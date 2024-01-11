@@ -21,7 +21,7 @@
     {name: $_("coins"), icon: "coins", fn: ()=>{goto('/market')}},
     {name: $_("candle_stick"), icon: "candle_stick", fn: ()=>{goto('/market/candle/BTC-USDT')}},
   ]
-  const utilApps = [
+  const toolApps = [
     {name: $_("help_center"), icon: "question", fn: ()=>{}},
   ]
 </script>
@@ -37,5 +37,5 @@
   <AppSection title={$_("market")} apps={marketApps} />
 
   <!-- Utils -->
-  <AppSection title={$_("utilities")} apps={utilApps} />
+  <AppSection title={$_("tools")} apps={toolApps} />
 </div>

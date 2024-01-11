@@ -1,8 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { searchValue } from "$lib/stores/market";
+  import { goto } from "$app/navigation";
+  import { marketQueryFn } from "$lib/helpers/hufi";
+  import { marketData, searchValue } from "$lib/stores/market";
   import Popular from "$lib/components/search/popular.svelte";
   import Filtered from "$lib/components/search/filtered.svelte";
+
+  // In case access directly, no cache hit
+  if (!$marketData) { marketQueryFn().then(x => marketData.set(x)).catch(x => goto('/home')) }
 </script>
 
 <div>

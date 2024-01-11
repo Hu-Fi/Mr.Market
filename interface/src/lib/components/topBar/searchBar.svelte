@@ -1,11 +1,7 @@
 <script lang="ts">
-  import clsx from "clsx";  
   import { _ } from "svelte-i18n"
-  import { goto } from "$app/navigation";
   import MixinMenu from "../common/MixinMenu.svelte";
   import { searchValue } from "$lib/stores/market";
-
-  
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">

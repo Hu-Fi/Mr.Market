@@ -10,7 +10,7 @@ export const addSearchHistory = (item: object) => {
   console.log('history:', history)
   
   if (history.length >= 6) {
-    history.pop();
+    history.shift();
   }
   history.push(item)
   localStorage.setItem('search-history', JSON.stringify(history))
