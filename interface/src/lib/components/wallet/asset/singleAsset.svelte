@@ -17,10 +17,10 @@
   <div class="flex flex-col justify-end items-end space-y-2 mb-0.5">
     <!-- Right 24h Change and Price -->
     <span class={clsx("text-xs opacity-60", Number(asset.details.change_usd) > 0 ? UpColorText : DownColorText)}> 
-      {formatDecimals(BN(asset.details.change_usd).multipliedBy(100).toString(), 3)}% 
+      {formatDecimals(BN(asset.details.change_usd).multipliedBy(100).toString(), 2)}% 
     </span>
     <span class="text-xs !text-[10px] opacity-40"> 
-      ${formatDecimals(asset.details.price_usd, 2)} 
+      ${formatAssetBalance(asset.details.price_usd, 2)} 
     </span>
   </div>
 </div>
@@ -30,7 +30,7 @@
   import { _ } from "svelte-i18n"
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
-  import { BN, BN2, findChainIcon, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
+  import { BN, BN2, findChainIcon, formatAssetBalance, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
 
   let locale_currency = 1;
   export let asset = {
