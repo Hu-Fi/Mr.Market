@@ -1,7 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { onDestroy } from "svelte";
   import MixinMenu from "../common/MixinMenu.svelte";
   import { searchValue } from "$lib/stores/market";
+
+  onDestroy(()=>searchValue.set(''))
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">
