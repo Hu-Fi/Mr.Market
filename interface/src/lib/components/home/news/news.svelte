@@ -19,7 +19,7 @@
   $: activeNews = getNewsByLang()
 </script>
 
-<div class="flex flex-col space-y-3">
+<div class="flex flex-col space-y-3 mt-4">
   <div class="flex flex-col space-y-4 px-4">
     {#each activeNews as n}
       <SingleNews news={n} />

@@ -5,7 +5,7 @@
 </script>
 
 {#if $mixinConnected}
-  <div class="flex items-center mx-6 space-x-4">
+  <div class="flex items-center mx-6 space-x-4 mt-4">
     <div class="avatar w-12 h-12 ">
       <img src={$user.avatar_url} alt="-" class="rounded-full" />
     </div>

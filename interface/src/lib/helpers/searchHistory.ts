@@ -4,14 +4,21 @@ export const getSearchHistory = (): [] => {
 }
 
 export const addSearchHistory = (item: object) => {
-  console.log('addSearchHistory:', item)
+  // console.log('addSearchHistory:', item)
   if (!item) return 
-  const history = getSearchHistory()
-  console.log('history:', history)
+  let history = getSearchHistory()
+  // console.log('history:', history)
   
-  if (history.length >= 6) {
+  if (history.length > 6) {
     history.shift();
   }
-  history.push(item)
+  
+  let existingItem = history.find(h => h.symbol === item.symbol);
+  if (!existingItem) {
+    history.push(item);
+  } else {
+    history = history.filter(h => h.symbol !== item.symbol);
+    history.push(item)
+  }
   localStorage.setItem('search-history', JSON.stringify(history))
 }
