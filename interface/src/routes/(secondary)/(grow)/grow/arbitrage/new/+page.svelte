@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Choose from "$lib/components/grow/arbitrage/new/choose.svelte";
   import Modes from "$lib/components/grow/arbitrage/new/modes.svelte";
 </script>
 

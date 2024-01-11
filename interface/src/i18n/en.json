@@ -169,7 +169,5 @@
   "start_market_making": "Start market making",
   "grow_get_started": "Maximize wealth growth effectively",
   "explore": "Explore",
-  "choose_a_mode": "Choose a mode",
-  "just_make_me_money": "Just make me money",
-  "i_will_take_control":"I will take control"
+  "step": "Step {step}"
 }

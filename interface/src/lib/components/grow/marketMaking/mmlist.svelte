@@ -8,7 +8,7 @@
 
 <!-- Zero mm created -->
 {#if list.length === 0}
-  <div class="flex flex-col grow mx-6 h-full justify-center items-center space-y-6">
+  <div class="flex flex-col grow mx-6 h-full justify-center items-center space-y-6 mb-24">
     <div class="text-xs font-bold">
       <span class="text-sm font-bold">
         {$_('ready_to_grow_your_wealth')}
