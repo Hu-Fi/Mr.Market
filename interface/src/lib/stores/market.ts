@@ -12,6 +12,8 @@ export let showCoinPrice = writable(true)
 export let ChartPrice = writable([])
 export let ChartActiveTab = writable(0)
 export let ChartLineOption = writable(lineOptions)
+export let marketData = writable()
+export let searchValue = writable('')
 
 // For list sorting (change keys and 'sortCoins()' when data change)
 export const asc = writable(true);

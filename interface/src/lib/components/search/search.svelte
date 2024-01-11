@@ -1,9 +1,14 @@
 <script lang="ts">
-  import clsx from "clsx"
   import { _ } from "svelte-i18n"
-    import Popular from "./popular.svelte";
+  import { searchValue } from "$lib/stores/market";
+  import Popular from "$lib/components/search/popular.svelte";
+  import Filtered from "$lib/components/search/filtered.svelte";
 </script>
 
-<div class="px-4">
-  <Popular/>
+<div>
+  {#if $searchValue.length === 0}
+    <Popular/>
+  {:else}
+    <Filtered />
+  {/if}
 </div>
