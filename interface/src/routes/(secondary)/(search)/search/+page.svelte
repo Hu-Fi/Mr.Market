@@ -1,12 +1,6 @@
 <script lang="ts">
-  import clsx from "clsx"
+  import Search from "$lib/components/search/search.svelte";
   import { _ } from "svelte-i18n"
 </script>
 
-<div>
-
-</div>
-
-<style>
-
-</style>
+<Search />
