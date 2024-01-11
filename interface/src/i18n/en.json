@@ -137,8 +137,10 @@
   "coin_market": "{symbol} Market",
   "coin_candle": "{symbol} Candlestick",
   "market_price": "Market price",
-  "easy": "Easy",
-  "advanced": "Advanced",
+  "easy": "Easy mode",
+  "easy_intro": "Delegate the task of selecting the most effective revenue strategy to our incredible robot.",
+  "advanced": "Advanced mode",
+  "advanced_intro": "Take control of every elements could possibly involved",
   "select_an_asset": "Select an asset",
   "next_step": "Next step",
   "back": "Back",
@@ -166,5 +168,8 @@
   "create_new_arbitrage": "Create new arbitrage",
   "start_market_making": "Start market making",
   "grow_get_started": "Maximize wealth growth effectively",
-  "explore": "Explore"
+  "explore": "Explore",
+  "choose_a_mode": "Choose a mode",
+  "just_make_me_money": "Just make me money",
+  "i_will_take_control":"I will take control"
 }
