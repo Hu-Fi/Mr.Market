@@ -6,7 +6,7 @@
     import { goto } from "$app/navigation";
 
   const items = [
-    {key: 'lang', name: $_('language'), value: getNameByKey($locale || 'en-US'), fn: ()=>{}},
+    {key: 'lang', name: $_('language'), value: getNameByKey($locale || 'en-US'), fn: ()=>{goto('/home/user/i18n')}},
     {key: 'theme', name: $_('theme'), value: 0, fn: ()=>{}},
     {key: 'quotation', name: $_('quotation'), value: 0, fn: ()=>{}},
     {key: 'faq', name: $_('faq'), value: 0, fn: ()=>{}},
@@ -36,8 +36,8 @@
           <span class="text-xs text-[9px] opacity-60"> {item.value} </span>
         {/if}
 
-        {#if item.key === 'theme'}        
-          <button class="flex items-center justify-center rounded-full p-0 h-6 w-8">
+        {#if item.key === 'theme'}
+          <button class="flex items-center justify-center rounded-full p-0 h-6 w-6">
             <!-- Theme Switch Icon -->
             <label class="swap swap-rotate">
               <!-- this hidden checkbox controls the state -->
@@ -53,6 +53,12 @@
               <!-- svelte-ignore a11y-no-static-element-interactions -->
               <svg on:click={()=>toggleTheme()} class="swap-on fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
             </label>
+          </button>
+        {:else if item.key === 'disconnect'}
+          <button class="flex items-center justify-center rounded-full p-0 h-6 w-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+            </svg>
           </button>
         {:else}
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-xs" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>

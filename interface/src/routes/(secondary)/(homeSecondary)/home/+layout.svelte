@@ -6,7 +6,7 @@
   <BackBar />
 </header>
 
-<main class="!px-0 !py-4">
+<main class="!px-0 !py-0">
   <slot />
 </main>
 

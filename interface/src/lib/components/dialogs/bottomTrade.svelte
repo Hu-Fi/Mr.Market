@@ -2,8 +2,8 @@
   import clsx from "clsx";
   import { locale } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { showSettingShortcut, theme } from "$lib/stores/theme";
   import { langs } from "../../../i18n/i18n";
+  import { showSettingShortcut, theme } from "$lib/stores/theme";
   import { bottomMode, bottomTradeDialog } from "$lib/stores/trade";
 
   const items = [
