@@ -169,5 +169,6 @@
   "start_market_making": "Start market making",
   "grow_get_started": "Maximize wealth growth effectively",
   "explore": "Explore",
-  "step": "Step {step}"
+  "step": "Step {step}",
+  "created_days_ago": "Created {days} days ago"
 }

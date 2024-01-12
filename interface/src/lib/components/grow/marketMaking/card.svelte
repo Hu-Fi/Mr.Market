@@ -15,50 +15,53 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<button class="flex flex-col border rounded-2xl px-6 py-4 space-y-6" on:click={()=>goto(`/grow/market_making/${data.id}`)}>
-  <!-- Title -->
-  <div class="flex w-full  justify-between items-center">
-    <div class="flex space-x-2">
-      <!-- Exchange Icon -->
-      <div class="flex avatar items-center">
-        <div class="w-6 h-6 rounded-full">
-          <img class="" src={findExchangeIconByIdentifier(data.exchange)} alt=""/>
+<div class="flex flex-col from-emerald-400 to-green-500 bg-gradient-to-r rounded-2xl rounded-t-xl">
+  <div class="flex items-center justify-end p-1 px-4">
+    <span class="text-xs text-base-100">
+      {$_('market_making')}
+    </span>
+  </div>
+  <button class="flex flex-col border border-green-300 bg-base-100 rounded-2xl p-6 pt-4 space-y-5" on:click={()=>goto(`/grow/market_making/${data.id}`)}>
+    <!-- Title -->
+    <div class="flex w-full justify-center items-center">
+      <div class="flex space-x-2">
+        <!-- Exchange Icon -->
+        <div class="flex avatar items-center">
+          <div class="w-6 h-6 rounded-full">
+            <img class="" src={findExchangeIconByIdentifier(data.exchange)} alt=""/>
+          </div>
         </div>
-      </div>
-    
-      <!-- Name -->
-      <div class="capitalize font-bold text-lg">
-        <span>{data.exchange}</span>
+      
+        <!-- Name -->
+        <div class="capitalize font-bold text-lg">
+          <span>{data.exchange}</span>
+        </div>
       </div>
     </div>
 
-    <div class="flex items-center">
-      <span class="h-full text-xs !text-[10px] badge text-green-700 badge-outline badge-xs py-0"> {data.name} </span>
-    </div>  
-  </div>
+    <!-- Infos -->
+    <div class="flex flex-col space-y-3 w-full">
+      {#each infos as info}
+        <div class="flex justify-between text-xs">
+          <span class="">
+            {info.key}
+          </span>
 
-  <!-- Infos -->
-  <div class="flex flex-col space-y-3 w-full">
-    {#each infos as info}
-      <div class="flex justify-between text-xs">
-        <span class="">
-          {info.key}
-        </span>
-
-        {#if info.f === 'profit'}
-          <span class={clsx(makingProfit ? UpColorText : DownColorText)}>
-            {makingProfit ? '+': ''}{info.value}%
-          </span>
-        {:else if info.f === 'amount'}
-          <span>
-            {info.value} {data.target}
-          </span>
-        {:else}
-          <span>
-            {info.value}
-          </span>
-        {/if}
-      </div>
-    {/each}
-  </div>
-</button>
+          {#if info.f === 'profit'}
+            <span class={clsx(makingProfit ? UpColorText : DownColorText)}>
+              {makingProfit ? '+': ''}{info.value}%
+            </span>
+          {:else if info.f === 'amount'}
+            <span>
+              {info.value} {data.target}
+            </span>
+          {:else}
+            <span>
+              {info.value}
+            </span>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  </button>
+</div>

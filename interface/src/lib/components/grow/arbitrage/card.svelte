@@ -2,8 +2,9 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { findCoinIconBySymbol, findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
+    import { daysBetweenToday, formatDecimals } from "$lib/helpers/utils";
 
   export let data = {type: 'arb', name: $_('arbitrage'), baseExchange: 'binance', targetExchange: 'okx', base: 'BTC', target: 'USDT', profit: '1.241', amount: '', started: '2023-12-28T12:00:12Z', id: 'df7b605f-ce06-4c3a-abb6-2fe947016fab' }
 
@@ -22,58 +23,60 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<button class="flex flex-col border rounded-2xl px-6 py-4 space-y-6" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
+<div class="flex flex-col from-sky-400 to-blue-500 bg-gradient-to-r rounded-2xl rounded-t-xl">
+  <div class="flex items-center justify-end p-1 px-4">
+    <span class="text-xs text-base-100">
+      {$_('arbitrage')}
+    </span>
+  </div>
+  <button class="flex flex-col border border-blue-300 bg-base-100 rounded-2xl p-6 pt-4 space-y-7" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
   <!-- Title -->
-  <div class="flex w-full justify-between items-center">
-    <div class="flex space-x-2">
-      <!-- Exchange Icon -->
-      <div class="-rotate-45 flex -space-x-2">
-        <div class="avatar">
-          <div class="w-6 h-6 rounded-full rotate-45">
-            <img class="" src={findExchangeIconByIdentifier(data.baseExchange)} alt=""/>        
-          </div>
-        </div>
-        <div class="avatar">
-          <div class="w-6 h-6 rounded-full rotate-45">
-            <img class="" src={findExchangeIconByIdentifier(data.targetExchange)} alt=""/>
-          </div>
+  <div class="flex space-x-2 w-full justify-center">
+    <div class="-rotate-45 flex -space-x-1 items-center">
+      <div class="avatar">
+        <div class="w-5 h-5 rounded-full rotate-45">
+          <img class="" src={findExchangeIconByIdentifier(data.baseExchange)} alt=""/>        
         </div>
       </div>
-
-      <!-- Name -->
-      <div class="capitalize font-bold text-lg">
-        <span>{data.baseExchange}</span> / <span>{data.targetExchange}</span>
+      <div class="avatar">
+        <div class="w-5 h-5 rounded-full rotate-45">
+          <img class="" src={findExchangeIconByIdentifier(data.targetExchange)} alt=""/>
+        </div>
       </div>
     </div>
-
-    <div class="flex items-center">
-      <span class="h-full text-xs !text-[10px] badge badge-primary badge-outline badge-xs py-0"> {data.name} </span>
-    </div>  
+    <span class="text-base font-bold capitalize">
+      { data.baseExchange }/{ data.targetExchange }
+    </span>
   </div>
 
-  <!-- Infos -->
-  <div class="flex flex-col space-y-3 w-full">
-    {#each infos as info}
-      <div class="flex justify-between text-xs">
-        <span class="">
-          {info.key}
-        </span>
-
-        {#if info.f === 'profit'}
-          <span class={clsx(makingProfit ? UpColorText : DownColorText)}>
-            {makingProfit ? '+': ''}{info.value}%
-          </span>
-        {:else if info.f === 'amount'}
-          <span>
-            {info.value} {data.target}
-          </span>
-        {:else}
-          <span>
-            {info.value}
-          </span>
-        {/if}
+  <div class="flex w-full justify-between items-center">
+    <div class="flex flex-col space-y-2 text-xs justify-start">
+      <div class="flex space-x-2 items-center mt-1">
+        <!-- arrow left right icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+        </svg>        
+        <span class="uppercase text-[10px] font-medium">{data.base}-{data.target}</span>
       </div>
-    {/each}
+      <div class="flex space-x-2 items-center mt-1">
+        <!-- clock icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <span class="text-[10px] font-medium"> {$_('created_days_ago', {values:{days:daysBetweenToday(data.started)}})} </span>
+      </div>
+    </div>
+    
+    <div class="flex flex-col space-y-1 items-end">
+      <div class={clsx(makingProfit ? UpColorText : DownColorText)}>
+        <span class='text-xl font-bold'>
+          {makingProfit?'+':''}{formatDecimals(data.profit, 2)}</span><span class="text-xs">%
+        </span>
+      </div>
+      <span class="text-xs opacity-80">
+        {data.amount} {data.target}
+      </span>
+    </div>
   </div>
 
   <!-- Actions -->
@@ -88,3 +91,4 @@
     {/each}
   </div> -->
 </button>
+</div>

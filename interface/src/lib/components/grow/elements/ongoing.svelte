@@ -11,11 +11,11 @@
       type: "arb",
       name: $_("arbitrage"),
       baseExchange: "binance",
-      targetExchange: "okx",
+      targetExchange: "OKX",
       base: "BTC",
       target: "USDT",
-      profit: "1.241",
-      amount: "",
+      profit: "-4.52",
+      amount: "23124",
       started: "2023-12-28T12:00:12Z",
       id: "df7b605f-ce06-4c3a-abb6-2fe947016fab",
     },
@@ -26,8 +26,8 @@
       targetExchange: "lbank",
       base: "BTC",
       target: "USDT",
-      profit: "1.241",
-      amount: "",
+      profit: "244.4523",
+      amount: "4124",
       started: "2023-12-28T12:00:12Z",
       id: "df7b605f-ce06-4c3a-abb6-2fe947016fab",
     },
@@ -73,7 +73,7 @@
     <Create />
   </div>
 {:else}
-  <div class="flex flex-col space-y-3 mx-4 my-5">
+  <div class="flex flex-col space-y-4 mx-4 my-5">
     {#each placeholder as item}
       {#if item.type === "arb"}
         <ArbCard data={item} />
