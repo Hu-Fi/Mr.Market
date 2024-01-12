@@ -7,7 +7,7 @@
   const bt = [
     {name: $_("swap"), icon: "swap", fn: ()=>{goto('/trade'); bottomMode.set(0)}},
     {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade'); bottomMode.set(1)}},
-    {name: $_("earn"), icon: "earn", fn: ()=>{goto('/grow')}},
+    {name: $_("grow"), icon: "earn", fn: ()=>{goto('/grow')}},
     {name: $_("arbitrage"), icon: "arbitrage", fn: ()=>{goto('/grow/arbitrage')}},
     {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},
 

@@ -26,7 +26,7 @@
   ]
 </script>
 
-<div class="flex flex-col space-y-10">
+<div class="flex flex-col space-y-10 mt-4">
   <!-- Trade -->
   <AppSection title={$_("trade")} apps={tradingApps} />
 

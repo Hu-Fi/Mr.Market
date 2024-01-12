@@ -83,20 +83,3 @@
     </button>
   </div>
 </div>
-
-<style>
-  /* .contain-balance {
-    container-type: inline-size;
-  } */
-  /* .balance-text {
-    container-name: balance;
-    font-size: 5cqw;
-    line-height: 2.25rem;
-  } */
-  /* @container balance (min-width: 700px) {
-    .balance-text h3{
-      font-size: 1.25rem
-      line-height: 1.75rem
-    }
-  } */
-</style>

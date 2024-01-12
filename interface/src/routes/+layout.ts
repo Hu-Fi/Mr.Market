@@ -1,4 +1,4 @@
-import { marketQueryFn } from '$lib/helpers/hufi.js';
+import { marketQueryFn } from '$lib/helpers/hufi/coin.js';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({params}) {

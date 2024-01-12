@@ -38,7 +38,7 @@
   import { ChartActiveTab, ChartLineOption, ChartPrice, currentCoin, showCoinPrice } from "$lib/stores/market";
   import { coinChartOptions as chartOptions, lineOptions } from "$lib/helpers/chart";
   import CoinChartLoader from "$lib/components/skeleton/market/coinChartLoader.svelte";
-  import { coinMarketChart } from "$lib/helpers/hufi";
+  import { coinMarketChart } from "$lib/helpers/hufi/coin";
   import { formatChartPrice } from "$lib/helpers/utils";
   import { onDestroy } from "svelte";
     import colors from "tailwindcss/colors";

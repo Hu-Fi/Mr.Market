@@ -1,7 +1,7 @@
 // Hufi backend
 
-import { HUFI_BACKEND_URL } from "./constants";
-import { formatDecimals } from "./utils";
+import { HUFI_BACKEND_URL } from "../constants";
+import { formatDecimals } from "../utils";
 
 // {/coingecko/coins/:id, GET}
 // {/coingecko/coins/markets/:vs_currency, GET}
