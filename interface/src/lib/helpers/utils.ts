@@ -74,11 +74,19 @@ const getNonZeroDecimalIndex = (decimalPart: string) => {
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
-    return formatDecimals(num, 8);
+    return formatDecimals(num, 9);
   } else if (num.toString().includes('.')) {
     const [integerPart, decimalPart] = num.toString().split('.');
     const truncatedDecimal = decimalPart.slice(0, 8 - integerPart.length);
     return `${integerPart}.${truncatedDecimal}`;
+  } else {
+    return num;
+  }
+}
+
+export const formatWalletBalanceFull = (num: number, lang: string = 'en') => {
+  if (num < 1 && num.toString().split('.')[1]?.length > 8) {
+    return formatDecimals(num, 9);
   } else {
     return num;
   }
