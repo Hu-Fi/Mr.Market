@@ -49,6 +49,18 @@ export const mixinUserMe = async (token: string) => {
   return result.data ? result.data.data : {};
 }
 
+export const mixinSafeAllOutputs = async (members: string[], token: string)=> {
+  let config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const result = await axios
+    .get(MIXIN_API_BASE_URL + `/safe/outputs?members=${hashMembers(members)}&threshold=1&offset=0&limit=1000&&order=ASC`, config);
+  return result.data ? result.data.data : {};
+}
+
 export const mixinSafeOutputs = async (members: string[], token: string, spent: boolean = false)=> {
   let config = {
     headers: {
@@ -142,7 +154,7 @@ async function calculateTotalBTCBalance(totalUSDBalance, token: string) {
   return totalUSDBalance / parseFloat(btcDetails.price_usd);
 }
 
-async function getUserBalances(user_id: string, token: string) {
+const getUserBalances = async (user_id: string, token: string) => {
   const topAssetsCache = await fetchTopAssetsCache();
   const outputs = await mixinSafeOutputs([user_id], token)
   let balances = groupAndSumUTXOs(outputs);
@@ -151,6 +163,14 @@ async function getUserBalances(user_id: string, token: string) {
   const totalBTCBalance = await calculateTotalBTCBalance(totalUSDBalance, token);
   userAssets.set({balances, totalUSDBalance, totalBTCBalance})
   return { balances, totalUSDBalance, totalBTCBalance}
+}
+
+export const getAssetUTXOs = async (asset_id: string, token: string) => {
+  const u = get(user)
+  if (!u) { return [] }
+  if (!u.user_id) { return [] }
+  const outputs = await mixinSafeAllOutputs([user_id], token)
+  console.log('outputs:',outputs)
 }
 
 export const AfterMixinOauth = async (token: string) => {

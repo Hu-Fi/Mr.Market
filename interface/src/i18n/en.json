@@ -170,5 +170,8 @@
   "grow_get_started": "Maximize wealth growth effectively",
   "explore": "Explore",
   "step": "Step {step}",
-  "created_days_ago": "Created {days} days ago"
+  "created_days_ago": "Created {days} days ago",
+  "asset": "Asset",
+  "apr_percent": "{percent}% APR",
+  "history": "History"
 }

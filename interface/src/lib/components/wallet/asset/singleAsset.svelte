@@ -1,10 +1,10 @@
-<div class="flex justify-between py-3">
+<button class="flex justify-between py-3" on:click={()=>{assetDetailAsset.set(asset); assetDetailDialog.set(true)}}>
   <div class="flex space-x-4 items-center">
     <!-- Left Icon -->
     <AssetIcon assetIcon={asset.details.icon_url} chainIcon={findChainIcon(asset.details.chain_id)} />
     
     <!-- Center Amount and USD Value -->
-    <div class="flex flex-col space-y-0.5">
+    <div class="flex flex-col space-y-0.5 items-start">
       <div>
         <span class="balance-font text-xl">{formatWalletBalance(asset.balance)}</span> <span class="text-xs !text-[10px]">{asset.details.symbol}</span>
       </div>
@@ -23,13 +23,14 @@
       ${formatAssetBalance(asset.details.price_usd, 2)} 
     </span>
   </div>
-</div>
+</button>
 
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import { assetDetailAsset, assetDetailDialog } from "$lib/stores/wallet"
   import { BN, BN2, findChainIcon, formatAssetBalance, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
 
   let locale_currency = 1;

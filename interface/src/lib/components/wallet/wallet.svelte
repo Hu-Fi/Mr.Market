@@ -6,7 +6,6 @@
   import Loading from "$lib/components/common/loading.svelte"
   import Title from "$lib/components/wallet/balance/title.svelte";
   import Assets from "$lib/components/wallet/asset/assets.svelte";
-  // import Action from "$lib/components/wallet/actions/action.svelte";
   import Percentage from "$lib/components/wallet/balance/percentage.svelte";
 </script>
 
@@ -14,7 +13,6 @@
   <div class="flex flex-col space-y-4">
     <Title />
     <Percentage />
-    <!-- <Action /> -->
   </div>
 
   <div class="mt-6 border-t-[10px] border-slate-100 mb-36">
