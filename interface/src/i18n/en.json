@@ -173,5 +173,6 @@
   "created_days_ago": "Created {days} days ago",
   "asset": "Asset",
   "apr_percent": "{percent}% APR",
-  "history": "History"
+  "history": "History",
+  "confirm_disconnect": "Confirm Disconnect"
 }
