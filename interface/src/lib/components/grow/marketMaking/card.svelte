@@ -22,7 +22,7 @@
       {$_('market_making')}
     </span>
   </div>
-  <button class="flex flex-col bg-base-100 rounded-xl p-6 pt-4 space-y-7" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
+  <button class="flex flex-col bg-base-100 rounded-xl p-6 pt-6 space-y-7" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
     <!-- Title -->
     <div class="flex space-x-2 w-full justify-start">
       <!-- Exchange Icon -->
