@@ -14,7 +14,6 @@
   <!-- Title -->
   <div class="flex justify-between">
     <div class="w-8 h-3 skeleton" />
-    <!-- <div class="w-8 h-3 skeleton" /> -->
   </div>
 
   <!-- Pairs -->

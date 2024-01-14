@@ -5,6 +5,7 @@
   import { userAssets } from "$lib/stores/wallet";
   import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import HideBalance from "$lib/components/home/walletBalance/hideBalance.svelte";
+	import BalanceNumberLoader from '$lib/components/skeleton/home/balanceNumberLoader.svelte';
 
   let open = false;
   let currency = "USDT"
@@ -66,7 +67,8 @@
               </ul>
             </details>
           {:else}
-            <span class="loading"></span>
+            <!-- <span class="loading"></span> -->
+            <BalanceNumberLoader />
           {/if}
         </div>
       {:else}

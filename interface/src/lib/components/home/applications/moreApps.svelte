@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import { bottomMode } from "$lib/stores/trade";
-	import { HUMAN_PROTOCOL_GROUP_URL } from '$lib/helpers/constants.ts';
+	import { HUMAN_PROTOCOL_GROUP_URL } from '$lib/helpers/constants';
   import AppSection from "$lib/components/home/applications/appSection.svelte";
 
   const tradingApps = [
