@@ -31,8 +31,8 @@
   </div>
     
   <!-- More button -->
-  <button class={clsx("flex btn min-w-8 space-x-[-8px] opacity-60 w-14 btn-xs bg-base-100 shadow-none border-none no-animation hover:bg-base-200 focus:bg-base-200 focus:border-none rounded-md px-0",
-    ranges.every(range => range.v !== $CandleTimeRange) ? "bg-base-200 text-base-content" : "opacity-60" )} on:click={()=>{CandleTimeRangeDialog.set(!$CandleTimeRangeDialog)}}>
+  <button class={clsx("flex btn min-w-8 space-x-[-8px] opacity-60 w-14 btn-xs bg-base-100 shadow-none border-none no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none rounded-md px-0",
+    ranges.every(range => range.v !== $CandleTimeRange) ? "bg-base-200 text-base-content opacity-100" : "" )} on:click={()=>{CandleTimeRangeDialog.set(!$CandleTimeRangeDialog)}}>
     <span> { $_('more') } </span>
     {#if $CandleTimeRangeDialog}
       <!-- Caret Up Icon -->
@@ -44,7 +44,7 @@
   </button>
 
   <!-- Indicator button -->
-  <button class="flex btn min-w-8 space-x-[-8px] opacity-60 btn-xs bg-base-100 shadow-none border-none rounded-md px-1 no-animation hover:bg-base-200 focus:bg-base-200 focus:border-none" on:click={()=>{CandleIndicatorDialog.set(!$CandleIndicatorDialog)}}>
+  <button class="flex btn min-w-8 space-x-[-8px] opacity-60 btn-xs bg-base-100 shadow-none border-none rounded-md px-1 no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none" on:click={()=>{CandleIndicatorDialog.set(!$CandleIndicatorDialog)}}>
     <span> {$_('indicators')} </span>
     {#if $CandleIndicatorDialog}
       <!-- Caret Up Icon -->

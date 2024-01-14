@@ -1,16 +1,16 @@
 <script lang="ts">
-  import clsx from 'clsx';
   import { _ } from "svelte-i18n"
   import { page } from "$app/stores";
   import { init, dispose } from "klinecharts";
   import { onMount, onDestroy } from 'svelte'
+	import { CandleChart } from '$lib/stores/market';
 	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
 	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
 
   onMount(() => {
-    const chart = init('chart')
+    CandleChart.set(init('chart'))
 
-    chart.setStyles({
+    $CandleChart.setStyles({
       candle: {
         tooltip:{ showRule: 'follow_cross', text: { family: 'Inter', size: 10 }, showType: 'rect' },
         priceMark: { high: { textFamily: 'Inter', textSize: 10 }, low: { textFamily: 'Inter', textSize: 10 }, last: { text: { family: 'Inter', size: 10 } } }
@@ -29,7 +29,7 @@
       xAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10 } },
       yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10, marginStart: 1, marginEnd: 1 } },
     })
-    chart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
+    $CandleChart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
     let data = [
       { timestamp: '2015-07-20', open: 277.98, high: 280.0, low: 277.37, close: 280.0 },
 { timestamp: '2015-07-21', open: 279.96, high: 281.27, low: 276.85, close: 277.32 },
@@ -3105,7 +3105,7 @@
 { timestamp: '2023-12-26', open: 43589.67, high: 43605.0, low: 41600.67, close: 42515.53 },
 { timestamp: '2023-12-27', open: 42521.21, high: 43709.98, low: 42111.47, close: 43474.4 }]
 
-    chart.applyNewData(data)
+    $CandleChart.applyNewData(data)
   })
 
   onDestroy(() => {
