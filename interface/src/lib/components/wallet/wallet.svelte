@@ -2,11 +2,12 @@
   import { _ } from "svelte-i18n"
   import { userAssets } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";
-  import ConnectWallet from "./connect/connectWallet.svelte";
   import Loading from "$lib/components/common/loading.svelte"
   import Title from "$lib/components/wallet/balance/title.svelte";
   import Assets from "$lib/components/wallet/asset/assets.svelte";
   import Percentage from "$lib/components/wallet/balance/percentage.svelte";
+  import ConnectWallet from "$lib/components/wallet/connect/connectWallet.svelte";
+	import WalletPageLoader from '$lib/components/skeleton/wallet/walletPageLoader.svelte';
 </script>
 
 {#if $mixinConnected && $userAssets}
@@ -19,10 +20,7 @@
     <Assets />
   </div>
 {:else if $mixinConnected && !$userAssets}
-  <div class="flex flex-col items-center justify-center space-y-6 h-[80vh]">
-    <Loading />
-    <span class="font-bold"> {$_('loading_assets')} </span>
-  </div>
+  <WalletPageLoader />
 {:else}
   <ConnectWallet />
 {/if}
