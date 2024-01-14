@@ -2,7 +2,6 @@
   import { _ } from "svelte-i18n"
   import { userAssets } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";
-  import Loading from "$lib/components/common/loading.svelte"
   import Title from "$lib/components/wallet/balance/title.svelte";
   import Assets from "$lib/components/wallet/asset/assets.svelte";
   import Percentage from "$lib/components/wallet/balance/percentage.svelte";

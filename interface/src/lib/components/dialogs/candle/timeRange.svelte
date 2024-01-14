@@ -44,7 +44,7 @@
       <div class="grid grid-cols-4 gap-4 mx-4">
         {#each ranges as r}
           <button 
-            class={clsx("btn btn-xs rounded-sm bg-base-100 no-animation shadow-none", $CandleTimeRange === r.v && "bg-base-200 text-base-content")}
+            class={clsx("btn btn-xs rounded-md bg-base-100 no-animation shadow-none", $CandleTimeRange === r.v && "bg-base-200 text-base-content")}
             on:click={()=>{CandleTimeRange.set(r.v); CandleTimeRangeDialog.set(false)} }
           >
             <span> {r.k} </span>
