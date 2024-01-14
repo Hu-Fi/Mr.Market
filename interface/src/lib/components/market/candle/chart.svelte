@@ -127,11 +127,9 @@
     chartApi.timeScale().fitContent();
     chartApi.subscribeCrosshairMove(crossHandler);
 
-    chartApi.addLineSeries({
-      color: ''
-    })
-    // const MALine = chartApi.addLineSeries()
-    // MALine.setData(smaLine);
+    let ma5 = getMA(data, 5)
+    const MALine = chartApi.addLineSeries({})
+    MALine.setData(ma5);
   }
   $: localization = { locale: $locale?.slice(0, 2) || "en" };
   $: if ($CandlePairSelectorDialog) tooltipOpen = false
@@ -3255,8 +3253,8 @@
 { time: '2023-12-26', open: 43589.67, high: 43605.0, low: 41600.67, close: 42515.53 },
 { time: '2023-12-27', open: 42521.21, high: 43709.98, low: 42111.47, close: 43474.4 }]
 
-let ma5 = getMA(data, 5)
+
 let ma30 = getMA(data, 30)
 let ma60 = getMA(data, 60)
-console.log(ma5)
+// console.log(ma5)
 </script>

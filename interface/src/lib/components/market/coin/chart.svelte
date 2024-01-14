@@ -41,7 +41,7 @@
   import { coinMarketChart } from "$lib/helpers/hufi/coin";
   import { formatChartPrice } from "$lib/helpers/utils";
   import { onDestroy } from "svelte";
-    import colors from "tailwindcss/colors";
+  import colors from "tailwindcss/colors";
 
   onDestroy(()=>ChartActiveTab.set(0))
   $page.data.coin.then(c => currentCoin.set(c))
