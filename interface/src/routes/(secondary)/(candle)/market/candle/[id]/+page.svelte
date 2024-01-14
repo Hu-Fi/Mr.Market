@@ -8,6 +8,7 @@
   import DetailsBook from "$lib/components/market/candle/detailsBook.svelte"
   import DetailsTabs from "$lib/components/market/candle/detailsTabs.svelte";
   import DetailsTrades from "$lib/components/market/candle/detailsTrades.svelte";
+	import IndicatorSettings from '$lib/components/dialogs/candle/indicatorSettings.svelte';
   import DetailsDepth from "$lib/components/market/candle/detailsDepth.svelte";
   import { CandleDetailTab } from "$lib/stores/market";
 </script>
@@ -32,3 +33,4 @@
 </div>
 
 <TimeRange />
+<IndicatorSettings />

@@ -4,11 +4,10 @@
   import { page } from "$app/stores";
   import { init, dispose } from "klinecharts";
   import { onMount, onDestroy } from 'svelte'
-	import KlineRange from './klineRange.svelte';
+	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
 	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
 
   onMount(() => {
-    // 初始化图表
     const chart = init('chart')
 
     chart.setStyles({
@@ -17,7 +16,7 @@
         priceMark: { high: { textFamily: 'Inter', textSize: 10 }, low: { textFamily: 'Inter', textSize: 10 }, last: { text: { family: 'Inter', size: 10 } } }
       },
       indicator: {
-        tooltip: { showRule: 'always', text: { family: 'Inter', size: 10, marginTop: 0 }, rect: {  }, showName: false, },
+        tooltip: { showRule: 'always', text: { family: 'Inter', size: 10, marginTop: 0 }, showName: false, },
       },
       grid: { 
         horizontal: { show: false }, 
@@ -28,7 +27,7 @@
         vertical: { text: { family: 'Inter', size: 10 } },
       },
       xAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10 } },
-      yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10 } },
+      yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10, marginStart: 1, marginEnd: 1 } },
     })
     chart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
     let data = [
@@ -3106,12 +3105,10 @@
 { timestamp: '2023-12-26', open: 43589.67, high: 43605.0, low: 41600.67, close: 42515.53 },
 { timestamp: '2023-12-27', open: 42521.21, high: 43709.98, low: 42111.47, close: 43474.4 }]
 
-    // 为图表添加数据
     chart.applyNewData(data)
   })
 
   onDestroy(() => {
-    // 销毁图表
     dispose('chart')
   })
 </script>
@@ -3120,7 +3117,7 @@
   <CoinChartLoader />
 {:then dt}
   <div class="flex flex-col space-y-4">
-    <KlineRange />
+    <KlineTabs />
     <div id="chart" class="h-[300px] w-full"/>
   </div>
 {/await}

@@ -39,7 +39,7 @@ export let CandleDetailTab = writable(0)
 export let CandleDetailBookDecimal = writable(1)
 export let CandleDetailBookDecimalDialog = writable(false)
 
-export let CandleTimeRange = writable('')
+export let CandleTimeRange = writable(4*60*60)
 export let CandleTimeRangeDialog = writable(false)
 export let CandleIndicatorDialog = writable(false)
 
