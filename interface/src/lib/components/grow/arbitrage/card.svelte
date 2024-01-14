@@ -10,13 +10,13 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<div class="flex flex-col rounded-xl border border-base-300 relative">
+<div class="flex flex-col rounded-xl border border-base-200 relative">
   <div class="absolute right-0 -top-1 flex items-center justify-end">
     <span class="text-xs text-base-100 from-sky-400 to-blue-500 bg-gradient-to-r px-6 py-0.5 rounded-tr-lg rounded-bl-lg">
       {$_('arbitrage')}
     </span>
   </div>
-  <button class="flex flex-col bg-base-100 rounded-xl p-6 pt-6 space-y-7" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
+  <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-6" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
     <!-- Title -->
     <div class="flex space-x-2 w-full justify-start">
       <div class="-rotate-45 flex -space-x-1 items-center">

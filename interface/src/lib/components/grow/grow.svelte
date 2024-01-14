@@ -4,7 +4,7 @@
   import Ongoing from "./elements/ongoing.svelte";
 </script>
 
-<div class="flex flex-col space-y-5">
+<div class="flex flex-col space-y-5 border-b-[8px] border-b-slate-50">
   <Entrance />
 </div>
 <Ongoing />

@@ -185,5 +185,6 @@
   "asset": "Asset",
   "apr_percent": "{percent}% APR",
   "history": "History",
-  "confirm_disconnect": "Confirm Disconnect"
+  "confirm_disconnect": "Confirm Disconnect",
+  "community": "Community"
 }

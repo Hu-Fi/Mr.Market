@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import { bottomMode } from "$lib/stores/trade";
+	import { HUMAN_PROTOCOL_GROUP_URL } from '$lib/helpers/constants.ts';
   import AppSection from "$lib/components/home/applications/appSection.svelte";
 
   const tradingApps = [
@@ -23,6 +24,7 @@
   ]
   const toolApps = [
     {name: $_("help_center"), icon: "question", fn: ()=>{}},
+    {name: $_("community"), icon: "community", fn: ()=>{window.open(HUMAN_PROTOCOL_GROUP_URL)}},
   ]
 </script>
 

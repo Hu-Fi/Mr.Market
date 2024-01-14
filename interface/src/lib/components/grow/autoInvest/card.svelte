@@ -24,7 +24,7 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<button class="flex flex-col border rounded-2xl px-6 py-4 space-y-6 collapse-title" on:click={()=>goto(`/grow/auto_invest/${data.id}`)}>
+<button class="flex flex-col border border-base-200 rounded-2xl p-4 space-y-6 collapse-title" on:click={()=>goto(`/grow/auto_invest/${data.id}`)}>
   <!-- Title -->
   <div class="flex w-full justify-between items-center">
     <div class="flex space-x-2">
