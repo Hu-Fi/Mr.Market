@@ -2,7 +2,6 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import Price from "$lib/components/market/candle/price.svelte";
-  // import Chart from "$lib/components/market/candle/chart.svelte";
 	import TimeRange from '$lib/components/dialogs/candle/timeRange.svelte';
   import KlineChart from "$lib/components/market/candle/klineChart.svelte";
   import DetailsBook from "$lib/components/market/candle/detailsBook.svelte"
@@ -15,7 +14,6 @@
 
 <div>
   <Price />
-  <!-- <Chart /> -->
   <KlineChart />
 </div>
 

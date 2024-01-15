@@ -24,7 +24,7 @@
   ]
   const toolApps = [
     {name: $_("help_center"), icon: "question", fn: ()=>{}},
-    {name: $_("community"), icon: "community", fn: ()=>{window.open(HUMAN_PROTOCOL_GROUP_URL)}},
+    {name: $_("community"), icon: "community", fn: ()=>{ window.open(HUMAN_PROTOCOL_GROUP_URL) }},
   ]
 </script>
 

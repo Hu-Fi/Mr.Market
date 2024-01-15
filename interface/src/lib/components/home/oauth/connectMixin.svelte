@@ -13,14 +13,13 @@
       { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
       {
         onShowUrl: (url: string) => {
-          window.open(url)
+          window.location.assign(url)
         },
         onError: (error: any) => {
           console.error(error);
           return;
         },
         onSuccess: async (token: any) => {
-          //token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJhaWQiOiI5ZWU4ZTQzZS04NzczLTQyMDgtYjY2ZC0yMWZjNGU2NmNjMWYiLCJleHAiOjE3MzU0NDkxMTAsImlhdCI6MTcwMzkxMzExMCwiaXNzIjoiM2ZiNjgyNjMtNGYwNi00NzZlLTgzZGItNTAzZDI1ZDU2YjkzIiwic2NwIjoiUFJPRklMRTpSRUFEIEFTU0VUUzpSRUFEIFNOQVBTSE9UUzpSRUFEIn0.R-JHH-MkmyfF6s9r-hASQaNmp3Vo8spfIyysQFhbW4cOlY7cAV9iMN0tZh2n9uLaspEah7z9oVeOksunBlXlUmcMkhwvl5IGi9AQ6YcpXMHlUiMg6tZWQBfOHPZnF3Tm8ULzGjaVHqSZkLQu0HxtQ2Cmhqg-7S_PwdXuf34ro28
           await AfterMixinOauth(token)
           return;
         },

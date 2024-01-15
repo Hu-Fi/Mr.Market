@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -60,6 +60,3 @@
     </div>
   </div>
 </button>
-
-<style>
-</style>
