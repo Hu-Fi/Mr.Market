@@ -20,7 +20,7 @@
       {formatDecimals(BN(asset.details.change_usd).multipliedBy(100).toString(), 2)}% 
     </span>
     <span class="text-xs !text-[10px] opacity-40"> 
-      ${formatAssetBalance(asset.details.price_usd, 2)} 
+      ${formatWalletBalance(Number(asset.details.price_usd))} 
     </span>
   </div>
 </button>

@@ -28,7 +28,10 @@ export const formatDecimals = (s: string | number, n: number) => {
   if (strValue.includes('.')) {
     const [integerPart, decimalPart] = strValue.split('.');
     if (decimalPart.length > n) {
-      return parseFloat(`${integerPart}.${decimalPart.slice(0, n+getNonZeroDecimalIndex(decimalPart)-1)}`);
+      return parseFloat(`${integerPart}.${decimalPart.slice(0, n)}`);
+    }
+    if (n === 0) {
+      return parseFloat(integerPart)
     }
   }
   return Math.floor(Number(s) * 10 ** n) / 10 ** n
@@ -41,7 +44,7 @@ export const formatChartPrice = (s: string | number) => {
     let finalDecimalLength = 0;
     if (integerPart.length > 2) finalDecimalLength = 2;
     else if (integerPart.length == 2) finalDecimalLength = 3;
-    else finalDecimalLength = 8 - integerPart.length;
+    else finalDecimalLength = 10 - integerPart.length;
     return parseFloat(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`);
   }
 }
@@ -74,11 +77,13 @@ const getNonZeroDecimalIndex = (decimalPart: string) => {
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
-    return formatDecimals(num, 9);
+    return formatDecimals(num, 8);
+  } else if (num >= 10000000) {
+    return formatDecimals(num, 0);
   } else if (num.toString().includes('.')) {
     const [integerPart, decimalPart] = num.toString().split('.');
     const truncatedDecimal = decimalPart.slice(0, 8 - integerPart.length);
-    return `${integerPart}.${truncatedDecimal}`;
+    return Number(`${integerPart}.${truncatedDecimal}`)
   } else {
     return num;
   }

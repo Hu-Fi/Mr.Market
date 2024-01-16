@@ -119,7 +119,7 @@ async function getAssetDetails(asset_id: string, topAssetsCache: any) {
 }
 
 // Step 2: Group UTXOs by asset_id and sum the amounts
-function groupAndSumUTXOs(outputs) {
+export function groupAndSumUTXOs(outputs) {
   const balances = outputs.reduce((acc, output) => {
     const { asset_id, amount } = output;
     if (!acc[asset_id]) {
@@ -131,7 +131,7 @@ function groupAndSumUTXOs(outputs) {
   return balances;
 }
 
-async function calculateAndSortUSDBalances(balances, topAssetsCache) {
+export async function calculateAndSortUSDBalances(balances, topAssetsCache) {
   for (const asset_id in balances) {
     const assetDetails = await getAssetDetails(asset_id, topAssetsCache);
     balances[asset_id].usdBalance = balances[asset_id].balance * parseFloat(assetDetails.price_usd);
@@ -144,7 +144,7 @@ async function calculateAndSortUSDBalances(balances, topAssetsCache) {
 }
 
 // Step 5: Calculate total USD balance
-function calculateTotalUSDBalance(balances) {
+export function calculateTotalUSDBalance(balances) {
   return Object.values(balances).reduce((acc, { usdBalance }) => acc + usdBalance, 0);
 }
 
@@ -157,6 +157,7 @@ async function calculateTotalBTCBalance(totalUSDBalance, token: string) {
 const getUserBalances = async (user_id: string, token: string) => {
   const topAssetsCache = await fetchTopAssetsCache();
   const outputs = await mixinSafeOutputs([user_id], token)
+  console.log(outputs)
   let balances = groupAndSumUTXOs(outputs);
   balances = await calculateAndSortUSDBalances(balances, topAssetsCache);
   const totalUSDBalance = calculateTotalUSDBalance(balances);

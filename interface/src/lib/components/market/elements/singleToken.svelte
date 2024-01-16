@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <div class="flex space-x-0">
+  <div class="flex space-x-2">
     <!-- Price -->
     <div class="flex items-center">
       <span class="text-xs font-semibold">
@@ -52,7 +52,7 @@
     </div>
     <!-- Price change -->
     <div class="w-[4.5rem] flex items-center justify-end">
-      <div class={clsx("min-w-14 h-7 flex justify-center items-center rounded-md px-2", Number(token.price_change_percentage_24h) > 0 ? UpColorBg : DownColorBg)}>
+      <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", Number(token.price_change_percentage_24h) > 0 ? UpColorBg : DownColorBg)}>
         <span class="text-center text-xs font-extrabold text-base-100">
           {formatDecimals(token.price_change_percentage_24h,2)}%
         </span>

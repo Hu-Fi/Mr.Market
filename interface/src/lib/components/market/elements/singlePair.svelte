@@ -33,8 +33,8 @@
     </div>
 
     <!-- Price change -->
-    <div class="w-20 flex items-center justify-end">
-      <div class={clsx("min-w-14 h-7 flex justify-center items-center rounded-md px-2", pair.percentage > 0 ? UpColorBg : DownColorBg)}>
+    <div class="w-[4.5rem] flex items-center justify-end">
+      <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", pair.percentage > 0 ? UpColorBg : DownColorBg)}>
         <span class="text-center text-xs font-extrabold text-base-100">
           {formatDecimals(pair.percentage,2)}%
         </span>

@@ -63,7 +63,7 @@
     <div class="flex space-x-4 justify-between w-full">
       <!-- Circle progress -->
       <div class={clsx("radial-progress border border-base-300", o.buy ? UpColorText : DownColorText)} style={`--value:${formatDecimals(o.traded/o.amount*100, 0)}; --size: 44px; --thickness: 2px;`} role="progressbar">
-        <span class="text-sm text-base-content">{formatDecimals(o.traded/o.amount*100, 1)}%</span> 
+        <span class="text-sm text-base-content">{formatDecimals(o.traded/o.amount*100, 0)}%</span> 
       </div>
       
       <!-- Price -->

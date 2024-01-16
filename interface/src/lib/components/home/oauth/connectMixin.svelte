@@ -1,7 +1,6 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { mixinConnected } from "$lib/stores/home";
   import authorize from "$lib/helpers/mixin-oauth";
   import { AfterMixinOauth } from "$lib/helpers/mixin";
   import { BOT_ID, OAUTH_SCOPE } from "$lib/helpers/constants";
@@ -13,7 +12,7 @@
       { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
       {
         onShowUrl: (url: string) => {
-          window.location.assign(url)
+          window.open(url)
         },
         onError: (error: any) => {
           console.error(error);

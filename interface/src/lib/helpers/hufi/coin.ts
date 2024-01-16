@@ -16,9 +16,13 @@ export const coinQueryFn = async (name: string) =>  {
 }
 
 export const marketQueryFn = async () =>  {
-  const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}?limit`)
-  const re = await r.json()
-  return re
+  try {
+    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}?limit`)
+    const re = await r.json()
+    return re
+  } catch (e) {
+    window.location.reload()
+  }
 }
 
 export const coinMarketChart = async (name: string, ranges: '1h'|'24h'|'1w'|'1m'|'1y'|'all', vs_currency: string = 'usd') => {

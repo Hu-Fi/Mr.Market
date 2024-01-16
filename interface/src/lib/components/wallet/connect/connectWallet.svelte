@@ -13,7 +13,7 @@
       { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
       {
         onShowUrl: (url: string) => {
-          window.location.assign(url)
+          window.open(url)
         },
         onError: (error: any) => {
           console.error(error);

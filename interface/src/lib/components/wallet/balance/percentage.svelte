@@ -2,14 +2,14 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { userAssets } from "$lib/stores/wallet";
-  import { getAssetPercentage } from "$lib/helpers/utils";
+  import { formatDecimals, getAssetPercentage } from "$lib/helpers/utils";
   
   $: first = $userAssets ? getAssetPercentage($userAssets.balances[0].usdBalance, $userAssets.totalUSDBalance) : 0
   $: second = $userAssets ? getAssetPercentage($userAssets.balances[1].usdBalance, $userAssets.totalUSDBalance) : 0
   $: percentages = $userAssets ? [
     first,
     second,
-    100-first-second,
+    formatDecimals(100-first-second, 1),
   ]: [63, 21, 16];
   const assetList = [ 
     { symbol: $userAssets.balances[0].details.symbol},
