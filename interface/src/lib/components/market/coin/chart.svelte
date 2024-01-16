@@ -14,6 +14,7 @@
 
   <div class="mt-2 grid grid-flow-row grid-cols-5 gap-4 px-4">
     {#each ranges as tab, i}
+    <div class="flex justify-center">
       <button
         class={clsx(
           "btn min-w-8 w-12 btn-xs px-1 bg-base-100 focus:bg-base-200 hover:bg-base-200 border-none shadow-none rounded-md no-animation",
@@ -23,6 +24,7 @@
       >
         {tab.name}
       </button>
+    </div>
     {/each}
   </div>
 {:catch e}
