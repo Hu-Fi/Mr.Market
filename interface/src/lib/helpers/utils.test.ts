@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatAssetBalance, formatChartPrice, formatDecimals, formatTimestampToTime, formatWalletBalance } from './utils'
+import { formatChartPrice, formatDecimals, formatTimestampToTime, formatWalletBalance } from './utils'
 
 describe('formatTimestampToTime', () => {
   it('format YYYY-MM-DD', () => {
@@ -157,3 +157,6 @@ describe('formatWalletBalance', () => {
   });
 })
 
+describe('', () => {
+  
+})

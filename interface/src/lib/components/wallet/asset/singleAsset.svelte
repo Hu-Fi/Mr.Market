@@ -1,5 +1,5 @@
 <button class="flex justify-between py-3" on:click={()=>{assetDetailAsset.set(asset); assetDetailDialog.set(true)}}>
-  <div class="flex space-x-4 items-center">
+  <div class="flex space-x-4 items-center justify-center">
     <!-- Left Icon -->
     <AssetIcon assetIcon={asset.details.icon_url} chainIcon={findChainIcon(asset.details.chain_id)} />
     
@@ -14,14 +14,18 @@
     </div>
   </div>
   
-  <div class="flex flex-col justify-end items-end space-y-2 mb-0.5">
+  <div class="flex flex-col justify-center items-end ">
     <!-- Right 24h Change and Price -->
-    <span class={clsx("text-xs opacity-60", Number(asset.details.change_usd) > 0 ? UpColorText : DownColorText)}> 
-      {formatDecimals(BN(asset.details.change_usd).multipliedBy(100).toString(), 2)}% 
-    </span>
-    <span class="text-xs !text-[10px] opacity-40"> 
-      ${formatWalletBalance(Number(asset.details.price_usd))} 
-    </span>
+    <div>
+      <span class={clsx("text-xs opacity-60", Number(asset.details.change_usd) > 0 ? UpColorText : DownColorText)}> 
+        {formatDecimals(BN(asset.details.change_usd).multipliedBy(100).toString(), 2)}% 
+      </span>
+    </div>
+    <div>
+      <span class="text-xs !text-[10px] opacity-40"> 
+        ${formatWalletBalance(Number(asset.details.price_usd))} 
+      </span>
+    </div>
   </div>
 </button>
 
@@ -31,7 +35,7 @@
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
   import { assetDetailAsset, assetDetailDialog } from "$lib/stores/wallet"
-  import { BN, BN2, findChainIcon, formatAssetBalance, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
+  import { BN, BN2, findChainIcon, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
 
   let locale_currency = 1;
   export let asset = {

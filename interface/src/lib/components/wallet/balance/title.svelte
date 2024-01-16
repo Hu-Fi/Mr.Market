@@ -14,7 +14,7 @@
     </div>
     {#if $userAssets.totalUSDBalance}
       <span class="text-4xl font-medium balance-font">
-        {formatDecimals($userAssets.totalUSDBalance, 3)}
+        {formatDecimals($userAssets.totalUSDBalance, 2)}
       </span>
     {/if}
   </div>
@@ -23,7 +23,7 @@
   <div class="flex justify-center items-center space-x-2">
     {#if $userAssets.totalBTCBalance}
       <span class="balance-font">
-        {formatDecimals($userAssets.totalBTCBalance, 9)}
+        {formatDecimals($userAssets.totalBTCBalance, 8)}
       </span>
     {/if}
     <span class="text-xs opacity-50">

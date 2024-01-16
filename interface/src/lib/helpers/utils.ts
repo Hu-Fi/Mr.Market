@@ -49,32 +49,6 @@ export const formatChartPrice = (s: string | number) => {
   }
 }
 
-export const formatAssetBalance = (s: string | number, n: number) => {
-  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0
-  
-  if (Number(s) < 0.000001) return Number(s).toFixed(8)
-  if (Number(s) < 1) return Math.floor(Number(s) * 10 ** 8) / 10 ** 8
-  const strValue = Number(s).toString();
-  if (strValue.includes('.')) {
-    const [integerPart, decimalPart] = strValue.split('.');
-    if (decimalPart.length > n) {
-      return parseFloat(`${integerPart}.${decimalPart.slice(0, n+getNonZeroDecimalIndex(decimalPart)-1)}`);
-    }
-  }
-  return Math.floor(Number(s) * 10 ** n) / 10 ** n
-}
-
-const getNonZeroDecimalIndex = (decimalPart: string) => {
-  let index = 0
-  for (let i = 0; i < decimalPart.length; i++) {
-    if (decimalPart[i] !== '0') {
-      index = i;
-      break;
-    }
-  }
-  return index
-}
-
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 8);
