@@ -8,16 +8,35 @@ test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/trade');
 })
 
-test('order filter', async({ page, context }) => {
-  await page.locator("//div/div[1]/main/div/div[2]/div/div[1]/div/div/button[2]").click()
+test('order filter dialog', async({ page, context }) => {
+  await page.getByTestId('manage_orders_filter').click();
+
   expect(await page.isVisible('//*[@id="order_filter_modal"]/div/div[1]')).toBe(true)
+  await page.locator('#order_filter_modal').getByRole('button', { name: 'Limit order' }).click();
 
-  // await page.locator('#order_filter_modal').getByRole('button', { name: 'Limit order' }).click();
-  // await page.locator('.mt-4 > div > div > div > div > button:nth-child(2)').first().click();
+  await page.getByTestId('manage_orders_filter').click();
+  await page.locator('#order_filter_modal').getByRole('button', { name: 'Market order' }).click();
 
-  // await page.locator('#order_filter_modal').getByRole('button', { name: 'Market order' }).click();
-  // await page.locator('.mt-4 > div > div > div > div > button:nth-child(2)').click();
+  await page.getByTestId('manage_orders_filter').click();
+  await page.locator('#order_filter_modal').getByRole('button', { name: 'Limit order' }).click();
+})
 
-  //div/div[1]/main/div/div[2]/div/div[3]
-  console.log(await page.locator("//div/div[1]/main/div/div[2]/div/div[3]"))
+test('switch between tabs', async({ page, context }) => {
+  await page.getByTestId('manage_orders').click();
+  await page.getByTestId('manage_positions').click();
+  await page.getByTestId('manage_orders').click();
+})
+
+test('enter order history', async({ page, context }) => {
+  await page.getByTestId('go_history').click();
+  await page.waitForURL('**/trade/history**');
+  await page.getByRole('button').first().click();
+})
+
+test('filter current pair', async({ page, context }) => {
+  await page.getByRole('checkbox').check();
+  await expect(page.getByRole('checkbox')).toBeChecked();
+
+  // Check only include selected pair
+  
 })

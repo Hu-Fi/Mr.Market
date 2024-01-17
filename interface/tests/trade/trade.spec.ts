@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test('open/close pair selector', async ({ page, context }) => {
   // Open pair selector
-  await page.locator("//div/div[1]/header/div/button").click()
+  await page.getByTestId('pair_selector').click();
   expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
 
   // Close 
@@ -22,7 +22,7 @@ test('select pair', async ({ page, context }) => {
 
   for (let i = 1; i < 12; i++) {
     // Open pair selector
-    await page.locator("//div/div[1]/header/div/button").click()
+    await page.getByTestId('pair_selector').click();
 
     // Select pair
     expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
@@ -36,7 +36,7 @@ test('select pair', async ({ page, context }) => {
 test('search pair', async ({ page, context }) => {
   for (let i = 1; i < 12; i++) {
     // Open pair selector
-    await page.locator("//div/div[1]/header/div/button").click()
+    await page.getByTestId('pair_selector').click();
 
     // Select pair
     expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
@@ -54,26 +54,27 @@ test('goto candlestick', async ({ page, context }) => {
 
 test('switch buy and sell', async ({ page, context }) => {
   // buy
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[1]').click()
+  await page.getByTestId('type_buy').click()
   let actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').textContent()
   expect(actionButtonText?.toLocaleLowerCase()).toContain('buy')
   
   // sell
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[2]').click()
+  await page.getByTestId('type_sell').click()
   actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button').textContent()
   expect(actionButtonText?.toLocaleLowerCase()).toContain('sell')
 });
 
 test('select limit/market order', async ({ page, context }) => {
   // Open dialog
-  await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[2]/button").click()
+  await page.getByTestId('order_type_selector').click()
   // Select limit order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
   let actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[2]/button/span').textContent()
   expect(actionButtonText?.toLocaleLowerCase()).toContain('limit')
 
   // Open dialog
-  await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[2]/button").click()
+    await page.getByTestId('order_type_selector').click()
+
   // Select market order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[2]').click()
   actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[2]/button/span').textContent()
@@ -83,12 +84,12 @@ test('select limit/market order', async ({ page, context }) => {
 test('create buy/sell market order', async ({ page, context }) => {
   let amount = '1234.2346'
   // Click buy tab
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[1]').click()
+  await page.getByTestId('type_buy').click()
   // Enter amount
   await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[3]/div[3]/input").click()
   await page.keyboard.type(amount);
   // Click buy action
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').click()
+  await page.getByTestId('confirm_order').click()
   let payAmount = await page.locator('//*[@id="order_confirm_modal"]/div/div/div[3]/div[1]/span[2]').textContent()
   expect(payAmount).toContain(amount)
   // Confirm order
@@ -100,12 +101,12 @@ test('create buy/sell market order', async ({ page, context }) => {
 
 
   // Click sell tab
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[2]').click()
+  await page.getByTestId('type_sell').click()
   // Enter amount
   await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[3]/div[3]/input").click()
   await page.keyboard.type(amount);
   // Click sell action
-  await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').click()
+  await page.getByTestId('confirm_order').click()
   payAmount = await page.locator('//*[@id="order_confirm_modal"]/div/div/div[2]/span[2]').textContent()
   expect(payAmount).toContain(amount)
   // Confirm order
@@ -124,7 +125,8 @@ test('create buy limit order', async ({ page, context }) => {
   let price = '10000'; let recvAmount = '10'; let estimatedPay = Number(price)*Number(recvAmount)
 
   // Open dialog
-  await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[2]/button").click()
+    await page.getByTestId('order_type_selector').click()
+
   // Select limit order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
 
@@ -162,7 +164,8 @@ test('create sell limit order', async ({ page, context }) => {
   let price = '10000'; let payAmount = '10'; let estimatedRecv = Number(price)*Number(payAmount)
 
   // Open dialog
-  await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[2]/button").click()
+    await page.getByTestId('order_type_selector').click()
+
   // Select limit order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
   
@@ -201,7 +204,8 @@ test('create sell limit order', async ({ page, context }) => {
 
 test('click order book to set limit price', async({ page, context }) => {
   // Open dialog
-  await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[2]/button").click()
+    await page.getByTestId('order_type_selector').click()
+
   // Select limit order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
   

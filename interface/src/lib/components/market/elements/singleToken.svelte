@@ -16,7 +16,7 @@
     <!-- Icon -->
     <div class="avatar w-8 h-8 p-0.5">
       <div class="rounded-full">
-        <img src={findCoinIconBySymbol(token.symbol.toUpperCase()) || token.image || emptyToken} alt={token.symbol} class="w-8 h-8" />
+        <img src={findCoinIconBySymbol(token.symbol.toUpperCase()) || token.image || emptyToken} alt={token.symbol} class="w-8 h-8" loading="lazy" />
       </div>
     </div>
 
