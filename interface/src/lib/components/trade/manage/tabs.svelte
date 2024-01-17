@@ -7,19 +7,21 @@
 
 <div class="flex px-4 py-3 border-b border-base-200 justify-between">
   <div class="flex space-x-2">
-    <!-- Orders -->
-    <button class={clsx("flex items-center", $manageMode!=0 && "opacity-60")} on:click={()=>{manageMode.set(0);}}>
-      <span class="text-sm" >{$_("orders")}({$openedOrders})</span>
-      {#if !$orderFilterDialog}
-        <!-- Caret down Icon -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <svg xmlns="http://www.w3.org/2000/svg" on:click={()=>orderFilterDialog.set(true)} fill="none" viewBox="0 0 24 24" class="h-5 w-5"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>
-      {:else}
-        <!-- Caret up Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5"><path xmlns="http://www.w3.org/2000/svg" d="M7 14L12 8L17 14L7 14Z" fill="currentColor"></path></svg>
-      {/if}
-    </button>
+    <div class="flex items-center">
+      <!-- Orders -->
+      <button class={clsx("flex items-center", $manageMode!=0 && "opacity-60")} on:click={()=>{manageMode.set(0);}}>
+        <span class="text-sm" >{$_("orders")}({$openedOrders})</span>
+      </button>
+      <button on:click={()=>orderFilterDialog.set(true)}>
+        {#if !$orderFilterDialog}
+          <!-- Caret down Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" class="h-5 w-5"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>
+        {:else}
+          <!-- Caret up Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5"><path xmlns="http://www.w3.org/2000/svg" d="M7 14L12 8L17 14L7 14Z" fill="currentColor"></path></svg>
+        {/if}
+      </button>
+    </div>
 
     <!-- Positions -->
     <button class={clsx("flex items-center", $manageMode!=1 && "opacity-60")} on:click={()=>manageMode.set(1)}>

@@ -39,7 +39,7 @@ test('search', async ({ page, context }) => {
   await page.getByRole('banner').getByRole('button').first().click();
 })
 
-test('history', async ({ page, context}) => {
+test('search history', async ({ page, context}) => {
   
 })
 

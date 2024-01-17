@@ -33,6 +33,25 @@ test('select pair', async ({ page, context }) => {
   }
 });
 
+test('search pair', async ({ page, context }) => {
+  for (let i = 1; i < 12; i++) {
+    // Open pair selector
+    await page.locator("//div/div[1]/header/div/button").click()
+
+    // Select pair
+    expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
+    const SelectedName = (await page.locator(`//*[@id="select_pair_modal"]/div/div[2]/div[${i}]/button/div[1]/span`).textContent())
+    await page.locator(`//*[@id="select_pair_modal"]/div/div[2]/div[${i}]/button`).click()
+    const ShownName = (await page.locator('//div/div[1]/header/div/button/span[1]').textContent())
+    expect(SelectedName).toBe(ShownName)
+  }
+});
+
+test('goto candlestick', async ({ page, context }) => {
+  await page.locator('.sticky > div > div > button').first().click();
+  await page.waitForURL('**/market/candle/**');
+});
+
 test('switch buy and sell', async ({ page, context }) => {
   // buy
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[1]').click()
@@ -92,6 +111,14 @@ test('create buy/sell market order', async ({ page, context }) => {
   // Confirm order
   await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
 });
+
+test('connect wallet', async({ page, context }) => {
+  await page.getByRole('button', { name: 'Connect Wallet' }).first().click();
+  const pagePromise = context.waitForEvent('page');
+  const newPage = await pagePromise;
+  await newPage.waitForLoadState();
+  expect(newPage.url()).toContain('https://mixin.one/codes/');
+})
 
 test('create buy limit order', async ({ page, context }) => {
   let price = '10000'; let recvAmount = '10'; let estimatedPay = Number(price)*Number(recvAmount)
@@ -197,14 +224,6 @@ test('click order book to set limit price', async({ page, context }) => {
     const currentInput = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').inputValue()
     expect(price?.replace(',','')).toContain(currentInput)
   }
-})
-
-test('connect wallet', async({ page, context }) => {
-  await page.getByRole('button', { name: 'Connect Wallet' }).first().click();
-  const pagePromise = context.waitForEvent('page');
-  const newPage = await pagePromise;
-  await newPage.waitForLoadState();
-  expect(newPage.url()).toContain('https://mixin.one/codes/');
 })
 
 // test('click', async({ page, context }) => {
