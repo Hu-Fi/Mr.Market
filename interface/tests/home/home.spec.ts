@@ -1,40 +1,54 @@
 import { test, expect } from '@playwright/test';
 
+test.use({
+  viewport: { width: 390, height: 844 },
+});
+
 test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/home');
 })
 
-test('Test bottom navigation', async ({ page, context }) => {
+test('bottom navigation', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Home' }).click();
+  await page.waitForURL('**/home');
   await page.getByRole('button', { name: 'Market' }).click();
+  await page.waitForURL('**/market');
   await page.getByRole('button', { name: 'Trade' }).click();
+  await page.waitForURL('**/trade');
   await page.getByRole('button', { name: 'Grow' }).click();
+  await page.waitForURL('**/grow');
   await page.getByRole('button', { name: 'Wallet' }).click();
+  await page.waitForURL('**/wallet');
 })
 
-test('Test search', async ({ page, context }) => {
+test('search', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Search' }).click();
   await page.getByPlaceholder('Search').fill('btc');
-  await page.getByRole('button', { name: 'btc btc 1 $835B $42,612.00 1.' }).click();
+  await page.getByRole('button', { name: 'btc btc' }).click();
   await expect(page.getByText('btc', { exact: true })).toHaveText('btc');
   await page.getByRole('banner').getByRole('button').first().click();
 
   await page.getByPlaceholder('Search').fill('usdc');
-  await page.getByRole('button', { name: 'usdc usdc 7 $25B $1.001 0.19%' }).click();
+  await page.getByRole('button', { name: 'usdc usdc' }).click();
   await expect(page.getByText('usdc', { exact: true })).toHaveText('usdc');
   await page.getByRole('banner').getByRole('button').first().click();
 
   await page.getByPlaceholder('Search').fill('usdt');
-  await page.getByRole('button', { name: 'usdt usdt 3 $95B $1.001 -0.02%' }).click();
+  await page.getByRole('button', { name: 'usdt usdt' }).click();
   await expect(page.getByText('usdt', { exact: true })).toHaveText('usdt');
   await page.getByRole('banner').getByRole('button').first().click();
 })
 
-test('Test history', async ({ page, context}) => {
+test('history', async ({ page, context}) => {
   
 })
 
-test('Test connect', async ({ page, context }) => {
+test('news', async ({ page, context}) => {
+  await page.getByRole('banner').getByRole('button').nth(2).click();
+  await page.getByRole('banner').getByRole('button').first().click();
+})
+
+test('connect', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Connect' }).click();
   const pagePromise = context.waitForEvent('page');
   const newPage = await pagePromise;
@@ -42,7 +56,7 @@ test('Test connect', async ({ page, context }) => {
   expect(newPage.url()).toContain('https://mixin.one/codes/');
 })
 
-test('Test app shortcuts', async ({ page, context }) => {
+test('app shortcuts', async ({ page, context }) => {
   await page.locator('.flex > .btn').first().click();
   await page.waitForURL('**/trade');
   await page.getByRole('button', { name: 'Home' }).click();
@@ -64,7 +78,7 @@ test('Test app shortcuts', async ({ page, context }) => {
   await page.getByRole('banner').getByRole('button').first().click();
 })
 
-test('Test more apps', async ({ page, context }) => {
+test('more apps', async ({ page, context }) => {
   await page.locator('div:nth-child(5) > .btn').click();
   await page.waitForURL('**/home/more');
 
@@ -89,21 +103,21 @@ test('Test more apps', async ({ page, context }) => {
   expect(page2.url()).toContain('https://mixin.one/apps/');
 })
 
-test('Test sorting tokens by category', async ({ page, context }) => {
+test('sorting tokens by category', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Favorites' }).click()
-  await page.getByRole('button', { name: 'All' }).click();
+  await page.getByRole('button', { name: 'All', exact: true }).click();
   await page.getByRole('button', { name: 'Mainstream' }).click();
   await page.getByRole('button', { name: 'Layer 1' }).click();
   await page.getByRole('button', { name: 'Layer 2' }).click();
   await page.getByRole('button', { name: 'Inscription' }).click();
-  await page.getByRole('button', { name: 'Ai' }).click();
+  await page.getByRole('button', { name: 'Ai', exact: true }).click();
   await page.getByRole('button', { name: 'Meme' }).click();
   await page.getByRole('button', { name: 'DeFi' }).click();
   await page.getByRole('button', { name: 'GameFi' }).click();
   await page.getByRole('button', { name: 'NFT' }).click();
 })
 
-test('Test sorting by name price and 24chg', async ({ page, context }) => {
+test('sorting by name price and 24chg', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Name' }).getByRole('button').click();
   await page.getByRole('button', { name: 'Name' }).getByRole('button').click();
   await page.getByRole('button', { name: 'Price' }).getByRole('button').click();

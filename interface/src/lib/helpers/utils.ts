@@ -22,7 +22,7 @@ export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
 }
 export const formatDecimals = (s: string | number, n: number) => {
-  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0
+  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0 
 
   const strValue = Number(s).toString();
   if (strValue.includes('.')) {
@@ -34,7 +34,9 @@ export const formatDecimals = (s: string | number, n: number) => {
       return parseFloat(integerPart)
     }
   }
-  return Math.floor(Number(s) * 10 ** n) / 10 ** n
+  const final = Math.floor(Math.abs(Number(s)) * 10 ** n) / 10 ** n
+  if (final === 0) return 0
+  return Number(s) > 0 ? final : -final
 }
 export const formatChartPrice = (s: string | number) => {
   const strValue = Number(s).toString();

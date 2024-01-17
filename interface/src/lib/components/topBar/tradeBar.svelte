@@ -12,7 +12,7 @@
   <!-- Title and change -->
   <button class="flex items-center pl-4" on:click={()=>pairSelectorDialog.set(true)}>
     <img src={$pair.icon} alt="icon" loading="lazy" class="w-5 h-5 mr-1" />
-    <span class="font-black text-lg"> {$pair.first+"/"+$pair.second} </span>
+    <span class="font-black text-lg" title="pair-name"> {$pair.first+"/"+$pair.second} </span>
     {#if !$pairSelectorDialog}
       <!-- Caret down Icon -->
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>
