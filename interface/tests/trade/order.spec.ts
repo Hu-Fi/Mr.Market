@@ -38,5 +38,5 @@ test('filter current pair', async({ page, context }) => {
   await expect(page.getByRole('checkbox')).toBeChecked();
 
   // Check only include selected pair
-  
 })
+
