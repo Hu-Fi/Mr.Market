@@ -3,7 +3,7 @@
   import { locale } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { langs } from "../../../i18n/i18n";
-  import { showSettingShortcut, theme } from "$lib/stores/theme";
+  import { showSettingShortcut, toggleTheme } from "$lib/stores/theme";
   import { bottomMode, bottomTradeDialog } from "$lib/stores/trade";
 
   const items = [
@@ -13,13 +13,6 @@
     // {title: "Perpetual", route: ""},
     // {title: "Market making", route: ""},
   ]
-
-	const toggleTheme = () => {
-		switch($theme) {
-			case 'light': theme.set('dark'); break;
-			case 'dark': theme.set('light'); break;
-		}
-  }
 
   let toggleLanguage = false;
   let expanded = false;

@@ -5,8 +5,6 @@
   let items = [
     {index: 0, name: $_("limit_order"), fn: ()=>{}},
     {index: 1, name: $_("market_order"), fn: ()=>{}},
-    // {index: 2, name: $_("advanced_limit_order"), fn: ()=>{}},
-    // {index: 3, name: $_("tp_sl"), fn: ()=>{}},
   ]
 </script>
 

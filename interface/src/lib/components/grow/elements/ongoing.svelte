@@ -5,6 +5,7 @@
   import MMCard from "../marketMaking/card.svelte";
   import AICard from "../autoInvest/card.svelte";
   import Create from "./create.svelte";
+  import AddMore from "./addMore.svelte";
 
   const placeholder = [
     {
@@ -83,5 +84,6 @@
         <AICard data={item} />
       {/if}
     {/each}
+    <AddMore />
   </div>
 {/if}

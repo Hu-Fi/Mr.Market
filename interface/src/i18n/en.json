@@ -141,7 +141,7 @@
   "gate_io": "Gate.io",
   "grow_with_ease": "Grow your asset with ease",
   "auto_invest": "Auto invest",
-  "auto_invest_intro": "Accumulate wealth gradually, then suddenly.",
+  "auto_invest_intro": "Accumulate wealth gradually, get rich suddenly.",
   "coming_soon": "Coming soon",
   "money_made_for_users": "{amount} earned for users",
   "show_more": "Show more",
@@ -185,5 +185,6 @@
   "apr_percent": "{percent}% APR",
   "history": "History",
   "confirm_disconnect": "Confirm Disconnect",
-  "community": "Community"
+  "community": "Community",
+  "add_more": "Add more"
 }

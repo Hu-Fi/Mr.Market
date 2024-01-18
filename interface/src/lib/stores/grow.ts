@@ -13,3 +13,6 @@ export let mmEasyStep = writable(0)
 
 // Arbitrage
 export let arbEasyStep = writable(0)
+
+// Add more dialog
+export let addMoreDialog = writable(false)

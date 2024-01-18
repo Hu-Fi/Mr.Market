@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { _, locale } from "svelte-i18n"
-  import { getNameByKey } from "../../../../i18n/i18n";
-    import { theme } from "$lib/stores/theme";
+    import { _, locale } from "svelte-i18n"
+    import { getNameByKey } from "../../../../i18n/i18n";
+    import {  toggleTheme } from "$lib/stores/theme";
     import { MixinDisconnect } from "$lib/helpers/mixin";
     import { goto } from "$app/navigation";
 
@@ -13,13 +13,6 @@
     {key: 'us', name: $_('about_us'), value: 0, fn: ()=>{}},
     {key: 'disconnect', name: $_('disconnect'), value: 0, fn: ()=>{confirmDisconnect=true}},
   ]
-
-	const toggleTheme = () => {
-		switch($theme) {
-			case 'light': theme.set('dark'); break;
-			case 'dark': theme.set('light'); break;
-		}
-  }
 
   let confirmDisconnect = false;
   const disconnect = () => {confirmDisconnect=false; goto('/home'); MixinDisconnect();}

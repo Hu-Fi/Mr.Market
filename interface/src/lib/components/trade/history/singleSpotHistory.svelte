@@ -2,8 +2,6 @@
   import clsx from "clsx"
   import moment from "moment"
   import { _ } from "svelte-i18n"
-  import { cancelOrder } from "$lib/stores/trade";
-  import { formatDecimals } from "$lib/helpers/utils";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
   export let o = {
@@ -15,34 +13,27 @@
     time: "2019-10-12T07:20:50.52Z", 
     type: "limit",
     buy: true,
-    amount: "1",
-    traded: "0.5",
+    amount: "1521412.4",
+    state: 'Canceled'
   };
-  const go = () => {
-    console.log('goto open order')
-  }
 </script>
 
-<div class="flex flex-col space-y-3">
+<button class="flex w-full flex-col space-y-3 border-b-slate-50 border-b py-4" on:click={()=>{}}>
   <!-- Title -->
-  <div class="flex justify-between">
-    <button class="flex items-center space-x-1" on:click={()=>{go()}}>
+  <div class="flex w-full justify-between">
+    <div class="flex items-center space-x-1">
       <img src={o.icon} alt="icon" loading="lazy" class="w-4 h-4" />
       <span class="font-semibold"> 
         {o.first}/{o.second}
       </span>
+    </div>
+    <div class="flex items-center">
       <!-- Chevron right Icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-xs opacity-60" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-    </button>
-
-    <div class="flex space-x-4 items-center">
-      <button class="btn btn-xs rounded-full no-animation" on:click={()=>{cancelOrder(o)}}>
-        <span class="text-xs opacity-80"> {$_('cancel_order')} </span>
-      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-xs opacity-80" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
     </div>
   </div>
 
-  <button class="flex flex-col space-y-3" on:click={()=>{go()}}>
+  <div class="flex flex-col w-full space-y-3">
     <!-- Info and time -->
     <div class="flex items-center justify-between w-full">
       <div class="flex space-x-2">
@@ -62,8 +53,8 @@
     <!-- Amount and price -->
     <div class="flex space-x-4 justify-between w-full">
       <!-- Circle progress -->
-      <div class={clsx("radial-progress border border-base-300", o.buy ? UpColorText : DownColorText)} style={`--value:${formatDecimals(o.traded/o.amount*100, 0)}; --size: 44px; --thickness: 2px;`} role="progressbar">
-        <span class="text-sm text-base-content">{formatDecimals(o.traded/o.amount*100, 0)}%</span> 
+      <div class={clsx("radial-progress border border-base-300", o.buy ? UpColorText : DownColorText)} style={`--value:${100}; --size: 44px; --thickness: 2px;`} role="progressbar">
+        <span class="text-sm text-base-content">100%</span> 
       </div>
       
       <!-- Price -->
@@ -73,7 +64,7 @@
             {$_('amount')}
           </span>
           <span class="">
-            {o.traded}/{o.amount}
+            {o.amount}
           </span>
         </div>
         <div class="flex items-center text-xs space-x-2 justify-between">
@@ -86,10 +77,5 @@
         </div>
       </div>
     </div>
-  </button>
-  
-</div>
-
-<style>
-
-</style>
+  </div>
+</button>

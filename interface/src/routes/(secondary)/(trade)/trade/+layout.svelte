@@ -1,5 +1,5 @@
 <script>
-  import HistoryBar from "$lib/components/topBar/historyBar.svelte";
+  import HistoryBar from "$lib/components/topBar/tradeHistoryBar.svelte";
 </script>
 
 <header class="sticky top-0 z-10 bg-base-100 pl-4 pr-[6px]">
