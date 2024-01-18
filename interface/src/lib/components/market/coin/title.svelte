@@ -36,10 +36,10 @@
       </div>
       <!-- Change percentage and change usd -->
       <div class="!mt-1 flex space-x-3">
-        <span class={clsx(Number(coin.market_data.price_change_24h) >= 0 ? "text-green-400":"text-red-400")}>
-          {(Number(coin.market_data.price_change_24h) >= 0 ? "+":"")}{ formatDecimals(coin.market_data.price_change_24h, 2) }%
+        <span class={clsx(Number(coin.market_data.price_change_percentage_24h) >= 0 ? "text-green-400":"text-red-400")}>
+          {(Number(coin.market_data.price_change_percentage_24h) >= 0 ? "+":"")}{ formatDecimals(coin.market_data.price_change_percentage_24h, 2) }%
         </span>
-        {#if Number(coin.market_data.price_change_24h) != 0}
+        {#if Number(formatDecimals(coin.market_data.price_change_24h,2)) != 0}
           <span class={clsx(Number(coin.market_data.price_change_24h) >= 0 ? "text-green-400":"text-red-400")}>
             {(Number(coin.market_data.price_change_24h) >= 0 ? "+":"") + Number(formatDecimals(coin.market_data.price_change_24h,2))}
           </span>
