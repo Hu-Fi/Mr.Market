@@ -16,7 +16,7 @@ export const formatUSNumber = (x: string | number) => {
   return new Intl.NumberFormat('en-US').format(Number(x))
 }
 export const formatUSMoney = (x: string | number) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 8 }).format(Number(x))
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 10 }).format(Number(x))
 }
 export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
@@ -39,16 +39,33 @@ export const formatDecimals = (s: string | number, n: number) => {
   return Number(s) > 0 ? final : -final
 }
 export const formatChartPrice = (s: string | number) => {
-  const strValue = Number(s).toString();
-  if (strValue.includes('.')) {
-    const [integerPart, decimalPart] = strValue.split('.');
+  const numValue = Number(s);
+  const strValue = numValue.toString();
 
-    let finalDecimalLength = 0;
-    if (integerPart.length > 2) finalDecimalLength = 2;
-    else if (integerPart.length == 2) finalDecimalLength = 3;
-    else finalDecimalLength = 10 - integerPart.length;
-    return parseFloat(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`);
+  // Handle the case when there is no decimal point
+  if (!strValue.includes('.')) {
+    return numValue;
   }
+
+  const [integerPart, decimalPart] = strValue.split('.');
+  let finalDecimalLength = 0;
+
+  // s >= 100, 2 decimals
+  if (integerPart.length > 2) finalDecimalLength = 2;
+  
+  // 10 <= s < 100, 3 decimals
+  else if (integerPart.length == 2) finalDecimalLength = 3;
+  
+  // 1 <= s < 10, 8 decimals
+  else if (integerPart.length == 1) finalDecimalLength = 8;
+
+  // 0.0001 <= s < 1, 8 decimals
+  else if (numValue >= 0.0001 && numValue < 1) finalDecimalLength = 8;
+
+  // s < 0.0001, all decimals
+  else if (numValue < 0.0001) finalDecimalLength = decimalPart.length;
+
+  return parseFloat(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`);
 }
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {

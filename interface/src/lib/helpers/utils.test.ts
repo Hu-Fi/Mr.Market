@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatChartPrice, formatDecimals, formatTimestampToTime, formatWalletBalance } from './utils'
+import { formatChartPrice, formatDecimals, formatTimestampToTime, formatUSMoney, formatWalletBalance } from './utils'
 
 describe('formatTimestampToTime', () => {
   it('format YYYY-MM-DD', () => {
@@ -48,8 +48,8 @@ describe('formatChartPrice', () => {
     [0.00001, 0.00001],
     [0.000001, 0.000001],
     // FIX
-    // [0.0000001, 0.0000001],
-    // [0.00000001, 0.00000001],
+    [0.0000001, 0.0000001],
+    [0.00000001, 0.00000001],
     [0.0123, 0.0123],
     [0.00123, 0.00123],
     [0.000123, 0.000123],
@@ -71,9 +71,9 @@ describe('formatChartPrice', () => {
     [0.123456, 0.123456],
     [0.1234567, 0.1234567],
     [0.12345678, 0.12345678],
-    [0.123456789, 0.123456789],
-    [0.1234567890, 0.1234567890],
-  ])('when 0.1 < x < 0.1, return all decimal places', (input, expected) => {
+    [0.123456789, 0.12345678],
+    [0.1234567890, 0.12345678],
+  ])('when 0.1 <= x < 1, return 8 decimal places', (input, expected) => {
     expect(formatChartPrice(input)).toBe(expected);
   });
 
@@ -82,7 +82,10 @@ describe('formatChartPrice', () => {
     [1.235, 1.235],
     [1.2356, 1.2356],
     [1.23567, 1.23567],
-  ])('when 1 <= x < 10, return all decimal places', (input, expected) => {
+    [1.2345678, 1.2345678],
+    [1.23456789, 1.23456789],
+    [1.234567891, 1.23456789],
+  ])('when 1 <= x < 10, return 8 decimal places', (input, expected) => {
     expect(formatChartPrice(input)).toBe(expected);
   });
 
@@ -157,6 +160,20 @@ describe('formatWalletBalance', () => {
     [12345678.12, 12345678],
   ])('show 0 decimal places when large value', (input, expected) => {
     expect(formatWalletBalance(input)).toBe(expected);
+  });
+})
+
+describe('formatUSMoney', () => {
+  it.each([
+    [123.1, '$123.10'],
+    [0.00001, '$0.00001'],
+    [0.0000001, '$0.0000001'],
+    [0.00000001, '$0.00000001'],
+    [0.000000001, '$0.000000001'],
+    [0.0000000013424, '$0.0000000013'],
+    [0.0000000013425, '$0.0000000013'],
+  ])('format money', (input, expected) => {
+    expect(formatUSMoney(input)).toBe(expected);
   });
 })
 

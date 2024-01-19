@@ -3,6 +3,7 @@
   import moment from "moment"
   import { _ } from "svelte-i18n"
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
+    import { goto } from "$app/navigation";
 
   export let o = {
     first: "BTC", 
@@ -14,11 +15,12 @@
     type: "limit",
     buy: true,
     amount: "1521412.4",
-    state: 'Canceled'
+    state: 'Canceled',
+    id: 'db3a8788-2303-405a-a734-683c85d797c2',
   };
 </script>
 
-<button class="flex w-full flex-col space-y-3 border-b-slate-50 border-b py-4" on:click={()=>{}}>
+<button class="flex w-full flex-col space-y-3 border-b-slate-50 border-b py-4" on:click={()=>{ goto(`/trade/history/${o.id}`) }}>
   <!-- Title -->
   <div class="flex w-full justify-between">
     <div class="flex items-center space-x-1">
