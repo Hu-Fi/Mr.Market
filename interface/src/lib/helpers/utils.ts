@@ -47,6 +47,7 @@ export const formatChartPrice = (s: string | number) => {
     return numValue;
   }
 
+  if (numValue < 0.0001) return numValue;
   const [integerPart, decimalPart] = strValue.split('.');
   let finalDecimalLength = 0;
 

@@ -24,17 +24,17 @@ test('bottom navigation', async ({ page, context }) => {
 test('search', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Search' }).click();
   await page.getByPlaceholder('Search').fill('btc');
-  await page.getByRole('button', { name: 'btc btc' }).click();
+  await page.getByRole('button', { name: 'btc' }).first().click();
   await expect(page.getByText('btc', { exact: true })).toHaveText('btc');
   await page.getByRole('banner').getByRole('button').first().click();
 
   await page.getByPlaceholder('Search').fill('usdc');
-  await page.getByRole('button', { name: 'usdc usdc' }).click();
+  await page.getByRole('button', { name: 'usdc' }).first().click();
   await expect(page.getByText('usdc', { exact: true })).toHaveText('usdc');
   await page.getByRole('banner').getByRole('button').first().click();
 
   await page.getByPlaceholder('Search').fill('usdt');
-  await page.getByRole('button', { name: 'usdt usdt' }).click();
+  await page.getByRole('button', { name: 'usdt' }).first().click();
   await expect(page.getByText('usdt', { exact: true })).toHaveText('usdt');
   await page.getByRole('banner').getByRole('button').first().click();
 })

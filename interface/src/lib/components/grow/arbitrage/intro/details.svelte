@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 </script>
 
-<div class="flex flex-col space-y-12 mt-4">
+<div class="flex flex-col space-y-10 mt-4">
   <div class="flex flex-col space-y-4">
     <div class="px-4 text-lg font-bold">
       <span> {$_('whats_arbitrage')} </span>
@@ -12,7 +12,7 @@
     </div>
   </div>
   
-  <div class="flex flex-col space-y-6">
+  <div class="flex flex-col space-y-4">
     <div class="px-4 text-lg font-bold">
       <span> {$_('what_re_benefits')} </span>
     </div>

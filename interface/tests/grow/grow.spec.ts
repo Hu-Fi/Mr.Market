@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('navigation', async ({ page, context }) => {
-  await page.getByRole('button', { name: 'Arbitrage' }).click();
+  await page.getByRole('button', { name: 'Arbitrage' }).first().click();
   await page.waitForURL('**/grow/arbitrage');
   await page.getByRole('button', { name: 'What\'s arbitrage?' }).click();
   await page.waitForURL('**/grow/arbitrage/intro');
@@ -19,7 +19,7 @@ test('navigation', async ({ page, context }) => {
   await page.getByRole('button').first().click();
   await page.getByRole('button').first().click();
 
-  await page.getByRole('button', { name: 'Market making' }).click();
+  await page.getByRole('button', { name: 'Market making' }).first().click();
   await page.waitForURL('**/grow/market_making');
   await page.getByRole('button', { name: 'What\'s market making?' }).click();
   await page.waitForURL('**/grow/market_making/intro');
