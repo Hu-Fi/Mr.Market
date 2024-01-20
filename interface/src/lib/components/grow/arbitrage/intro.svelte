@@ -9,7 +9,7 @@
       {$_("arbitrage_intro")}
     </span>
 
-    <button class="text-start btn btn-xs h-[1.75rem] btn-outline no-animation w-40 rounded-full" on:click={()=>goto('/grow/arbitrage/intro')}>
+    <button class="text-start btn btn-xs bg-base-100 hover:bg-base-100 hover:text-base-content h-[1.75rem] btn-outline no-animation w-40 rounded-full" on:click={()=>goto('/grow/arbitrage/intro')}>
       {$_("whats_arbitrage")}
     </button>
   </div>

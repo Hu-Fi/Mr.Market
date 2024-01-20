@@ -15,7 +15,7 @@
       </span>
     </div>
     <div>
-      <button class="btn btn-md rounded-full bg-base-content no-animation" on:click={()=>goto('/grow/arbitrage/new')}>
+      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/arbitrage/new')}>
         <span class="text-base-100">
           {$_('create_new_arbitrage')}
         </span>

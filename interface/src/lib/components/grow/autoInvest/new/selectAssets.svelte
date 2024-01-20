@@ -58,8 +58,8 @@
     {#each placeholders as item, i}
       <button
         class={clsx(
-          "flex just items-center justify-center space-x-1 mx-1 my-2 p-2 border shadow-sm rounded-xl text-start",
-          itemInArray($createNewAutoInvestAssets, 'chain_id', item) ? 'bg-slate-50 border-primary' : 'bg-base-100'
+          "flex just items-center justify-center space-x-1 mx-1 my-2 p-2 bg-base-100 border border-base-300 shadow-sm rounded-xl text-start",
+          itemInArray($createNewAutoInvestAssets, 'chain_id', item) ? 'border-primary' : '',
         )}
         on:click={() => {
           toggleHighlight(item, i);

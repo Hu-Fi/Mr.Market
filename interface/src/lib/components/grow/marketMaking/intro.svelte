@@ -9,7 +9,7 @@
       {$_("market_making_intro")}
     </span>
 
-    <button class="text-start btn btn-xs h-[1.75rem] btn-outline no-animation rounded-full mr-6" on:click={()=>goto('/grow/market_making/intro')}>
+    <button class="text-start btn btn-xs bg-base-100 hover:bg-base-100 hover:text-base-content h-[1.75rem] btn-outline no-animation rounded-full mr-6" on:click={()=>goto('/grow/market_making/intro')}>
       {$_("whats_market_making")}
     </button>
   </div>

@@ -15,7 +15,7 @@
       </span>
     </div>
     <div>
-      <button class="btn btn-md rounded-full bg-base-content no-animation" on:click={()=>goto('/grow/market_making/new')}>
+      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/market_making/new')}>
         <span class="text-base-100">
           {$_('start_market_making')}
         </span>

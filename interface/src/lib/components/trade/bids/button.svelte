@@ -11,7 +11,7 @@
 </script>
 
 <div>
-  <button class={clsx("btn btn-md h-[2.5rem] min-h-[2.5rem] no-animation text-center w-full rounded-full text-base-100 font-extrabold", $buy ? `${UpColorBg} focus:${UpColorBg}` : `${DownColorBg} focus:${DownColorBg}`)} on:click={confirm} data-testid="confirm_order">
+  <button class={clsx("btn btn-md h-[2.5rem] min-h-[2.5rem] no-animation text-center w-full rounded-full text-base-100 font-extrabold", $buy ? `${UpColorBg} !hover:${UpColorBg} focus:${UpColorBg}` : `${DownColorBg} !hover:${DownColorBg} focus:${DownColorBg}`)} on:click={confirm} data-testid="confirm_order">
     {#if $buy}
       <span> {$_('buy')} {$pair.first} </span>
     {:else}

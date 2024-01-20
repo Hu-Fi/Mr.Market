@@ -9,7 +9,7 @@
       {$_("auto_invest_intro")}
     </span>
 
-    <button class="text-start btn btn-xs h-[1.75rem] btn-outline no-animation rounded-full mr-6" on:click={()=>goto('/grow/auto_invest/intro')}>
+    <button class="text-start btn btn-xs bg-base-100 hover:bg-base-100 hover:text-base-content h-[1.75rem] btn-outline no-animation rounded-full mr-6" on:click={()=>goto('/grow/auto_invest/intro')}>
       {$_("whats_auto_invest")}
     </button>
   </div>
