@@ -1,12 +1,7 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
+  import Create from "$lib/components/grow/autoInvest/new/create.svelte";
 </script>
 
 <div>
-
+  <Create />
 </div>
-
-<style>
-
-</style>

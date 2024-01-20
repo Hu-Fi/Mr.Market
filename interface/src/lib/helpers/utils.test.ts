@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatChartPrice, formatDecimals, formatTimestampToTime, formatUSMoney, formatWalletBalance } from './utils'
+import { formatChartPrice, formatDecimals, formatTimestampToTime, formatUSMoney, formatWalletBalance, numberInArray, toggleItemInArray, toggleNumberInArray } from './utils'
 
 describe('formatTimestampToTime', () => {
   it('format YYYY-MM-DD', () => {
@@ -176,6 +176,51 @@ describe('formatUSMoney', () => {
     expect(formatUSMoney(input)).toBe(expected);
   });
 })
+
+describe('toggleItemInArray', () => {
+  it('toggle item in array', ()=>{
+    let arr: any = []
+    let item = {chain_id: '123'}
+    let item1 = {chain_id: '221'}
+    toggleItemInArray(arr, 'chain_id', item)
+    expect(arr).toStrictEqual([item])
+    toggleItemInArray(arr, 'chain_id', item)
+    expect(arr).toStrictEqual([])
+    toggleItemInArray(arr, 'chain_id', item)
+    toggleItemInArray(arr, 'chain_id', item1)
+    expect(arr).toStrictEqual([item, item1])
+    toggleItemInArray(arr, 'chain_id', item1)
+    expect(arr).toStrictEqual([item])
+    toggleItemInArray(arr, 'chain_id', item)
+    expect(arr).toStrictEqual([])
+  })
+})
+
+describe('numberInArray', () => {
+  it('number in array', ()=>{
+    let arr = [1,2,3,4,5,6,7,8,9,10]
+    expect(numberInArray(arr, 1)).toBe(true)
+    expect(numberInArray(arr, 2)).toBe(true)
+    expect(numberInArray(arr, 10)).toBe(true)
+    expect(numberInArray(arr, 0)).toBe(false)
+  })
+})
+
+describe('toggleNumberInArray', () => {
+  it('toggle number in array', ()=>{
+    let arr: any = []
+    let item = 1
+    let item1 = 2
+    toggleNumberInArray(arr, item)
+    expect(arr).toStrictEqual([item])
+    toggleNumberInArray(arr, item)
+    expect(arr).toStrictEqual([])
+    toggleNumberInArray(arr, item)
+    toggleNumberInArray(arr, item1)
+    expect(arr).toStrictEqual([item, item1])
+  })
+})
+
 
 // describe('', () => {
   

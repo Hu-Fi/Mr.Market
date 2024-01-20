@@ -5,11 +5,11 @@
   import { BN, formatDecimals } from "$lib/helpers/utils";
   //@ts-ignore
   import { cleave } from "svelte-cleavejs";
+  import authorize from "$lib/helpers/mixin-oauth";
+  import { AfterMixinOauth } from "$lib/helpers/mixin";
   import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
   import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
   import { pair, price, amount, total, buy, orderType, current } from "$lib/stores/trade";
-    import { AfterMixinOauth } from "$lib/helpers/mixin";
-    import authorize from "$lib/helpers/mixin-oauth";
 
   let usdValue = 1
   let slider = 0

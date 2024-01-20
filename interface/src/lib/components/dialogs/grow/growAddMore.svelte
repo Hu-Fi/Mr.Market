@@ -15,7 +15,7 @@
   class="modal modal-bottom sm:modal-middle"
   class:modal-open={$addMoreDialog}
 >
-  <div class="modal-box space-y-3 pt-0">
+  <div class="modal-box space-y-3 pt-0 pl-6">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-6">
       <!-- Close -->
       <div class="absolute left-[calc(50%-16px)] top-2">

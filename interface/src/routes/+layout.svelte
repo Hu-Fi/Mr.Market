@@ -5,6 +5,7 @@
 	import { initi18n as i18n } from "../i18n/i18n";
 	import Loading from "$lib/components/home/loading.svelte";
 	import { autoConnectMixin } from "$lib/stores/wallet";
+    import { Toaster } from "svelte-french-toast";
 
 	const init = async () => {
 		// checkDarkMode
@@ -25,6 +26,7 @@
 	<div class="app text-base-content select-none" data-theme={$theme}>
 		<slot />
 	</div>
+	<Toaster />
 {/await}
 
 <style>

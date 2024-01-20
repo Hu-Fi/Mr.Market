@@ -128,3 +128,39 @@ export const daysBetweenToday = (d1: string) => {
 
   return Math.round(diff / (1000 * 3600 * 24)).toString()
 }
+
+export const toggleItemInArray = (array: Array<object>, field: string, item: object) => {
+  const index = array.findIndex(obj => obj[field] === item[field]);
+
+  if (index === -1) {
+    // If the object isn't found, push it to the array
+    array.push(item);
+  } else {
+    // If the object is found, remove it from the array
+    array.splice(index, 1);
+  }
+}
+
+export const itemInArray = (array: Array<object>, field: string, item: object) => {
+  const index = array.findIndex(obj => obj[field] === item[field]);
+
+  if (index === -1) {
+    return false
+  }
+  return true
+}
+
+export const numberInArray = (array: Array<number>, item: number) => {
+  return  array.includes(item)
+}
+export const toggleNumberInArray = (array: Array<number>, item: number) => {
+  const index = array.indexOf(item);
+
+  if (index === -1) {
+    // If the number isn't found, push it to the array
+    array.push(item);
+  } else {
+    // If the number is found, remove it from the array
+    array.splice(index, 1);
+  }
+}
