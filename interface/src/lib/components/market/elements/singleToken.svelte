@@ -29,7 +29,7 @@
 
       <div class="flex space-x-1.5 items-center">
         {#if token.market_cap_rank}
-          <div class="flex rounded-sm badge badge-xs bg-slate-100 px-0.5">
+          <div class={clsx("flex rounded-sm badge badge-xs px-0.5", $darkTheme ? "bg-slate-700" : "bg-slate-100")}>
             <span class="text-xs !text-[10px] opacity-90">
               {token.market_cap_rank}
             </span>

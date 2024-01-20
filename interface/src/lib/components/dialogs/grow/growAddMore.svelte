@@ -11,7 +11,7 @@
 </script>
 
 <dialog
-  id="order_type_explain_modal"
+  id="grow_add_more_modal"
   class="modal modal-bottom sm:modal-middle"
   class:modal-open={$addMoreDialog}
 >

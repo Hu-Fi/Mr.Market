@@ -2,14 +2,14 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
 	import toast from 'svelte-french-toast';
-  import { createNewAutoInvestAssets, createNewAutoInvestStep } from "$lib/stores/grow";
+  import { createAIAssets, createAIStep } from "$lib/stores/grow";
 
   const move = () => {
-    if ($createNewAutoInvestStep === 0 && $createNewAutoInvestAssets.length === 0) {
-      toast.error($_('please_select_an_asset'))
+    if ($createAIStep === 0 && $createAIAssets.length === 0) {
+      toast.error($_('please_select_an_asset'), {duration: 3000})
       return;
     }
-    createNewAutoInvestStep.set($createNewAutoInvestStep + 1);
+    createAIStep.set($createAIStep + 1);
   };
 </script>
 
@@ -24,7 +24,7 @@
       on:click={() => {move()}}
     >
       <span>
-        { $createNewAutoInvestStep === 2 ? $_('confirm') : $_("next_step") }
+        { $createAIStep === 2 ? $_('confirm') : $_("next_step") }
       </span>
     </button>
   </div>

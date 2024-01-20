@@ -21,7 +21,7 @@
   ]
 </script>
 
-<div class="grid grid-cols-5 gap-4 px-4 py-2 pb-6 border-b border-base-200/60">
+<div class="grid grid-cols-5 gap-4 px-4 py-2 pb-6 border-b border-base-200">
   {#each bt as b}
     <div class="flex flex-col justify-center items-center space-y-1.5">
       <button class="btn btn-sm bg-base-100 hover:bg-base-100 hover:border-base-300 rounded-xl border-base-300 w-10 h-10 text-center shadow-sm no-animation px-2" on:click={()=>b.fn()}>

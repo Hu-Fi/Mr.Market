@@ -2,17 +2,17 @@
   import Amount from "./amount.svelte";
   import Period from "./period.svelte";
   import SelectAsset from "./selectAssets.svelte";
-  import { createNewAutoInvestAssets, createNewAutoInvestStep } from "$lib/stores/grow";
+  import { createAIAssets, createAIStep } from "$lib/stores/grow";
   import { onDestroy } from "svelte";
-  onDestroy( ()=> {createNewAutoInvestStep.set(0); createNewAutoInvestAssets.set([])} )
+  onDestroy( ()=> {createAIStep.set(0); createAIAssets.set([])} )
 </script>
 
-<div class="mx-4 mt-4">
-  {#if $createNewAutoInvestStep === 0}
+<div class="mx-4 mt-4 mb-24">
+  {#if $createAIStep === 0}
     <SelectAsset />
-  {:else if $createNewAutoInvestStep === 1}
+  {:else if $createAIStep === 1}
     <Amount />
-  {:else if $createNewAutoInvestStep === 2}
+  {:else if $createAIStep === 2}
     <Period />
   {/if}
 </div>

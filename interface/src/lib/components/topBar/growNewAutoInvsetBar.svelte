@@ -3,18 +3,18 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import MixinMenu from "../common/MixinMenu.svelte";
-  import { createNewAutoInvestStep } from "$lib/stores/grow";
+  import { createAIStep } from "$lib/stores/grow";
 
   const back = () => {
-    switch ($createNewAutoInvestStep) {
+    switch ($createAIStep) {
       case 0:
         history.back()
         break;
       case 1:
-        createNewAutoInvestStep.set(0)
+        createAIStep.set(0)
         break;
       case 2:
-        createNewAutoInvestStep.set(1)
+        createAIStep.set(1)
         break;
     }
   }
@@ -29,9 +29,9 @@
     
     <div class="px-2 pl-4">
       <span>
-        {$createNewAutoInvestStep === 0 ? $_('select_asset') : 
-         $createNewAutoInvestStep === 1 ? $_('select_period'): 
-         $createNewAutoInvestStep === 2 ? $_('confirm'): $_('auto_invest')}
+        {$createAIStep === 0 ? $_('select_asset') : 
+         $createAIStep === 1 ? $_('select_period'): 
+         $createAIStep === 2 ? $_('confirm'): $_('auto_invest')}
       </span>
     </div>
   </div>

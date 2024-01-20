@@ -8,22 +8,22 @@
   } from "$lib/helpers/utils";
   import mixinChains from "$lib/constants/mixinChains.json";
   import {
-    createNewAutoInvestAssets,
-    selectAssetSearch,
+    createAIAssets,
+    createAISelectAssetSearch,
   } from "$lib/stores/grow";
   import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
 
   let assets = mixinChains.map(item => ({ ...item, selected: false }))
-  $: placeholders =  $selectAssetSearch ? 
+  $: placeholders =  $createAISelectAssetSearch ? 
     assets.filter((item) => {
       return (
-        item.name.toUpperCase().match($selectAssetSearch.toUpperCase()) ||
-        item.symbol.toUpperCase().match($selectAssetSearch.toUpperCase())
+        item.name.toUpperCase().match($createAISelectAssetSearch.toUpperCase()) ||
+        item.symbol.toUpperCase().match($createAISelectAssetSearch.toUpperCase())
       );
   }) : assets;
 
   const toggleHighlight = async (item: object, index: number) => {
-    toggleItemInArray($createNewAutoInvestAssets, "chain_id", item);
+    toggleItemInArray($createAIAssets, "chain_id", item);
   };
 </script>
 
@@ -47,7 +47,7 @@
       >
     </div>
     <input
-      bind:value={$selectAssetSearch}
+      bind:value={$createAISelectAssetSearch}
       class="input input-md h-[2.5rem] w-full pl-2 focus:outline-none focus:border-0 rounded-full bg-base-200 join-item"
       placeholder={$_("search")}
     />
@@ -59,7 +59,7 @@
       <button
         class={clsx(
           "flex just items-center justify-center space-x-1 mx-1 my-2 p-2 bg-base-100 border border-base-300 shadow-sm rounded-xl text-start",
-          itemInArray($createNewAutoInvestAssets, 'chain_id', item) ? 'border-primary' : '',
+          itemInArray($createAIAssets, 'chain_id', item) ? 'border-primary' : '',
         )}
         on:click={() => {
           toggleHighlight(item, i);
