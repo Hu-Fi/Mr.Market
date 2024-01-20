@@ -1,4 +1,5 @@
 <script lang="ts">
+  
   import { manageMode } from "$lib/stores/trade";
   import OrderConfirm from "$lib/components/dialogs/orderConfirm.svelte";
   import Button from "$lib/components/trade/bids/button.svelte";
@@ -10,6 +11,8 @@
   import Sub from "$lib/components/trade/manage/sub.svelte";
   import Tabs from "$lib/components/trade/manage/tabs.svelte";
   import OrderBook from "$lib/components/trade/order/orderBook.svelte";
+    import clsx from "clsx";
+    import { darkTheme } from "$lib/stores/theme";
 </script>
 
 <!-- Trading -->
@@ -27,7 +30,7 @@
 <OrderConfirm />
 
 <!-- Orders -->
-<div class="mt-4 border-t-[12px] border-slate-100">
+<div class={clsx("mt-4 border-t-[12px]", $darkTheme ? "border-slate-900" : "border-slate-100")}>
   <div class="flex flex-col">
     <Tabs />
     <Sub />

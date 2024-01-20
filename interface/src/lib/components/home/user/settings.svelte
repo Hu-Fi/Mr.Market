@@ -1,7 +1,7 @@
 <script lang="ts">
     import { _, locale } from "svelte-i18n"
     import { getNameByKey } from "../../../../i18n/i18n";
-    import {  toggleTheme } from "$lib/stores/theme";
+    import { toggleTheme } from "$lib/stores/theme";
     import { MixinDisconnect } from "$lib/helpers/mixin";
     import { goto } from "$app/navigation";
 

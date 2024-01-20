@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { darkTheme } from "$lib/stores/theme";
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   let sections = [
@@ -13,7 +14,8 @@
     <button
       class={clsx(
         "btn btn-sm h-[2.5rem] join-item border-none no-animation",
-        "bg-slate-50 focus:bg-slate-50",
+        $darkTheme ? "bg-slate-800 focus:bg-slate-800" : "bg-slate-50 focus:bg-slate-50",
+        "",
       )}
       on:click={() => {}}
     >

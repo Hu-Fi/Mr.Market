@@ -1,8 +1,8 @@
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
+  import { darkTheme } from "$lib/stores/theme";  
   import { activeSecondTab, activeTab } from "$lib/stores/market";
-    import Tbd from "$lib/components/common/TBD.svelte";
 
   let coinItems = [
     {name: $_("favorites"), fn: ()=>{}},
@@ -31,7 +31,7 @@
 <!-- Tabs -->
 <!-- Coins -->
 {#if $activeTab === 0}
-  <div class="w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5">
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-50")}>
     {#each coinItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSecondTab === i && "")} on:click={()=>{activeSecondTab.set(i); item.fn()}}>
         <span class={clsx("font-medium text-xs text-start", $activeSecondTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
@@ -42,7 +42,7 @@
 
 <!-- Spot -->
 {:else if $activeTab === 1}
-  <div class="w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5">
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-50")}>
     {#each spotItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSecondTab === i && "")} on:click={()=>{activeSecondTab.set(i); item.fn()}}>
         <span class={clsx("font-medium text-xs text-start", $activeSecondTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
@@ -53,7 +53,7 @@
 
 <!-- Leverage -->
 {:else if $activeTab === 2}
-  <div class="w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5">
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-50")}>
     {#each coinItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSecondTab === i && "")} on:click={()=>{activeSecondTab.set(i); item.fn()}}>
         <span class={clsx("font-medium text-xs text-start", $activeSecondTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
@@ -64,7 +64,7 @@
   
 <!-- Perp -->
 {:else if $activeTab === 3}
-  <div class="w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5">
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-50")}>
     {#each coinItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSecondTab === i && "")} on:click={()=>{activeSecondTab.set(i); item.fn()}}>
         <span class={clsx("font-medium text-xs text-start", $activeSecondTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
@@ -74,7 +74,7 @@
 
 <!-- Options -->
 {:else if $activeTab === 4}
-  <div class="w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5">
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-50")}>
     {#each coinItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSecondTab === i && "")} on:click={()=>{activeSecondTab.set(i); item.fn()}}>
         <span class={clsx("font-medium text-xs text-start", $activeSecondTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>

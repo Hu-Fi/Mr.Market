@@ -5,6 +5,7 @@
   import MixinMenu from "../common/MixinMenu.svelte";
 
   import { activeTab, setActiveTab } from "$lib/stores/market";
+    import { darkTheme } from "$lib/stores/theme";
   
   let items = [
     { name: $_("coins"), fn: () => {} },
@@ -15,7 +16,7 @@
   ];
 </script>
 
-<div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px] border-b-[0.8px]">
+<div class={clsx("flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px] border-b-[0.8px]", $darkTheme ? "border-slate-700" : "border-slate-50")}>
   <div class="tabs w-full overflow-x-auto no-scrollbar flex">
     {#each items as item, i}
       <button

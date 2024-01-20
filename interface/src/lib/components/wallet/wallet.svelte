@@ -1,5 +1,7 @@
 <script lang="ts">
+  import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { darkTheme } from "$lib/stores/theme";
   import { userAssets } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";
   import Title from "$lib/components/wallet/balance/title.svelte";
@@ -15,7 +17,7 @@
     <Percentage />
   </div>
 
-  <div class="mt-6 border-t-[10px] border-slate-100 mb-36">
+  <div class={clsx("mt-6 border-t-[10px] mb-36", $darkTheme ? "border-slate-900" : "border-slate-100")}>
     <Assets />
   </div>
 {:else if $mixinConnected && !$userAssets}

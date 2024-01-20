@@ -2,7 +2,7 @@ import { derived, get, writable } from "svelte/store"
 
 // light, dark
 export let theme = writable('light')
-
+export let darkTheme = derived(theme, ($theme) => {return $theme != 'light'})
 export let showSettingShortcut= writable(false)
 
 

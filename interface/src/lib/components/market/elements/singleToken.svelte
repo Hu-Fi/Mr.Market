@@ -7,11 +7,12 @@
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
   import { formatDecimals, formatUSMoney, formatUSMoneyUnit } from "$lib/helpers/utils";
+    import { darkTheme } from "$lib/stores/theme";
 
   export let token = {"id": "bitcoin","symbol": "btc","name": "Bitcoin","image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400","current_price": 42647,"market_cap": 835106968766,"market_cap_rank": 1,"fully_diluted_valuation": 895363344292,"total_volume": 12072391201,"high_24h": 42782,"low_24h": 42095,"price_change_24h": 153.96,"price_change_percentage_24h": 0.36232,"market_cap_change_24h": 3004861113,"market_cap_change_percentage_24h": 0.36112,"circulating_supply": 19586737,"total_supply": 21000000,"max_supply": 21000000,"ath": 69045,"ath_change_percentage": -38.24065,"ath_date": "2021-11-10T14:24:11.849Z","atl": 67.81,"atl_change_percentage": 62784.86453,"atl_date": "2013-07-06T00:00:00.000Z","roi": null,"last_updated": "2024-01-01T14:46:24.444Z"};
 </script>
 
-<button class="flex w-full items-center justfy-between p-4 border-slate-50 border-b-[0.1px] first:border-t-[0.1px]" on:click={()=>{goto('/market/coin/'+token.id); currentCoin.set(token)}} >
+<button class={clsx("flex w-full items-center justfy-between p-4 border-b-[0.1px] first:border-t-[0.1px]", $darkTheme ? "border-slate-700":"border-slate-50")} on:click={()=>{goto('/market/coin/'+token.id); currentCoin.set(token)}} >
   <div class="flex flex-1 items-center space-x-3 text-left">
     <!-- Icon -->
     <div class="avatar w-8 h-8 p-0.5">

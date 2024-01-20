@@ -11,7 +11,7 @@ export const coinChartOptions = {
     textColor: "#d1d4dc",
     background: {
       type: ColorType.Solid,
-      color: colors.white[100],
+      color: colors.transparent,
     },
   },
   timeScale: {
