@@ -31,11 +31,14 @@
     if ($createAIPeriod === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('period')}})); return }
     // Check amounts
     if ($createAIAmounts.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}})); return }
-    $createAIAmounts.forEach(
-      (e)=>{
-        if(e == 0) { toast.error($_('please_fill_out_field_x', { values:{ name: $_('amount') } } ) ); return }
+    // Check length
+    if ($createAIAmounts.length != $createAIAssets.length) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}})); return }
+    // Check all amounts
+    for (let i = 0; i<$createAIAmounts.length; i++) {
+      if (!$createAIAmounts[i]) {
+        toast.error($_('please_fill_out_field_x', { values:{ name: $_('amount') } } ) ); return
       }
-    )
+    }
   }
 </script>
 
