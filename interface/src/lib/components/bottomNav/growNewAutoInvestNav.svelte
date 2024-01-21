@@ -4,7 +4,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
 	import toast from 'svelte-french-toast';
-  import { createAIAssets } from "$lib/stores/grow";
+  import { createAIAmounts, createAIAssets, createAIName, createAIPeriod } from "$lib/stores/grow";
 
   const move = () => {
     if ($page.url.pathname.includes('/grow/auto_invest/new/one') && $createAIAssets.length === 0) {
@@ -16,7 +16,7 @@
       return;
     }
     if ($page.url.pathname.includes('/grow/auto_invest/new/two')) {
-      // CheckAllFields()
+      CheckAllFields()
       // ConfirmNewAI()
       return;
     }
@@ -24,9 +24,18 @@
 
   const CheckAllFields = () => {
     // Check assets
+    if ($createAIAssets.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('asset')}})); return }
     // Check name
+    if ($createAIName.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('name')}})); return }
     // Check period
+    if ($createAIPeriod === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('period')}})); return }
     // Check amounts
+    if ($createAIAmounts.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}})); return }
+    $createAIAmounts.forEach(
+      (e)=>{
+        if(e == 0) { toast.error($_('please_fill_out_field_x', { values:{ name: $_('amount') } } ) ); return }
+      }
+    )
   }
 </script>
 

@@ -212,5 +212,6 @@
   "weeks": "weeks",
   "exact_time": "Exact time",
   "hour": "Hour",
-  "minute": "Minute"
+  "minute": "Minute",
+  "please_fill_out_field_x": "Please fill out field: {name}"
 }
