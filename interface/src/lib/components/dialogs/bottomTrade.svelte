@@ -27,7 +27,7 @@
   <form method="dialog" class="modal-backdrop h-[calc(100%-(56px+28px+16px+32px+274px))]">
     <button on:click={() => bottomTradeDialog.set(false)}></button>
   </form>
-  <div class="modal-box space-y-3 py-4 pb-8 mb-1 w-80 rounded-2xl shadow-sm clip-trade">
+  <div class="modal-box space-y-3 py-4 pb-8 mb-7 w-80 rounded-2xl shadow-sm clip-trade">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10">
       <!-- Routes -->
       {#if !toggleLanguage}
@@ -67,10 +67,10 @@
   
   
   <!-- Close Button -->
-  <div class="mb-[26px] flex items-center justify-between w-80">    
+  <div class="relative bottom-6 flex items-center justify-between w-80">    
     <div class={clsx(expanded ? "w-[calc(32px*2+12px+20px)]" : "w-[52px]")}></div>
     
-    <button class="btn rounded-full bg-base-100 h-[2.875rem] w-[2.875rem] min-h-[2.875rem] px-3" on:click={()=>bottomTradeDialog.set(false)}>
+    <button class="btn rounded-full bg-base-100 hover:bg-base-100 no-animation h-[2.875rem] w-[2.875rem] min-h-[2.875rem] px-3" on:click={()=>bottomTradeDialog.set(false)}>
       <!-- Close Icon -->
       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
     </button>
