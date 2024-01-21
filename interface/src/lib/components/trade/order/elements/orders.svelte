@@ -73,7 +73,7 @@
     </div>
 
     <!-- Current Price -->
-    <button class="flex flex-col" on:click={()=>{price.set($current)}}>
+    <button class={clsx("flex flex-col", $orderBookMode === 1 && "!mt-1.5")} on:click={()=>{price.set($current)}}>
       <span class={clsx("text-lg font-bold", "text-red-500", false && "text-green-500")}>
         {$current}
       </span>
@@ -96,7 +96,7 @@
     </button>
 
     <!-- Bid -->
-    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5")}">
+    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5", $orderBookMode === 2 && "!mt-1.5")}">
       {#each $bids.slice(0, $orderType.index === 1? 10: 12) as b}
         <button class="flex justify-between" on:click={()=>{price.set(magic(b.price))}}>
           <div class={clsx("text-xs text-start", "text-green-500")}>

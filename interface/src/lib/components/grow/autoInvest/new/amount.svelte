@@ -56,15 +56,15 @@
       </span>
 
       <button class="flex items-center" on:click={()=>{createAISelectUnitDialog.set(!$createAISelectUnitDialog)}}>
-        <span class="text-xs">
+        <span class="text-xs opacity-60">
           {$_("select_unit")}
         </span>
         {#if !$createAISelectUnitDialog}
           <!-- Caret down Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-4 w-4 opacity-60"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>
         {:else}
           <!-- Caret up Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M7 14L12 8L17 14L7 14Z" fill="currentColor"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="h-4 w-4 opacity-60"><path xmlns="http://www.w3.org/2000/svg" d="M7 14L12 8L17 14L7 14Z" fill="currentColor"></path></svg>
         {/if}
       </button>
     </div>

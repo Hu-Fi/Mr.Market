@@ -3,11 +3,11 @@
   import { _ } from "svelte-i18n"
   import authorize from "$lib/helpers/mixin-oauth";
   import { AfterMixinOauth } from "$lib/helpers/mixin";
+  import { mixinConnectLoading } from "$lib/stores/home";
   import { BOT_ID, OAUTH_SCOPE } from "$lib/helpers/constants";
 
-  $: load = false;
   const auth = async () => {
-    load = true;
+    mixinConnectLoading.set(true);
     authorize(
       { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
       {
@@ -24,7 +24,7 @@
         },
       },
     );
-    load = false;
+    mixinConnectLoading.set(false);
   };
 </script>
 
@@ -48,8 +48,8 @@
   </div>
   <!-- Right -->
   <div class="">
-    <button class="btn btn-sm h-[2.5rem] rounded-full bg-blue-500 hover:bg-blue-500 no-animation" on:click={()=>{auth(); load=true}}>
-      <span class={clsx("mx-3 font-semibold text-sm text-base-100", load && "loading")}>{$_('connect')}</span>
+    <button class="btn btn-sm h-[2.5rem] rounded-full bg-blue-500 hover:bg-blue-500 no-animation" on:click={()=>{auth(); mixinConnectLoading.set(true)}}>
+      <span class={clsx("mx-3 font-semibold text-sm text-base-100", $mixinConnectLoading && "loading")}>{$_('connect')}</span>
     </button>
   </div>
 </div>

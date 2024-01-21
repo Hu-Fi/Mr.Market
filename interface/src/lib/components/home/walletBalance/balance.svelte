@@ -41,7 +41,6 @@
         <div class="flex items-end space-x-1">
           {#if $userAssets}
             <span class="text-4xl font-medium break-words max-w-[calc(100vw-98px-30px-32px-16px)] balance-font">
-            <!-- <span class="text-2xl font-semibold break-words max-w-[calc(100vw-98px-30px-32px-16px)] "> -->
               {formatUSNumber(formatDecimals(balance, 2))}
             </span>  
             
@@ -67,7 +66,6 @@
               </ul>
             </details>
           {:else}
-            <!-- <span class="loading"></span> -->
             <BalanceNumberLoader />
           {/if}
         </div>
