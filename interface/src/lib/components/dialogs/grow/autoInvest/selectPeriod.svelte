@@ -65,7 +65,11 @@
           
           <div class="grid grid-cols-3 justify-center text-center items-center px-4 join w-full border border-base-300">
             <span class="text-xs"> {$_('every')} </span>
-            <input class="input input-sm focus:border-none focus:outline-none" />
+            <input class="input input-sm focus:border-none focus:outline-none" placeholder={
+              $createAIPeriod === 24 ? '1-365' :
+              $createAIPeriod === 7*24 ? '1-52' :
+              $createAIPeriod === 30*24 ? '1-12' : ''
+            } />
             <span class="text-xs"> 
               {
                 $createAIPeriod === 24 ? $_('dayss') :

@@ -33,9 +33,11 @@ export const mixinShare = (url: string, title: string, description: string, icon
     app_id: BOT_ID,
     description,
     icon_url,
-    title
+    title,
   };
-  window.open("mixin://send?category=app_card&data=" + encodeURIComponent(btoa(JSON.stringify(data))).replace(/%3D/g, '') )
+  console.log(data)
+  console.log("mixin://send?category=app_card&data=" + encodeURIComponent(btoa(JSON.stringify(data))) )
+  window.open("mixin://send?category=app_card&data=" + encodeURIComponent(btoa(JSON.stringify(data))) )
 }
 
 export const mixinUserMe = async (token: string) => {
