@@ -10,10 +10,10 @@
     </div>
     <div class="flex flex-col items-start space-y-2">
       <span class="text-lg font-semibold">
-        {$_("easy")}
+        {$_("easy_mode")}
       </span>
       <span class="text-xs !text-[10px] opacity-60 break-words text-start">
-        {$_("easy_intro")} 
+        {$_("easy_mode_intro")} 
       </span>
     </div>
   </button>
@@ -25,10 +25,10 @@
     </div>
     <div class="flex flex-col items-start space-y-2">
       <span class="text-lg font-semibold">
-        {$_("advanced")}
+        {$_("advanced_mode")}
       </span>
       <span class="text-xs !text-[10px] opacity-60 break-words text-start">
-        {$_("advanced_intro")} 
+        {$_("advanced_mode_intro")} 
       </span>
     </div>
   </button>

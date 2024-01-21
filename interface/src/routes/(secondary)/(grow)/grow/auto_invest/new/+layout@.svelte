@@ -1,5 +1,7 @@
 <script>
   import GrowNewAutoInvestNav from "$lib/components/bottomNav/growNewAutoInvestNav.svelte";
+    import SelectPeriod from "$lib/components/dialogs/grow/autoInvest/selectPeriod.svelte";
+    import SelectUnit from "$lib/components/dialogs/grow/autoInvest/selectUnit.svelte";
 import GrowNewAutoInvestBar from "$lib/components/topBar/growNewAutoInvsetBar.svelte"
 </script>
 
@@ -12,6 +14,9 @@ import GrowNewAutoInvestBar from "$lib/components/topBar/growNewAutoInvsetBar.sv
 </main>
 
 <GrowNewAutoInvestNav />
+
+<SelectPeriod />
+<SelectUnit />
 
 
 <style>

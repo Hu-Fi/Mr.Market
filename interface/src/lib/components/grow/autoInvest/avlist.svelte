@@ -15,7 +15,7 @@ const list = []
       </span>
     </div>
     <div>
-      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/auto_invest/new')}>
+      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/auto_invest/new/one')}>
         <span class="text-base-100">
           {$_('start_auto_invest')}
         </span>
