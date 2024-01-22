@@ -37,7 +37,6 @@
     <!-- Amount -->
     <div class="flex items-end space-x-2 mt-1 pb-1 justify-between">
       {#if !$hideBalance}
-      <!-- TODO: Dynamic text size -->
         <div class="flex items-end space-x-1">
           {#if $userAssets}
             <span class="text-4xl font-medium break-words max-w-[calc(100vw-98px-30px-32px-16px)] balance-font">
@@ -78,7 +77,7 @@
   </div>
   <!-- Right -->
   <div class="">
-    <button class="btn btn-sm rounded-full bg-blue-500 hover:bg-blue-500 no-animation" on:click={()=>goto("/wallet")}>
+    <button class="btn btn-sm rounded-full bg-base-content hover:bg-base-content no-animation" on:click={()=>goto("/wallet")}>
       <span class="mx-3 text-sm text-base-100">{$_('view')}</span>
     </button>
   </div>

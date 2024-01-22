@@ -53,7 +53,6 @@
         </span>
       </div>
       <!-- Date -->
-      <!-- TODO: format time by country -->
       <div class="!mt-1 flex space-x-3">
         <span class={"text-base-content text-md opacity-50"}>
           { $ChartActiveTab <= 2 ? formatTimestampToTime($ChartPrice.time, true) : formatTimestampToTime($ChartPrice.time) }

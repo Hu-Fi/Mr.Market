@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n";
   import { formatUSNumber } from "$lib/helpers/utils";
   import { CandlePairSelectorDialog as sd, CandlePair, CandlePairSearch } from "$lib/stores/market";
+    import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
   let activeTab = 0
   let items = [
@@ -71,9 +72,9 @@
       {#each placeholders as c}
         <div class="w-full flex items-center justify-start space-x-2 py-3">
           <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{CandlePair.set(c); sd.set(false);}}>
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2.5">
               <img src={c.icon} alt="-" loading="lazy" class="w-5 h-5" />
-              <span class="flex items-center font-semibold text-sm">
+              <span class="flex items-center font-semibold text-base">
                 {c.first}<span class="font-light text-xs text-base-content/60">/{c.second}</span>
               </span>
             </div>
@@ -82,8 +83,7 @@
               <span class="text-sm font-semibold">
                 {formatUSNumber(c.price)}
               </span>
-              <!-- TODO: replace with variable theme color -->
-              <span class={clsx("text-xs !text-[10px]", c.percentage >= 0 ? 'text-green-600' : 'text-red-600')}>
+              <span class={clsx("text-xs !text-[10px]", c.percentage >= 0 ? UpColorText : DownColorText)}>
                 {c.percentage}%
               </span>
             </div>

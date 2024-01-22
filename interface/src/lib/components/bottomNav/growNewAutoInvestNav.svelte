@@ -8,7 +8,7 @@
 
   const move = () => {
     if ($page.url.pathname.includes('/grow/auto_invest/new/one') && $createAIAssets.length === 0) {
-      toast.error($_('please_select_an_asset'), {duration: 3000})
+      toast.error($_('please_select_an_asset'), {position:'bottom-center', duration: 2000})
       return;
     }
     if ($page.url.pathname.includes('/grow/auto_invest/new/one')) {
@@ -24,19 +24,19 @@
 
   const CheckAllFields = () => {
     // Check assets
-    if ($createAIAssets.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('asset')}})); return }
+    if ($createAIAssets.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('asset')}}), {position:'bottom-center', duration: 2000}); return }
     // Check name
-    if ($createAIName.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('name')}})); return }
+    if ($createAIName.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('name')}}), {position:'bottom-center', duration: 2000}); return }
     // Check period
-    if ($createAIPeriod === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('period')}})); return }
+    if ($createAIPeriod === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('period')}}), {position:'bottom-center', duration: 2000}); return }
     // Check amounts
-    if ($createAIAmounts.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}})); return }
+    if ($createAIAmounts.length === 0) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}}), {position:'bottom-center', duration: 2000}); return }
     // Check length
-    if ($createAIAmounts.length != $createAIAssets.length) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}})); return }
+    if ($createAIAmounts.length != $createAIAssets.length) { toast.error($_('please_fill_out_field_x', {values:{name: $_('amount')}}), {position:'bottom-center', duration: 2000}); return }
     // Check all amounts
     for (let i = 0; i<$createAIAmounts.length; i++) {
       if (!$createAIAmounts[i]) {
-        toast.error($_('please_fill_out_field_x', { values:{ name: $_('amount') } } ) ); return
+        toast.error($_('please_fill_out_field_x', { values:{ name: $_('amount') } } ), {position:'bottom-center', duration: 2000} ); return
       }
     }
   }

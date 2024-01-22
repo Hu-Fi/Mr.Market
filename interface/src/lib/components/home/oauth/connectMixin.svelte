@@ -48,7 +48,7 @@
   </div>
   <!-- Right -->
   <div class="">
-    <button class="btn btn-sm h-[2.5rem] rounded-full bg-blue-500 hover:bg-blue-500 no-animation" on:click={()=>{auth(); mixinConnectLoading.set(true)}}>
+    <button class="btn btn-sm h-[2.5rem] rounded-full bg-base-content hover:bg-base-content no-animation" on:click={()=>{auth(); mixinConnectLoading.set(true)}}>
       <span class={clsx("mx-3 font-semibold text-sm text-base-100", $mixinConnectLoading && "loading")}>{$_('connect')}</span>
     </button>
   </div>

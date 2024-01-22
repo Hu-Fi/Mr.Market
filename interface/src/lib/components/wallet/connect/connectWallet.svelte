@@ -33,7 +33,7 @@
 
   <div class="flex flex-col space-y-6 items-center">
     <span class="font-medium"> {$_("connect_wallet_intro")} </span>
-    <button class="btn btn-md rounded-full bg-blue-500 hover:bg-blue-500 no-animation" on:click={()=>{auth(); mixinConnectLoading.set(true)}}>
+    <button class="btn btn-md rounded-full bg-base-content hover:bg-base-content no-animation" on:click={()=>{auth(); mixinConnectLoading.set(true)}}>
       <span class={clsx("mx-3 font-bold text-sm text-base-100", $mixinConnectLoading && "loading")}>{$_("connect_wallet")}</span>
     </button>
   </div>
