@@ -1,16 +1,16 @@
 <script lang="ts">
 	import "./styles.css";
 	import "../app.css";
-	import { theme } from "$lib/stores/theme";
+	import { Toaster } from "svelte-french-toast";
 	import { initi18n as i18n } from "../i18n/i18n";
-	import Loading from "$lib/components/home/loading.svelte";
 	import { autoConnectMixin } from "$lib/stores/wallet";
-    import { Toaster } from "svelte-french-toast";
+	import Loading from "$lib/components/home/loading.svelte";
+	import { detectSystemDark, theme } from "$lib/stores/theme";
 
 	const init = async () => {
-		// checkDarkMode
 		await i18n();
 		autoConnectMixin();
+		detectSystemDark();
 	};
 
 </script>

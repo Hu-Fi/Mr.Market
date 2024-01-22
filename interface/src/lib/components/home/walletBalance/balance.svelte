@@ -6,6 +6,8 @@
   import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import HideBalance from "$lib/components/home/walletBalance/hideBalance.svelte";
 	import BalanceNumberLoader from '$lib/components/skeleton/home/balanceNumberLoader.svelte';
+    import { darkTheme } from "$lib/stores/theme";
+    import clsx from "clsx";
 
   let open = false;
   let currency = "USDT"
@@ -77,8 +79,8 @@
   </div>
   <!-- Right -->
   <div class="">
-    <button class="btn btn-sm rounded-full bg-base-content hover:bg-base-content no-animation" on:click={()=>goto("/wallet")}>
-      <span class="mx-3 text-sm text-base-100">{$_('view')}</span>
+    <button class={clsx("btn btn-sm rounded-full no-animation", $darkTheme ? "bg-slate-700 hover:bg-slate-700 hover:border-slate-700 focus:bg-slate-700": "bg-slate-100 hover:bg-slate-100 border border-slate-100 focus:border-slate-100")} on:click={()=>goto("/wallet")}>
+      <span class="mx-3 text-sm text-base-content">{$_('view')}</span>
     </button>
   </div>
 </div>

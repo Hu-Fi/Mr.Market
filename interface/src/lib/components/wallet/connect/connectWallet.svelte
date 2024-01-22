@@ -2,10 +2,9 @@
   import { BOT_ID, OAUTH_SCOPE } from "$lib/helpers/constants";
   import { AfterMixinOauth } from "$lib/helpers/mixin";
   import authorize from "$lib/helpers/mixin-oauth";
-  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
+  import { mixinConnectLoading } from "$lib/stores/home";
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
-
   
   const auth = async () => {
     mixinConnectLoading.set(true);

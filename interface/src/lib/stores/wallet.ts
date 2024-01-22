@@ -34,5 +34,5 @@ export const autoConnectMixin = async () => {
     localStorage.removeItem('mixin-oauth')
     return
   }
-  await AfterMixinOauth(token)
+  AfterMixinOauth(token)
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { darkTheme } from "$lib/stores/theme";
   import { keys, asc, selectedField, spotKeys } from "$lib/stores/market";
-    import { darkTheme } from "$lib/stores/theme";
 
   let tableHeaders = [$_('name'), $_('price'), $_('24chg')]
 
@@ -13,7 +13,11 @@
 <thead>
   <tr class="flex justify-between border-b-0">
     {#if type === 0}
-      <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {selectedField.set(keys[0])} } >
+      <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {
+        if ($selectedField == keys[0]) {return}
+        selectedField.set(keys[0]);
+        asc.set(true);
+      }}>
         <button class="flex items-center" on:click={() => ($asc = !$asc) }>
           <span class="text-xs !text-[10px]">{tableHeaders[0]}</span>
           <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != keys[0] && "opacity-50")}>
@@ -26,7 +30,11 @@
       </th>
 
       <div>
-        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {selectedField.set(keys[1]);}} >
+        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {
+          if ($selectedField == keys[1]) {return}
+          selectedField.set(keys[1]);
+          asc.set(false);
+        }} >
           <button class="flex items-center" on:click={() => ($asc = !$asc)}>
             <span class="text-xs !text-[10px]">{tableHeaders[1]}</span>
             <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != keys[1] && "opacity-50")}>
@@ -38,7 +46,11 @@
           </button>
         </th>
     
-        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {selectedField.set(keys[2]);}} >
+        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {
+          if ($selectedField == keys[2]) {return}
+          selectedField.set(keys[2]);
+          asc.set(false);
+        }} >
           <button class="flex items-center" on:click={() => ($asc = !$asc)}>
             <span class="text-xs !text-[10px]">{tableHeaders[2]}</span>
             <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != keys[2] && "opacity-50")}>
@@ -52,7 +64,8 @@
       </div>
     
     {:else if type === 1}
-      <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {selectedField.set(spotKeys[0])} } >
+      <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={ () => {
+        selectedField.set(spotKeys[0])} } >
         <button class="flex items-center" on:click={() => ($asc = !$asc) }>
           <span class="text-xs !text-[10px]">{tableHeaders[0]}</span>
           <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != spotKeys[0] && "opacity-50")}>
@@ -65,7 +78,8 @@
       </th>
 
       <div>
-        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {selectedField.set(spotKeys[1]);}} >
+        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {
+          selectedField.set(spotKeys[1]);}} >
           <button class="flex items-center" on:click={() => ($asc = !$asc)}>
             <span class="text-xs !text-[10px]">{tableHeaders[1]}</span>
             <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != spotKeys[1] && "opacity-50")}>
@@ -77,7 +91,8 @@
           </button>
         </th>
     
-        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {selectedField.set(spotKeys[2]);}} >
+        <th class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7" on:click={() => {
+          selectedField.set(spotKeys[2]);}} >
           <button class="flex items-center" on:click={() => ($asc = !$asc)}>
             <span class="text-xs !text-[10px]">{tableHeaders[2]}</span>
             <button class={clsx("flex flex-col space-y-[-8px]", $selectedField != spotKeys[2] && "opacity-50")}>

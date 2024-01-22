@@ -1,3 +1,4 @@
+import { getMixinContext } from "$lib/helpers/mixin"
 import { derived, get, writable } from "svelte/store"
 
 // light, dark
@@ -13,6 +14,13 @@ export const detectSystemDark = () => {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     theme.set(e.matches ? "dark" : "light");
   });
+  const mixinContext = getMixinContext()
+  if (!mixinContext) {
+    return
+  }
+  if (mixinContext.appearance === 'dark') {
+    theme.set('dark')
+  }
 }
 
 export const toggleTheme = () => {
