@@ -39,7 +39,7 @@ export const mixinShare = (url: string, title: string, description: string, icon
 }
 
 export const mixinUserMe = async (token: string) => {
-  let config = {
+  const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -50,7 +50,7 @@ export const mixinUserMe = async (token: string) => {
 }
 
 export const mixinSafeAllOutputs = async (members: string[], token: string)=> {
-  let config = {
+  const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -62,7 +62,7 @@ export const mixinSafeAllOutputs = async (members: string[], token: string)=> {
 }
 
 export const mixinSafeOutputs = async (members: string[], token: string, spent: boolean = false)=> {
-  let config = {
+  const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -88,7 +88,7 @@ export const mixinAsset = async (asset_id: string) => {
 }
 
 export const mixinSafeAsset = async (asset_id: string, token: string)=> {
-  let config = {
+  const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -101,7 +101,7 @@ export const mixinSafeAsset = async (asset_id: string, token: string)=> {
 
 async function fetchTopAssetsCache() {
   const topAssets = await mixinTopAssets();
-  let topCache = get(topAssetsCache)
+  const topCache = get(topAssetsCache)
   topAssets.forEach(asset => {
     topCache[asset.asset_id] = asset;
   });

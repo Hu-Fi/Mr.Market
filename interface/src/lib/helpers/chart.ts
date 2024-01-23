@@ -129,7 +129,7 @@ export const MALineOptions = {
 }
 
 export const getMA = (source:object[], r: number = 5) => {
-  let final = []
+  const final = []
   const closes = source.map(item => item.close);
   const arr = sma({period: r, values:closes})
 

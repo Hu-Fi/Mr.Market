@@ -35,7 +35,7 @@
 
     <div class="flex w-full px-2">
       <button class="btn btn-block justify-between bg-base-100 border-base-300 no-animation" on:click={()=>{createAIPeriodDialog.set(!$createAIPeriodDialog)}}>
-        <span class={clsx($createAIPeriod ? "" : "opacity-40")}>
+        <span class={clsx('font-medium', $createAIPeriod ? "" : "opacity-40")}>
           { $createAIPeriod ? getPeriodByNumber($createAIPeriod) : $_('select_period') }
         </span>
         {#if !$createAIPeriodDialog}

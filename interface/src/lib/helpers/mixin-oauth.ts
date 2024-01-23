@@ -73,7 +73,7 @@ export default function authorize(
             { baseURL: http }
           )
           .then((data) => {
-            let token = data?.data?.data?.access_token;
+            const token = data?.data?.data?.access_token;
             if (token) {
               callbacks.onSuccess?.(token);
             } else {

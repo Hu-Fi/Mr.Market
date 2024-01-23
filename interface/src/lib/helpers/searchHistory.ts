@@ -6,14 +6,14 @@ export const getSearchHistory = (): [] => {
 export const addSearchHistory = (item: object) => {
   // console.log('addSearchHistory:', item)
   if (!item) return 
-  let history = getSearchHistory()
+  const history = getSearchHistory()
   // console.log('history:', history)
   
-  let index = history.findIndex(h => h.symbol === item.symbol);
+  const index = history.findIndex(h => h.symbol === item.symbol);
   if (index === -1) {
     history.push(item);
   } else {
-    let existingItem = history.splice(index, 1)[0];
+    const existingItem = history.splice(index, 1)[0];
     history.push(existingItem);
   }
 

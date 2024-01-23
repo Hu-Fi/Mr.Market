@@ -2,9 +2,9 @@ import { getMixinContext } from "$lib/helpers/mixin"
 import { derived, get, writable } from "svelte/store"
 
 // light, dark
-export let theme = writable('light')
-export let darkTheme = derived(theme, ($theme) => {return $theme != 'light'})
-export let showSettingShortcut= writable(false)
+export const theme = writable('light')
+export const darkTheme = derived(theme, ($theme) => {return $theme != 'light'})
+export const showSettingShortcut= writable(false)
 
 
 export const detectSystemDark = () => {

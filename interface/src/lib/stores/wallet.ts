@@ -3,12 +3,12 @@ import { writable } from "svelte/store";
 import { AfterMixinOauth } from "$lib/helpers/mixin";
 import { mixinConnected } from "./home";
 
-export let user = writable()
-export let userAssets = writable()
-export let topAssetsCache = writable({})
-export let currencySymbol = writable("$")
-export let assetDetailAsset = writable()
-export let assetDetailDialog = writable()
+export const user = writable()
+export const userAssets = writable()
+export const topAssetsCache = writable({})
+export const currencySymbol = writable("$")
+export const assetDetailAsset = writable()
+export const assetDetailDialog = writable()
 
 export const checkMixinTokenExist = () => {
   if (!localStorage.getItem('mixin-oauth')) {

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { marketData, searchValue } from "$lib/stores/market";  
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
     import { addSearchHistory } from "$lib/helpers/searchHistory";

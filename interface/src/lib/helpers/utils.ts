@@ -122,9 +122,9 @@ export const findChainIcon = (chainId: string) => {
 }
 
 export const daysBetweenToday = (d1: string) => {
-  let date1 = new Date(d1);
-  let date2 = new Date();
-  let diff = date2.getTime() - date1.getTime();
+  const date1 = new Date(d1);
+  const date2 = new Date();
+  const diff = date2.getTime() - date1.getTime();
 
   return Math.round(diff / (1000 * 3600 * 24)).toString()
 }

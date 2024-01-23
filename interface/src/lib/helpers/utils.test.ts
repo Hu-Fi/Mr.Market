@@ -178,9 +178,9 @@ describe('formatUSMoney', () => {
 
 describe('toggleItemInArray', () => {
   it('toggle item in array', ()=>{
-    let arr: any = []
-    let item = {chain_id: '123'}
-    let item1 = {chain_id: '221'}
+    const arr: any = []
+    const item = {chain_id: '123'}
+    const item1 = {chain_id: '221'}
     toggleItemInArray(arr, 'chain_id', item)
     expect(arr).toStrictEqual([item])
     toggleItemInArray(arr, 'chain_id', item)
@@ -197,7 +197,7 @@ describe('toggleItemInArray', () => {
 
 describe('numberInArray', () => {
   it('number in array', ()=>{
-    let arr = [1,2,3,4,5,6,7,8,9,10]
+    const arr = [1,2,3,4,5,6,7,8,9,10]
     expect(numberInArray(arr, 1)).toBe(true)
     expect(numberInArray(arr, 2)).toBe(true)
     expect(numberInArray(arr, 10)).toBe(true)
@@ -207,9 +207,9 @@ describe('numberInArray', () => {
 
 describe('toggleNumberInArray', () => {
   it('toggle number in array', ()=>{
-    let arr: any = []
-    let item = 1
-    let item1 = 2
+    const arr: any = []
+    const item = 1
+    const item1 = 2
     toggleNumberInArray(arr, item)
     expect(arr).toStrictEqual([item])
     toggleNumberInArray(arr, item)

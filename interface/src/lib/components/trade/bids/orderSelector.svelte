@@ -1,6 +1,4 @@
 <script lang="ts">
-  import clsx from "clsx";
-  import { _ } from "svelte-i18n";
   import { orderType, orderTypeDialog } from "$lib/stores/trade";
   import OrderTypeSelector from "$lib/components/dialogs/orderTypeSelector.svelte";
 </script>

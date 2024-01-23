@@ -1,30 +1,33 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import {
-    findChainIcon,
-    itemInArray,
-    toggleItemInArray,
-  } from "$lib/helpers/utils";
-  import mixinChains from "$lib/constants/mixinChains.json";
-  import {
-    createAIAssets,
-    createAISelectAssetSearch,
-  } from "$lib/stores/grow";
-  import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import { findChainIcon } from "$lib/helpers/utils";
+  import { createMMSelectPairEasySearch } from "$lib/stores/grow";
+  import PairIcon from "$lib/components/common/pairIcon.svelte";
 
-  let assets = mixinChains.map(item => ({ ...item, selected: false }))
-  $: placeholders =  $createAISelectAssetSearch ? 
-    assets.filter((item) => {
-      return (
-        item.name.toUpperCase().match($createAISelectAssetSearch.toUpperCase()) ||
-        item.symbol.toUpperCase().match($createAISelectAssetSearch.toUpperCase())
-      );
-  }) : assets;
+  const placeholder = [
+    { base: 'BTC', target: 'USDT', exchange: 'binance', exchangeIcon: 'icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png'},
+    { base: 'ETH', target: 'USDT', exchange: 'binance'},
+    { base: 'SOL', target: 'USDT', exchange: 'binance'},
+    { base: 'ADA', target: 'USDT', exchange: 'binance'},
+    { base: 'XRP', target: 'USDT', exchange: 'binance'},
+  ]
+  let assets = placeholder.map((item) => ({ ...item, selected: false }));
+  $: placeholders = $createMMSelectPairEasySearch
+    ? assets.filter((item) => {
+        return (
+          // item.name
+          //   .toUpperCase()
+          //   .match($createMMSelectPairEasySearch.toUpperCase()) ||
+          // item.symbol
+          //   .toUpperCase()
+          //   .match($createMMSelectPairEasySearch.toUpperCase())
+          item
+        );
+      })
+    : assets;
 
-  const toggleHighlight = async (item: object, index: number) => {
-    toggleItemInArray($createAIAssets, "chain_id", item);
-  };
+  const toggleHighlight = async (item: object, index: number) => {};
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -47,7 +50,7 @@
       >
     </div>
     <input
-      bind:value={$createAISelectAssetSearch}
+      bind:value={$createMMSelectPairEasySearch}
       class="input input-md h-[2.5rem] w-full pl-2 focus:outline-none focus:border-0 rounded-full bg-base-200 join-item"
       placeholder={$_("search")}
     />
@@ -59,14 +62,14 @@
       <button
         class={clsx(
           "flex just items-center justify-center space-x-1 mx-1 my-2 p-2 bg-base-100 border border-base-300 shadow-sm rounded-xl text-start",
-          itemInArray($createAIAssets, 'chain_id', item) ? 'border-primary' : '',
+          false ? "border-primary" : "",
         )}
         on:click={() => {
           toggleHighlight(item, i);
-          item.selected = !item.selected
+          item.selected = !item.selected;
         }}
       >
-        <AssetIcon
+        <PairIcon
           assetIcon={item.icon_url}
           chainIcon={findChainIcon(item.chain_id)}
           clazz="w-5 h-5"

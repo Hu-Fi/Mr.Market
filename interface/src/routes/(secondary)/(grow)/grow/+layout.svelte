@@ -1,6 +1,5 @@
 <script>
   import clsx from "clsx";
-  import Actions from "$lib/components/grow/marketMaking/actions.svelte";
   import GrowDetails from "$lib/components/topBar/growDetails.svelte";
 </script>
 

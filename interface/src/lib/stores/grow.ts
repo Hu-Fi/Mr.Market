@@ -1,30 +1,33 @@
 import { writable } from "svelte/store";
 
 // 0 easy, 1 advanced
-export let easyAdvancedMode = writable(0)
+export const easyAdvancedMode = writable(0)
 
 // MarketMaking
-export let mmCoin0 = writable()
-export let mmCoin1 = writable()
-export let mmCoinSelector = writable(false)
+export const mmCoin0 = writable()
+export const mmCoin1 = writable()
 // 0 asset, 1 amount
-export let mmEasyStep = writable(0)
+export const mmEasyStep = writable(0)
 
 // Arbitrage
-export let arbEasyStep = writable(0)
+export const arbEasyStep = writable(0)
 
-export let addMoreDialog = writable(false)
+export const addMoreDialog = writable(false)
+
+// Create new market making
+export const createMMEasyPair = writable()
+export const createMMSelectPairEasySearch = writable('')
 
 // Create new auto invest
-export let createAISelectAssetSearch = writable("")
+export const createAISelectAssetSearch = writable("")
 // 0 = select asset, 1 == amount and period, 2 == name and auto
-export let createAIStep = writable(0)
-export let createAIAssets = writable([])
-export let createAIAmounts = writable([])
+export const createAIStep = writable(0)
+export const createAIAssets = writable([])
+export const createAIAmounts = writable([])
 // from 60 minutes to 12 months, base: 1 hour, default: 24 hour
-export let createAIPeriod = writable(24)
-export let createAIName = writable('')
-export let createAIFiat = writable('USDT')
-export let createAIAutoPay = writable(true)
-export let createAIPeriodDialog = writable(false)
-export let createAISelectUnitDialog = writable(false)
+export const createAIPeriod = writable(24)
+export const createAIName = writable('')
+export const createAIFiat = writable('USDT')
+export const createAIAutoPay = writable(true)
+export const createAIPeriodDialog = writable(false)
+export const createAISelectUnitDialog = writable(false)

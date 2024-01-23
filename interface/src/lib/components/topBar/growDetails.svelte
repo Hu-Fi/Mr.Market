@@ -16,11 +16,10 @@
     }
   }
   $: pageName = $page.url.pathname.includes('arbitrage/intro') ?  $_('about_arbitrage') :
-                $page.url.pathname.includes('arbitrage/new') ?  $_('create_arbitrage') :
                 $page.url.pathname.includes('arbitrage') ?  $_('arbitrage') :
                 $page.url.pathname.includes('market_making/intro') ? $_('about_market_making') :
-                $page.url.pathname.includes('market_making/new') ? $_('create_market_making') :
                 $page.url.pathname.includes('market_making') ? $_('market_making') :
+                $page.url.pathname.includes('auto_invest/intro') ? $_('about_auto_invest') :
                 $page.url.pathname.includes('auto_invest') ? $_('auto_invest') : ''
 </script>
 
