@@ -22,21 +22,24 @@ test('bottom navigation', async ({ page, context }) => {
 })
 
 test('search', async ({ page, context }) => {
+  // Click on search bar
   await page.getByRole('button', { name: 'Search' }).click();
-  await page.getByPlaceholder('Search').fill('btc');
-  await page.getByRole('button', { name: 'btc' }).first().click();
-  await expect(page.getByText('btc', { exact: true })).toHaveText('btc');
-  await page.getByRole('banner').getByRole('button').first().click();
 
-  await page.getByPlaceholder('Search').fill('usdc');
-  await page.getByRole('button', { name: 'usdc' }).first().click();
-  await expect(page.getByText('usdc', { exact: true })).toHaveText('usdc');
-  await page.getByRole('banner').getByRole('button').first().click();
-
-  await page.getByPlaceholder('Search').fill('usdt');
-  await page.getByRole('button', { name: 'usdt' }).first().click();
-  await expect(page.getByText('usdt', { exact: true })).toHaveText('usdt');
-  await page.getByRole('banner').getByRole('button').first().click();
+  const symbols = ['btc', 'eth', 'usdc', 'usdt', 'xrp', 'sol']
+  for (let i=0; i<symbols.length; i++) {
+    // Fill text
+    await page.getByPlaceholder('Search').fill(symbols[i]);
+    // Wait
+    await page.waitForTimeout(1000);
+    // Click on result
+    await page.getByRole('button', { name: symbols[i] }).first().click();
+    // Wait page change
+    await page.waitForURL('**/market/coin/**');
+    // Check result
+    await expect(page.getByText(symbols[i], { exact: true })).toHaveText(symbols[i]);
+    // Back
+    await page.getByRole('banner').getByRole('button').first().click();
+  }
 })
 
 test('search history', async ({ page, context}) => {
@@ -72,28 +75,36 @@ test('app shortcuts', async ({ page, context }) => {
   await page.locator('div:nth-child(4) > .btn').click();
   await page.waitForURL('**/grow/arbitrage');
   await page.getByRole('button').first().click();
+  await page.getByRole('button', { name: 'Home' }).click();
 
   await page.locator('div:nth-child(5) > .btn').click();
   await page.waitForURL('**/home/more');
   await page.getByRole('banner').getByRole('button').first().click();
 })
 
-test('more apps', async ({ page, context }) => {
+test('more apps', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', 'Firefox bug: https://github.com/microsoft/playwright/issues/20749');
   await page.locator('div:nth-child(5) > .btn').click();
   await page.waitForURL('**/home/more');
 
   await page.locator('.btn').first().click();
   await page.locator('div:nth-child(2) > .btn').first().click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(2) > .grid > div > .btn').first().click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(2) > .grid > div:nth-child(2) > .btn').click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(3) > .btn').click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(3) > .grid > div > .btn').first().click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(3) > .grid > div:nth-child(2) > .btn').click();
+  await page.waitForLoadState()
   await page.goto('/home/more');
   await page.locator('div:nth-child(4) > .grid > div > .btn').first().click();
   const page2Promise = page.waitForEvent('popup');

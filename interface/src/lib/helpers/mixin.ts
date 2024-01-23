@@ -166,25 +166,22 @@ const getUserBalances = async (user_id: string, token: string) => {
   return { balances, totalUSDBalance, totalBTCBalance}
 }
 
-export const getAssetUTXOs = async (asset_id: string, token: string) => {
-  const u = get(user)
-  if (!u) { return [] }
-  if (!u.user_id) { return [] }
-  const outputs = await mixinSafeAllOutputs([user_id], token)
-  // console.log('outputs:',outputs)
-}
-
 export const AfterMixinOauth = async (token: string) => {
   const data = await mixinUserMe(token)
-  user.set(data)
-  
-  localStorage.setItem("mixin-oauth", JSON.stringify(token))
+  if (!data) {
+    console.log('!UserMe, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  if (data.full_name === '') {
+    console.log('!UserMeError, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  user.set(data)  
   mixinConnected.set(true)
-  await getUserBalances(data.user_id, token)
-
-  // console.log('AfterMixinOauth data:', data)
-  // console.log('AfterMixinOauth token:', token)
-  // console.log(data)
+  localStorage.setItem("mixin-oauth", JSON.stringify(token))
+  getUserBalances(data.user_id, token)
 }
 
 export const MixinDisconnect = () => {

@@ -3,14 +3,16 @@
 	import "../app.css";
 	import { Toaster } from "svelte-french-toast";
 	import { initi18n as i18n } from "../i18n/i18n";
-	import { autoConnectMixin } from "$lib/stores/wallet";
+	import { autoConnectMixin, checkMixinTokenExist } from "$lib/stores/wallet";
 	import Loading from "$lib/components/home/loading.svelte";
 	import { detectSystemDark, theme } from "$lib/stores/theme";
 
 	const init = async () => {
 		await i18n();
-		autoConnectMixin();
 		detectSystemDark();
+		if (checkMixinTokenExist()) {
+			await autoConnectMixin();
+		}
 	};
 
 </script>
