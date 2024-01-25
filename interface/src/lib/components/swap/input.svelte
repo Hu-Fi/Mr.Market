@@ -12,7 +12,7 @@
   <!-- Text and balance/account selector -->
   <div class="flex items-center justify-between my-1">
     <span class="text-xs"> {$_("from")} </span>
-    <button class={clsx("flex items-center space-x-1")} on:click={()=>console.log(1)}>
+    <button class={clsx("flex items-center space-x-1")} on:click={()=>{InputAssetDialog.set(true)}}>
       <span class="text-xs !text-[10px] opacity-60">
         {`${$_("trading")}: ${10} ${"BTC"}`}
       </span>

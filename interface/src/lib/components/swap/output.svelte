@@ -12,7 +12,7 @@
   <!-- Text and balance/account selector -->
   <div class="flex items-center justify-between my-1">
     <span class="text-xs"> {$_("to")} </span>
-    <button class={clsx("flex items-center space-x-1")} on:click={()=>console.log(1)}>
+    <button class={clsx("flex items-center space-x-1")} on:click={()=>{OutputAssetDialog.set(true)}}>
       <span class="text-xs !text-[10px] opacity-60">
         {`${$_("trading")}: ${10} ${"BTC"}`}
       </span>
@@ -88,13 +88,8 @@
     />
   </div>
 
-  <!-- Max -->
-  <div class="flex items-center justify-between mb-2">
-    <button class={clsx("flex items-center border rounded-2xl")}>
-      <span class="text-[10px] mx-2 my-0.5 capitalize">
-        {$_('max')}
-      </span>
-    </button>
+  <!-- USD value -->
+  <div class="flex items-center justify-end mb-2">
     
     {#if $Output}
       <span class={clsx("text-[10px] mx-2 my-0.5 capitalize opacity-60")}>

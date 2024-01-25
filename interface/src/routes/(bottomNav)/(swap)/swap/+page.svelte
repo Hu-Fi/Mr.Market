@@ -5,6 +5,8 @@
   import Confirm from "$lib/components/swap/confirm.svelte";
   import InputAssetDialog from "$lib/components/dialogs/swap/inputAsset.svelte";
   import OutputAssetDialog from "$lib/components/dialogs/swap/outputAsset.svelte";
+  import InputBalanceDialog from "$lib/components/dialogs/swap/inputBalance.svelte";
+  import OutputBalanceDialog from "$lib/components/dialogs/swap/outputBalance.svelte";
 </script>
 
 <div class="flex flex-col mt-4 -space-y-2">
@@ -16,3 +18,5 @@
 
 <InputAssetDialog />
 <OutputAssetDialog />
+<InputBalanceDialog />
+<OutputBalanceDialog />
