@@ -73,7 +73,7 @@
 
       <!-- Button -->
       <div class="w-full py-4 mb-4">
-        <button class={clsx("btn btn-md w-full rounded-full bg-gradient-to-r no-animation", "from-sky-500 to-blue-500")} on:click={confirmPayment}>
+        <button class={clsx("btn btn-md w-full rounded-full bg-base-content hover:bg-base-content focus:bg-base-content no-animation")} on:click={confirmPayment}>
           <span class={clsx("text-base-100 font-semibold", loading && "loading loading-spinner")}> {$_('confirm_order')}</span>
         </button>
       </div>

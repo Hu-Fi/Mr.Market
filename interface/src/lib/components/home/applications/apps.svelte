@@ -1,19 +1,18 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import AppIcon from "./appIcon.svelte";
   import { goto } from "$app/navigation";
-  import { bottomMode } from "$lib/stores/trade";
-    import AppIcon from "./appIcon.svelte";
 
   const bt = [
-    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/trade'); bottomMode.set(0)}},
-    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade'); bottomMode.set(1)}},
+    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/trade');}},
+    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade');}},
     {name: $_("grow"), icon: "earn", fn: ()=>{goto('/grow')}},
     {name: $_("arbitrage"), icon: "arbitrage", fn: ()=>{goto('/grow/arbitrage')}},
     {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},
 
     // Enable in v2
-    // {name: $_("invite"), icon: "invite", fn: ()=>{goto('/trade'); bottomMode.set(0)}},
-    // {name: $_("loan"), icon: "loan", fn: ()=>{goto('/trade'); bottomMode.set(1)}},
+    // {name: $_("invite"), icon: "invite", fn: ()=>{goto('/trade');}},
+    // {name: $_("loan"), icon: "loan", fn: ()=>{goto('/trade');}},
     // {name: $_("trading_account"), icon: "trading_account", fn: ()=>{goto('/grow')}},
     // {name: $_("future"), icon: "future", fn: ()=>{goto('/grow/arbitrage')}},
     // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/home/more')}},

@@ -2,15 +2,14 @@
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-  import { bottomMode } from "$lib/stores/trade";
 	import { HUMAN_PROTOCOL_GROUP_URL } from '$lib/helpers/constants';
   import AppSection from "$lib/components/home/applications/appSection.svelte";
 
   const tradingApps = [
-    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/trade'); bottomMode.set(0)}},
-    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade'); bottomMode.set(1)}},
-    // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/trade'); bottomMode.set(2)}},
-    // {name: $_("future"), icon: "future", fn: ()=>{goto('/trade'); bottomMode.set(3)}},
+    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/trade');}},
+    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade');}},
+    // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/trade');}},
+    // {name: $_("future"), icon: "future", fn: ()=>{goto('/trade');}},
   ]
   const earnApps = [
     {name: $_("earn"), icon: "earn", fn: ()=>{goto('/grow')}},

@@ -2,8 +2,7 @@ import { writable } from "svelte/store";
 import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
 
 export const bottomTradeDialog = writable(false)
-// 0 swap, 1 spot, 2 leverage, 3 perp, 4 market making
-export const bottomMode = writable(1)
+export const bottomModeLastRoute = writable('')
 
 export const pair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", exchange: "binance"})
 export const pairSearch = writable("")
