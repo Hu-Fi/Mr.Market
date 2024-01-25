@@ -13,7 +13,7 @@
     // Enable in v2
     // {name: $_("invite"), icon: "invite", fn: ()=>{goto('/trade');}},
     // {name: $_("loan"), icon: "loan", fn: ()=>{goto('/trade');}},
-    // {name: $_("trading_account"), icon: "trading_account", fn: ()=>{goto('/grow')}},
+    // {name: $_("trade.acc"), icon: "trading_account", fn: ()=>{goto('/grow')}},
     // {name: $_("future"), icon: "future", fn: ()=>{goto('/grow/arbitrage')}},
     // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/home/more')}},
     // {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},
