@@ -5,7 +5,7 @@
   import { cleave } from "svelte-cleavejs";
   import { findChainIcon } from "$lib/helpers/utils";
   import { maskOption } from "$lib/helpers/constants";
-  import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import { createAIAmounts,createAIName, createAIAssets, createAIPeriodDialog, createAISelectUnitDialog, createAIAutoPay, createAIFiat, createAIPeriod } from "$lib/stores/grow";
 
   const getPeriodByNumber = (n: number) => {

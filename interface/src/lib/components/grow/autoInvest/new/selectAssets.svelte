@@ -11,7 +11,7 @@
     createAIAssets,
     createAISelectAssetSearch,
   } from "$lib/stores/grow";
-  import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
   let assets = mixinChains.map(item => ({ ...item, selected: false }))
   $: placeholders =  $createAISelectAssetSearch ? 

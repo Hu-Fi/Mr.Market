@@ -118,7 +118,7 @@ export const findChainIcon = (chainId: string) => {
       return mixinChains[i].icon_url;
     }
   }
-  return mixinChains[0].icon_url;
+  return '';
 }
 
 export const daysBetweenToday = (d1: string) => {

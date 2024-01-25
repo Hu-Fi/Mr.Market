@@ -3,8 +3,8 @@
   import { _ } from "svelte-i18n"
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import { darkTheme } from "$lib/stores/theme";
   import { bottomTradeDialog } from "$lib/stores/trade";
-    import { darkTheme, theme } from "$lib/stores/theme";
   
   $: active = $page.url.pathname.includes('/home') ? 0 : 
     $page.url.pathname.includes('/market') ? 1 : 

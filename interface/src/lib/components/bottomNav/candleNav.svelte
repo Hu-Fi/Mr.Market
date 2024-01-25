@@ -1,9 +1,8 @@
 <script lang="ts">
-  import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-    import { pair } from "$lib/stores/trade";
-    import { CandlePair } from "$lib/stores/market";
+  import { pair } from "$lib/stores/trade";
+  import { CandlePair } from "$lib/stores/market";
 
   $: utils = [
     // {icon: 'futures', route: '/home', title: $_('futures')},
@@ -20,7 +19,7 @@
     </button>
 
     <div class="flex flex-row items-center space-x-6">
-      {#each utils as u, i}
+      {#each utils as u}
         <button class="flex flex-col justify-center items-center">
           <!-- Icon -->
           <div>

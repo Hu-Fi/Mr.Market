@@ -33,7 +33,7 @@
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
-  import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import { assetDetailAsset, assetDetailDialog } from "$lib/stores/wallet"
   import { BN, BN2, findChainIcon, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
 

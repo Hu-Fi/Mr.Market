@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import AssetIcon from "$lib/components/wallet/asset/assetIcon.svelte";
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import {
     BN2,
     findChainIcon,

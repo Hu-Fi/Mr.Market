@@ -5,6 +5,8 @@ import lbank from "$lib/images/exchanges/lbank.png"
 import mixinIcons from "$lib/constants/mixinIcons.json"
 import emptyToken from "$lib/images/empty-token.svg"
 
+export const EXCHANGES = ['binance', 'okx', 'gate', 'lbank']
+
 // Input identifier from coingecko /coin/:id
 export const findExchangeIconByIdentifier = (identifier: string) => {
   switch(identifier.toUpperCase()) {

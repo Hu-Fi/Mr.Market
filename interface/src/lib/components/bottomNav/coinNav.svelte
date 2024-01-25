@@ -1,7 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-  import { pair } from "$lib/stores/trade";
   import { currentCoin } from "$lib/stores/market";
 </script>
 

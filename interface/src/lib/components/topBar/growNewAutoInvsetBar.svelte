@@ -1,16 +1,16 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
   import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
   import MixinMenu from "../common/MixinMenu.svelte";
-    import { goto } from "$app/navigation";
 
   const back = () => {
-    if ($page.url.pathname.includes('/grow/auto_invest/new/one')) {
-      goto('/grow/auto_invest/')
-      return;
-    }
     if ($page.url.pathname.includes('/grow/auto_invest/new/two')) {
       goto('/grow/auto_invest/new/one')
+      return;
+    }
+    if ($page.url.pathname.includes('/grow/auto_invest/new/one')) {
+      goto('/grow/auto_invest/')
       return;
     }
   }

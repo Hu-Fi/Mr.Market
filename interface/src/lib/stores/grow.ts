@@ -16,6 +16,8 @@ export const addMoreDialog = writable(false)
 
 // Create new market making
 export const createMMEasyPair = writable()
+export const createMMEasyAmounts = writable([])
+export const createMMSelectPairEasyFilter = writable('')
 export const createMMSelectPairEasySearch = writable('')
 
 // Create new auto invest
