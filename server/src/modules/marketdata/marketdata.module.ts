@@ -6,6 +6,6 @@ import { MarketDataGateway } from './marketdata.gateway';
 @Module({
   controllers:[MarketDataController],
   providers: [MarketDataGateway,MarketdataService],
-  exports: [MarketdataService]
+  exports: [MarketdataService,MarketDataGateway]
 })
 export class MarketdataModule {}

@@ -48,10 +48,15 @@ export class MarketdataService {
                 onData(orderBook);
             } catch (error) {
                 this.logger.error(`Error watching order book for ${symbol} on ${exchangeName}: ${error.message}`);
-                await new Promise(resolve => setTimeout(resolve, 900));  // Reconnect after a delay
+                await new Promise(resolve => setTimeout(resolve, 1000));  // Reconnect after a delay
             }
         }
     }
+
+    isSubscribed(exchangeName: string, symbol: string): boolean {
+      const subscriptionKey = `${exchangeName}:${symbol}`;
+      return this.activeSubscriptions.has(subscriptionKey);
+  }
 
     unsubscribeOrderBook(exchangeName: string, symbol: string): void {
         const subscriptionKey = `${exchangeName}:${symbol}`;
