@@ -27,6 +27,14 @@ export class StrategyService {
         this.exchanges.set('binance', new ccxt.pro.binance({apiKey:process.env.BINANCE_API_KEY,secret:process.env.BINANCE_SECRET}))
     }
 
+    async getSupportedExchanges(): Promise<string[]> {
+        const supportedExchanges: string[] = [];
+        this.exchanges.forEach((_, exchangeName) => {
+            supportedExchanges.push(exchangeName);
+        });
+        return supportedExchanges;
+    }
+
     async startArbitrageStrategyForUser(strategyParamsDto: StrategyDto) {
       const { userId, clientId, pair, minProfitability, exchangeAName, exchangeBName } = strategyParamsDto;
       const strategyKey = `${userId}-${clientId}`;

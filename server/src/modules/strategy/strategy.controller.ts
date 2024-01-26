@@ -31,4 +31,14 @@ export class StrategyController {
   ) {
     return this.strategyService.stopArbitrageStrategyForUser(userId, clientId);
   }
+
+  @Get('/supported-exchanges')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get list of supported exchanges' })
+  @ApiResponse({ status: 200, description: 'List of supported exchanges.' })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getSupportedExchanges() {
+    return this.strategyService.getSupportedExchanges();
+  }
+  
 }
