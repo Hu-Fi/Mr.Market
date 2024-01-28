@@ -13,7 +13,7 @@ test('bottom navigation', async ({ page, context }) => {
   await page.waitForURL('**/home');
   await page.getByRole('button', { name: 'Market' }).click();
   await page.waitForURL('**/market');
-  await page.getByRole('button', { name: 'Trade' }).click();
+  await page.getByRole('button', { name: 'Trade' }).getByRole('button').click();
   await page.waitForURL('**/trade');
   await page.getByRole('button', { name: 'Grow' }).click();
   await page.waitForURL('**/grow');
