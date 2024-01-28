@@ -1,6 +1,6 @@
 # Mr.market interface
 
-![Vercel](https://vercelbadge.vercel.app/api/hufi/interface)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
 
 https://hufiui.vercel.app
 
