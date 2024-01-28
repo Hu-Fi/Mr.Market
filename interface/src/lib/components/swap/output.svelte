@@ -5,7 +5,7 @@
   import { darkTheme } from "$lib/stores/theme";
   import { formatUSMoney } from "$lib/helpers/utils";
   import { maskOption } from "$lib/helpers/constants";
-  import { Output, OutputAssetDialog } from "$lib/stores/swap";
+  import { Output, OutputAssetDialog, OutputAsset } from "$lib/stores/swap";
 </script>
 
 <div class={clsx("flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl", $darkTheme ?  "bg-gray-800" : "bg-gray-50")}>
@@ -14,7 +14,7 @@
     <span class="text-xs"> {$_("to")} </span>
     <button class={clsx("flex items-center space-x-1")} on:click={()=>{OutputAssetDialog.set(true)}}>
       <span class="text-xs !text-[10px] opacity-60">
-        {`${$_("trading")}: ${10} ${"BTC"}`}
+        {`${$_("trading")}: ${10} ${$OutputAsset.symbol}`}
       </span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -41,10 +41,10 @@
     >
       <img
         alt=""
-        src={"https://mixin-images.zeromesh.net/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128"}
+        src={$OutputAsset.icon_url}
         class="w-6 h-6"
       />
-      <span class="font-semibold"> {"BTC"} </span>
+      <span class="font-semibold"> {$OutputAsset.symbol} </span>
       <div class="w-4">
         {#if !$OutputAssetDialog}
           <!-- Caret down Icon -->
@@ -90,10 +90,13 @@
 
   <!-- USD value -->
   <div class="flex items-center justify-end mb-2">
-    
     {#if $Output}
       <span class={clsx("text-[10px] mx-2 my-0.5 capitalize opacity-60")}>
         {formatUSMoney(123*$Output)}
+      </span>
+    {:else}
+      <span class="text-[10px] my-0.5 invisible">
+        -
       </span>
     {/if}
   </div>
