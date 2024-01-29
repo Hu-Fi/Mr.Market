@@ -1,0 +1,25 @@
+name: Runs All Unit Tests
+
+on:
+  push:
+    branches: [ main, master, unit-testing ]
+  pull_request:
+    branches: [ main, master, unit-testing ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ./interface
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Execute Unit tests
+        run: npm run test:unit
