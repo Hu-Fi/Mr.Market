@@ -5,7 +5,7 @@ test.use({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('https://hufiui.vercel.app/home');
+  await page.goto('http://127.0.0.1:5173/home');
 })
 
 const EXPECT_TIME = 1000  // 1000 ms
