@@ -8,7 +8,7 @@
   import { Input, InputAssetDialog, InputAsset } from "$lib/stores/swap";
 </script>
 
-<div class={clsx("flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl", $darkTheme ?  "bg-gray-800" : "bg-gray-50")}>
+<div class={clsx("flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl", $darkTheme ?  "bg-gray-800" : "bg-stone-100")}>
   <!-- Text and balance/account selector -->
   <div class="flex items-center justify-between my-1">
     <span class="text-xs"> {$_("from")} </span>
@@ -36,7 +36,7 @@
   <!-- Asset selector and amount input -->
   <div class="flex items-center">
     <button
-      class={clsx("btn !h-[2.5rem] !min-h-[2.5rem] flex items-center rounded-full border-none shadow-none no-animation px-0", $darkTheme ? "bg-gray-800 hover:bg-gray-800" : "bg-gray-50 hover:bg-gray-50")}
+      class={clsx("btn !h-[2.5rem] !min-h-[2.5rem] flex items-center rounded-full border-none shadow-none no-animation px-0", $darkTheme ? "bg-gray-800 hover:bg-gray-800" : "bg-stone-100 hover:bg-stone-100")}
       on:click={() => InputAssetDialog.set(!$InputAssetDialog)}
     >
       <img
@@ -83,7 +83,7 @@
       class={clsx(
         "px-2 pr-0", "w-full",
         "input focus:outline-none text-2xl font-bold text-right",
-        $darkTheme ? "bg-gray-800 focus:border-gray-800" : "bg-gray-50 focus:border-gray-50"
+        $darkTheme ? "bg-gray-800 focus:border-gray-800" : "bg-stone-100 focus:border-stone-100"
       )}
     />
   </div>
