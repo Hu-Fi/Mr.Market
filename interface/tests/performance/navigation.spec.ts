@@ -66,7 +66,7 @@ test('trade navigation', async ({ page, context }) => {
     let time2 = new Date().getTime();
     await page.getByTestId('bottom-nav-trade').click();
     await page.waitForURL('**/trade');
-    await page.getByTestId('bottom-nav-market').nth(3).click();
+    await page.getByTestId('bottom-nav-market').click();
     await page.waitForURL('**/market');
 
     let time3 = new Date().getTime();
