@@ -40,13 +40,11 @@
       goto(route);
     }
   }
-
-
 </script>
 
 <div class={clsx("btm-nav btm-nav-xs h-[3.25rem] visible bg-base-100 shadow-[0_-1px_1px_black]", $darkTheme ? "shadow-zinc-800":"shadow-zinc-100")}>
   {#each routes as route, i}
-    <button class={clsx("flex flex-col justify-start")} on:click={()=>routing(route.route)}>
+    <button class={clsx("flex flex-col justify-start")} on:click={()=>routing(route.route)} data-testid={`bottom-nav-${route.icon}`}>
       <div class={clsx(active === i ? 'opacity-100 text-base-content' : i===2 ? '' : 'opacity-40', "mt-2")}>
         {#if route.icon === 'trade'}
           <!-- Trade -->
