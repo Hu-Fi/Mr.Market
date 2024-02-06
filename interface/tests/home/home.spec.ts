@@ -91,21 +91,27 @@ test('more apps', async ({ page, browserName }) => {
   await page.getByTestId('more-app-spot').click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-earn').first().click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-arbitrage').click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-market_making').click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-coins').click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-candle_stick').click();
   await page.waitForLoadState()
   await page.goto('/home/more');
+  await page.waitForURL('**/home/more');
   await page.getByTestId('more-app-question').click();
   const page2Promise = page.waitForEvent('popup');
   await page.getByTestId('more-app-community').click();
