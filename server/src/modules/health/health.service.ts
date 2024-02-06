@@ -5,12 +5,12 @@ type HEALTH_STATE = 'alive' | 'dead'
 
 @Injectable()
 export class HealthService {
-  private exchange: ccxt.Exchange;
   private exchanges = new Map<string, ccxt.Exchange>();
   private readonly logger = new Logger(HealthService.name);
 
   constructor(
   ) {
+    // Enable this with api keys in .env
     // this.checkApiKeys()
     this.initializeExchange();
   }

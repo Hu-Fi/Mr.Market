@@ -8,7 +8,9 @@
 
 <div class={clsx("relative", clazz)}>
   <img src={assetIcon} alt="-" />
-  <div class={clsx("absolute bottom-0 left-0.5 rounded-full border border-base-100", claxx)}>
-    <img src={chainIcon} alt="-" />
-  </div>
+  {#if chainIcon}
+    <div class={clsx("absolute bottom-0 left-0.5 rounded-full border border-base-100", claxx)}>
+      <img src={chainIcon} alt="-" />
+    </div>
+  {/if}
 </div>
