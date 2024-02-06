@@ -69,8 +69,8 @@
   ];
 </script>
 
-{#if placeholder.length === 0}
-  <div class="border-t">
+{#if placeholder.length != 0}
+  <div class="">
     <Create />
   </div>
 {:else}

@@ -22,9 +22,9 @@ export class StrategyService {
 
     private async initializeExchanges() {
         // Initialize exchanges
-        this.exchanges.set('bitfinex',new ccxt.pro.bitfinex({ apiKey: process.env.BITFINEX_API_KEY, secret: process.env.BITFINEX_SECRET}));
+        this.exchanges.set('bitfinex', new ccxt.pro.bitfinex({ apiKey: process.env.BITFINEX_API_KEY, secret: process.env.BITFINEX_SECRET }));
         this.exchanges.set('mexc', new ccxt.pro.mexc({ apiKey: process.env.MEXC_API_KEY, secret: process.env.MEXC_SECRET }));
-        this.exchanges.set('binance', new ccxt.pro.binance({apiKey:process.env.BINANCE_API_KEY,secret:process.env.BINANCE_SECRET}))
+        this.exchanges.set('binance', new ccxt.pro.binance({ apiKey: process.env.BINANCE_API_KEY, secret: process.env.BINANCE_SECRET }))
     }
 
     async getSupportedExchanges(): Promise<string[]> {
@@ -36,34 +36,34 @@ export class StrategyService {
     }
 
     async startArbitrageStrategyForUser(strategyParamsDto: StrategyDto) {
-      const { userId, clientId, pair, minProfitability, exchangeAName, exchangeBName } = strategyParamsDto;
-      const strategyKey = `${userId}-${clientId}`;
-      let exchangeA: ccxt.Exchange;
-      let exchangeB: ccxt.Exchange;
-      exchangeA = this.exchanges.get(exchangeAName);
-      exchangeB = this.exchanges.get(exchangeBName);
+        const { userId, clientId, pair, minProfitability, exchangeAName, exchangeBName } = strategyParamsDto;
+        const strategyKey = `${userId}-${clientId}`;
+        let exchangeA: ccxt.Exchange;
+        let exchangeB: ccxt.Exchange;
+        exchangeA = this.exchanges.get(exchangeAName);
+        exchangeB = this.exchanges.get(exchangeBName);
 
-      if (!exchangeA || !exchangeB) {
-          this.logger.error(`Exchanges ${exchangeAName} or ${exchangeBName} are not configured.`);
-          throw new InternalServerErrorException('Exchange configuration error.');
-      }
-        
+        if (!exchangeA || !exchangeB) {
+            this.logger.error(`Exchanges ${exchangeAName} or ${exchangeBName} are not configured.`);
+            throw new InternalServerErrorException('Exchange configuration error.');
+        }
+
         if (this.strategyInstances.has(strategyKey)) {
             this.logger.log(`Strategy already running for user ${userId} and client ${clientId}`);
             return;
         }
 
         this.logger.log(`Starting arbitrage strategy for user ${userId}, client ${clientId}`);
-                // Add the pair to active watches for this strategy
+        // Add the pair to active watches for this strategy
         const watchSet = this.activeOrderBookWatches.get(strategyKey) || new Set();
         watchSet.add(pair);
         this.activeOrderBookWatches.set(strategyKey, watchSet);
-        
+
         this.watchSymbols(exchangeA, exchangeB, pair, strategyKey);
-        
+
 
         const intervalId = setInterval(() => {
-            this.evaluateArbitrageOpportunityVWAP(exchangeA,exchangeB, userId, clientId, pair, strategyParamsDto.amountToTrade, minProfitability);
+            this.evaluateArbitrageOpportunityVWAP(exchangeA, exchangeB, userId, clientId, pair, strategyParamsDto.amountToTrade, minProfitability);
         }, 1000); // Run every 1 seconds
 
         this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
@@ -84,24 +84,24 @@ export class StrategyService {
     }
 
     private async watchSymbols(exchangeA, exchangeB, pair: string, strategyKey: string) {
-      this.watchOrderBook(exchangeA, pair, strategyKey);
-      this.watchOrderBook(exchangeB, pair, strategyKey);
-  }
+        this.watchOrderBook(exchangeA, pair, strategyKey);
+        this.watchOrderBook(exchangeB, pair, strategyKey);
+    }
 
-  private async watchOrderBook(exchange: ccxt.Exchange, symbol: string, strategyKey: string) {
-    while (this.activeOrderBookWatches.get(strategyKey)?.has(symbol)) {
-        try {
-            const newOrderbook = await exchange.watchOrderBook(symbol);
-            this.orderBookCache.set(symbol + '-' + exchange.id, { data: newOrderbook, timestamp: Date.now() });
-            // Notify strategies if needed
-        } catch (error) {
-            this.logger.error(`Error in watchOrderBook: ${error.message}`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+    private async watchOrderBook(exchange: ccxt.Exchange, symbol: string, strategyKey: string) {
+        while (this.activeOrderBookWatches.get(strategyKey)?.has(symbol)) {
+            try {
+                const newOrderbook = await exchange.watchOrderBook(symbol);
+                this.orderBookCache.set(symbol + '-' + exchange.id, { data: newOrderbook, timestamp: Date.now() });
+                // Notify strategies if needed
+            } catch (error) {
+                this.logger.error(`Error in watchOrderBook: ${error.message}`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
         }
     }
-}
 
-    private async evaluateArbitrageOpportunityVWAP(exchangeA, exchangeB,userId: string, clientId:string, symbol: string, amountToTrade: number, minProfitability: number) {
+    private async evaluateArbitrageOpportunityVWAP(exchangeA, exchangeB, userId: string, clientId: string, symbol: string, amountToTrade: number, minProfitability: number) {
         const cacheKeyA = symbol + '-' + exchangeA.id;
         const cacheKeyB = symbol + '-' + exchangeB.id;
         const cachedOrderBookA = this.orderBookCache.get(cacheKeyA);
@@ -152,7 +152,7 @@ export class StrategyService {
         this.strategyInstances.clear();
 
         this.activeOrderBookWatches.clear();
-        
+
         process.exit(0);
     }
 }

@@ -9,9 +9,10 @@
   import InputBalanceDialog from "$lib/components/dialogs/swap/inputBalance.svelte";
   import OutputBalanceDialog from "$lib/components/dialogs/swap/outputBalance.svelte";
   import SwapConfirmDialog from "$lib/components/dialogs/swap/swapConfirm.svelte";
+  import SupportedExchangesDialog from "$lib/components/dialogs/swap/supportedExchanges.svelte";
 </script>
 
-<div class="flex flex-col mt-4 -space-y-2">
+<div class="flex flex-col mt-8 -space-y-2.5">
   <Input />
   <Switch />
   <Output />
@@ -24,3 +25,4 @@
 <InputBalanceDialog />
 <OutputBalanceDialog />
 <SwapConfirmDialog />
+<SupportedExchangesDialog />

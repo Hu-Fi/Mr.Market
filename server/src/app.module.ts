@@ -7,6 +7,7 @@ import { TradeModule } from './modules/trade/trade.module';
 import { Transaction } from './common/entities/transaction.entity';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
+import { HealthModule } from './modules/health/health.module';
 
 dotenv.config();
 
@@ -24,7 +25,8 @@ dotenv.config();
     }),
     TradeModule,
     StrategyModule,
-    MarketdataModule
+    MarketdataModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

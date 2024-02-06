@@ -3,18 +3,19 @@
   import { _ } from "svelte-i18n";
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
-  import { formatUSMoney } from "$lib/helpers/utils";
   import { maskOption } from "$lib/helpers/constants";
-  import { Output, OutputAssetDialog, OutputAsset } from "$lib/stores/swap";
+  import { findChainIcon, formatUSMoney } from "$lib/helpers/utils";
+	import AssetIcon from '$lib/components/common/assetIcon.svelte';
+  import { Output, OutputAssetDialog, OutputAsset, OutputBalanceDialog, OutputBalanceAccount } from "$lib/stores/swap";
 </script>
 
 <div class={clsx("flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl", $darkTheme ?  "bg-gray-800" : "bg-stone-100")}>
   <!-- Text and balance/account selector -->
   <div class="flex items-center justify-between my-1">
     <span class="text-xs"> {$_("to")} </span>
-    <button class={clsx("flex items-center space-x-1")} on:click={()=>{OutputAssetDialog.set(true)}}>
+    <button class={clsx("flex items-center space-x-1")} on:click={()=>{OutputBalanceDialog.set(true)}} data-testid="to-account">
       <span class="text-xs !text-[10px] opacity-60">
-        {`${$_("trading")}: ${10} ${$OutputAsset.symbol}`}
+        {`${$OutputBalanceAccount.name}: ${$OutputBalanceAccount.balance} ${$OutputAsset.symbol}`}
       </span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -38,13 +39,15 @@
     <button
       class={clsx("btn !h-[2.5rem] !min-h-[2.5rem] flex items-center rounded-full border-none shadow-none no-animation px-0", $darkTheme ? "bg-gray-800 hover:bg-gray-800" : "bg-stone-100 hover:bg-stone-100")}
       on:click={() => OutputAssetDialog.set(!$OutputAssetDialog)}
+      data-testid="select-to-asset"
     >
-      <img
-        alt=""
-        src={$OutputAsset.icon_url}
-        class="w-6 h-6"
+      <AssetIcon
+        assetIcon={$OutputAsset.icon_url}
+        chainIcon={findChainIcon($OutputAsset.chain_id)}
+        clazz="w-6 h-6"
+        claxx="w-2 h-2"
       />
-      <span class="font-semibold"> {$OutputAsset.symbol} </span>
+      <span class="font-semibold" data-testid="to-asset-symbol"> {$OutputAsset.symbol} </span>
       <div class="w-4">
         {#if !$OutputAssetDialog}
           <!-- Caret down Icon -->
@@ -78,12 +81,14 @@
     
     <input
       type="tel"
+      data-testid="output-amount"
       use:cleave={maskOption}
       bind:value={$Output}
+      placeholder={'0.1-1000000'}
       class={clsx(
         "px-2 pr-0", "w-full",
         "input focus:outline-none text-2xl font-bold text-right",
-        $darkTheme ? "bg-gray-800 focus:border-gray-800" : "bg-stone-100 focus:border-stone-100"
+        $darkTheme ? "bg-gray-800 focus:border-none placeholder-stone-600" : "bg-stone-100 focus:border-stone-100 placeholder-stone-200"
       )}
     />
   </div>
