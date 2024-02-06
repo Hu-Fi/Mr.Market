@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { EXCHANGES, findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { SUPPORTED_EXCHANGES } from "$lib/helpers/constants";
   import { SupportedExchangesDialog } from "$lib/stores/swap";
 </script>
 
@@ -27,7 +28,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-6">
-          {#each EXCHANGES as e}
+          {#each SUPPORTED_EXCHANGES as e}
             <div class="flex space-x-3 items-center">
               <div class="avatar">
                 <div class="rounded-full w-8">
