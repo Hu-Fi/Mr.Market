@@ -8,6 +8,7 @@ import { Transaction } from './common/entities/transaction.entity';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { HealthModule } from './modules/health/health.module';
+import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ dotenv.config();
     TradeModule,
     StrategyModule,
     MarketdataModule,
+    CoingeckoModule,
     HealthModule,
   ],
   controllers: [AppController],

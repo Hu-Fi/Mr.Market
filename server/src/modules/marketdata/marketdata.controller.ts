@@ -29,6 +29,4 @@ export class MarketDataController {
     const symbolCap = symbol.toUpperCase();
     return this.marketDataService.getOHLCVData(exchange, symbolCap, timeframe, sinceNumber, limitNumber);
   }
-
-
 }

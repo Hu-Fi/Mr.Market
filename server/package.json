@@ -34,6 +34,7 @@
     "@nestjs/terminus": "^10.0.1",
     "@nestjs/typeorm": "^10.0.1",
     "@nestjs/websockets": "10.2.10",
+    "@nestjs/cache-manager": "^2.1.1",
     "@sendgrid/mail": "^7.7.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/express-session": "^1.17.7",
@@ -51,7 +52,9 @@
     "socket.io-client": "^4.7.4",
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.17",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "cache-manager": "^4.0.0",
+    "coingecko-api-v3": "^0.0.29"
   },
   "devDependencies": {
     "@golevelup/ts-jest": "^0.4.0",
