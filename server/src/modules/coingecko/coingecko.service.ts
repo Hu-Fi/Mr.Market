@@ -2,15 +2,13 @@
 import { Inject, Logger } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CoinFullInfo, CoinGeckoClient, CoinMarket, CoinMarketChartResponse } from 'coingecko-api-v3';
-import { CoingeckoController } from './coingecko.controller';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class CoingeckoProxyService {
-  private readonly logger = new Logger(CoingeckoController.name);
   private coingecko: CoinGeckoClient;
-  private cachingTTL: 30;
+  private cachingTTL: 30; // 30s
 
   // Using caching to avoid coingecko rate limit (30 calls/min)
   constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {
