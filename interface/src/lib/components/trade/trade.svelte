@@ -1,5 +1,6 @@
 <script lang="ts">
-  
+  import clsx from "clsx";
+  import { darkTheme } from "$lib/stores/theme";
   import { manageMode } from "$lib/stores/trade";
   import OrderConfirm from "$lib/components/dialogs/orderConfirm.svelte";
   import Button from "$lib/components/trade/bids/button.svelte";
@@ -11,8 +12,6 @@
   import Sub from "$lib/components/trade/manage/sub.svelte";
   import Tabs from "$lib/components/trade/manage/tabs.svelte";
   import OrderBook from "$lib/components/trade/order/orderBook.svelte";
-    import clsx from "clsx";
-    import { darkTheme } from "$lib/stores/theme";
 </script>
 
 <!-- Trading -->

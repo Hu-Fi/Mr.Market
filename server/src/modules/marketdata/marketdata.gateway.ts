@@ -7,7 +7,7 @@ import { MarketdataService } from './marketdata.service';
 import { Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-@WebSocketGateway(3012, { namespace: '/orderbookdata' })
+@WebSocketGateway(3012, { namespace: '/orderbookdata', cors: true })
 export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: SocketIOServer;
   private readonly logger = new Logger(MarketDataGateway.name);
