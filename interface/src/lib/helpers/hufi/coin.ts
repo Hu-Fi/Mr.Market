@@ -1,5 +1,6 @@
 // Hufi backend
 
+import { error } from "console";
 import { HUFI_BACKEND_URL } from "../constants";
 import { formatDecimals } from "../utils";
 
@@ -21,7 +22,7 @@ export const marketQueryFn = async () =>  {
     const re = await r.json()
     return re
   } catch (e) {
-    window.location.reload()
+    throw error('Server error')
   }
 }
 

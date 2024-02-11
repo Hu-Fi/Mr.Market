@@ -2,6 +2,8 @@ import binance from "$lib/images/exchanges/binance.png"
 import okx from "$lib/images/exchanges/okx.svg"
 import gate from "$lib/images/exchanges/gate.png"
 import lbank from "$lib/images/exchanges/lbank.png"
+import mexc from "$lib/images/exchanges/mexc.jpeg"
+import bitfinex from "$lib/images/exchanges/bitfinex.png"
 import mixinIcons from "$lib/constants/mixinIcons.json"
 import emptyToken from "$lib/images/empty-token.svg"
 
@@ -13,6 +15,8 @@ export const findExchangeIconByIdentifier = (identifier: string) => {
     case "OKEX": return okx
     case "GATE": return gate
     case "LBANK": return lbank
+    case "MEXC": return mexc
+    case "BITFINEX": return bitfinex
     default: return emptyToken
   }
 }

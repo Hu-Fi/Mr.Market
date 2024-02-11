@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 
+export type marketDataType = 'orderbook' | 'OHLCV'
+
 @Injectable()
 export class MarketdataService {
   private exchange: ccxt.Exchange;
@@ -30,7 +32,7 @@ export class MarketdataService {
     return await this.exchange.fetchOHLCV(symbol, timeframe, since, limit);
   }
 
-  async watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void): Promise<void> {
+  async watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void, limit: number = 12): Promise<void> {
     const exchange = this.exchanges.get(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(`Exchange ${exchangeName} does not support watchOrderBook or is not configured.`);
@@ -41,7 +43,7 @@ export class MarketdataService {
 
     while (this.activeSubscriptions.get(subscriptionKey)) {
       try {
-        const orderBook = await exchange.watchOrderBook(symbol);
+        const orderBook = await exchange.watchOrderBook(symbol, limit);
         onData(orderBook);
       } catch (error) {
         this.logger.error(`Error watching order book for ${symbol} on ${exchangeName}: ${error.message}`);
@@ -50,9 +52,76 @@ export class MarketdataService {
     }
   }
 
-  isSubscribed(exchangeName: string, symbol: string): boolean {
-    const subscriptionKey = `${exchangeName}:${symbol}`;
-    return this.activeSubscriptions.has(subscriptionKey);
+  async watchOHLCV(exchangeName: string, symbol: string, onData: (data: any) => void): Promise<void> {
+    const exchange = this.exchanges.get(exchangeName);
+    if (!exchange || !exchange.has.watchOHLCV) {
+      throw new Error(`Exchange ${exchangeName} does not support watchOHLCV or is not configured.`);
+    }
+
+    const subscriptionKey = `OHLCV:${exchangeName}:${symbol}`;
+    this.activeSubscriptions.set(subscriptionKey, true);
+
+    while (this.activeSubscriptions.get(subscriptionKey)) {
+      try {
+        const OHLCV = await exchange.watchOHLCV(symbol);
+        onData(OHLCV);
+      } catch (error) {
+        this.logger.error(`Error watching OHLCV for ${symbol} on ${exchangeName}: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));  // Reconnect after a delay
+      }
+    }
+  }
+
+  async watchTicker(exchangeName: string, symbol: string, onData: (data: any) => void): Promise<void> {
+    const exchange = this.exchanges.get(exchangeName);
+    if (!exchange || !exchange.has.watchTicker) {
+      throw new Error(`Exchange ${exchangeName} does not support watchTicker or is not configured.`);
+    }
+
+    const subscriptionKey = `Ticker:${exchangeName}:${symbol}`;
+    this.activeSubscriptions.set(subscriptionKey, true);
+
+    while (this.activeSubscriptions.get(subscriptionKey)) {
+      try {
+        const ticker = await exchange.watchTicker(symbol);
+        onData(ticker);
+      } catch (error) {
+        this.logger.error(`Error watching ticker for ${symbol} on ${exchangeName}: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));  // Reconnect after a delay
+      }
+    }
+  }
+
+  async watchTickers(exchangeNames: string[], symbol: string, onData: (data: any) => void): Promise<void> {
+    for (let i=0; i < exchangeNames.length; i++) {
+      const exchange = this.exchanges.get(exchangeNames[i]);
+      if (!exchange || !exchange.has.watchTicker) {
+        throw new Error(`Exchange ${exchangeNames[i]} does not support watchTicker or is not configured.`);
+      }
+    }
+    const subscriptionKey = `Ticker:${exchangeNames}:${symbol}`;
+    this.activeSubscriptions.set(subscriptionKey, true);
+
+    while (this.activeSubscriptions.get(subscriptionKey)) {
+      try {
+        const ticker = await exchange.watchTicker(symbol);
+        onData(ticker);
+      } catch (error) {
+        this.logger.error(`Error watching ticker for ${symbol} on ${exchangeName}: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));  // Reconnect after a delay
+      }
+    }
+  }
+
+  isSubscribed(type: marketDataType, exchangeName: string, symbol: string): boolean {
+    if (type === 'orderbook') {
+      const subscriptionKey = `${exchangeName}:${symbol}`;
+      return this.activeSubscriptions.has(subscriptionKey);
+    }
+    if (type === 'OHLCV') {
+      const subscriptionKey = `OHLCV:${exchangeName}:${symbol}`;
+      return this.activeSubscriptions.has(subscriptionKey);
+    }
   }
 
   unsubscribeOrderBook(exchangeName: string, symbol: string): void {

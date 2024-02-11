@@ -12,6 +12,13 @@ export const HUFI_BACKEND_URL = 'https://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mv
 export const HUMAN_PROTOCOL_GROUP_URL = 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const SUPPORTED_EXCHANGES = ['binance', 'okx', 'gate', 'lbank', 'mexc', 'bitfinex']
+// Limit needs 12, Market needs 10, use 14 to avoid data loss
+export const ORDERBOOK_STREAM_LENGTH = 14
+export const LIMIT_ORDERBOOK_LENGTH = 12
+export const MARKET_ORDERBOOK_LENGTH = 10
+export const LIMIT_ORDERBOOK_HALF_LENGTH = LIMIT_ORDERBOOK_LENGTH/2
+export const MARKET_ORDERBOOK_HALF_LENGTH = MARKET_ORDERBOOK_LENGTH/2
+
 export const BTC_UUID = 'c6d0c728-2624-429b-8e0d-d9d19b6592fa'
 
 export const UpColorBg = "bg-green-500"

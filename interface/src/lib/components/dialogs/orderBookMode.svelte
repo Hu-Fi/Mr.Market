@@ -1,19 +1,18 @@
 <script lang="ts">
-  import { orderBookDecimal, orderBookDecimalDialog } from "$lib/stores/trade";
+  import { _ } from "svelte-i18n"
+  import { orderBookMode, orderBookModeDialog } from "$lib/stores/trade";
 
   const options = [
-    {v:0.01, fn:()=>{}},
-    {v:0.1, fn:()=>{}},
-    {v:1, fn:()=>{}},
-    {v:10, fn:()=>{}},
-    {v:100, fn:()=>{}},
+    {i: 0, v:$_('all'), fn:()=>{}},
+    {i: 1, v:$_('asks'), fn:()=>{}},
+    {i: 2, v:$_('bids'), fn:()=>{}},
   ]
 </script>
 
 <dialog
   id="order_book_decimal_modal"
   class="modal modal-bottom sm:modal-middle"
-  class:modal-open={$orderBookDecimalDialog}
+  class:modal-open={$orderBookModeDialog}
 >
   <div class="modal-box space-y-3 pt-0 px-5">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-6">
@@ -21,7 +20,7 @@
       <div class="absolute left-[calc(50%-16px)] top-2">
         <div class="w-8 h-1 bg-base-content/40 rounded-full">
           <form method="dialog" class="modal-backdrop">
-            <button on:click={() => orderBookDecimalDialog.set(false)}>c</button
+            <button on:click={() => orderBookModeDialog.set(false)}>c</button
             >
           </form>
         </div>
@@ -31,10 +30,10 @@
       <div class="flex flex-col">
         {#each options as o}
           <div class="flex items-center">
-            <button class="w-full py-4 text-start" on:click={()=>{orderBookDecimal.set(o.v); orderBookDecimalDialog.set(false)}}>
+            <button class="w-full py-4 text-start" on:click={()=>{orderBookMode.set(o.i); orderBookModeDialog.set(false)}}>
               <span class="font-medium"> {o.v} </span>
             </button>
-            {#if $orderBookDecimal === o.v}
+            {#if $orderBookMode === o.i}
               <div>
                 <!-- Circle check Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" /></svg>          
@@ -46,6 +45,6 @@
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button on:click={() => orderBookDecimalDialog.set(false)}></button>
+    <button on:click={() => orderBookModeDialog.set(false)}></button>
   </form>
 </dialog>

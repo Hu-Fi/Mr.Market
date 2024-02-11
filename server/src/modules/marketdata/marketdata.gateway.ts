@@ -50,7 +50,7 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
     this.clientSubscriptions.get(clientId).add(compositeKey);
 
     try {
-      if (!this.marketDataService.isSubscribed(data.exchange, data.symbol)) {
+      if (!this.marketDataService.isSubscribed('orderbook', data.exchange, data.symbol)) {
 
         await this.marketDataService.watchOrderBook(data.exchange, data.symbol, (orderBookData) => {
           this.broadcastToSubscribedClients(compositeKey, { exchange: data.exchange, symbol: data.symbol, data: orderBookData });
@@ -89,6 +89,39 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
       this.marketDataService.unsubscribeOrderBook(exchange, symbol);
     }
   }
+
+  @SubscribeMessage('subscribeOHLCV')
+  async handleSubscribeOHLCV(
+    @MessageBody() data: { exchange: string; symbol: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.logger.log("Subscribing to OHLCV" ,data.exchange,data.symbol)
+    const clientId = this.getClientId(client);
+    if (!clientId) {
+      this.logger.error(`Client ID not found for the connected socket`);
+      return;
+    }
+
+    const compositeKey = `OHLCV:${data.exchange}:${data.symbol}`; // Create a composite key
+
+    if (!this.clientSubscriptions.has(clientId)) {
+      this.clientSubscriptions.set(clientId, new Set());
+    }
+    this.clientSubscriptions.get(clientId).add(compositeKey);
+
+    try {
+      if (!this.marketDataService.isSubscribed('OHLCV', data.exchange, data.symbol)) {
+
+        await this.marketDataService.watchOHLCV(data.exchange, data.symbol, (orderBookData) => {
+          this.broadcastToSubscribedClients(compositeKey, { exchange: data.exchange, symbol: data.symbol, data: orderBookData });
+        });
+      }
+    } catch (error) {
+      this.logger.error(`Error in subscribing to order book: ${error.message}`);
+      client.emit("error", 'Failed to subscribe to order book');
+    }
+  }
+
 
   private broadcastToSubscribedClients(compositeKey: string, data: object) {
     const [exchange, symbol] = compositeKey.split(':'); // Split the composite key

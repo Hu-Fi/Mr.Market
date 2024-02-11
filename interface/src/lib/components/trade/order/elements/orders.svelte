@@ -1,28 +1,27 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { formatDecimals, formatUSMoney, formatUSNumber, roundToDigits } from "$lib/helpers/utils";
-  import { orderBookDecimal as obd, orderBookMode, orderType, price } from "$lib/stores/trade";
-
   import { asks, bids, current, usdValue } from "$lib/stores/trade";
+  import { orderBookMode, orderType, price } from "$lib/stores/trade";
+  import { formatOrderBookAmount, formatOrderBookPrice, formatUSMoney, formatUSNumber } from "$lib/helpers/utils";
+  import { LIMIT_ORDERBOOK_LENGTH, LIMIT_ORDERBOOK_HALF_LENGTH, MARKET_ORDERBOOK_LENGTH, MARKET_ORDERBOOK_HALF_LENGTH } from "$lib/helpers/constants";
 
-  $: decimalPlace = $obd === 0.1 ? 1 : $obd === 1 ? 0 : $obd === 10 ? -1 : $obd === 100 ? -2 : 2;
-  $: magic = (x: number) => roundToDigits(x, decimalPlace);
+  $: marketMode = $orderType.index === 1
 </script>
 
-<div class={clsx($orderType.index === 1? "space-y-1": "space-y-1.5")}>
+<div class={clsx(marketMode? "space-y-1": "space-y-1.5")}>
   <!-- Default mode -->
   {#if $orderBookMode === 0}
     <!-- Ask -->
-    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5")}">
-      {#each $asks.slice(0, $orderType.index === 1? 5: 6) as a}
-        <button class="flex justify-between" on:click={()=>{price.set(magic(a.price))}}>
+    <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
+      {#each $asks.slice(marketMode ? $asks.length-MARKET_ORDERBOOK_HALF_LENGTH : $asks.length-LIMIT_ORDERBOOK_HALF_LENGTH, $asks.length) as a}
+        <button class="flex justify-between" on:click={()=>{price.set(a.price)}}>
           <div class={clsx("text-xs text-start", "text-red-500")}>
-            <span> {formatUSNumber(magic(a.price))} </span>
+            <span> {formatOrderBookPrice(a.price)} </span>
           </div>
 
           <div class="text-xs text-end">
-            <span> {formatDecimals(a.amount,2)} </span>
+            <span> {formatOrderBookAmount(a.amount)} </span>
           </div>
         </button>
       {/each}
@@ -41,15 +40,15 @@
     </div>
 
     <!-- Bid -->
-    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5")}">
-      {#each $bids.slice(0, $orderType.index === 1? 5: 6) as b}
-        <button class="flex justify-between" on:click={()=>{price.set(magic(b.price))}}>
+    <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
+      {#each $bids.slice(0, marketMode ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as b}
+        <button class="flex justify-between" on:click={()=>{price.set(b.price)}}>
           <div class={clsx("text-xs text-start", "text-green-500")}>
-            <span> {formatUSNumber(magic(b.price))} </span>
+            <span> {formatOrderBookPrice(b.price)} </span>
           </div>
 
           <div class="text-xs text-end">
-            <span> {formatDecimals(b.amount,2)} </span>
+            <span> {formatOrderBookAmount(b.amount)} </span>
           </div>
         </button>
       {/each}
@@ -58,15 +57,15 @@
   {:else if $orderBookMode === 1}
     <!-- Show all Ask -->
     <!-- Ask -->
-    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5")}">
-      {#each $asks.slice(0, $orderType.index === 1? 10: 12) as a}
-        <button class="flex justify-between" on:click={()=>{price.set(magic(a.price))}}>
+    <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
+      {#each $asks.slice(marketMode ? $asks.length-MARKET_ORDERBOOK_LENGTH : $asks.length-LIMIT_ORDERBOOK_LENGTH, $asks.length) as a}
+        <button class="flex justify-between" on:click={()=>{price.set(a.price)}}>
           <div class={clsx("text-xs text-start", "text-red-500")}>
-            <span> {formatUSNumber(magic(a.price))} </span>
+            <span> {formatOrderBookPrice(a.price)} </span>
           </div>
 
           <div class="text-xs text-end">
-            <span> {formatDecimals(a.amount,2)} </span>
+            <span> {formatOrderBookAmount(a.amount)} </span>
           </div>
         </button>
       {/each}
@@ -96,15 +95,15 @@
     </button>
 
     <!-- Bid -->
-    <div class="{clsx("flex flex-col", $orderType.index === 1? "space-y-0.5":"space-y-1.5", $orderBookMode === 2 && "!mt-1.5")}">
-      {#each $bids.slice(0, $orderType.index === 1? 10: 12) as b}
-        <button class="flex justify-between" on:click={()=>{price.set(magic(b.price))}}>
+    <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5", $orderBookMode === 2 && "!mt-1.5")}">
+      {#each $bids.slice(0, marketMode ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as b}
+        <button class="flex justify-between" on:click={()=>{price.set(b.price)}}>
           <div class={clsx("text-xs text-start", "text-green-500")}>
-            <span> {formatUSNumber(magic(b.price))} </span>
+            <span> {formatOrderBookPrice(b.price)} </span>
           </div>
 
           <div class="text-xs text-end">
-            <span> {formatDecimals(b.amount,2)} </span>
+            <span> {formatOrderBookAmount(b.amount)} </span>
           </div>
         </button>
       {/each}

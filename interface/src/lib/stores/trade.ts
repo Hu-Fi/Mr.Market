@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
+import type { OrderBookPriceFormat } from "$lib/types/hufi/exchanges";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
@@ -17,15 +18,14 @@ export const price = writable()
 export const amount = writable()
 export const total = writable()
 
-export const asks = writable(a)
-export const bids = writable(b)
+export const asks = writable<OrderBookPriceFormat[]>(a)
+export const bids = writable<OrderBookPriceFormat[]>(b)
 export const current = writable(c)
 export const usdValue = writable(u)
 
 // 0 default, 1 ask, 2 bid
 export const orderBookMode = writable(0)
-export const orderBookDecimal = writable(1)
-export const orderBookDecimalDialog = writable(false)
+export const orderBookModeDialog = writable(false)
 
 // 0 order, 1 position, ...
 export const manageMode = writable(0)
