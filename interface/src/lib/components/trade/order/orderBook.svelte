@@ -17,7 +17,7 @@
 
     socket.on("connect", () => {
       socket.emit("subscribeOrderBook", { exchange: 'binance', symbol: 'BTC/USDT' });
-      socket.emit("subscribeTicker", { exchange: 'binance', symbol: 'HIFI/USDT' });
+      socket.emit("subscribeTicker", { exchange: 'binance', symbol: 'BTC/USDT' });
       console.log("Socket connected");
     });
 
