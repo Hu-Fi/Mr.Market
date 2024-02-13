@@ -1,8 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { asks, bids, current, usdValue } from "$lib/stores/trade";
-  import { orderBookMode, orderType, price } from "$lib/stores/trade";
+  import { asks, bids, current, usdValue, orderBookMode, orderType, price, buy } from "$lib/stores/trade";
   import { formatOrderBookAmount, formatOrderBookPrice, formatUSMoney, formatUSNumber } from "$lib/helpers/utils";
   import { LIMIT_ORDERBOOK_LENGTH, LIMIT_ORDERBOOK_HALF_LENGTH, MARKET_ORDERBOOK_LENGTH, MARKET_ORDERBOOK_HALF_LENGTH } from "$lib/helpers/constants";
 
@@ -30,7 +29,7 @@
     <!-- Current Price -->
     <div class="flex flex-col">
       <button class="text-start" on:click={()=>{price.set($current)}}>
-        <span class={clsx("text-lg font-bold", "text-red-500", false && "text-green-500")}>
+        <span class={clsx("text-lg font-bold", $buy ? "text-green-500" : "text-red-500")}>
           {formatUSNumber($current)}
         </span>
       </button>
@@ -73,7 +72,7 @@
 
     <!-- Current Price -->
     <button class={clsx("flex flex-col", $orderBookMode === 1 && "!mt-1.5")} on:click={()=>{price.set($current)}}>
-      <span class={clsx("text-lg font-bold", "text-red-500", false && "text-green-500")}>
+      <span class={clsx("text-lg font-bold", $buy ? "text-green-500" : "text-red-500")}>
         {$current}
       </span>
       <span class="text-xs text-start !text-[10px]">
@@ -86,7 +85,7 @@
     <!-- Show all Bid -->
     <!-- Current Price -->
     <button class="flex flex-col" on:click={()=>{price.set($current)}}>
-      <span class={clsx("text-lg font-bold", "text-red-500", false && "text-green-500")}>
+      <span class={clsx("text-lg font-bold", $buy ? "text-green-500" : "text-red-500")}>
         {$current}
       </span>
       <span class="text-xs text-start !text-[10px]">

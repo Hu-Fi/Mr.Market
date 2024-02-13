@@ -230,5 +230,13 @@ test('click order book to set limit price', async({ page, context }) => {
   }
 })
 
+test.skip('real time orderbook', async({ page, context }) => {
+
+})
+
+test.skip('real time current price', async({ page, context }) => {
+  
+})
+
 // test('click', async({ page, context }) => {
 // })
