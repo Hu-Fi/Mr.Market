@@ -1,7 +1,7 @@
+import { get } from "svelte/store";
 import { asks, bids, buy, current, pair } from "$lib/stores/trade";
 import { ORDERBOOK_STREAM_LENGTH } from "$lib/helpers/constants";
 import type { OrderBookData, OrderBookPriceData, OrderBookPriceFormat, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
-import { get } from "svelte/store";
 
 const formatOrderBookPriceArray = (a: OrderBookPriceData[]): OrderBookPriceFormat[] => {
   return a.map(([price, amount]) => ({ price, amount }));
@@ -18,15 +18,13 @@ export const decodeOrderBook = ( exchangeName: SupportedExchanges, data: OrderBo
     console.log('bids:', Bids.length) 
     console.log(Bids)
   }
+  // Set asks and bids
   asks.set(reservedAsks)
   bids.set(Bids)
-}
-
-export const decodeTicker = ( exchangeName: SupportedExchanges, data: TickerData) => {
+  // Set current price
   if (get(buy)) {
-    current.set(data.data.data.ask)
+    current.set(reservedAsks[reservedAsks.length-1].price)
   } else {
-    current.set(data.data.data.bid)
+    current.set(Bids[0].price)
   }
-  // pair.percentage = data.data.percentage
 }

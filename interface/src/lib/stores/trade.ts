@@ -25,6 +25,7 @@ export const usdValue = writable(u)
 
 // 0 default, 1 ask, 2 bid
 export const orderBookMode = writable(0)
+export const orderBookLoaded = writable(false)
 export const orderBookModeDialog = writable(false)
 
 // 0 order, 1 position, ...
