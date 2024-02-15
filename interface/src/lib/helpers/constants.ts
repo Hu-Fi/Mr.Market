@@ -7,11 +7,32 @@ export const OAUTH_SCOPE = 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ'
 export const MIXIN_MESSENGER_INSTALL = 'https://messenger.mixin.one/install'
 export const MIXIN_API_BASE_URL = 'https://api.mixin.one'
 
-export const HUFI_SOCKET_URL = 'http://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi'
+export const HUFI_SOCKET_URL = '//bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi'
 export const HUFI_BACKEND_URL = 'https://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi:3000'
 export const HUMAN_PROTOCOL_GROUP_URL = 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const SUPPORTED_EXCHANGES = ['binance', 'okx', 'gate', 'lbank', 'mexc', 'bitfinex']
+export const SUPPORTED_PAIRS = {
+  'binance': [
+    'BTC/USDT',
+    'ETH/USDT',
+    'BNB/USDT',
+    'UNI/USDT',
+    'CRV/USDT',
+    'SOL/USDT',
+    'SUI/USDT',
+  ],
+  'okx': [
+    'BTC/USDT',
+    'ETH/USDT',
+    'BNB/USDT',
+    'UNI/USDT',
+    'CRV/USDT',
+    'SOL/USDT',
+    'SUI/USDT',
+  ],
+}
+
 // Limit needs 12, Market needs 10, use 14 to avoid data loss
 export const ORDERBOOK_STREAM_LENGTH = 14
 export const LIMIT_ORDERBOOK_LENGTH = 12

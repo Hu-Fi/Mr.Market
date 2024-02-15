@@ -2,8 +2,9 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { formatUSNumber } from "$lib/helpers/utils";
-  import { pair, pairSearch, pairSelectorDialog } from "$lib/stores/trade";
-    import { DownColorText, UpColorText } from "$lib/helpers/constants";
+  import { switchPair } from "$lib/helpers/hufi/socket";
+  import { DownColorText, UpColorText } from "$lib/helpers/constants";
+  import { pair, pairSearch, pairSelectorDialog, socket } from "$lib/stores/trade";
 
   let activeTab = 0
   let items = [
@@ -72,7 +73,9 @@
     <div class="flex flex-col overflow-y-auto mt-0 px-4">
       {#each placeholders as c}
       <div class="w-full flex items-center justify-start space-x-2 py-3">
-        <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{pair.set(c);pairSelectorDialog.set(false);}}>
+        <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{
+          switchPair($socket, c);
+        }}>
           <div class="flex items-center space-x-2.5">
             <img src={c.icon} alt="-" loading="lazy" class="w-5 h-5" />
             <span class="flex items-center font-semibold text-base">

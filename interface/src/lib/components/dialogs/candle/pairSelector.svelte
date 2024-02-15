@@ -2,8 +2,8 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { formatUSNumber } from "$lib/helpers/utils";
+  import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import { CandlePairSelectorDialog as sd, CandlePair, CandlePairSearch } from "$lib/stores/market";
-    import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
   let activeTab = 0
   let items = [
