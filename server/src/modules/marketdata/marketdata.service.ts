@@ -21,6 +21,18 @@ export class MarketdataService {
     this.exchanges.set('mexc', new ccxt.pro.mexc({ apiKey: process.env.MEXC_API_KEY, secret: process.env.MEXC_SECRET }));
     this.exchanges.set('binance', new ccxt.pro.binance({ apiKey: process.env.BINANCE_API_KEY, secret: process.env.BINANCE_SECRET }))
   }
+
+  async getTickers(exchange: string, symbols: string[]) {
+    this.exchange = this.exchanges.get(exchange);
+
+    if (!this.exchange || !this.exchange.has.fetchTickers) {
+      throw new Error('Exchange does not support fetchTickers or is not configured.');
+    }
+    this.logger.log(`Fetching tickers from ${this.exchange.name} for ${symbols}`)
+    
+    return await this.exchange.fetchTickers(symbols);
+  }
+
   async getOHLCVData(exchange: string, symbol: string, timeframe: string = '1m', since?: number, limit: number = 30): Promise<any> {
     this.exchange = this.exchanges.get(exchange);
 
