@@ -29,4 +29,20 @@ export class MarketDataController {
     const symbolCap = symbol.toUpperCase();
     return this.marketDataService.getOHLCVData(exchange, symbolCap, timeframe, sinceNumber, limitNumber);
   }
+
+  @Get('/tickers')
+  @ApiOperation({ summary: 'Get tickers' })
+  @ApiQuery({ name: 'exchange', description: 'Exchange name', required: true, type: 'String' })
+  @ApiQuery({ name: 'symbols', description: 'Comma-separated list of symbols to get data for', required: true, type: 'String' })
+  @ApiResponse({ status: 200, description: 'tickers data' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getTickers(
+    @Query('exchange') exchange: string,
+    @Query('symbols') symbols: string,
+  ) {
+    // Split the symbols string by comma to get an array of symbols
+    const symbolsArray = symbols.split(',');
+    const symbolsCap = symbolsArray.map(symbol => symbol.toUpperCase());
+    return this.marketDataService.getTickers(exchange, symbolsCap);
+  }
 }
