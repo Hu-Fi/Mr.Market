@@ -1,9 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import SingleHistory from "$lib/components/grow/arbitrage/details/singleHistory.svelte";
+  import SingleHistory from "$lib/components/grow/marketMaking/details/singleHistory.svelte";
 
   // TODO: Set type when backend is ready
-  export let histories: Array<Object>;
+  export let histories: Array<object>;
 </script>
 
 <div class="flex items-center p-6">

@@ -3,13 +3,11 @@ import { writable } from "svelte/store";
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
 
-// MarketMaking
 export const mmCoin0 = writable()
 export const mmCoin1 = writable()
 // 0 asset, 1 amount
 export const mmEasyStep = writable(0)
 
-// Arbitrage
 export const arbEasyStep = writable(0)
 export const currentArbitrageStatus = writable()
 export const currentMarketMakingStatus = writable()

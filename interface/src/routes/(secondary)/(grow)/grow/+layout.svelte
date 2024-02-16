@@ -8,7 +8,7 @@
   import type { Page } from '@sveltejs/kit';
   import MarketMakingStatusNav from "$lib/components/bottomNav/marketMakingStatusNav.svelte";
   import EditArbitrageDialog from "$lib/components/dialogs/grow/arbitrage/editArbitrage.svelte";
-  // import EditMarketMakingDialog from "$lib/components/dialogs/grow/market_making/";
+  import EditMarketMakingDialog from "$lib/components/dialogs/grow/market_making/editMarketMaking.svelte";
 
   const isArbitragePage = derived(page, ($page: Page) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -44,7 +44,7 @@
 {/if}
 
 <EditArbitrageDialog />
-<!-- <EditMarketMakingDialog /> -->
+<EditMarketMakingDialog />
 
 <style>
   main {

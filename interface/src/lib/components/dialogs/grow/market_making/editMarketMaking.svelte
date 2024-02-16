@@ -1,18 +1,18 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { editArbitrageDialog } from "$lib/stores/grow";
+  import { editMarketMakingDialog } from "$lib/stores/grow";
 
   let items = [
-    { name: $_("deposit"), intro: $_('deposit_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(0)} },
-    { name: $_("withdraw"), intro: $_('withdraw_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(1)} },
-    { name: $_("delete"), intro: $_('delete_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(2)} },
+    { name: $_("deposit"), intro: $_('deposit_info', {values:{grow_type:$_("market_making")}}), fn: () => {console.log(0)} },
+    { name: $_("withdraw"), intro: $_('withdraw_info', {values:{grow_type:$_("market_making")}}), fn: () => {console.log(1)} },
+    { name: $_("delete"), intro: $_('delete_info', {values:{grow_type:$_("market_making")}}), fn: () => {console.log(2)} },
   ];
 </script>
 
 <dialog
-  id="grow_edit_arbitrage_modal"
+  id="grow_edit_market_making_modal"
   class="modal modal-bottom sm:modal-middle"
-  class:modal-open={$editArbitrageDialog}
+  class:modal-open={$editMarketMakingDialog}
 >
   <div class="modal-box space-y-3 pt-0 pl-6">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-6">
@@ -20,7 +20,7 @@
       <div class="absolute left-[calc(50%-16px)] top-2">
         <div class="w-8 h-1 bg-base-content/40 rounded-full">
           <form method="dialog" class="modal-backdrop">
-            <button on:click={() => editArbitrageDialog.set(false)}>c</button
+            <button on:click={() => editMarketMakingDialog.set(false)}>c</button
             >
           </form>
         </div>
@@ -29,7 +29,7 @@
 
     <div class="flex flex-col">
       {#each items as item, i} 
-        <button class="flex space-x-6 my-6 text-start items-center" on:click={()=>{item.fn(); editArbitrageDialog.set(false)}}>
+        <button class="flex space-x-6 my-6 text-start items-center" on:click={()=>{item.fn(); editMarketMakingDialog.set(false)}}>
           {#if i === 0}
             <svg name="plus-circle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -59,6 +59,6 @@
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button on:click={() => editArbitrageDialog.set(false)}></button>
+    <button on:click={() => editMarketMakingDialog.set(false)}></button>
   </form>
 </dialog>
