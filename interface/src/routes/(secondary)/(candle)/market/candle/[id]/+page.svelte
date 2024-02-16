@@ -1,6 +1,6 @@
 <script lang="ts">
-  import clsx from "clsx";
-  import { _ } from "svelte-i18n";
+  import { CandleDetailTab } from "$lib/stores/market";
+  import { connectCandleStick } from "$lib/helpers/hufi/socket";
   import Price from "$lib/components/market/candle/price.svelte";
 	import TimeRange from '$lib/components/dialogs/candle/timeRange.svelte';
   import KlineChart from "$lib/components/market/candle/klineChart.svelte";
@@ -9,7 +9,13 @@
   import DetailsTrades from "$lib/components/market/candle/detailsTrades.svelte";
 	import IndicatorSettings from '$lib/components/dialogs/candle/indicatorSettings.svelte';
   import DetailsDepth from "$lib/components/market/candle/detailsDepth.svelte";
-  import { CandleDetailTab } from "$lib/stores/market";
+  import { onDestroy } from "svelte";
+  import { socket } from "$lib/stores/trade";
+
+  socket.set(connectCandleStick());
+  onDestroy(() => {
+    $socket.disconnect();
+  });
 </script>
 
 <div>

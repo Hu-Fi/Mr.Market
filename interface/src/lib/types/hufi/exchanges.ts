@@ -2,6 +2,7 @@ export type SupportedExchanges = 'binance' | 'mexc' | 'bitfinex' | 'okx' | 'gate
 export type SupportedPairs = 'BTC/USDT' | 'ETH/USDT' | 'HMT/USDT'
 export type OrderBookPriceData = [number, number, number?]
 export type OrderBookPriceFormat = { price: number, amount: number}
+export type MarketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
 export interface OrderBookData {
   exchange: SupportedExchanges,
@@ -22,6 +23,10 @@ export interface OrderBookData {
 export interface TickerData {
   exchange: SupportedExchanges,
   symbol: SupportedPairs,
+  
+}
+
+export interface OHLCVData {
   
 }
 

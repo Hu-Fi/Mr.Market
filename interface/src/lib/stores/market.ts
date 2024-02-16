@@ -27,6 +27,7 @@ export const setActiveTab = (x: number) => {
 }
 
 // Candle
+export const CandleLoaded = writable(false)
 export const CandlePair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", exchange: "binance"})
 export const CandlePairSearch = writable("")
 export const CandlePairSelectorDialog = writable(false)
