@@ -58,8 +58,45 @@ export class MarketdataService {
       return this.activeSubscriptions.has(subscriptionKey);
   }
 
+
+
     unsubscribeOrderBook(exchangeName: string, symbol: string): void {
         const subscriptionKey = `${exchangeName}:${symbol}`;
         this.activeSubscriptions.delete(subscriptionKey);
     }
+    
+    public async getTickerPrice(exchangeName: string, symbol: string): Promise<any> {
+      const exchange = this.exchanges.get(exchangeName);
+      if (!exchange || !exchange.has.fetchTicker) {
+        throw new Error('Exchange does not support fetchTicker or is not configured.');
+      }
+      this.logger.log(`Fetching ticker price from ${exchange.name} for ${symbol}`);
+      return await exchange.fetchTicker(symbol); //Use Last as it represent the last price. 
+    }
+
+    //optional to fetch multiple ticker prices at once
+    async getMultipleTickerPrices(exchangeNames: string[], symbols: string[]): Promise<any[]> {
+      const fetchPromises = [];
+      exchangeNames.forEach(exchangeName => {
+        symbols.forEach(symbol => {
+          const promise = this.getTickerPrice(exchangeName, symbol).catch(error => {
+            this.logger.error(`Failed to fetch ticker for ${symbol} on ${exchangeName}: ${error.message}`);
+            return null; // Return null or some error indication for this failed request
+          });
+          fetchPromises.push(promise);
+        });
+      });
+      return Promise.all(fetchPromises);
+    }
+
+
+    async getSupportedSymbols(exchangeName: string): Promise<string[]> {
+      const exchange = this.exchanges.get(exchangeName);
+      if (!exchange) {
+        throw new Error(`Exchange ${exchangeName} is not configured.`);
+      }
+      await exchange.loadMarkets();
+      return Object.keys(exchange.markets);
+    }
+    
 }

@@ -38,7 +38,7 @@ export class TradeService {
     try {
       const order = await this.exchange.createOrder(symbol, 'market', side, amount);
       this.logger.log(`Market trade executed`, order);
-      await this.tradeRepository.createTransaction({
+      await this.tradeRepository.createTrade({
         userId,
         clientId,
         symbol,
@@ -75,7 +75,7 @@ export class TradeService {
       const order = await this.exchange.createOrder(symbol, 'limit', side, amount, price);
       this.logger.log(`Limit trade executed: ${JSON.stringify(order)}`);
 
-      await this.tradeRepository.createTransaction({
+      await this.tradeRepository.createTrade({
         userId,
         clientId,
         symbol,
@@ -99,7 +99,7 @@ export class TradeService {
       const result = await this.exchange.cancelOrder(orderId, symbol);
       this.logger.log(`Order cancelled: ${orderId}`, result);
       //  update the transaction status in database
-      await this.tradeRepository.updateTransactionStatus(orderId, 'cancelled');
+      await this.tradeRepository.updateTradeStatus(orderId, 'cancelled');
     } catch (error) {
       this.logger.error(`Failed to cancel order: ${error.message}`);
       throw new InternalServerErrorException(`Order cancellation failed: ${error.message}`);

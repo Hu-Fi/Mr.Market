@@ -1,7 +1,10 @@
 // market-data.controller.ts
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller,Body, Get, Post, Query } from '@nestjs/common';
 import { MarketdataService } from './marketdata.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TickersDto } from './marketdata.dto';
+
+
 
 @ApiTags('marketdata')
 @Controller('marketdata')
@@ -30,5 +33,40 @@ export class MarketDataController {
     return this.marketDataService.getOHLCVData(exchange, symbolCap, timeframe, sinceNumber, limitNumber);
   }
 
+@Get('/ticker')
+@ApiOperation({ summary: 'Get ticker price' })
+@ApiQuery({ name: 'exchange', description: 'Exchange name', required: true })
+@ApiQuery({ name: 'symbol', description: 'Symbol to get ticker for', required: true })
+@ApiResponse({ status: 200, description: 'Ticker price data' })
+@ApiResponse({ status: 400, description: 'Bad Request' })
+async getTickerPrice(
+  @Query('exchange') exchange: string,
+  @Query('symbol') symbol: string,
+) {
+  const symbolCap = symbol.toUpperCase();
+  return this.marketDataService.getTickerPrice(exchange, symbolCap);
+}
+
+@Post('/multitickers')
+@ApiOperation({ summary: 'Get multiple ticker prices' })
+@ApiResponse({ status: 200, description: 'Ticker prices data' })
+@ApiResponse({ status: 400, description: 'Bad Request' })
+async getMultipleTickerPrices(
+  @Body() body: TickersDto,
+) {
+  const { exchangeNames, symbols } = body;
+  return this.marketDataService.getMultipleTickerPrices(exchangeNames, symbols);
+}
+
+@Get('/supported-symbols')
+@ApiOperation({ summary: 'Get supported symbols' })
+@ApiQuery({ name: 'exchange', description: 'Exchange name', required: true })
+@ApiResponse({ status: 200, description: 'Supported symbols' })
+@ApiResponse({ status: 400, description: 'Bad Request' })
+async getSupportedSymbols(
+  @Query('exchange') exchange: string,
+) {
+  return this.marketDataService.getSupportedSymbols(exchange);
+}
 
 }
