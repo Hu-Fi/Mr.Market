@@ -6,7 +6,7 @@
   import { findChainIcon } from "$lib/helpers/utils";
   import { maskOption } from "$lib/helpers/constants";
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
-  import { createAIAmounts,createAIName, createAIAssets, createAIPeriodDialog, createAISelectUnitDialog, createAIAutoPay, createAIFiat, createAIPeriod } from "$lib/stores/grow";
+  import { createAIAmounts, createAIName, createAIAssets, createAIPeriodDialog, createAISelectUnitDialog, createAIAutoPay, createAIFiat, createAIPeriod } from "$lib/stores/grow";
 
   const getPeriodByNumber = (n: number) => {
     switch(n){
@@ -73,7 +73,6 @@
       <div class="flex items-center justify-between space-x-2 mx-2">
         <div class="flex space-x-2">
           <AssetIcon assetIcon={asset.icon_url} chainIcon={findChainIcon(asset.chain_id)} clazz="w-6 h-6" claxx="w-2 h-2" />
-          <!-- <img src={asset.icon_url} alt="" class="w-6 h-6"> -->
           <span class="font-semibold">
             {asset.symbol}
           </span>

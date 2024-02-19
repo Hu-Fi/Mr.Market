@@ -28,9 +28,9 @@ export class StrategyService {
 
     private async initializeExchanges() {
         // Initialize exchanges
-        this.exchanges.set('bitfinex',new ccxt.pro.bitfinex({ apiKey: process.env.BITFINEX_API_KEY, secret: process.env.BITFINEX_SECRET}));
+        this.exchanges.set('bitfinex', new ccxt.pro.bitfinex({ apiKey: process.env.BITFINEX_API_KEY, secret: process.env.BITFINEX_SECRET }));
         this.exchanges.set('mexc', new ccxt.pro.mexc({ apiKey: process.env.MEXC_API_KEY, secret: process.env.MEXC_SECRET }));
-        this.exchanges.set('binance', new ccxt.pro.binance({apiKey:process.env.BINANCE_API_KEY,secret:process.env.BINANCE_SECRET}))
+        this.exchanges.set('binance', new ccxt.pro.binance({ apiKey: process.env.BINANCE_API_KEY, secret: process.env.BINANCE_SECRET }))
     }
 
     async getSupportedExchanges(): Promise<string[]> {
@@ -40,6 +40,7 @@ export class StrategyService {
         });
         return supportedExchanges;
     }
+
 
     async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
         const { userId, clientId, pair, minProfitability, exchangeAName, exchangeBName } = strategyParamsDto;
@@ -60,6 +61,7 @@ export class StrategyService {
         }
 
         this.logger.log(`Starting arbitrage strategy for user ${userId}, client ${clientId}`);
+        // Add the pair to active watches for this strategy
         const watchSet = this.activeOrderBookWatches.get(strategyKey) || new Set();
         watchSet.add(pair);
         this.activeOrderBookWatches.set(strategyKey, watchSet);
@@ -69,6 +71,7 @@ export class StrategyService {
         const intervalId = setInterval(() => {
             this.evaluateArbitrageOpportunityVWAP(exchangeA, exchangeB, strategyParamsDto);
         }, 1000); // Run every 1 second
+
 
         this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
     }
@@ -96,26 +99,28 @@ export class StrategyService {
     
 
     private async watchSymbols(exchangeA, exchangeB, pair: string, strategyKey: string) {
-      this.watchOrderBook(exchangeA, pair, strategyKey);
-      this.watchOrderBook(exchangeB, pair, strategyKey);
-  }
+        this.watchOrderBook(exchangeA, pair, strategyKey);
+        this.watchOrderBook(exchangeB, pair, strategyKey);
+    }
 
-  private async watchOrderBook(exchange: ccxt.Exchange, symbol: string, strategyKey: string) {
-    while (this.activeOrderBookWatches.get(strategyKey)?.has(symbol)) {
-        try {
-            const newOrderbook = await exchange.watchOrderBook(symbol);
-            this.orderBookCache.set(symbol + '-' + exchange.id, { data: newOrderbook, timestamp: Date.now() });
-            // Notify strategies if needed
-        } catch (error) {
-            this.logger.error(`Error in watchOrderBook: ${error.message}`);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+    private async watchOrderBook(exchange: ccxt.Exchange, symbol: string, strategyKey: string) {
+        while (this.activeOrderBookWatches.get(strategyKey)?.has(symbol)) {
+            try {
+                const newOrderbook = await exchange.watchOrderBook(symbol);
+                this.orderBookCache.set(symbol + '-' + exchange.id, { data: newOrderbook, timestamp: Date.now() });
+                // Notify strategies if needed
+            } catch (error) {
+                this.logger.error(`Error in watchOrderBook: ${error.message}`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
         }
     }
-}
+
 
 async executePureMarketMakingStrategy(strategyParamsDto: PureMarketMakingStrategyDto) {
     const { userId, clientId, pair, exchangeName, bidSpread, askSpread, orderAmount, orderRefreshTime } = strategyParamsDto;
     const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+
 
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
@@ -334,7 +339,7 @@ private async checkAndCleanFilledOrders(strategyKey: string): Promise<boolean> {
         this.strategyInstances.clear();
 
         this.activeOrderBookWatches.clear();
-        
+
         process.exit(0);
     }
 }

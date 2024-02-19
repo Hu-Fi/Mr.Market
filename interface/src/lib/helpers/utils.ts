@@ -5,8 +5,8 @@ import moment from "moment";
 export const BN = BigNumber.clone({ DECIMAL_PLACES: 8 })
 export const BN2 = BigNumber.clone({ DECIMAL_PLACES: 2 })
 
-export const formatTimestampToTime = (t: string | number, showMinutes: boolean = false) => {
-  return moment(t).format(showMinutes? "YYYY-MM-DD HH:mm": "YYYY-MM-DD");
+export const formatTimestampToTime = (t: string | number, showMinutes: boolean = false, showSeconds: boolean = false) => {
+  return moment(t).format(showMinutes? showSeconds ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD HH:mm": "YYYY-MM-DD");
 }
 
 export const formatUsUnit = (x: string | number) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { marketData, searchValue } from "$lib/stores/market";  
+  import { addSearchHistory } from "$lib/helpers/searchHistory";
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
-    import { addSearchHistory } from "$lib/helpers/searchHistory";
   
   $: filteredTokens = $marketData ? $marketData.filter((item) => {
     return (

@@ -9,7 +9,7 @@ See [README.md](interface/README.md) for more details.
 
 # Backend
 
-See [README.md](backend/README.md) for more details.
+See [README.md](server/README.md) for more details.
 
 # License
 

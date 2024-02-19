@@ -52,3 +52,9 @@ export const formatMarketChartAPI = (arr:[]) => {
   if (arr) return arr.map(([time, value]) => ({ time: time, value: formatDecimals(value, 2) }))
   return arr
 }
+
+export const getArbitrageById = async (id: string) => {
+  const r = await fetch(`${HUFI_BACKEND_URL}`)
+  const res = await r.json()
+  return res
+}

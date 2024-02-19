@@ -6,6 +6,14 @@ describe('formatTimestampToTime', () => {
     expect(formatTimestampToTime('2018-10-19')).toBe('2018-10-19')
   })
 
+  it('format YYYY-MM-DD HH:mm', () => {
+    expect(formatTimestampToTime('2018-10-19T12:23:52', true)).toBe('2018-10-19 12:23')
+  })
+
+  it('format YYYY-MM-DD HH:mm:ss', () => {
+    expect(formatTimestampToTime('2018-10-19T12:23:52', true, true)).toBe('2018-10-19 12:23:52')
+  })
+
   it('format RFC3339', ()=> {
     expect(formatTimestampToTime('2018-10-19T09:23:21Z')).toBe('2018-10-19')
   })

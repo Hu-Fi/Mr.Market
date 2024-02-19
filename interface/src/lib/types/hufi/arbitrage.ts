@@ -1,3 +1,5 @@
+import type { SupportedExchanges } from "$lib/types/hufi/exchanges";
+
 export interface StrategyDto {
   userId: string;
   clientId: string;
@@ -6,4 +8,11 @@ export interface StrategyDto {
   minProfitability: number;
   exchangeAName: string;
   exchangeBName: string;
+}
+
+export type ArbitrageDetailHistoryType = 'buy' | 'sell' | 'deposit' | 'withdraw' | 'stop' | 'resume' | 'delete'
+
+export interface ArbitrageDetailHistory {
+  type: ArbitrageDetailHistoryType;
+  exchange: SupportedExchanges
 }
