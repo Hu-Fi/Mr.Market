@@ -1,3 +1,5 @@
+import type { SupportedExchanges } from "$lib/types/hufi/exchanges";
+
 export const AppName = "HuFi"
 export const AppURL = "https://hufi-interface.vercel.app"
 
@@ -11,7 +13,7 @@ export const HUFI_SOCKET_URL = '//bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi'
 export const HUFI_BACKEND_URL = 'https://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi:3000'
 export const HUMAN_PROTOCOL_GROUP_URL = 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
-export const SUPPORTED_EXCHANGES = ['binance', 'okx', 'gate', 'lbank', 'mexc', 'bitfinex']
+export const SUPPORTED_EXCHANGES = ['binance', 'OKX', 'gate', 'lbank', 'mexc', 'bitfinex']
 export const SUPPORTED_PAIRS = {
   'binance': [
     'BTC/USDT',
@@ -31,6 +33,9 @@ export const SUPPORTED_PAIRS = {
     'SOL/USDT',
     'SUI/USDT',
   ],
+  'gate': [
+
+  ]
 }
 
 // Limit needs 12, Market needs 10, use 14 to avoid data loss

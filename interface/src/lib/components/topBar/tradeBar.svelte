@@ -3,9 +3,9 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import { CandlePair } from "$lib/stores/market";
+  import MixinMenu from "../common/MixinMenu.svelte";
   import { pair, pairSelectorDialog } from "$lib/stores/trade";
-  import TradingPairSelector from "$lib/components/dialogs/tradingPairSelector.svelte";
-    import MixinMenu from "../common/MixinMenu.svelte";
+  import SpotPairSelector from "$lib/components/dialogs/spotPairSelector.svelte";
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">
@@ -22,7 +22,7 @@
     {/if}
     <span class={clsx("text-xs items-end", $pair.percentage >= 0 ? 'text-green-600' : 'text-red-600')}> {$pair.percentage}% </span>
   </button>
-  <TradingPairSelector />
+  <SpotPairSelector />
 
   <div class="flex items-center space-x-4">
     <!-- CandleStick -->
