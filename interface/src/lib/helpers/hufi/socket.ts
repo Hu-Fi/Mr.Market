@@ -1,11 +1,11 @@
+import { get } from "svelte/store";
 import { io } from "socket.io-client";
 import type { Socket } from "socket.io-client";
-import { HUFI_SOCKET_URL, ORDERBOOK_STREAM_LENGTH } from "$lib/helpers/constants";
-import { decodeCandleStick, decodeOrderBook } from "$lib/helpers/hufi/marketDataDecoder";
-import { asks, bids, orderBookLoaded, pair, pairSelectorDialog, socket } from "$lib/stores/trade";
-import { get } from "svelte/store";
+import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
 import { CandleLoaded, CandlePair } from "$lib/stores/market";
 import type { MarketDataType } from "$lib/types/hufi/exchanges";
+import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/trade";
+import { decodeCandleStick, decodeOrderBook } from "$lib/helpers/hufi/marketDataDecoder";
 
 export const connectOrderBook = (): Socket => {
   let socket: Socket;

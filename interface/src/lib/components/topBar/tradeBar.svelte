@@ -5,8 +5,8 @@
   import { CandlePair } from "$lib/stores/market";
   import MixinMenu from "../common/MixinMenu.svelte";
   import { pair, pairSelectorDialog } from "$lib/stores/trade";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import SpotPairSelector from "$lib/components/dialogs/spotPairSelector.svelte";
-    import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">

@@ -1,8 +1,9 @@
 // Hufi backend
 
 import { error } from "console";
-import { HUFI_BACKEND_URL } from "../constants";
+import { HUFI_BACKEND_URL, SUPPORTED_PAIRS } from "../constants";
 import { formatDecimals } from "../utils";
+import type { SupportedExchanges, SupportedPairs } from "$lib/types/hufi/exchanges";
 
 // {/coingecko/coins/:id, GET}
 // {/coingecko/coins/markets/:vs_currency, GET}
@@ -23,6 +24,29 @@ export const marketQueryFn = async () =>  {
     return re
   } catch (e) {
     throw error('Server error')
+  }
+}
+
+// Deprecated
+export const tickersFn = async (exchange: SupportedExchanges, symbols: SupportedPairs[]) => {
+  try {
+    const symbolsQuery = symbols.join(',');
+    const url = `${HUFI_BACKEND_URL}/marketdata/tickers?exchange=${exchange}&symbols=${encodeURIComponent(symbolsQuery)}`;
+    const r = await fetch(url);
+    const data = await r.json();
+    return data;
+  } catch (e) {
+    console.log('tickersFn:', e);
+  }
+}
+
+export const pairsFn = async () => {
+  try {
+    const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/tickers/pairs`)
+    const re = await r.json()
+    return re
+  } catch (e) {
+    throw error('pairsFn:', e)
   }
 }
 

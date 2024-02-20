@@ -1,5 +1,5 @@
 export type SupportedExchanges = 'binance' | 'mexc' | 'bitfinex' | 'okx' | 'gate' | 'lbank' 
-export type SupportedPairs = 'BTC/USDT' | 'ETH/USDT' | 'HMT/USDT'
+export type SupportedPairs = 'BTC/USDT' | 'ETH/USDT' | 'HMT/USDT' | 'BNB/USDT' | 'UNI/USDT' | 'CRV/USDT' | 'SOL/USDT' | 'SUI/USDT'
 export type OrderBookPriceData = [number, number, number?]
 export type OrderBookPriceFormat = { price: number, amount: number}
 export type MarketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
