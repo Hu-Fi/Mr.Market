@@ -1,5 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
 import * as ccxt from 'ccxt';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Injectable, Inject, Logger } from '@nestjs/common';
+import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers'
 
@@ -10,8 +13,10 @@ export class MarketdataService {
   private readonly logger = new Logger(MarketdataService.name);
   private activeSubscriptions = new Map<string, boolean>(); // Track active subscriptions
 
-  constructor(
-  ) {
+  private cachingTTL: 10; // 10s
+
+  // cache supported pairs
+  constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {
     this.initializeExchange();
   }
 
@@ -43,6 +48,64 @@ export class MarketdataService {
 
     return await this.exchange.fetchOHLCV(symbol, timeframe, since, limit);
   }
+
+  async getSupportedPairs(): Promise<any> {
+    const cacheID = `supported-pairs`;
+    try {
+      const cachedData = await this.cacheService.get(cacheID);
+      console.log('cache:', cachedData);
+      if (cachedData) {
+        // Make sure to parse the cached string back into JSON
+        return JSON.parse(cachedData);
+      } else {
+        const pairs = await this._getSupportedPairs();
+        // Cache the stringified version of pairs
+        await this.cacheService.set(cacheID, JSON.stringify(pairs), this.cachingTTL);
+        return pairs;
+      }
+    } catch (error) {
+      console.error('Error accessing cache:', error);
+      // If there's an error with the cache, fetch new data as a fallback
+      const pairs = await this._getSupportedPairs();
+      return pairs;
+    }
+  }  
+
+  async _getSupportedPairs(): Promise<any> {
+    let promises = [];
+  
+    for (const [exchange, pairs] of Object.entries(SUPPORTED_PAIRS)) {
+      if (pairs.length > 0) {
+        const promise = this.getTickers(exchange, pairs)
+          .then(tickers => {
+            return {
+              exchange,
+              data: pairs.map(pair => ({
+                symbol: pair,
+                price: tickers[pair].last,
+                change: tickers[pair].percentage,
+              }))
+            };
+          })
+          .catch(error => {
+            this.logger.error(`Error fetching tickers from ${exchange}: ${error.message}`);
+            return { exchange, data: [] }; // Return an empty array for this exchange
+          });
+        promises.push(promise);
+      } else {
+        promises.push(Promise.resolve({ exchange, data: [] }));
+      }
+    }
+  
+    const results = await Promise.all(promises);
+    let allPairsData = {};
+  
+    results.forEach(result => {
+      allPairsData[result.exchange] = result.data;
+    });
+  
+    return allPairsData;
+  }  
 
   async watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void, limit: number = 25): Promise<void> {
     const exchange = this.exchanges.get(exchangeName);

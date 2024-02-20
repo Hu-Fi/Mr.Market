@@ -1,9 +1,8 @@
 // coingecko.service.ts
-import { Inject, Logger } from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
-import { CoinFullInfo, CoinGeckoClient, CoinMarket, CoinMarketChartResponse } from 'coingecko-api-v3';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { CoinFullInfo, CoinGeckoClient, CoinMarket, CoinMarketChartResponse } from 'coingecko-api-v3';
 
 @Injectable()
 export class CoingeckoProxyService {
