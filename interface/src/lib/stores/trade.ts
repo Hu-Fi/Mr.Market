@@ -7,9 +7,10 @@ export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
 
 export const socket = writable<Socket>()
-export const pair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", exchange: "binance"})
+export const pair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, exchange: "binance"})
 export const pairSearch = writable("")
 export const pairSelectorDialog = writable(false)
+export const pairSelectorLoaded = writable(false)
 export const pairExchangeFilter = writable("all")
 // 0 limit, 1 market, ...
 export const orderType = writable({index: 0, name: "Limit order", fn: ()=>{}})

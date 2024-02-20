@@ -6,12 +6,13 @@
   import MixinMenu from "../common/MixinMenu.svelte";
   import { pair, pairSelectorDialog } from "$lib/stores/trade";
   import SpotPairSelector from "$lib/components/dialogs/spotPairSelector.svelte";
+    import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">
   <!-- Title and change -->
   <button class="flex items-center pl-4" on:click={()=>pairSelectorDialog.set(true)} data-testid="pair_selector">
-    <img src={$pair.icon} alt="icon" loading="lazy" class="w-5 h-5 mr-1" />
+    <img src={findExchangeIconByIdentifier($pair.exchange)} alt="icon" loading="lazy" class="w-5 h-5 mr-1" />
     <span class="font-black text-lg" title="pair-name"> {$pair.first+"/"+$pair.second} </span>
     {#if !$pairSelectorDialog}
       <!-- Caret down Icon -->

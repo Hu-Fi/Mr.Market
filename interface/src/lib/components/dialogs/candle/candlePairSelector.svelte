@@ -3,29 +3,23 @@
   import { _ } from "svelte-i18n";
   import { formatUSNumber } from "$lib/helpers/utils";
   import NoResult from "$lib/components/common/NoResult.svelte";
-  import { DownColorText, SUPPORTED_EXCHANGES, UpColorText } from "$lib/helpers/constants";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { DownColorText, SUPPORTED_EXCHANGES, SUPPORTED_PAIRS, UpColorText } from "$lib/helpers/constants";
   import { CandlePairSelectorDialog as sd, CandlePair, CandlePairSearch, CandlePairExchangeFilter } from "$lib/stores/market";
 
   let items = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
 
-  $: placeholders = [
-    {first: "BTC", second: "USDT", price: 43576, percentage: -0.87, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "ETH", second: "USDT", price: 2288, percentage: -1.58, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "SOL", second: "USDT", price: 95.55, percentage: +20.21, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "BNB", second: "USDT", price: 253, percentage: -0.63, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "SUI", second: "USDT", price: 0.7299, percentage: +4.9, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "UNI", second: "USDT", price: 43576, percentage: -0.87, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "BTC", second: "USDT", price: 43576, percentage: -0.87, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "ETH", second: "USDT", price: 2288, percentage: -1.58, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "SOL", second: "USDT", price: 95.55, percentage: +20.21, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "BNB", second: "USDT", price: 253, percentage: -0.63, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "SUI", second: "USDT", price: 0.7299, percentage: +4.9, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-    {first: "UNI", second: "USDT", price: 43576, percentage: -0.87, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"},
-  ].filter((item)=>{
+  $: placeholders = Object.entries(SUPPORTED_PAIRS).flatMap(([exchange, pairs]) => {
+    return pairs.map(pair => {
+      const [first, second] = pair.split('/');
+      const icon = findExchangeIconByIdentifier(exchange);
+      return { first, second, icon, exchange };
+    });
+  }).filter((item)=>{
     return (
-      $CandlePairExchangeFilter === 'all' ?
+      $CandlePairExchangeFilter.toUpperCase() === 'ALL' ?
       item :
-      item.exchange.match($CandlePairExchangeFilter)
+      item.exchange.toUpperCase().match($CandlePairExchangeFilter.toUpperCase())
     )}
   ).filter((item) => {
     return (
@@ -79,7 +73,7 @@
         </div>  
       {:else}
         {#each placeholders as c}
-          <div class="w-full flex items-center justify-start space-x-2 py-3">
+          <div class="w-full flex items-center justify-start space-x-2 py-3 h-16">
             <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{CandlePair.set(c); sd.set(false);}}>
               <div class="flex items-center space-x-2.5">
                 <img src={c.icon} alt="-" loading="lazy" class="w-5 h-5" />
@@ -88,6 +82,7 @@
                 </span>
               </div>
     
+              {#if c.price && c.percentage}
               <div class="flex flex-col items-end">
                 <span class="text-sm font-semibold">
                   {formatUSNumber(c.price)}
@@ -96,6 +91,7 @@
                   {c.percentage}%
                 </span>
               </div>
+              {/if}
             </button>
           </div>
         {/each}

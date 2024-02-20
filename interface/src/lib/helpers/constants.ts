@@ -24,22 +24,25 @@ export const SUPPORTED_PAIRS = {
     'SOL/USDT',
     'SUI/USDT',
   ],
-  'okx': [
+  // 'okx': [
+  //   'BTC/USDT',
+  //   'ETH/USDT',
+  //   'BNB/USDT',
+  //   'UNI/USDT',
+  //   'CRV/USDT',
+  //   'SOL/USDT',
+  //   'SUI/USDT',
+  // ],
+  'bitfinex': [
     'BTC/USDT',
     'ETH/USDT',
     'BNB/USDT',
     'UNI/USDT',
-    'CRV/USDT',
-    'SOL/USDT',
-    'SUI/USDT',
-  ],
-  'gate': [
-
   ]
 }
 
 // Limit needs 12, Market needs 10, use 14 to avoid data loss
-export const ORDERBOOK_STREAM_LENGTH = 14
+export const ORDERBOOK_STREAM_LENGTH = 25
 export const LIMIT_ORDERBOOK_LENGTH = 12
 export const MARKET_ORDERBOOK_LENGTH = 10
 export const LIMIT_ORDERBOOK_HALF_LENGTH = LIMIT_ORDERBOOK_LENGTH/2

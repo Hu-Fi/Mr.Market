@@ -44,7 +44,7 @@ export class MarketdataService {
     return await this.exchange.fetchOHLCV(symbol, timeframe, since, limit);
   }
 
-  async watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void, limit: number = 14): Promise<void> {
+  async watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void, limit: number = 25): Promise<void> {
     const exchange = this.exchanges.get(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(`Exchange ${exchangeName} does not support watchOrderBook or is not configured.`);
