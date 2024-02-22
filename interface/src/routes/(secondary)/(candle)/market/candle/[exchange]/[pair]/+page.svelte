@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onDestroy } from "svelte";
+  import { socket } from "$lib/stores/trade";
   import { CandleDetailTab } from "$lib/stores/market";
   import { connectCandleStick } from "$lib/helpers/hufi/socket";
   import Price from "$lib/components/market/candle/price.svelte";
@@ -9,8 +11,6 @@
   import DetailsTrades from "$lib/components/market/candle/detailsTrades.svelte";
 	import IndicatorSettings from '$lib/components/dialogs/candle/indicatorSettings.svelte';
   import DetailsDepth from "$lib/components/market/candle/detailsDepth.svelte";
-  import { onDestroy } from "svelte";
-  import { socket } from "$lib/stores/trade";
 
   socket.set(connectCandleStick());
   onDestroy(() => {

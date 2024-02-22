@@ -1,8 +1,8 @@
 // Hufi backend
 
 import { error } from "console";
+import { formatDecimals } from "$lib/helpers/utils";
 import { HUFI_BACKEND_URL, SUPPORTED_PAIRS } from "../constants";
-import { formatDecimals } from "../utils";
 import type { SupportedExchanges, SupportedPairs } from "$lib/types/hufi/exchanges";
 
 // {/coingecko/coins/:id, GET}

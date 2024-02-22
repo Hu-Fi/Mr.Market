@@ -33,7 +33,6 @@
   $: if ($sd === false) {
     CandlePairSearch.set('')
     CandlePairExchangeFilter.set('all')
-    CandlePairSelectorDialog.set(false)
   }
 
   const loadPairs = async () => {
@@ -72,14 +71,13 @@
 
       <!-- Tabs -->
       <div class="tabs border-b w-full mt-3 px-3 overflow-x-auto no-scrollbar">
-        {#each items as item, i}
+        {#each items as item}
           <button class={clsx("tab", $CandlePairExchangeFilter === item.name && "border-b border-base-content")} on:click={()=>{ CandlePairExchangeFilter.set(item.name) }}>
             <span class={clsx("font-medium capitalize", $CandlePairExchangeFilter === item.name ? "opacity-100" : "opacity-60")}>{item.name}</span>
           </button>
         {/each}
       </div>
     </div>
-    
     
     {#if $CandlePairSelectorLoaded}
       <!-- Pairs -->
@@ -100,7 +98,7 @@
                     {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
                   </span>
                 </div>
-        
+
                 <div class="flex flex-col items-end">
                   {#if c.price}
                     <span class="text-sm font-semibold">

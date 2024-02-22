@@ -135,7 +135,17 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
       return;
     }
     this.subscribeToMarketData('ticker', data.exchange, data.symbol, clientId, client, (tickerData) => {
-      this.broadcastToSubscribedClients(this.createCompositeKey('ticker', data.exchange, data.symbol), { exchange: data.exchange, symbol: data.symbol, data: tickerData });
+      this.broadcastToSubscribedClients(this.createCompositeKey('ticker', data.exchange, data.symbol), { 
+        exchange: data.exchange, 
+        symbol: data.symbol, 
+        price: tickerData.last,
+        change: tickerData.percentage,
+        info: {
+          high: tickerData.high,
+          low: tickerData.low,
+          volume: tickerData.baseVolume,
+        },
+      });
     })
   }
 
@@ -180,19 +190,6 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
       }
     });
   }
-
-  // FIX: NOT WORKING
-  // handleDisconnect(clientId: string) {
-  //   const subscriptions = this.clientSubscriptions.get(clientId);
-  //   if (subscriptions) {
-  //     subscriptions.forEach(symbol => {
-  //       this.handleUnsubscribeData({ type: 'orderbook', exchange: 'relevant_exchange', symbol }, this.getClientById(clientId));
-  //     });
-  //   }
-  //   this.clientSubscriptions.delete(clientId);
-  //   this.clients.delete(clientId);
-  //   this.logger.log(`Client disconnected: ${clientId}`);
-  // }
 
   handleDisconnect(clientId: string) {
     const subscriptions = this.clientSubscriptions.get(clientId);

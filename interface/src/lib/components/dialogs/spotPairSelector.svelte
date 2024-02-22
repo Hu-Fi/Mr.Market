@@ -33,7 +33,6 @@
   $: if ($pairSelectorDialog === false) {
     pairSearch.set('')
     pairExchangeFilter.set('all')
-    pairSelectorLoaded.set(false)
   }
 
   const loadPairs = async () => {
@@ -41,7 +40,6 @@
     pairSelectorLoaded.set(true)
     console.log('pairs:',pairs)
   }
-
   onMount(async ()=> {
     await loadPairs()
   })

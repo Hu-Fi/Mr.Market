@@ -1,7 +1,7 @@
 import { get } from "svelte/store";
-import { ORDERBOOK_STREAM_LENGTH } from "$lib/helpers/constants";
 import { asks, bids, buy, current, pair, usdValue } from "$lib/stores/trade";
-import type { OHLCVData, OrderBookData, OrderBookPriceData, OrderBookPriceFormat, SupportedExchanges } from "$lib/types/hufi/exchanges";
+import type { OHLCVData, OrderBookData, OrderBookPriceData, OrderBookPriceFormat, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
+import { CandlePair } from "$lib/stores/market";
 
 const formatOrderBookPriceArray = (a: OrderBookPriceData[]): OrderBookPriceFormat[] => {
   return a.map(([price, amount]) => ({ price, amount }));
@@ -25,4 +25,9 @@ export const decodeOrderBook = ( exchangeName: SupportedExchanges, data: OrderBo
 
 export const decodeCandleStick = ( exchangeName: SupportedExchanges, data: OHLCVData ) => {
   console.log('OHLCV:',data);
+}
+
+export const decodeTicker = ( exchangeName: SupportedExchanges, data: TickerData ) => {
+  CandlePair.set(data.data);
+  console.log('ticker:', data)
 }

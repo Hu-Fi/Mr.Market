@@ -7,28 +7,29 @@
 	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
 	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
 
+  const klineStyle = {
+    candle: {
+      tooltip:{ showRule: 'follow_cross', text: { family: 'Inter', size: 10 }, showType: 'rect' },
+      priceMark: { high: { textFamily: 'Inter', textSize: 10 }, low: { textFamily: 'Inter', textSize: 10 }, last: { text: { family: 'Inter', size: 10 } } }
+    },
+    indicator: {
+      tooltip: { showRule: 'always', text: { family: 'Inter', size: 10, marginTop: 0 }, showName: false, },
+    },
+    grid: { 
+      horizontal: { show: false }, 
+      vertical: { show: false },
+    },
+    crosshair: {
+      horizontal: { text: { family: 'Inter', size: 10 } },
+      vertical: { text: { family: 'Inter', size: 10 } },
+    },
+    xAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10 } },
+    yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10, marginStart: 1, marginEnd: 1 } },
+  }
   onMount(() => {
     CandleChart.set(init('chart'))
 
-    $CandleChart.setStyles({
-      candle: {
-        tooltip:{ showRule: 'follow_cross', text: { family: 'Inter', size: 10 }, showType: 'rect' },
-        priceMark: { high: { textFamily: 'Inter', textSize: 10 }, low: { textFamily: 'Inter', textSize: 10 }, last: { text: { family: 'Inter', size: 10 } } }
-      },
-      indicator: {
-        tooltip: { showRule: 'always', text: { family: 'Inter', size: 10, marginTop: 0 }, showName: false, },
-      },
-      grid: { 
-        horizontal: { show: false }, 
-        vertical: { show: false },
-      },
-      crosshair: {
-        horizontal: { text: { family: 'Inter', size: 10 } },
-        vertical: { text: { family: 'Inter', size: 10 } },
-      },
-      xAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10 } },
-      yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10, marginStart: 1, marginEnd: 1 } },
-    })
+    $CandleChart.setStyles(klineStyle)
     $CandleChart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
     let data = [
       { timestamp: '2015-07-20', open: 277.98, high: 280.0, low: 277.37, close: 280.0 },

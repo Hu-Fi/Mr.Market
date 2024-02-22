@@ -19,7 +19,7 @@
   ]
   const marketApps = [
     {name: $_("coins"), icon: "coins", fn: ()=>{goto('/market')}},
-    {name: $_("candle_stick"), icon: "candle_stick", fn: ()=>{goto('/market/candle/BTC-USDT')}},
+    {name: $_("candle_stick"), icon: "candle_stick", fn: ()=>{goto('/market/candle/binance/BTC-USDT')}},
   ]
   const toolApps = [
     {name: $_("help_center"), icon: "question", fn: ()=>{}},

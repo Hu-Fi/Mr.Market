@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import type { Socket } from "socket.io-client";
-import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
+import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
