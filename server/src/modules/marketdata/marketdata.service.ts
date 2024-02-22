@@ -53,7 +53,6 @@ export class MarketdataService {
     const cacheID = `supported-pairs`;
     try {
       const cachedData = await this.cacheService.get(cacheID);
-      console.log('cache:', cachedData);
       if (cachedData) {
         return JSON.parse(cachedData);
       } else {

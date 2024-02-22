@@ -38,7 +38,6 @@
   const loadPairs = async () => {
     pairs = await pairsFn()
     pairSelectorLoaded.set(true)
-    console.log('pairs:',pairs)
   }
   onMount(async ()=> {
     await loadPairs()

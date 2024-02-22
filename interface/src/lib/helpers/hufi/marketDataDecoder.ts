@@ -29,5 +29,4 @@ export const decodeCandleStick = ( exchangeName: SupportedExchanges, data: OHLCV
 
 export const decodeTicker = ( exchangeName: SupportedExchanges, data: TickerData ) => {
   CandlePair.set(data.data);
-  console.log('ticker:', data)
 }

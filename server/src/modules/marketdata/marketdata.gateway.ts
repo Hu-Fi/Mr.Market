@@ -118,7 +118,7 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
       return;
     }
 
-    this.subscribeToMarketData('orderbook', data.exchange, data.symbol, clientId, client, (OHLCVData) => {
+    this.subscribeToMarketData('OHLCV', data.exchange, data.symbol, clientId, client, (OHLCVData) => {
       this.broadcastToSubscribedClients(this.createCompositeKey('OHLCV', data.exchange, data.symbol), { exchange: data.exchange, symbol: data.symbol, data: OHLCVData });
     })
   }
@@ -174,16 +174,16 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
         if (subscribedClient) {
           switch (type) {
             case 'orderbook':
-              subscribedClient.emit("orderBookData", { exchange, symbol, data });
+              subscribedClient.emit("orderBookData", { data });
               break;
             case 'OHLCV':
-              subscribedClient.emit("OHLCVData", { exchange, symbol, data });
+              subscribedClient.emit("OHLCVData", { data });
               break;
             case 'ticker':
-              subscribedClient.emit("tickerData", { exchange, symbol, data });
+              subscribedClient.emit("tickerData", { data });
               break;
             case 'tickers':
-              subscribedClient.emit("tickersData", { exchange, symbol, data });
+              subscribedClient.emit("tickersData", { data });
               break;
           }
         }
