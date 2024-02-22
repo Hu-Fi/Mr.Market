@@ -1,3 +1,8 @@
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
+![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg)
+![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
+https://hufiui.vercel.app
+
 # What is Mr.Market
 
 Mr Market is an CeFi crypto bot and the reference exchange oracle for Hu Fi. Mr Market has three main functions
@@ -14,10 +19,6 @@ The crypto markets are characterized by their fragmented markets, where each cry
 HuFi introduces a decentralized approach to market making, enabling anyone with tokens and code to programmatically engage in market making on any centralized exchange using Solidity. The code for market making can be directly embedded in the crypto product itself, or externally with a sidecar market making product. Additionally, anyone with exchange keys and the ability to run a bot can now become a market maker in a safe and transparent way. Finally, anyone with excess crypto funds can earn income by providing it to the bot to generate yield on this excess crypto. 
 
 HuFi utilizes the Human Protocol to ensure fair compensation for market makers. By leveraging the same smart contract framework and infrastructure already in use for various applications, including machine learning, market makers can trust that they will receive timely and fair payment. This trust is reinforced by the use of the same Escrow Factories, which have a proven track record of reliably disbursing payments to individuals involved in machine learning labeling tasks for years.
-
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
-
-https://hufiui.vercel.app
 
 The frontend user interface for Mr.market on Mixin.
 
@@ -69,10 +70,6 @@ npm run test:e2e
 
 * [Svelte](https://svelte.dev/) - Web framework
 * [Daisy UI](https://daisyui.com/) - UI framework
-
-## Contributing
-
-Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
 
 # Backend
 
