@@ -1,6 +1,6 @@
-[Vercel production location](https://hufiui.vercel.app)
+[Vercel production location](https://mr-market-one.vercel.app/home)
 
-![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
+![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=mr-market-one)
 ![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg)
 ![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
 
