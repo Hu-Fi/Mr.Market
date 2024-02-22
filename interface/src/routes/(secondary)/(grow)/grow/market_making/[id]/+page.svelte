@@ -6,7 +6,3 @@
 <div>
 
 </div>
-
-<style>
-
-</style>

@@ -22,6 +22,3 @@
     </span>
   </div>
 </div>
-
-<style>
-</style>

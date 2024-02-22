@@ -9,6 +9,3 @@
   <Orders />
   <Tools />
 </div>
-
-<style>
-</style>

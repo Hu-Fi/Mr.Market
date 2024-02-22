@@ -1,5 +1,4 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import ArbCard from "../arbitrage/card.svelte";
   import MMCard from "../marketMaking/card.svelte";
@@ -70,7 +69,7 @@
 </script>
 
 {#if placeholder.length === 0}
-  <div class="border-t">
+  <div class="">
     <Create />
   </div>
 {:else}

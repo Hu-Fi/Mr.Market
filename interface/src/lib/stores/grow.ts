@@ -11,6 +11,10 @@ export const mmEasyStep = writable(0)
 
 // Arbitrage
 export const arbEasyStep = writable(0)
+export const currentArbitrageStatus = writable()
+export const currentMarketMakingStatus = writable()
+export const editArbitrageDialog = writable(false)
+export const editMarketMakingDialog = writable(false)
 
 export const addMoreDialog = writable(false)
 
