@@ -114,7 +114,7 @@ export class StrategyService {
 }
 
 async executePureMarketMakingStrategy(strategyParamsDto: PureMarketMakingStrategyDto) {
-    const { userId, clientId, pair, exchangeName, bidSpread, askSpread, orderAmount, orderRefreshTime } = strategyParamsDto;
+    const { userId, clientId, pair, exchangeName, bidSpread, askSpread, orderAmount, orderRefreshTime, numberOfLayers } = strategyParamsDto;
     const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
 
     // Ensure the strategy is not already running
@@ -127,7 +127,7 @@ async executePureMarketMakingStrategy(strategyParamsDto: PureMarketMakingStrateg
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
     const intervalId = setInterval(async () => {
         try {
-            await this.manageMarketMakingOrders(userId, clientId, exchangeName, pair, bidSpread, askSpread, orderAmount);
+            await this.manageMarketMakingOrdersWithLayers(userId, clientId, exchangeName, pair, bidSpread, askSpread, orderAmount, numberOfLayers);
         } catch (error) {
             this.logger.error(`Error executing pure market making strategy for ${strategyKey}: ${error.message}`);
             clearInterval(intervalId); // Optionally stop the strategy on error
@@ -138,27 +138,57 @@ async executePureMarketMakingStrategy(strategyParamsDto: PureMarketMakingStrateg
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
 }
 
-private async manageMarketMakingOrders(userId: string, clientId: string, exchangeName: string, pair: string, bidSpread: number, askSpread: number, orderAmount: number) {
-    // Fetch the current mid-price
-    const midPrice = await this.getMidPrice(exchangeName, pair); // Implement this method based on your exchange's API
-    const buyPrice = midPrice * (1 - bidSpread);
-    const sellPrice = midPrice * (1 + askSpread);
-    const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+// Add endpoint to keep track of the user id and client id
+// not only mid price also best ask and best bid, last price.
+// Plus minus increase on each layer.
+// Ceiling and floor price hard ceiling and hard floor, and make it auto adjustable every x seconds
+// Track inventory cost,
+private async manageMarketMakingOrdersWithLayers(userId: string, clientId: string, exchangeName: string, pair: string, bidSpread: number, askSpread: number, orderAmount: number, numberOfLayers: number) {
+    const midPrice = await this.getMidPrice(exchangeName, pair);
+    const exchange = this.exchanges.get(exchangeName);
 
     // Cancel all existing orders for this strategy
-    const exchange = this.exchanges.get(exchangeName)
-    this.cancelAllOrders(exchange,pair,strategyKey)
+    await this.cancelAllOrders(exchange, pair, `${userId}-${clientId}-pureMarketMaking`);
 
-    // Place new buy and sell limit orders
-    await this.tradeService.executeLimitTrade({
-        userId, clientId, exchange: exchangeName, symbol: pair, side: 'buy', amount: orderAmount, price: buyPrice
-    });
-    await this.tradeService.executeLimitTrade({
-        userId, clientId, exchange: exchangeName, symbol: pair, side: 'sell', amount: orderAmount, price: sellPrice
-    });
+    for (let layer = 1; layer <= numberOfLayers; layer++) {
+        const layerBidSpreadPercentage = bidSpread * layer;
+        const layerAskSpreadPercentage = askSpread * layer;
 
-    this.logger.log(`Placed new market making orders for ${pair} at buy: ${buyPrice}, sell: ${sellPrice}`);
+        let buyPrice = midPrice * (1 - layerBidSpreadPercentage);
+        let sellPrice = midPrice * (1 + layerAskSpreadPercentage);
+
+        // Adjust buy and sell prices and amounts to exchange precision
+        const { adjustedAmount: adjustedBuyAmount, adjustedPrice: adjustedBuyPrice } = await this.adjustOrderParameters(exchange, pair, orderAmount, buyPrice);
+        const { adjustedAmount: adjustedSellAmount, adjustedPrice: adjustedSellPrice } = await this.adjustOrderParameters(exchange, pair, orderAmount, sellPrice);
+
+        // Log the adjusted parameters for verification
+        this.logger.log(`Layer ${layer}: Adjusted Buy Order: ${adjustedBuyAmount} @ ${adjustedBuyPrice}, Adjusted Sell Order: ${adjustedSellAmount} @ ${adjustedSellPrice}`);
+
+        // Place buy and sell orders with adjusted parameters
+        await this.tradeService.executeLimitTrade({
+            userId, clientId, exchange: exchangeName, symbol: pair, side: 'buy', amount: parseFloat(adjustedBuyAmount), price: parseFloat(adjustedBuyPrice)
+        });
+        await this.tradeService.executeLimitTrade({
+            userId, clientId, exchange: exchangeName, symbol: pair, side: 'sell', amount: parseFloat(adjustedSellAmount), price: parseFloat(adjustedSellPrice)
+        });
+    }
 }
+
+
+private async adjustOrderParameters(exchange: ccxt.Exchange, symbol: string, amount: number, price: number): Promise<{ adjustedAmount: string, adjustedPrice: string }> {
+    // Ensure market data is loaded
+    if (!exchange.markets) {
+        throw new Error('Exchange markets not loaded');
+    }
+
+   
+    // Adjust amount and price to the exchange's precision
+    const adjustedAmount =await exchange.amountToPrecision(symbol, amount);
+    const adjustedPrice = await exchange.priceToPrecision(symbol, price);
+    this.logger.log(`Adjusted Buy Order: ${adjustedAmount} @ ${adjustedPrice}`)
+    return { adjustedAmount, adjustedPrice };
+}
+
 
 
 private async cancelAllOrders(exchange: ccxt.Exchange, pair: string, strategyKey: string) {

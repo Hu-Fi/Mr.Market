@@ -39,10 +39,10 @@ export class PureMarketMakingStrategyDto {
   @ApiProperty({ description: 'Exchange name', example: 'binance' })
   exchangeName: string;
 
-  @ApiProperty({ description: 'Bid spread as a percentage', example: 0.001 })
+  @ApiProperty({ description: 'Bid spread as a percentage', example: 0.1 })
   bidSpread: number;
 
-  @ApiProperty({ description: 'Ask spread as a percentage', example: 0.001 })
+  @ApiProperty({ description: 'Ask spread as a percentage', example: 0.1 })
   askSpread: number;
 
   @ApiProperty({ description: 'Order amount', example: 0.1 })
@@ -50,4 +50,7 @@ export class PureMarketMakingStrategyDto {
 
   @ApiProperty({ description: 'Order refresh time in milliseconds', example: 15000 })
   orderRefreshTime: number;
+  
+  @ApiProperty({description:'Number of orders you want to place on both sides',example:1})
+  numberOfLayers:number
 }
