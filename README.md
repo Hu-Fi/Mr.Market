@@ -15,10 +15,64 @@ HuFi introduces a decentralized approach to market making, enabling anyone with 
 
 HuFi utilizes the Human Protocol to ensure fair compensation for market makers. By leveraging the same smart contract framework and infrastructure already in use for various applications, including machine learning, market makers can trust that they will receive timely and fair payment. This trust is reinforced by the use of the same Escrow Factories, which have a proven track record of reliably disbursing payments to individuals involved in machine learning labeling tasks for years.
 
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
 
-# Interface
+https://hufiui.vercel.app
 
-See [README.md](interface/README.md) for more details.
+The frontend user interface for Mr.market on Mixin.
+
+## Getting Started
+
+### Prerequisites
+
+Install dependencies with npm
+
+```
+npm install
+```
+
+### Run development server
+
+```
+npm run dev
+```
+
+If you're using bun:
+
+```
+bun dev
+```
+
+## Tests
+
+### Install dependencies
+
+```
+npx playwright install-deps
+npx playwright install msedge
+```
+
+### Running tests
+
+Unit testing
+```
+npm run test:unit
+```
+
+E2E testing
+
+```
+npm run test:e2e
+```
+
+## Built With
+
+* [Svelte](https://svelte.dev/) - Web framework
+* [Daisy UI](https://daisyui.com/) - UI framework
+
+## Contributing
+
+Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
 
 # Backend
 
