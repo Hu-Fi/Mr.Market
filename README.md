@@ -72,10 +72,6 @@ npm run test:e2e
 * [Svelte](https://svelte.dev/) - Web framework
 * [Daisy UI](https://daisyui.com/) - UI framework
 
-# Backend
-
-See [README.md](server/README.md) for more details.
-
 # License
 
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](LICENSE) file for details
