@@ -1,7 +1,8 @@
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
+[Vercel production location](https://hufiui.vercel.app)
+
+![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=hufiui)
 ![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg)
 ![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
-https://hufiui.vercel.app
 
 # What is Mr.Market
 
