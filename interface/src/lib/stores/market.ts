@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import type { PairsData } from "$lib/types/hufi/exchanges";
 import { candleChartOptions, lineOptions } from "$lib/helpers/chart";
 
 // Coin
@@ -6,7 +7,11 @@ import { candleChartOptions, lineOptions } from "$lib/helpers/chart";
 export const activeTab = writable(0);
 // 0 Favorites, 1 All, 2 MainStream, 3 Layer1, 4 Layer2, 5 Inscription, 6 AI, 7 Meme, 8 Defi, 9 GameFi, 10 NFT
 export const activeSecondTab = writable(1);
-export const currentCoin = writable({"id": "bitcoin","symbol": "btc","name": "Bitcoin","image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400","current_price": 42647,"market_cap": 835106968766,"market_cap_rank": 1,"fully_diluted_valuation": 895363344292,"total_volume": 12072391201,"high_24h": 42782,"low_24h": 42095,"price_change_24h": 153.96,"price_change_percentage_24h": 0.36232,"market_cap_change_24h": 3004861113,"market_cap_change_percentage_24h": 0.36112,"circulating_supply": 19586737,"total_supply": 21000000,"max_supply": 21000000,"ath": 69045,"ath_change_percentage": -38.24065,"ath_date": "2021-11-10T14:24:11.849Z","atl": 67.81,"atl_change_percentage": 62784.86453,"atl_date": "2013-07-06T00:00:00.000Z","roi": null,"last_updated": "2024-01-01T14:46:24.444Z"});
+export const currentCoin = writable<PairsData>({
+  symbol: 'BTC/USDT',
+  price: 0,
+  exchange: 'binance',
+})
 export const currentCoinChart = writable()
 export const showCoinPrice = writable(true)
 export const ChartPrice = writable([])
@@ -28,7 +33,11 @@ export const setActiveTab = (x: number) => {
 
 // Candle
 export const CandleLoaded = writable(false)
-export const CandlePair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, exchange: "binance"})
+export const CandlePair = writable<PairsData>({
+  symbol: 'BTC/USDT',
+  price: 0,
+  exchange: 'binance',
+})
 export const CandlePairSearch = writable("")
 export const CandlePairSelectorDialog = writable(false)
 export const CandlePairSelectorLoaded = writable(false)

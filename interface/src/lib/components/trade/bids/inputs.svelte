@@ -5,12 +5,12 @@
   import { BN, formatDecimals } from "$lib/helpers/utils";
   //@ts-ignore
   import { cleave } from "svelte-cleavejs";
+  import { darkTheme } from "$lib/stores/theme";
   import authorize from "$lib/helpers/mixin-oauth";
   import { AfterMixinOauth } from "$lib/helpers/mixin";
   import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
   import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
   import { pair, price, amount, total, buy, orderType, current } from "$lib/stores/trade";
-    import { darkTheme } from "$lib/stores/theme";
 
   let usdValue = 1
   let slider = 0
@@ -46,7 +46,7 @@
   <div class={clsx("flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400", $orderType.index === 1 ? $darkTheme ? "bg-slate-800":"bg-slate-50" : "bg-base-100")}>
     {#if $orderType.index === 0}
       <input type="tel" use:cleave={maskOption} bind:value={$price} placeholder={$_("price")} class={clsx("input input-sm text-base bg-base-100 w-full focus:outline-none focus:border-0 px-0")} />  
-      <span class="text-xs opacity-60"> {$pair.second} </span>
+      <span class="text-xs opacity-60"> {$pair.symbol.split('/')[1]} </span>
     {:else if $orderType.index === 1}
       <input disabled placeholder={$_("market_price")} class={clsx("h-[2rem] text-base w-full px-0", $darkTheme ? "bg-slate-800":"bg-slate-50")} />
     {/if}
@@ -63,7 +63,7 @@
     <!-- Amount input -->
     <div class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400">
       <input type="tel" on:keyup={getTotal} use:cleave={maskOption} bind:value={$amount} placeholder={$_("amount")} class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0" />
-      <span class="text-xs opacity-60"> {$pair.first} </span>
+      <span class="text-xs opacity-60"> {$pair.symbol.split('/')[0]} </span>
     </div>
   {/if}
 
@@ -82,14 +82,14 @@
   <!-- Total -->
   <div class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400">
     <input type="tel" on:keyup={getAmount} use:cleave={maskOption} bind:value={$total} placeholder={$_("total")} class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0" />
-    <span class="text-xs opacity-60"> {$pair.second} </span>
+    <span class="text-xs opacity-60"> {$pair.symbol.split('/')[1]} </span>
   </div>
 
   <!-- Balance -->
   <div class="flex items-center justify-between mb-1 py-1">
     {#if $mixinConnected}
       <span class="text-xs opacity-60">{$_('balance')}:</span>
-      <button class="" on:click={()=>{setBalance()}}><span class="text-xs opacity-90">{balance} {$pair.second}</span></button>
+      <button class="" on:click={()=>{setBalance()}}><span class="text-xs opacity-90">{balance} {$pair.symbol.split('/')[1]}</span></button>
     {:else}
       <button class="flex w-full items-center space-x-1" on:click={()=>auth()}>
         <button><span class="text-xs opacity-90">{$_('connect_wallet')}</span></button>

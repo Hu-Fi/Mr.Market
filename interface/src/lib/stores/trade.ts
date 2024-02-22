@@ -1,13 +1,17 @@
 import { writable } from "svelte/store";
 import type { Socket } from "socket.io-client";
 import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
-import type { OrderBookPriceFormat } from "$lib/types/hufi/exchanges";
+import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
 
 export const socket = writable<Socket>()
-export const pair = writable({first: "BTC", second: "USDT", price: 43576, percentage: -0.87, exchange: "binance"})
+export const pair = writable<PairsData>({
+  symbol: 'BTC/USDT',
+  price: 0,
+  exchange: 'binance',
+})
 export const pairSearch = writable("")
 export const pairSelectorDialog = writable(false)
 export const pairSelectorLoaded = writable(false)

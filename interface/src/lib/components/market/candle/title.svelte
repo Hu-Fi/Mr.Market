@@ -6,6 +6,7 @@
   import { mixinShare } from "$lib/helpers/mixin";  
   import { AppName } from "$lib/helpers/constants";
   import MixinMenu from "$lib/components/common/MixinMenu.svelte";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { CandlePairSelectorDialog as sd, CandlePair, currentCoin } from "$lib/stores/market";
   
   let like = false
@@ -18,8 +19,8 @@
   </button>
 
   <button class="flex items-center" on:click={()=>sd.set(true)}>
-    <img src={$CandlePair.icon} alt="icon" loading="lazy" class="w-4 h-4 mr-1" />
-    <span class="font-black text-base"> {$CandlePair.first+"/"+$CandlePair.second} </span>
+    <img src={findExchangeIconByIdentifier($CandlePair.exchange)} alt="icon" loading="lazy" class="w-4 h-4 mr-1" />
+    <span class="font-black text-base"> {$CandlePair.symbol.split('/')[0]+"/"+$CandlePair.symbol.split('/')[1]} </span>
     {#if !$sd}
       <!-- Caret down Icon -->
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>

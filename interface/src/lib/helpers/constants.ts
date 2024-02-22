@@ -42,7 +42,7 @@ export const SUPPORTED_PAIRS: {
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);
 
 // Limit needs 12, Market needs 10, use 14 to avoid data loss
-export const ORDERBOOK_STREAM_LENGTH = 14
+export const ORDERBOOK_STREAM_LENGTH = 25
 export const LIMIT_ORDERBOOK_LENGTH = 12
 export const MARKET_ORDERBOOK_LENGTH = 10
 export const LIMIT_ORDERBOOK_HALF_LENGTH = LIMIT_ORDERBOOK_LENGTH/2

@@ -9,7 +9,7 @@
       {$_("price")}
     </span>
     <span>
-      ({$pair.second})
+      ({$pair.symbol.split('/')[0]})
     </span>
   </div>
 
@@ -18,7 +18,7 @@
       {$_("amount")}
     </span>
     <span>
-      ({$pair.first})
+      ({$pair.symbol.split('/')[1]})
     </span>
   </div>
 </div>

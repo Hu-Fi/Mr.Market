@@ -30,6 +30,13 @@ export interface OHLCVData {
   
 }
 
+export type PairsData = {
+  symbol: SupportedPairs;
+  price: number;
+  exchange: SupportedExchanges;
+  change?: number;
+}
+
 // {
 //   "symbol": "BTC/USDT",
 //   "timestamp": 1707725876275,

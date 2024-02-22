@@ -1,37 +1,52 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { formatUSNumber } from "$lib/helpers/utils";
+  import { onDestroy, onMount } from "svelte";
+  import { pairsFn } from "$lib/helpers/hufi/coin";
+  import type { PairsData } from "$lib/types/hufi/exchanges";
+  import Loading from "$lib/components/common/loading.svelte";
   import NoResult from "$lib/components/common/NoResult.svelte";
+  import { switchCandleStickPair } from "$lib/helpers/hufi/socket";
+  import { formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, SUPPORTED_EXCHANGES, SUPPORTED_PAIRS, UpColorText } from "$lib/helpers/constants";
-  import { CandlePairSelectorDialog as sd, CandlePair, CandlePairSearch, CandlePairExchangeFilter } from "$lib/stores/market";
+  import { CandlePairSelectorDialog as sd, CandlePair, CandlePairSearch, CandlePairExchangeFilter, CandlePairSelectorLoaded, CandlePairSelectorDialog } from "$lib/stores/market";
 
   let items = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
 
-  $: placeholders = Object.entries(SUPPORTED_PAIRS).flatMap(([exchange, pairs]) => {
-    return pairs.map(pair => {
-      const [first, second] = pair.split('/');
-      const icon = findExchangeIconByIdentifier(exchange);
-      return { first, second, icon, exchange };
-    });
-  }).filter((item)=>{
-    return (
-      $CandlePairExchangeFilter.toUpperCase() === 'ALL' ?
-      item :
-      item.exchange.toUpperCase().match($CandlePairExchangeFilter.toUpperCase())
-    )}
-  ).filter((item) => {
-    return (
-      item.first.toUpperCase().match($CandlePairSearch.toUpperCase()) ||
-      item.exchange.toUpperCase().match($CandlePairSearch.toUpperCase())
-    );
-  })
+  let pairs: PairsData[];
+  $: filteredPairs = pairs ?
+    pairs.filter((item)=>{
+      return (
+        $CandlePairExchangeFilter.toUpperCase() === 'ALL' ?
+        item :
+        item.exchange.toUpperCase().match($CandlePairExchangeFilter.toUpperCase())
+      )}
+    ).filter((item) => {
+      return (
+        item.symbol.toUpperCase().match($CandlePairSearch.toUpperCase()) ||
+        item.exchange.toUpperCase().match($CandlePairSearch.toUpperCase())
+      );
+    })
+  : []
 
   $: if ($sd === false) {
     CandlePairSearch.set('')
     CandlePairExchangeFilter.set('all')
+    CandlePairSelectorDialog.set(false)
   }
+
+  const loadPairs = async () => {
+    pairs = await pairsFn()
+    CandlePairSelectorLoaded.set(true)
+    console.log('pairs:',pairs)
+  }
+  onMount(async ()=> {
+    await loadPairs()
+  })
+  onDestroy(async ()=> {
+    CandlePairSelectorLoaded.set(false)
+  })
 </script>
 
 <dialog id="candle_select_pair_modal" class="modal modal-bottom sm:modal-middle" class:modal-open={$sd}>
@@ -65,38 +80,49 @@
       </div>
     </div>
     
-    <!-- Pairs -->
-    <div class="flex flex-col overflow-y-auto mt-0 px-4">
-      {#if placeholders.length === 0}
-        <div class="w-full flex items-center justify-center">
-          <NoResult />
-        </div>  
-      {:else}
-        {#each placeholders as c}
-          <div class="w-full flex items-center justify-start space-x-2 py-3 h-16">
-            <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{CandlePair.set(c); sd.set(false);}}>
-              <div class="flex items-center space-x-2.5">
-                <img src={c.icon} alt="-" loading="lazy" class="w-5 h-5" />
-                <span class="flex items-center font-semibold text-base">
-                  {c.first}<span class="font-light text-xs text-base-content/60">/{c.second}</span>
-                </span>
-              </div>
     
-              {#if c.price && c.percentage}
-              <div class="flex flex-col items-end">
-                <span class="text-sm font-semibold">
-                  {formatUSNumber(c.price)}
-                </span>
-                <span class={clsx("text-xs !text-[10px]", c.percentage >= 0 ? UpColorText : DownColorText)}>
-                  {c.percentage}%
-                </span>
-              </div>
-              {/if}
-            </button>
+    {#if $CandlePairSelectorLoaded}
+      <!-- Pairs -->
+      <div class="flex flex-col overflow-y-auto mt-0 px-4">
+        {#if filteredPairs.length === 0}
+          <div class="w-full flex items-center justify-center">
+            <NoResult />
           </div>
-        {/each}
-      {/if}
-    </div>
+        {:else}
+          {#each filteredPairs as c}
+            <div class="w-full flex items-center justify-start space-x-2 py-3 h-16">
+              <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{
+                switchCandleStickPair()
+              }}>
+                <div class="flex items-center space-x-2.5">
+                  <img src={findExchangeIconByIdentifier(c.exchange)} alt="-" loading="lazy" class="w-5 h-5" />
+                  <span class="flex items-center font-semibold text-base">
+                    {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
+                  </span>
+                </div>
+        
+                <div class="flex flex-col items-end">
+                  {#if c.price}
+                    <span class="text-sm font-semibold">
+                      {formatUSNumber(c.price)}
+                    </span>
+                  {/if}
+                  {#if c.change}
+                    <span class={clsx("text-xs !text-[10px]", c.change >= 0 ? UpColorText : DownColorText)}>
+                      {c.change >= 0 ? '+':''}{formatDecimals(c.change, 2)}%
+                    </span>
+                  {/if}
+                </div>
+              </button>
+            </div>
+          {/each}
+        {/if}
+      </div>
+    {:else}
+      <div class="flex justify-center items-center h-full">
+        <Loading />
+      </div>
+    {/if}
   </div>
   <form method="dialog" class="modal-backdrop">
     <button on:click={()=>sd.set(false)}></button>

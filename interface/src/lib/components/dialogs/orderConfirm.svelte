@@ -4,7 +4,7 @@
   import { amount, buy, orderConfirmDialog, pair, price, total } from "$lib/stores/trade";
 
   $: infos = [
-    {title: $_('payment_amount'), value: $buy ? `${$total} ${$pair.second}` : `${$amount} ${$pair.first}`},
+    {title: $_('payment_amount'), value: $buy ? `${$total} ${$pair.symbol.split('/')[1]}` : `${$amount} ${$pair.symbol.split('/')[0]}`},
     {title: $_('estimated_price'), value: $price},
     {title: $_('recipient'), value: $_('mixin_wallet')},
   ]
@@ -40,7 +40,7 @@
           {$_('estimated_receive')}
         </span>
         <span class="text-3xl font-bold">
-          {$buy ? $amount : $total} {$buy ? $pair.first : $pair.second}
+          {$buy ? $amount : $total} {$buy ? $pair.symbol.split('/')[0] : $pair.symbol.split('/')[1]}
         </span>
       </div>
 
@@ -60,7 +60,7 @@
             {:else if i === 1}
               <!-- Exchange price -->
               <span>
-                1 {$pair.first} = {info.value} {$pair.second}
+                1 {$pair.symbol.split('/')[0]} = {info.value} {$pair.symbol.split('/')[1]}
               </span>
             {:else}
               <span>
