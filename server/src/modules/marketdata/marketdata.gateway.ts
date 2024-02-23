@@ -1,11 +1,11 @@
+import { v4 as uuidv4 } from 'uuid';
+import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway, SubscribeMessage, MessageBody,
   ConnectedSocket, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer
 } from '@nestjs/websockets';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { MarketdataService, marketDataType } from './marketdata.service';
-import { Logger } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 
 @WebSocketGateway(3012, { namespace: '/marketdata', cors: true })
 export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

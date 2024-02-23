@@ -1,11 +1,12 @@
 import { get } from "svelte/store";
 import { io } from "socket.io-client";
+import { goto } from "$app/navigation";
 import type { Socket } from "socket.io-client";
 import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
-import type { MarketDataType, SupportedExchanges } from "$lib/types/hufi/exchanges";
+import type { MarketDataType, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
 import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/trade";
-import { CandleLoaded, CandlePair, CandlePairSelectorDialog } from "$lib/stores/market";
-import { decodeCandleStick, decodeOrderBook, decodeTicker } from "$lib/helpers/hufi/marketDataDecoder";
+import { CandleChartLoaded, CandleLoaded, CandleOrderBookLoaded, CandlePair, CandlePairSelectorDialog, CandlePriceLoaded } from "$lib/stores/market";
+import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/hufi/marketDataDecoder";
 
 // /trade
 export const connectOrderBook = (): Socket => {
@@ -30,7 +31,6 @@ export const connectOrderBook = (): Socket => {
   return socket;
 };
 
-// Orderbook
 export const subscribeOrderBook = (socket: Socket) => {
   socket.emit("subscribeOrderBook", {
     exchange: get(pair).exchange,
@@ -54,6 +54,8 @@ export const switchSpotPair = (socket: Socket, c: any) => {
   subscribeOrderBook(socket)
 }
 
+
+
 // /market/candle/{EXCHANGE}/{PAIR}
 export const connectCandleStick = (): Socket => {
   let socket: Socket;
@@ -70,7 +72,7 @@ export const connectCandleStick = (): Socket => {
   });
 
   socket.on("tickerData", (data) => {
-    decodeTicker('binance', data);
+    decodeCandleTicker('binance', data);
   })
 
   socket.on('OHLCVData', (data) => {
@@ -79,14 +81,22 @@ export const connectCandleStick = (): Socket => {
   })
 
   socket.on("orderBookData", (data) => {
-    decodeOrderBook("binance", data);
+    decodeCandleOrderbook("binance", data);
   });
 
   return socket;
 };
 
-export const switchCandleStickPair = () => {
+export const switchCandleStickPair = (socket: Socket, pair: TickerData) => {
+  unSubscribeCandleStick(socket);
+  CandlePriceLoaded.set(false)
+  CandleChartLoaded.set(false)
+  CandleOrderBookLoaded.set(false)
+  CandlePair.set(pair);
+  goto(`/market/candle/${pair.exchange}/${pair.symbol.replace('/', '-')}`)
+  console.log('pair:', pair)
   CandlePairSelectorDialog.set(false);
+  subscribeCandleStick(socket);
 }
 
 export const subscribeCandleStick = (socket: Socket) => {
@@ -105,8 +115,7 @@ export const subscribeCandleStick = (socket: Socket) => {
   });
 
   // OrderBook
-  socket.emit("subscribeOrderbook", {
-    type: 'orderbook' as MarketDataType,
+  socket.emit("subscribeOrderBook", {
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
   });
@@ -119,13 +128,13 @@ export const unSubscribeCandleStick = (socket: Socket) => {
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
   })
 
-  socket.emit("unsubscribeTicker", {
+  socket.emit("unsubscribeData", {
     type: 'ticker' as MarketDataType,
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
   });
 
-  socket.emit("unsubscribeOrderbook", {
+  socket.emit("unsubscribeData", {
     type: 'orderbook' as MarketDataType,
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,

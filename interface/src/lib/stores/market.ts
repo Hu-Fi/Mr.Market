@@ -1,7 +1,8 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import { lineOptions } from "$lib/helpers/chart";
+import { fetchOHLCV } from "$lib/helpers/hufi/coin";
 import type { Chart } from "svelte-lightweight-charts";
-import type { TickerData } from "$lib/types/hufi/exchanges";
-import { candleChartOptions, lineOptions } from "$lib/helpers/chart";
+import type { OHLCVData, SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
 
 // Coin
 // 0 Coins, 1 Spot, 2 Perp, 3 Options
@@ -41,16 +42,22 @@ export const CandlePairSelectorLoaded = writable(false)
 export const CandlePairExchangeFilter = writable("all")
 // 0 Chart, 1 Overview, 2 Data, 3 Trade
 export const CandleTabActive = writable(0)
-export const CandleChartOptions = writable(candleChartOptions);
-export const CandleTooltipData = writable({time: "2023-11-26", open: 37806.84, high: 37842.17, low: 37156.72, close: 37462.79, amount: 12370, turnover: 28220000})
 // 0 OrderBook, 1 Depth, 2 Last trades
 export const CandleDetailTab = writable(0)
 export const CandleDetailBookDecimal = writable(1)
 export const CandleDetailBookDecimalDialog = writable(false)
 
+export const CandlePriceLoaded = writable(false)
+export const CandleChartLoaded = writable(false)
+export const CandleOrderBookLoaded = writable(false)
+
 export const CandleChart = writable<Chart>()
-export const CandleTimeRange = writable(4*60*60)
+export const CandleTimeRange = writable({k: '4h', v: '4h' as SupportedTimeFrame})
 export const CandleTimeRangeDialog = writable(false)
 export const CandleIndicatorDialog = writable(false)
 
-export const s = writable()
+export const fetchCandleChartData = async (): Promise<OHLCVData[]> => {
+  const pair = get(CandlePair)
+  const timeFrame = get(CandleTimeRange).v
+  return fetchOHLCV(pair.exchange, pair.symbol, timeFrame)
+}
