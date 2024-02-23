@@ -102,7 +102,12 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
       return;
     }
     this.subscribeToMarketData('orderbook', data.exchange, data.symbol, clientId, client, (orderBookData) => {
-      this.broadcastToSubscribedClients(this.createCompositeKey('orderbook', data.exchange, data.symbol), { exchange: data.exchange, symbol: data.symbol, data: orderBookData });
+      this.broadcastToSubscribedClients(this.createCompositeKey('orderbook', data.exchange, data.symbol), {
+        exchange: data.exchange, 
+        symbol: data.symbol,
+        bids: orderBookData.bids.map(([price, amount]) => ({ price, amount })),
+        asks: orderBookData.asks.map(([price, amount]) => ({ price, amount })).reverse(), 
+      });
     })
   }
 
@@ -119,7 +124,11 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
     }
 
     this.subscribeToMarketData('OHLCV', data.exchange, data.symbol, clientId, client, (OHLCVData) => {
-      this.broadcastToSubscribedClients(this.createCompositeKey('OHLCV', data.exchange, data.symbol), { exchange: data.exchange, symbol: data.symbol, data: OHLCVData });
+      this.broadcastToSubscribedClients(this.createCompositeKey('OHLCV', data.exchange, data.symbol), { 
+        exchange: data.exchange, 
+        symbol: data.symbol, 
+        data: OHLCVData 
+      });
     })
   }
 

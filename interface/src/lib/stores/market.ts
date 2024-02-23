@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import { lineOptions } from "$lib/helpers/chart";
 import type { Chart } from "svelte-lightweight-charts";
-import type { SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
+import type { OrderBookPriceFormat, SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
 
 // Coin
 // 0 Coins, 1 Spot, 2 Perp, 3 Options
@@ -43,8 +43,6 @@ export const CandlePairExchangeFilter = writable("all")
 export const CandleTabActive = writable(0)
 // 0 OrderBook, 1 Depth, 2 Last trades
 export const CandleDetailTab = writable(0)
-export const CandleDetailBookDecimal = writable(1)
-export const CandleDetailBookDecimalDialog = writable(false)
 
 export const CandlePriceLoaded = writable(false)
 export const CandleChartLoaded = writable(false)
@@ -54,3 +52,5 @@ export const CandleChart = writable<Chart>()
 export const CandleTimeRange = writable({k: '4h', v: '4h' as SupportedTimeFrame})
 export const CandleTimeRangeDialog = writable(false)
 export const CandleIndicatorDialog = writable(false)
+export const CandleBids = writable<OrderBookPriceFormat[]>([])
+export const CandleAsks = writable<OrderBookPriceFormat[]>([])
