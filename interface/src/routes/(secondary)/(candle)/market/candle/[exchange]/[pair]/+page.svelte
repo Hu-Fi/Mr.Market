@@ -3,7 +3,7 @@
   import { goto } from "$app/navigation";
   import { socket } from "$lib/stores/trade";
   import { onDestroy, onMount } from "svelte";
-  import { CandleDetailTab, CandlePair } from "$lib/stores/market";
+  import { CandleDetailTab } from "$lib/stores/market";
   import type { SupportedPairs } from "$lib/types/hufi/exchanges";
   import Price from "$lib/components/market/candle/price.svelte";
 	import TimeRange from '$lib/components/dialogs/candle/timeRange.svelte';

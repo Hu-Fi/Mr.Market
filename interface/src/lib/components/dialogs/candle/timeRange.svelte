@@ -2,7 +2,8 @@
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import type { CandleTabs } from "$lib/types/hufi/exchanges";
-	import { CandleTimeRange, CandleTimeRangeDialog } from '$lib/stores/market';
+  import { setCandleTimeFrame } from "$lib/helpers/candle/candle";
+	import { CandleChart, CandleTimeRange, CandleTimeRangeDialog } from '$lib/stores/market';
 
   const ranges: CandleTabs = [  
     {k:$_('1m'), v: '1m'},
@@ -37,12 +38,17 @@
         </span>
       </div>
       <div class="grid grid-cols-4 gap-4 mx-4">
-        {#each ranges as r}
+        {#each ranges as tab}
           <button 
-            class={clsx("btn btn-xs rounded-md bg-base-100 no-animation shadow-none", $CandleTimeRange.v === r.v && "bg-base-200 text-base-content")}
-            on:click={()=>{CandleTimeRange.set(r); CandleTimeRangeDialog.set(false)} }
+            class={clsx("btn btn-xs rounded-md bg-base-100 no-animation shadow-none", $CandleTimeRange.v === tab.v && "bg-base-200 text-base-content")}
+            on:click={async ()=>{
+              CandleTimeRangeDialog.set(false)
+              CandleTimeRange.set(tab)
+              const data = await setCandleTimeFrame(tab);
+              $CandleChart.applyNewData(data);
+            } }
           >
-            <span> {r.k} </span>
+            <span> {tab.k} </span>
           </button>
         {/each}
       </div>

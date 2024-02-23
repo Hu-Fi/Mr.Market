@@ -1,8 +1,9 @@
 <script lang="ts">
   import clsx from 'clsx';
   import { _ } from "svelte-i18n"
-  import type { CandleTabs, SupportedTimeFrame } from '$lib/types/hufi/exchanges';
-	import { CandleTimeRange, CandleTimeRangeDialog, CandleIndicatorDialog, fetchCandleChartData, CandleChart } from '$lib/stores/market';
+  import type { CandleTabs } from '$lib/types/hufi/exchanges';
+  import { setCandleTimeFrame } from '$lib/helpers/candle/candle';
+	import { CandleTimeRange, CandleTimeRangeDialog, CandleIndicatorDialog, CandleChart } from '$lib/stores/market';
 
   let ranges: CandleTabs = [
     { k: $_("15m"),v: '15m'},
@@ -10,14 +11,6 @@
     { k: $_("4h"), v: '4h'},
     { k: $_("1d"), v: '1d'},
   ];
-  const setTimeFrame = async (timeFrame: SupportedTimeFrame) => {
-    CandleTimeRange.set(timeFrame);
-    await loadChart();
-  }
-  const loadChart = async () => {
-    const data = await fetchCandleChartData();
-    $CandleChart.applyNewData(data);
-  }
 </script>
 
 <div class="flex px-2 mt-2 items-center space-x-2">
@@ -28,9 +21,10 @@
           "btn min-w-8 w-12 btn-xs px-1 bg-base-100 border-none shadow-none no-animation hover:bg-base-200 focus:bg-base-200 focus:border-none rounded-md ",
           $CandleTimeRange.v === tab.v ? "bg-base-200 text-base-content" : "opacity-60",
         )}
-        on:click={() => {
+        on:click={async () => {
           CandleTimeRange.set(tab)
-          setTimeFrame(tab);
+          const data = await setCandleTimeFrame(tab);
+          $CandleChart.applyNewData(data);
         }}
       >
         {tab.k}

@@ -3,8 +3,9 @@
   import { page } from "$app/stores";
   import { onMount, onDestroy } from 'svelte'
   import { init, dispose } from "klinecharts";
+	import { CandleChart } from '$lib/stores/market';
+  import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
-	import { CandleChart, fetchCandleChartData } from '$lib/stores/market';
 	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
 
   const klineStyle = {
@@ -31,16 +32,13 @@
     $CandleChart.setStyles(klineStyle)
     $CandleChart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
 
-    await loadChart();
+    // Init chart
+    const data = await fetchCandleChartData();
+    $CandleChart.applyNewData(data);
   })
   onDestroy(() => {
     dispose('chart')
   })
-
-  const loadChart = async () => {
-    const data = await fetchCandleChartData();
-    $CandleChart.applyNewData(data);
-  }
 </script>
 
 {#await $page.data.chart}

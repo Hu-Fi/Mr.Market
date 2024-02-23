@@ -4,7 +4,8 @@ export type SupportedTimeFrame = '1s' | '1m' | '3m' | '5m' | '15m' | '30m' | '1h
 export type OrderBookPriceData = [number, number, number?]
 export type OrderBookPriceFormat = { price: number, amount: number}
 export type MarketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
-export type CandleTabs = {k:string, v: SupportedTimeFrame}[]
+export type CandleTab = {k:string, v: SupportedTimeFrame}
+export type CandleTabs = CandleTab[]
 
 export interface OrderBookData {
   exchange: SupportedExchanges,
