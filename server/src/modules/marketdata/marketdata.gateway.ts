@@ -89,7 +89,7 @@ export class MarketDataGateway implements OnGatewayInit, OnGatewayConnection, On
   private createCompositeKey(type: marketDataType, exchange: string, symbol?: string, symbols?: string[]): string {
     return `${type}:${exchange}:${symbols ? symbols: symbol}`;
   }
-    
+  
   @SubscribeMessage('subscribeOrderBook')
   async handleSubscribeOrderBook(
     @MessageBody() data: { exchange: string; symbol: string },
