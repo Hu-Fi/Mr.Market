@@ -2,7 +2,8 @@
   import { _ } from "svelte-i18n";
   import SingleHistory from "$lib/components/grow/arbitrage/details/singleHistory.svelte";
 
-  export let histories: Array<Object>;
+  // TODO: Set type when backend is ready
+  export let histories: Array<object>;
 </script>
 
 <div class="flex items-center p-6">

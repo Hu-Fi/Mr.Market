@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { cancelAllOrderDialog } from "$lib/stores/trade";
+  import { cancelAllOrderDialog } from "$lib/stores/spot";
 
   const cancelAll = () => {
     // Call API to cancel

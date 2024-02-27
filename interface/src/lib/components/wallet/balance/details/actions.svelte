@@ -10,7 +10,7 @@
 
 <!-- Actions -->
 <div class="join grid grid-cols-2 w-full p-6 pt-3">
-  {#each sections as section, i}
+  {#each sections as section}
     <button
       class={clsx(
         "btn btn-sm h-[2.5rem] join-item border-none no-animation",

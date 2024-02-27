@@ -1,7 +1,4 @@
 // @ts-nocheck
-// https://github.com/fox-one/uikit/blob/main/packages/uikit/src/utils/authorize.ts
-// https://github.com/fox-one/uikit/blob/main/packages/uikit/src/services/mixin/oauth.js
-// bun i reconnecting-websocket pako uuid pako axios crypto-js
 
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { gzip, ungzip } from "pako";
@@ -111,11 +108,13 @@ class MixinClient {
     this.endpoint = endpoint;
   }
   disconnect() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
     self.ws.close();
   }
   connect(callback, clientId, scope, codeChallenge) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
 
     self.handled = false;
@@ -159,6 +158,7 @@ class MixinClient {
   }
 
   sendRefreshCode(clientId, scope, codeChallenge, authorization) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     if (self.handled) {
       return;
@@ -181,6 +181,7 @@ class MixinClient {
       this.ws.send(gzip(JSON.stringify(msg)));
     } catch (e) {
       if (e instanceof DOMException) {
+        console.error('DOMException')
       } else {
         console.error(e);
       }

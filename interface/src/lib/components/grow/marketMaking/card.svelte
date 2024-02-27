@@ -8,11 +8,11 @@
 
   export let data = {type: 'mm',  name: $_('market_making'), exchange: 'binance', base: 'ETH', target: 'USDT', profit: '-1.08', amount: '17232', started: '2023-09-28T12:00:12Z', id: '1c7aeede-e14e-4017-bb38-8ffe57667b93' }
 
-  let infos = [
-    { f: 'pair', key: $_('pair'), value: `${data.base}/${data.target}` },
-    { f: 'profit', key: $_('profit'), value: data.profit },
-    { f: 'amount', key: $_('amount'), value: data.amount },
-  ]
+  // let infos = [
+  //   { f: 'pair', key: $_('pair'), value: `${data.base}/${data.target}` },
+  //   { f: 'profit', key: $_('profit'), value: data.profit },
+  //   { f: 'amount', key: $_('amount'), value: data.amount },
+  // ]
   $: makingProfit = Number(data.profit) >= 0
 </script>
 

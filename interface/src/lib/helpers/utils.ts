@@ -70,6 +70,8 @@ export const formatChartPrice = (s: string | number) => {
 }
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
+  lang;
+
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 8);
   } else if (num >= 10000000) {
@@ -84,11 +86,58 @@ export const formatWalletBalance = (num: number, lang: string = 'en') => {
 }
 
 export const formatWalletBalanceFull = (num: number, lang: string = 'en') => {
+  console.log('lang:', lang)
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 9);
   } else {
     return num;
   }
+}
+
+export const formatOrderBookPrice = (s: string | number) => {
+  // 10000.00
+  // 1000.00
+  // 100.00
+  // 10.00
+  // 1.000
+  // 0.1000
+  // 0.010000
+  // 0.001000
+  // 0.0001000
+  // 0.00001000
+
+  const numValue = Number(s);
+  const strValue = numValue.toString();
+
+  // Handle the case when there is no decimal point
+  if (!strValue.includes('.')) {
+    return numValue;
+  }
+
+  if (numValue < 0.0001) return numValue;
+  const [integerPart, decimalPart] = strValue.split('.');
+  let finalDecimalLength = 0;
+
+  // s >= 10, 2 decimals
+  if (integerPart.length > 1) finalDecimalLength = 2;
+  
+  // 1 <= s < 10, 3 decimals
+  else if (integerPart.length == 1) finalDecimalLength = 3;
+
+  // 0.0001 <= s < 1, 8 decimals
+  else if (numValue >= 0.0001 && numValue < 1) finalDecimalLength = 8;
+
+  // s < 0.0001, all decimals
+  else if (numValue < 0.0001) finalDecimalLength = decimalPart.length;
+
+  return BN(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`).toString();
+
+  // Format determined by decimal places
+  // return BN(Number(x)).toFixed(2)
+}
+
+export const formatOrderBookAmount = (x: string | number) => {
+  return formatDecimals(x, 4)
 }
 
 export const getAssetPercentage = (balance: string | number, total: string | number) => {

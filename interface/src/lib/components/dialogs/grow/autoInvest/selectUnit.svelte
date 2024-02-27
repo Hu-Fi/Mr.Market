@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { createAIFiat, createAISelectUnitDialog } from "$lib/stores/grow";
   
   const placeholders = [

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import Apps from "$lib/components/home/applications/apps.svelte";
   import Balance from "$lib/components/home/walletBalance/balance.svelte";
   import Tabs from "$lib/components/home/markets/tabs.svelte";

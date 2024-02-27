@@ -1,24 +1,21 @@
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
-	import { CandleTimeRange, CandleTimeRangeDialog } from '$lib/stores/market';
+  import type { CandleTabs } from "$lib/types/hufi/exchanges";
+  import { socket } from '$lib/stores/spot';
+  import { switchCandleStickTimeFrame } from '$lib/helpers/hufi/socket';
+	import { CandleChart, CandleTimeRange, CandleTimeRangeDialog } from '$lib/stores/market';
 
-  const ranges = [  
-    {k:$_('1s'), v: 1, fn:()=>{  }},
-    {k:$_('1min'), v: 1*60, fn:()=>{  }},
-    {k:$_('3min'), v: 3*60, fn:()=>{  }},
-    {k:$_('5min'), v: 5*60,fn:()=>{  }},
-    {k:$_('15m'), v: 15*60,  fn:()=>{  }},
-    {k:$_('30m'), v: 30*60,  fn:()=>{  }},
-    {k:$_('1hr'), v: 60*60,  fn:()=>{  }},
-    {k:$_('2hr'), v: 2*60*60,  fn:()=>{  }},
-    {k:$_('4hr'), v: 4*60*60, fn:()=>{  }},
-    {k:$_('1d'), v: 24*60*60, fn:()=>{  }},
-    {k:$_('2d'), v: 2*24*60*60,fn:()=>{  }},
-    {k:$_('3d'), v: 3*24*60*60,  fn:()=>{  }},
-    {k:$_('5d'), v: 5*24*60*60,  fn:()=>{  }},
-    {k:$_('1w'), v: 7*24*60*60,  fn:()=>{  }},
-    {k:$_('1m'), v: 30*24*60*60,  fn:()=>{  }},
+  const ranges: CandleTabs = [  
+    {k:$_('1m'), v: '1m'},
+    {k:$_('5m'), v: '5m'},
+    {k:$_('15m'),v: '15m'},
+    {k:$_('30m'),v: '30m'},
+    {k:$_('1h'), v: '1h'},
+    {k:$_('4h'), v: '4h'},
+    {k:$_('1d'), v: '1d'},
+    {k:$_('1w'), v: '1w'},
+    {k:$_('1M'), v: '1M'},
   ]
 </script>
 
@@ -42,12 +39,16 @@
         </span>
       </div>
       <div class="grid grid-cols-4 gap-4 mx-4">
-        {#each ranges as r}
+        {#each ranges as tab}
           <button 
-            class={clsx("btn btn-xs rounded-md bg-base-100 no-animation shadow-none", $CandleTimeRange === r.v && "bg-base-200 text-base-content")}
-            on:click={()=>{CandleTimeRange.set(r.v); CandleTimeRangeDialog.set(false)} }
+            class={clsx("btn btn-xs rounded-md bg-base-100 no-animation shadow-none", $CandleTimeRange.v === tab.v && "bg-base-200 text-base-content")}
+            on:click={async ()=>{
+              CandleTimeRangeDialog.set(false)
+              const data = await switchCandleStickTimeFrame($socket, tab);
+              $CandleChart.applyNewData(data);
+            } }
           >
-            <span> {r.k} </span>
+            <span> {tab.k} </span>
           </button>
         {/each}
       </div>

@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
 	import SingleSnapshot from '$lib/components/wallet/balance/details/singleSnapshot.svelte';
 
-  export let histories = ['']
+  export let histories: string[];
 </script>
 
 <!-- History -->
 <div class="flex flex-col px-6">
-  {#each histories as h}
+  {#each histories as _}
     <SingleSnapshot />
   {/each}
 

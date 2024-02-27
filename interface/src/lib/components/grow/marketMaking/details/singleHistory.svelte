@@ -1,8 +1,16 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { formatTimestampToTime } from "$lib/helpers/utils";
   import type { MarketMakingDetailHistoryType } from "$lib/types/hufi/market_making";
 
-  export let type: MarketMakingDetailHistoryType = 'sell'
+  const placeholder = {
+    amount0: 1.123,
+    symbol0: 'BTC',
+    amount1: 52341,
+    symbol1: 'USDT',
+    price: 45213
+  }
+  export let type: MarketMakingDetailHistoryType = 'place_buy'
 </script>
 
 <div class="flex w-full border rounded-2xl p-6 space-x-4">
@@ -16,13 +24,29 @@
       <svg xmlns="http://www.w3.org/2000/svg" name="arrow-up-tray" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
       </svg>
-    {:else if type === 'buy'}
+    {:else if type === 'place_buy'}
       <svg xmlns="http://www.w3.org/2000/svg" name="arrow-down-on-square" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
       </svg>
-    {:else if type === 'sell'}
+    {:else if type === 'place_sell'}
       <svg xmlns="http://www.w3.org/2000/svg" name="arrow-up-on-square" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15" />
+      </svg>
+    {:else if type === 'buy_filled'}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+      </svg>
+    {:else if type === 'sell_filled'}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+      </svg>        
+    {:else if type === 'buy_canceled'}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    {:else if type === 'sell_canceled'}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>    
     {:else if type === 'delete'}
       <svg xmlns="http://www.w3.org/2000/svg" name="trash" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -43,13 +67,21 @@
     <!-- Action made -->
     <div>
       {#if type === 'deposit'}
-        <span> {$_('deposit_amount_made', {values:{amount: '1.123', symbol:'BTC'}})} </span>
+        <span> {$_('deposit_amount_made', {values:{amount: placeholder.amount0, symbol: placeholder.symbol0}})} </span>
       {:else if type === 'withdraw'}
-        <span> {$_('withdraw_amount_made', {values:{amount: '1.123', symbol:'BTC'}})} </span>
-      {:else if type === 'buy'}
-        <span> {$_('buy_order_placed', {values:{amount: '1.123', symbol:'BTC'}})} </span>
-      {:else if type === 'sell'}
-        <span> {$_('sell_order_placed', {values:{amount: '1.123', symbol:'BTC'}})} </span>
+        <span> {$_('withdraw_amount_made', {values:{amount: placeholder.amount0, symbol: placeholder.symbol0}})} </span>
+      {:else if type === 'place_buy'}
+        <span> {$_('buy_order_placed', {values:{amount0: placeholder.amount0, symbol0: placeholder.symbol0, amount1: placeholder.amount1, symbol1: placeholder.symbol1, price: placeholder.price}})} </span>
+      {:else if type === 'place_sell'}
+        <span> {$_('sell_order_placed', {values:{amount0: placeholder.amount0, symbol0: placeholder.symbol0, amount1: placeholder.amount1, symbol1: placeholder.symbol1, price: placeholder.price}})} </span>
+      {:else if type === 'buy_filled'}
+        <span> {$_('buy_order_filled', {values:{amount0: placeholder.amount0, symbol0: placeholder.symbol0, amount1: placeholder.amount1, symbol1: placeholder.symbol1}})} </span>
+      {:else if type === 'sell_filled'}
+        <span> {$_('sell_order_filled', {values:{amount0: placeholder.amount0, symbol0: placeholder.symbol0, amount1: placeholder.amount1, symbol1: placeholder.symbol1}})} </span>
+      {:else if type === 'buy_canceled'}
+        <span> {$_('buy_order_canceled')} </span>
+      {:else if type === 'sell_canceled'}
+        <span> {$_('sell_order_canceled')} </span>
       {:else if type === 'delete'}
         <span> {$_('market_making_deleted')} </span>
       {:else if type === 'stop'}
@@ -66,7 +98,7 @@
 
     <!-- Time -->
     <div>
-
+      <span class="text-xs opacity-60"> {formatTimestampToTime('2024-01-28T21:52:21', true, true)} </span>
     </div>
   </div>
 </div>

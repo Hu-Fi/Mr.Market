@@ -1,7 +1,7 @@
 import colors from "tailwindcss/colors";
-import { ColorType } from "lightweight-charts";
 import { sma } from "technicalindicators";
-import { formatDecimals } from "./utils";
+import { ColorType } from "lightweight-charts";
+import { formatDecimals } from "$lib/helpers/utils";
 
 // Coin single line Chart
 export const coinChartOptions = {
@@ -54,7 +54,7 @@ export const coinChartOptions = {
   },
 };
 
-// CandleStick Chart
+// CandleStick Chart (lightweight chart)
 export const candleChartOptions = {
   autoSize: true,
   height: 300,
@@ -112,7 +112,7 @@ export const lineOptions = {
   lineWidth: 2,
   lineVisible: false,
   priceLineVisible: false,
-  color: false ? colors.green[500] : colors.red[500],
+  color: colors.green[500]
 };
 
 export const candleLineOptions = {

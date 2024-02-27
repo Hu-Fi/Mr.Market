@@ -22,7 +22,7 @@
       );
   }) : assets;
 
-  const toggleHighlight = async (item: object, index: number) => {
+  const toggleHighlight = async (item: object) => {
     toggleItemInArray($createAIAssets, "chain_id", item);
   };
 </script>

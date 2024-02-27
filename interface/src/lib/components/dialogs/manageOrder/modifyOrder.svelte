@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import { modifyOrderDialog } from "$lib/stores/trade";
+  // import { modifyOrderDialog } from "$lib/stores/spot";
 </script>
 
 <!-- <dialog

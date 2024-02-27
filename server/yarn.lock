@@ -1034,6 +1034,11 @@
   resolved "https://registry.yarnpkg.com/@nestjs/axios/-/axios-2.0.0.tgz#2116fad483e232ef102a877b503a9f19926bd102"
   integrity sha512-F6oceoQLEn031uun8NiommeMkRIojQqVryxQy/mK7fx0CI0KbgkJL3SloCQcsOD+agoEnqKJKXZpEvL6FNswJg==
 
+"@nestjs/cache-manager@^2.1.1":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/cache-manager/-/cache-manager-2.2.0.tgz#495990e219b7d9dbcda83e07fafd913d763a4067"
+  integrity sha512-hAcX1f5moiK7B8KnPZVfV/up4nrZnaeN6w0o3M+UzNJNlw6bsIH6bn7jpGqzySAWPD9iYE/rg5IxTe1vSWyWZg==
+
 "@nestjs/cli@^9.4.3":
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-9.5.0.tgz#ddf1b0e21b5507c151e0cd1a4cfcf6c55df7cb2e"
@@ -1071,15 +1076,15 @@
     iterare "1.2.1"
     tslib "2.6.2"
 
-"@nestjs/config@^3.0.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-3.1.1.tgz#51e23ed84debd08afb86acf7b92bc4bf341797da"
-  integrity sha512-qu5QlNiJdqQtOsnB6lx4JCXPQ96jkKUsOGd+JXfXwqJqZcOSAq6heNFg0opW4pq4J/VZoNwoo87TNnx9wthnqQ==
+"@nestjs/config@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-3.2.0.tgz#4ca70f88b0636f86741ba192dd51dd2f01eaa7c1"
+  integrity sha512-BpYRn57shg7CH35KGT6h+hT7ZucB6Qn2B3NBNdvhD4ApU8huS5pX/Wc2e/aO5trIha606Bz2a9t9/vbiuTBTww==
   dependencies:
-    dotenv "16.3.1"
+    dotenv "16.4.1"
     dotenv-expand "10.0.0"
     lodash "4.17.21"
-    uuid "9.0.0"
+    uuid "9.0.1"
 
 "@nestjs/core@10.2.10":
   version "10.2.10"
@@ -2023,6 +2028,11 @@ asap@^2.0.0:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==
 
+async@3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
+  integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
@@ -2291,6 +2301,15 @@ bytes@3.1.2:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.2.tgz#8b0beeb98605adf1b128fa4386403c009e0221a5"
   integrity sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==
 
+cache-manager@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/cache-manager/-/cache-manager-4.1.0.tgz#aa986421f1c975a862d6de88edb9ab1d30f4bd39"
+  integrity sha512-ZGM6dLxrP65bfOZmcviWMadUOCICqpLs92+P/S5tj8onz+k+tB7Gr+SAgOUHCQtfm2gYEQDHiKeul4+tYPOJ8A==
+  dependencies:
+    async "3.2.3"
+    lodash.clonedeep "^4.5.0"
+    lru-cache "^7.10.1"
+
 call-bind@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/call-bind/-/call-bind-1.0.5.tgz#6fa2b7845ce0ea49bf4d8b9ef64727a2c2e2e513"
@@ -2469,6 +2488,13 @@ co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
+
+coingecko-api-v3@^0.0.29:
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/coingecko-api-v3/-/coingecko-api-v3-0.0.29.tgz#68b43ecae04519ca9f669da44df596e868861845"
+  integrity sha512-4aF0mU6Pwmo78W4NsPbMslU3ooeSa2Dq8a8PFR+5+wWcWvTBMiUZgfy9UvybynYVsnvYCoyxtNwxTiMZBeZh4w==
+  dependencies:
+    https "^1.0.0"
 
 collect-v8-coverage@^1.0.0:
   version "1.0.2"
@@ -2784,7 +2810,12 @@ dotenv-expand@10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-10.0.0.tgz#12605d00fb0af6d0a592e6558585784032e4ef37"
   integrity sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==
 
-dotenv@16.3.1, dotenv@^16.0.3, dotenv@^16.3.1:
+dotenv@16.4.1:
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.1.tgz#1d9931f1d3e5d2959350d1250efab299561f7f11"
+  integrity sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==
+
+dotenv@^16.0.3, dotenv@^16.3.1:
   version "16.3.1"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
@@ -3613,6 +3644,11 @@ https-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
+https@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https/-/https-1.0.0.tgz#3c37c7ae1a8eeb966904a2ad1e975a194b7ed3a4"
+  integrity sha512-4EC57ddXrkaF0x83Oj8sM6SLQHAWXw90Skqu2M4AEWENZ3F02dFJE/GARA8igO79tcgYqGrD7ae4f5L3um2lgg==
+
 human-signals@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
@@ -4383,6 +4419,11 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
+
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.includes/-/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
@@ -4454,6 +4495,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+lru-cache@^7.10.1:
+  version "7.18.3"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.3.tgz#f793896e0fd0e954a59dfdd82f0773808df6aa89"
+  integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
 
 "lru-cache@^9.1.1 || ^10.0.0":
   version "10.1.0"
@@ -5248,11 +5294,6 @@ reflect-metadata@^0.1.13:
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.14.tgz#24cf721fe60677146bb77eeb0e1f9dece3d65859"
   integrity sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==
 
-reflect-metadata@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.2.1.tgz#8d5513c0f5ef2b4b9c3865287f3c0940c1f67f74"
-  integrity sha512-i5lLI6iw9AU3Uu4szRNPPEkomnkjRTaVt9hy/bn5g/oSzekBSMeLZblcjP74AW0vBabqERLLIrz+gR8QYR54Tw==
-
 regenerator-runtime@^0.14.0:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
@@ -6035,11 +6076,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
-
-uuid@9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
-  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 uuid@9.0.1, uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"

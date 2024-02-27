@@ -1,8 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { goto } from "$app/navigation";
-  import { currentArbitrageStatus, editArbitrageDialog } from "$lib/stores/grow";
+  import { editArbitrageDialog } from "$lib/stores/grow";
 
   // use $currentArbitrageStatus for status
   export let statusStop = true;

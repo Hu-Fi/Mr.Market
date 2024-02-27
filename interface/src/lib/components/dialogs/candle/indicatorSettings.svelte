@@ -1,42 +1,50 @@
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
-	import { CandleChart, CandleIndicatorDialog } from '$lib/stores/market';
+	import { CandleChart, CandleActiveIndicators, CandleIndicatorDialog } from '$lib/stores/market';
 
-  const toggleIndicator = (name: string) => {
-    
+  const toggleIndicator = (v: string, vv?: object) => {
+    // If indicator enabled, disable it
+    if ($CandleActiveIndicators.includes(v)) {
+      $CandleChart.removeIndicator('candle_pane', v);
+      CandleActiveIndicators.set($CandleActiveIndicators.filter(e => e !== v))
+      return;
+    }
+    // If not enabled, enable it
+    $CandleChart.createIndicator(vv ? vv : v, true, { id: 'candle_pane' })
+    CandleActiveIndicators.set([...$CandleActiveIndicators, v])
   }
-  const ranges = [
-    {k: 'MA', v: 'MA', fn: ()=>{}},
-    {k: 'BIAS', v: 'BIAS', fn: ()=>{}},
-    {k: 'VR', v: 'VR', fn: ()=>{}},
-    {k: 'EMA', v: 'EMA', fn: ()=>{}},
-    {k: 'BRAR', v: 'BRAR', fn: ()=>{}},
-    {k: 'WR', v: 'WR', fn: ()=>{}},
-    {k: 'SMA', v: 'SMA', fn: ()=>{}},
-    {k: 'CCI', v: 'CCI', fn: ()=>{}},
-    {k: 'MTM', v: 'MTM', fn: ()=>{}},
-    // {k: 'BBI', v: 'BBI', fn: ()=>{}},
-    // {k: 'DMI', v: 'DMI', fn: ()=>{}},
-    // {k: 'EMV', v: 'EMV', fn: ()=>{}},
-    // {k: 'VOL', v: 'VOL', fn: ()=>{}},
-    // {k: 'CR', v: 'CR', fn: ()=>{}},
-    // {k: 'SAR', v: 'SAR', fn: ()=>{}},
-    // {k: 'MACD', v: 'MACD', fn: ()=>{}},
-    // {k: 'PSY', v: 'PSY', fn: ()=>{}},
-    // {k: 'AO', v: 'AO', fn: ()=>{}},
-    // {k: 'BOLL', v: 'BOLL', fn: ()=>{}},
-    // {k: 'DMA', v: 'DMA', fn: ()=>{}},
-    // {k: 'ROC', v: 'ROC', fn: ()=>{}},
-    // {k: 'KDJ', v: 'KDJ', fn: ()=>{}},
-    // {k: 'TRIX', v: 'TRIX', fn: ()=>{}},
-    // {k: 'PVT', v: 'PVT', fn: ()=>{}},
-    // {k: 'KDJRSI', v: 'KDJRSI', fn: ()=>{}},
-    // {k: 'TRIXOBV', v: 'TRIXOBV', fn: ()=>{}},
-    // {k: 'PVTAVP', v: 'PVTAVP', fn: ()=>{}},
-    // {k: 'RSI', v: 'RSI', fn: ()=>{}},
-    // {k: 'OBV', v: 'OBV', fn: ()=>{}},
-    // {k: 'AVP', v: 'AVP', fn: ()=>{}},
+  const indicators = [
+    {k: 'MA', v: 'MA', vv: {name:'MA', calcParams: [5, 10, 30]}},
+    {k: 'EMA', v: 'EMA', vv: {name:'EMA', calcParams: [5, 10, 30]}},
+    {k: 'SMA', v: 'SMA'},
+    {k: 'MTM', v: 'MTM'},
+    {k: 'WR', v: 'WR'},
+    {k: 'CCI', v: 'CCI'},
+    {k: 'BIAS', v: 'BIAS'},
+    {k: 'VR', v: 'VR'},
+    // {k: 'BRAR', v: 'BRAR'},
+    // {k: 'BBI', v: 'BBI'},
+    // {k: 'DMI', v: 'DMI'},
+    // {k: 'EMV', v: 'EMV'},
+    // {k: 'VOL', v: 'VOL'},
+    // {k: 'CR', v: 'CR'},
+    // {k: 'SAR', v: 'SAR'},
+    // {k: 'MACD', v: 'MACD'},
+    // {k: 'PSY', v: 'PSY'},
+    // {k: 'AO', v: 'AO'},
+    // {k: 'BOLL', v: 'BOLL'},
+    // {k: 'DMA', v: 'DMA'},
+    // {k: 'ROC', v: 'ROC'},
+    // {k: 'KDJ', v: 'KDJ'},
+    // {k: 'TRIX', v: 'TRIX'},
+    // {k: 'PVT', v: 'PVT'},
+    // {k: 'KDJRSI', v: 'KDJRSI'},
+    // {k: 'TRIXOBV', v: 'TRIXOBV'},
+    // {k: 'PVTAVP', v: 'PVTAVP'},
+    // {k: 'RSI', v: 'RSI'},
+    // {k: 'OBV', v: 'OBV'},
+    // {k: 'AVP', v: 'AVP'},
   ]
 </script>
 
@@ -60,12 +68,12 @@
         </span>
       </div>
       <div class="grid grid-cols-4 gap-4 mx-4">
-        {#each ranges as r}
+        {#each indicators as i}
           <button 
-            class={clsx("btn btn-xs rounded-sm bg-base-100 no-animation shadow-none", false && "bg-base-200 text-base-content")}
-            on:click={()=>{CandleIndicatorDialog.set(false)} }
+            class={clsx("btn btn-xs rounded-sm bg-base-100 no-animation shadow-none", $CandleActiveIndicators.includes(i.v) && "bg-base-200 text-base-content")}
+            on:click={()=>{toggleIndicator(i.v, i.vv); CandleIndicatorDialog.set(false)} }
           >
-            <span> {r.k} </span>
+            <span> {i.k} </span>
           </button>
         {/each}
       </div>

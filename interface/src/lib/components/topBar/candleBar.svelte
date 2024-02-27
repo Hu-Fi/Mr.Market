@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PairSelector from "$lib/components/dialogs/candle/pairSelector.svelte"
+  import CandlePairSelector from "$lib/components/dialogs/candle/candlePairSelector.svelte"
   import Title from "$lib/components/market/candle/title.svelte";
 </script>
 
@@ -7,4 +7,4 @@
   <Title />
 </div>
 
-<PairSelector />
+<CandlePairSelector />

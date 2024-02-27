@@ -11,7 +11,7 @@ export default function (url: string) {
 		try {
 			const response = await fetch(url)
 			data.set(await response.json())
-		} catch(e: any) {
+		} catch(e) {
 			error.set(e)
 		}
 		loading.set(false)

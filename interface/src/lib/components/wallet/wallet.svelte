@@ -1,6 +1,5 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n"
   import { darkTheme } from "$lib/stores/theme";
   import { userAssets } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";

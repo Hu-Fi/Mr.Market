@@ -1,51 +1,56 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
-  import { formatDecimals, formatUSMoney, formatUSNumber, formatUsUnit } from "$lib/helpers/utils";
+  import clsx from "clsx";
+  import { _ } from "svelte-i18n";
   import { CandlePair } from "$lib/stores/market";
-  import { DownColorText, UpColorText } from "$lib/helpers/constants";
+  import { UpColorText } from "$lib/helpers/constants";
+  import {
+    formatDecimals,
+    formatUSMoney,
+    formatUSNumber,
+    formatUsUnit,
+  } from "$lib/helpers/utils";
 
-  const ss = [
-    {title: $_("24h_high"), value: 43226.7},
-    {title: $_("24h_low"), value: 41610.0},
-    {title: $_("24h_vol", {values:{coin:$CandlePair.first}}), value: 13090},
-    {title: $_("24h_turnover", {values:{coin:$CandlePair.second}}),value: 55636346233}
-  ]
-  
+  $: ss = [
+    { title: $_("24h_high"), value: $CandlePair.info?.high},
+    { title: $_("24h_low"), value: $CandlePair.info?.low},
+    {
+      title: $_("24h_vol", {
+        values: { coin: $CandlePair.symbol.split("/")[0] },
+      }),
+      value: $CandlePair.info?.volume,
+    },
+  ];
 </script>
 
 <div class="flex p-4 justify-between">
   <!-- Price -->
   <div class="flex flex-col space-y-1">
-    <!-- Price -->
-    <span class={clsx("text-3xl font-bold" ,true ? UpColorText : DownColorText)}>
+    <span class={clsx("text-3xl font-bold", UpColorText)}>
       {formatUSNumber($CandlePair.price)}
     </span>
 
     <div class="flex space-x-2 text-sm">
       <!-- USD Price -->
-      <span> 
-        {formatUSMoney($CandlePair.price)} 
+      <span>
+        {formatUSMoney($CandlePair.price)}
       </span>
 
       <!-- Change -->
-      <span class="{clsx(true ? UpColorText : DownColorText)}">
-        {$CandlePair.percentage}%
+      <span class={clsx(UpColorText)}>
+        {formatDecimals($CandlePair.change, 2)}%
       </span>
     </div>
   </div>
 
   <!-- Volume -->
-  <div class="flex flex-col">
-    {#each ss as s,i}
+  <div class="flex flex-col items-center justify-center space-y-1">
+    {#each ss as s, i}
       <div class="flex justify-between text-xs w-full space-x-2">
         <span class="opacity-60"> {s.title} </span>
-        <span> {i <= 1 ? formatDecimals(s.value, 1) : formatUsUnit(s.value)} </span>
+        <span>
+          {i <= 1 ? formatDecimals(s.value, 1) : formatUsUnit(s.value)}
+        </span>
       </div>
     {/each}
   </div>
 </div>
-
-<style>
-
-</style>

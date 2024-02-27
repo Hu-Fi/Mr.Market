@@ -54,6 +54,7 @@
     "pako": "^2.1.0",
     "postcss": "^8.4.32",
     "reconnecting-websocket": "^4.4.0",
+    "socket.io-client": "^4.7.4",
     "svelte-cleavejs": "^1.0.3",
     "svelte-french-toast": "^1.2.0",
     "svelte-i18n": "^4.0.0",

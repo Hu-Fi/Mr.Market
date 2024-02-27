@@ -10,7 +10,7 @@
     <WalletPercentLoader />
   </div>
   <div class="flex flex-col px-5">
-    {#each Array(10) as a}
+    {#each Array(10) as _}
       <SingleAssetLoader />
     {/each}
   </div>

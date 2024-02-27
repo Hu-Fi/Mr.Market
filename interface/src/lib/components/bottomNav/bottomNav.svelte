@@ -4,39 +4,41 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { darkTheme } from "$lib/stores/theme";
-  import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/trade";
+  import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
   
   $: active = $page.url.pathname.includes('/home') ? 0 : 
     $page.url.pathname.includes('/market') ? 1 : 
-    $page.url.pathname.includes('/trade') ? 2 :
+    $page.url.pathname.includes('/spot') ? 2 :
     $page.url.pathname.includes('/grow') ? 3 :
     $page.url.pathname.includes('/wallet') ? 4 : 2;
   $: routes = [
     {icon: 'home', route: '/home', title: $_('home')},
-    {icon: 'market', route: '/market', title: $_('market')},
-    {icon: 'trade', route: '/trade', title: $_('trade')},
+    {icon: 'market', route: '/market/token', title: $_('market')},
+    {icon: 'trade', route: '/spot', title: $_('trade')},
     {icon: 'grow', route: '/grow', title: $_('grow')},
     {icon: 'wallet', route: '/wallet', title: $_('wallet')},
   ]
   const routing = (route: string) => {
-    // If the destination route is '/trade'
-    if (route === '/trade') {
+    // If the destination route is '/spot'
+    if (route === '/spot') {
       // Check if the current route is one of the trade-related routes
-      const isTradeRelatedRoute = ['/swap', '/trade', '/leverage', '/perp'].includes($page.url.pathname);
+      const isTradeRelatedRoute = ['/swap', '/spot', '/leverage', '/perp'].includes($page.url.pathname);
+      // Check if route is spot related
+      const isSpotRelatedRoute = $page.url.pathname.startsWith('/spot')
       // If we're already on a trade-related route, open the dialog
-      if (isTradeRelatedRoute) {
+      if (isTradeRelatedRoute || isSpotRelatedRoute) {
         bottomTradeDialog.set(true);
       } else {
-        // If we're not on a trade-related route, go to the last trade mode or default to '/trade'
+        // If we're not on a trade-related route, go to the last trade mode or default to '/spot'
         if ($bottomModeLastRoute) {
           goto($bottomModeLastRoute);
         } else {
-          goto('/trade');
-          bottomModeLastRoute.set('/trade');
+          goto('/spot');
+          bottomModeLastRoute.set('/spot');
         }
       }
     } else {
-      // If the destination route is not '/trade', just go to that route
+      // If the destination route is not '/spot', just go to that route
       goto(route);
     }
   }

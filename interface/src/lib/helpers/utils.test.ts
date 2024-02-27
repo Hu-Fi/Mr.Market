@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatChartPrice, formatDecimals, formatTimestampToTime, formatUSMoney, formatWalletBalance, numberInArray, toggleItemInArray, toggleNumberInArray } from './utils'
+import { formatChartPrice, formatDecimals, formatOrderBookPrice, formatTimestampToTime, formatUSMoney, formatWalletBalance, numberInArray, toggleItemInArray, toggleNumberInArray } from './utils'
 
 describe('formatTimestampToTime', () => {
   it('format YYYY-MM-DD', () => {
@@ -186,7 +186,7 @@ describe('formatUSMoney', () => {
 
 describe('toggleItemInArray', () => {
   it('toggle item in array', ()=>{
-    const arr: any = []
+    const arr: object[] = []
     const item = {chain_id: '123'}
     const item1 = {chain_id: '221'}
     toggleItemInArray(arr, 'chain_id', item)
@@ -215,7 +215,7 @@ describe('numberInArray', () => {
 
 describe('toggleNumberInArray', () => {
   it('toggle number in array', ()=>{
-    const arr: any = []
+    const arr: number[] = []
     const item = 1
     const item1 = 2
     toggleNumberInArray(arr, item)
@@ -228,6 +228,91 @@ describe('toggleNumberInArray', () => {
   })
 })
 
+describe('formatOrderBookPrice', () => {
+  it.fails('orderbook price', ()=> {
+
+  it.each([
+    [0.00001, 0.00001],
+    [0.000001, 0.000001],
+    [0.0000001, 0.0000001],
+    [0.00000001, 0.00000001],
+    [0.0123, 0.0123],
+    [0.00123, 0.00123],
+    [0.000123, 0.000123],
+    [0.0000123, 0.0000123],
+    [0.00000123, 0.00000123],
+    [0.000000123, 0.000000123],
+    [0.0000000123, 0.0000000123],
+
+    ])('when 0.00000001 < x < 0.1, return all decimal places', (input, expected) => {
+    expect(formatOrderBookPrice(input)).toBe(expected);
+  });
+
+  it.each([
+    [0.1, 0.1],
+    [0.12, 0.12],
+    [0.123, 0.123],
+    [0.1234, 0.1234],
+    [0.12345, 0.12345],
+    [0.123456, 0.123456],
+    [0.1234567, 0.1234567],
+    [0.12345678, 0.12345678],
+    [0.123456789, 0.12345678],
+    [0.1234567890, 0.12345678],
+  ])('when 0.1 <= x < 1, return 8 decimal places', (input, expected) => {
+    expect(formatOrderBookPrice(input)).toBe(expected);
+  });
+
+  it.each([
+    [1.23, 1.23],
+    [1.235, 1.23],
+    [1.2356, 1.23],
+    [1.23567, 1.23],
+    [1.2345678, 1.23],
+    [1.23456789, 1.23],
+    [1.234567891, 1.23],
+  ])('when 1 <= x < 10, return 2 decimal places', (input, expected) => {
+    expect(formatOrderBookPrice(input)).toBe(expected);
+  });
+
+  it.each([
+    [12.1, 12.1],
+    [12.12, 12.12],
+    [12.123, 12.12],
+    [12.1234, 12.12],
+    [12.12345, 12.12],
+    [12.123456, 12.12],
+    [12.1234567, 12.12],
+    [12.12345678, 12.12],
+    [12.123456789, 12.12],
+    [12.1234567890, 12.12],
+  ])('when 10 <= x < 100, return 2 decimal places', (input, expected) => {
+    expect(formatOrderBookPrice(input)).toBe(expected);
+  });
+
+  it.each([
+    [123.1, 123.1],
+    [123.12, 123.12],
+    [123.123, 123.12],
+    [123.1234, 123.12],
+    [123.12345, 123.12],
+    [123.123456, 123.12],
+    [123.1234567, 123.12],
+    [123.12345678, 123.12],
+    [123.123456789, 123.12],
+    [123.1234567890, 123.12],
+  ])('when x >= 100, return 2 decimal places', (input, expected) => {
+    expect(formatOrderBookPrice(input)).toBe(expected);
+  });
+      
+})
+})
+
+describe('formatOrderBookAmount', () => {
+  it.skip('', ()=>{
+    
+  }) 
+})
 
 // describe('', () => {
   
