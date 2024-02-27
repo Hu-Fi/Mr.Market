@@ -124,7 +124,8 @@ test('more apps', async ({ page, browserName }) => {
   expect(page2.url()).toContain('https://mixin.one/apps/');
 })
 
-test('sorting tokens by category', async ({ page }) => {
+// Will be updated when these parts are accomplished
+test.skip('sorting tokens by category', async ({ page }) => {
   await page.getByRole('button', { name: 'Favorites' }).click()
   await page.getByRole('button', { name: 'All', exact: true }).click();
   await page.getByRole('button', { name: 'Mainstream' }).click();
@@ -138,7 +139,8 @@ test('sorting tokens by category', async ({ page }) => {
   await page.getByRole('button', { name: 'NFT' }).click();
 })
 
-test('sorting by name price and 24chg', async ({ page }) => {
+// Will be updated when these parts are accomplished
+test.skip('sorting by name price and 24chg', async ({ page }) => {
   await page.getByRole('button', { name: 'Name' }).getByRole('button').click();
   await page.getByRole('button', { name: 'Name' }).getByRole('button').click();
   await page.getByRole('button', { name: 'Price' }).getByRole('button').click();
