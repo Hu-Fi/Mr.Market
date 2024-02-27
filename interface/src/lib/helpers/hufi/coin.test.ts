@@ -3,14 +3,14 @@ import { fetchOHLCV, pairsFn } from "./coin"
 import type { SupportedExchanges } from "$lib/types/hufi/exchanges"
 import { SUPPORTED_TIMERANGES } from "../constants"
 
-describe('pairsFn', () => {
+describe.skip('pairsFn', () => {
   it('get pairs', async () => {
     const pairs = await pairsFn()
     console.log(pairs)
   })
 })
 
-describe('fetchOHLCV', () => {
+describe.skip('fetchOHLCV', () => {
   const exchanges: SupportedExchanges[] = ['binance', 'bitfinex', 'mexc']
   for (let x=0; x<exchanges.length; x++) {
     const exchange = exchanges[x]

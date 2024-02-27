@@ -70,7 +70,7 @@ export const formatChartPrice = (s: string | number) => {
 }
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
-  console.log('lang:', lang)
+  lang;
 
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 8);
