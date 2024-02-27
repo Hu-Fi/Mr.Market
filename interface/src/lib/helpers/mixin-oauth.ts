@@ -108,12 +108,18 @@ class MixinClient {
     this.endpoint = endpoint;
   }
   disconnect() {
-    this.ws.close();
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+
+    self.ws.close();
   }
   connect(callback, clientId, scope, codeChallenge) {
-    this.handled = false;
-    this.callback = callback;
-    this.ws = new ReconnectingWebSocket(this.endpoint, "Mixin-OAuth-1", {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+
+    self.handled = false;
+    self.callback = callback;
+    self.ws = new ReconnectingWebSocket(self.endpoint, "Mixin-OAuth-1", {
       maxReconnectionDelay: 5000,
       minReconnectionDelay: 1000,
       reconnectionDelayGrowFactor: 1.2,
@@ -122,20 +128,20 @@ class MixinClient {
       debug: false
     });
 
-    this.ws.addEventListener("message", function (event) {
-      if (this.handled) {
+    self.ws.addEventListener("message", function (event) {
+      if (self.handled) {
         return;
       }
       const fileReader = new FileReader();
       fileReader.onload = function () {
         const msg = ungzip(new Uint8Array(this.result), { to: "string" });
         const authorization = JSON.parse(msg);
-        if (this.callback(authorization)) {
-          this.handled = true;
+        if (self.callback(authorization)) {
+          self.handled = true;
           return;
         }
         setTimeout(function () {
-          this.sendRefreshCode(
+          self.sendRefreshCode(
             clientId,
             scope,
             codeChallenge,
@@ -146,17 +152,19 @@ class MixinClient {
       fileReader.readAsArrayBuffer(event.data);
     });
 
-    this.ws.addEventListener("open", function () {
-      this.sendRefreshCode(clientId, scope, codeChallenge);
+    self.ws.addEventListener("open", function (_) {
+      self.sendRefreshCode(clientId, scope, codeChallenge);
     });
   }
 
   sendRefreshCode(clientId, scope, codeChallenge, authorization) {
-    if (this.handled) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    if (self.handled) {
       return;
     }
 
-    this.send({
+    self.send({
       id: uuidv4().toUpperCase(),
       action: "REFRESH_OAUTH_CODE",
       params: {

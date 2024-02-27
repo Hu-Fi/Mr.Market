@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.use({
   viewport: { width: 390, height: 844 },  // iPhone 14 Pro
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/market/candle/BTC-USDT');
+  await page.goto('http://127.0.0.1:5173/market/candle/binance/BTC-USDT');
 })
 
-test('open/close pair selector', async ({ page, context }) => {
+test.skip('open/close pair selector', async ({ page, context }) => {
   
 })

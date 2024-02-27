@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.use({
   viewport: { width: 390, height: 844 },  // iPhone 14 Pro
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/grow');
 })
 
-test('navigation', async ({ page, context }) => {
+test('navigation', async ({ page }) => {
   await page.getByRole('button', { name: 'Arbitrage' }).first().click();
   await page.waitForURL('**/grow/arbitrage');
   await page.getByRole('button', { name: 'What\'s arbitrage?' }).click();
