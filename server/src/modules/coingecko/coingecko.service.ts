@@ -16,17 +16,20 @@ export class CoingeckoProxyService {
 
   // Using caching to avoid coingecko rate limit (30 calls/min)
   constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {
-    this.coingecko = new CoinGeckoClient({
-      timeout: 5000,
-      autoRetry: false,
-    });
+    this.coingecko = new CoinGeckoClient(
+      {
+        timeout: 5000,
+        autoRetry: false,
+      },
+      process.env.COINGECKO_API_KEY,
+    );
   }
 
   // /coins/{id}
   async coinsId(id: string): Promise<CoinFullInfo> {
     try {
       const cachedData = await this.cacheService.get(id);
-      console.log('cache:', cachedData);
+      console.log('cached:', cachedData);
       if (!cachedData) {
         const data = await this.coingecko.coinId({ id });
         await this.cacheService.set(id, data, this.cachingTTL);

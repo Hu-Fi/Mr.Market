@@ -4,9 +4,15 @@ import { CoingeckoController } from './coingecko.controller';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
-  imports: [CacheModule.register()],
-  controllers:[CoingeckoController],
+  imports: [
+    // Caching for 30 seconds
+    CacheModule.register({
+      ttl: 30,
+      max: 30,
+    }),
+  ],
+  controllers: [CoingeckoController],
   providers: [CoingeckoProxyService],
-  exports: [CoingeckoProxyService, CacheModule]
+  exports: [CoingeckoProxyService, CacheModule],
 })
 export class CoingeckoModule {}
