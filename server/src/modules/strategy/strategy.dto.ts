@@ -1,6 +1,7 @@
 // strategy.dto.ts
 
 import { ApiProperty } from '@nestjs/swagger';
+import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 
 export class ArbitrageStrategyDto {
   @ApiProperty({ example: '123', description: 'User ID for whom the strategy is being executed.' })
@@ -50,7 +51,22 @@ export class PureMarketMakingStrategyDto {
 
   @ApiProperty({ description: 'Order refresh time in milliseconds', example: 15000 })
   orderRefreshTime: number;
-  
+
   @ApiProperty({description:'Number of orders you want to place on both sides',example:1})
   numberOfLayers:number
+
+  @ApiProperty({description:'Price source type (mid_price, best_bid, best_ask, last_price)',example:'mid_price'})
+  priceSourceType: PriceSourceType; 
+
+  @ApiProperty({description:'Amount that increases on each layer, Set to 0 for same amount',example:1})
+  amountChangePerLayer: number; // This can be a fixed amount or a percentage
+
+  @ApiProperty({description:'How the amountChangePerLayer should be interpreted (fixed, percentage)',example:"percentage"})
+  amountChangeType: 'fixed' | 'percentage'; 
+
+  @ApiProperty({description:'How the amountChangePerLayer should be interpreted (fixed, percentage)',example:"percentage"})
+  ceilingPrice?: number;
+
+  @ApiProperty({description:'How the amountChangePerLayer should be interpreted (fixed, percentage)',example:"percentage"})
+  floorPrice?: number;
 }
