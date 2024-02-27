@@ -2,9 +2,9 @@ name: Runs All Unit Tests
 
 on:
   push:
-    branches: [ main, master, unit-testing ]
+    branches: [ main, master, feature/v1, update ]
   pull_request:
-    branches: [ main, master, unit-testing ]
+    branches: [ main, master, feature/v1, update ]
 
 jobs:
   test:

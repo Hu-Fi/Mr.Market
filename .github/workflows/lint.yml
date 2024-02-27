@@ -1,9 +1,9 @@
 name: Lint
 on:
   push:
-    branches: [ main, master, update ]
+    branches: [ main, master, feature/v1, update ]
   pull_request:
-    branches: [ main, master, update ]
+    branches: [ main, master, feature/v1, update ]
 jobs:
   test:
     timeout-minutes: 60
