@@ -23,7 +23,7 @@ test.skip('bottom navigation', async ({ page, context }) => {
     //console.log('Home -> Market', Home2Market, 'ms')
 
     await page.getByTestId('bottom-nav-trade').click();
-    await page.waitForURL('**/trade');
+    await page.waitForURL('**/spot');
     let time3 = new Date().getTime();
     let Market2Trade = time3 - time2
     //console.log('Market -> Trade', Market2Trade, 'ms')
@@ -59,25 +59,25 @@ test('trade navigation', async ({ page, context }) => {
   for (let index = 0; index < 10; index++) {
     let time1 = new Date().getTime();
     await page.getByTestId('bottom-nav-trade').click();
-    await page.waitForURL('**/trade');
+    await page.waitForURL('**/spot');
     await page.getByTestId('bottom-nav-home').click();
     await page.waitForURL('**/home');
     
     let time2 = new Date().getTime();
     await page.getByTestId('bottom-nav-trade').click();
-    await page.waitForURL('**/trade');
+    await page.waitForURL('**/spot');
     await page.getByTestId('bottom-nav-market').click();
     await page.waitForURL('**/market');
 
     let time3 = new Date().getTime();
     await page.getByTestId('bottom-nav-trade').click();
-    await page.waitForURL('**/trade');
+    await page.waitForURL('**/spot');
     await page.getByTestId('bottom-nav-grow').click();
     await page.waitForURL('**/grow');
 
     let time4 = new Date().getTime();
     await page.getByTestId('bottom-nav-trade').click();
-    await page.waitForURL('**/trade');
+    await page.waitForURL('**/spot');
     await page.getByTestId('bottom-nav-wallet').click();
     await page.waitForURL('**/wallet');
 

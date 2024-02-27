@@ -3,6 +3,7 @@ import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
+import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers'
 
@@ -116,6 +117,10 @@ export class MarketdataService {
     const subscriptionKey = `orderbook:${exchangeName}:${symbol}`;
     this.activeSubscriptions.set(subscriptionKey, true);
 
+    if (exchangeName === 'bitfinex') {
+      limit = 25
+    }
+
     while (this.activeSubscriptions.get(subscriptionKey)) {
       try {
         const orderBook = await exchange.watchOrderBook(symbol, limit);
@@ -127,18 +132,18 @@ export class MarketdataService {
     }
   }
 
-  async watchOHLCV(exchangeName: string, symbol: string, onData: (data: any) => void): Promise<void> {
+  async watchOHLCV(exchangeName: string, symbol: string, onData: (data: any) => void, timeFrame?: string, since?: number, limit?: number): Promise<void> {
     const exchange = this.exchanges.get(exchangeName);
     if (!exchange || !exchange.has.watchOHLCV) {
       throw new Error(`Exchange ${exchangeName} does not support watchOHLCV or is not configured.`);
     }
 
-    const subscriptionKey = `OHLCV:${exchangeName}:${symbol}`;
+    const subscriptionKey = `OHLCV:${exchangeName}:${symbol}:${timeFrame}`;
     this.activeSubscriptions.set(subscriptionKey, true);
 
     while (this.activeSubscriptions.get(subscriptionKey)) {
       try {
-        const OHLCV = await exchange.watchOHLCV(symbol);
+        const OHLCV = await exchange.watchOHLCV(symbol, timeFrame, since, limit);
         onData(OHLCV);
       } catch (error) {
         this.logger.error(`Error watching OHLCV for ${symbol} on ${exchangeName}: ${error.message}`);
@@ -187,34 +192,13 @@ export class MarketdataService {
     }
   }
 
-  isSubscribed(type: marketDataType, exchangeName: string, symbol?: string, symbols?: string[]): boolean {
-    let subscriptionKey = '';
-    
-    if (type === 'orderbook' || type === 'OHLCV' || type === 'ticker') {
-      // Handle both single symbol and array of symbols for these types
-      const symbolKey = Array.isArray(symbol) ? symbol.join(':') : symbol;
-      subscriptionKey = `${type}:${exchangeName}:${symbolKey}`;
-    } else if (type === 'tickers') {
-      // Ensure symbols is an array and sort it to create a consistent key
-      const symbolsKey = Array.isArray(symbols) ? symbols.sort().join(':') : symbols;
-      subscriptionKey = `tickers:${exchangeName}:${symbolsKey}`;
-    }
-  
+  isSubscribed(type: marketDataType, exchangeName: string, symbol?: string, symbols?: string[], timeFrame?: string): boolean {
+    let subscriptionKey = createCompositeKey(type, exchangeName, symbol, symbols, timeFrame);
     return this.activeSubscriptions.has(subscriptionKey);
   }
 
-  unsubscribeData(type: marketDataType,exchangeName: string, symbol?: string, symbols?: string[]): void {
-    let subscriptionKey = '';
-    switch (type) {
-      case 'orderbook':
-      case 'OHLCV':
-      case 'ticker':
-        subscriptionKey = `${type}:${exchangeName}:${symbol}`;
-        break;
-      case 'tickers':
-        subscriptionKey = `orderbook:${exchangeName}:${symbols}`;
-        break;
-    }
+  unsubscribeData(type: marketDataType, exchangeName: string, symbol?: string, symbols?: string[], timeFrame?: string): void {
+    let subscriptionKey = createCompositeKey(type, exchangeName, symbol, symbols, timeFrame);
     this.activeSubscriptions.delete(subscriptionKey);
   }
 }

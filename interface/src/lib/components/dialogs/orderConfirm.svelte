@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { amount, buy, orderConfirmDialog, pair, price, total } from "$lib/stores/trade";
+  import { amount, buy, orderConfirmDialog, pair, price, total } from "$lib/stores/spot";
 
   $: infos = [
     {title: $_('payment_amount'), value: $buy ? `${$total} ${$pair.symbol.split('/')[1]}` : `${$amount} ${$pair.symbol.split('/')[0]}`},

@@ -17,7 +17,7 @@
   {#each activeList as coin}
     <button class="btn btn-xs h-[1.75rem] rounded no-animation hover:bg-base-200 hover:border-base-200" on:click={() => {
       addSearchHistory(coin);
-      goto(`/market/coin/${coin.id}`);
+      goto(`/market/token/${coin.id}`);
     }}>
       <span> {coin.symbol} </span>
     </button>

@@ -112,7 +112,7 @@ export const lineOptions = {
   lineWidth: 2,
   lineVisible: false,
   priceLineVisible: false,
-  color: false ? colors.green[500] : colors.red[500],
+  color: colors.green[500]
 };
 
 export const candleLineOptions = {

@@ -14,11 +14,11 @@
         onShowUrl: (url: string) => {
           window.open(url)
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           console.error(error);
           return;
         },
-        onSuccess: async (token: any) => {
+        onSuccess: async (token: string) => {
           await AfterMixinOauth(token)
         },
       },

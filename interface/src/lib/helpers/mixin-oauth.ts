@@ -1,7 +1,4 @@
 // @ts-nocheck
-// https://github.com/fox-one/uikit/blob/main/packages/uikit/src/utils/authorize.ts
-// https://github.com/fox-one/uikit/blob/main/packages/uikit/src/services/mixin/oauth.js
-// bun i reconnecting-websocket pako uuid pako axios crypto-js
 
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { gzip, ungzip } from "pako";
@@ -111,16 +108,12 @@ class MixinClient {
     this.endpoint = endpoint;
   }
   disconnect() {
-    const self = this;
-
-    self.ws.close();
+    this.ws.close();
   }
   connect(callback, clientId, scope, codeChallenge) {
-    const self = this;
-
-    self.handled = false;
-    self.callback = callback;
-    self.ws = new ReconnectingWebSocket(self.endpoint, "Mixin-OAuth-1", {
+    this.handled = false;
+    this.callback = callback;
+    this.ws = new ReconnectingWebSocket(this.endpoint, "Mixin-OAuth-1", {
       maxReconnectionDelay: 5000,
       minReconnectionDelay: 1000,
       reconnectionDelayGrowFactor: 1.2,
@@ -129,20 +122,20 @@ class MixinClient {
       debug: false
     });
 
-    self.ws.addEventListener("message", function (event) {
-      if (self.handled) {
+    this.ws.addEventListener("message", function (event) {
+      if (this.handled) {
         return;
       }
       const fileReader = new FileReader();
       fileReader.onload = function () {
         const msg = ungzip(new Uint8Array(this.result), { to: "string" });
         const authorization = JSON.parse(msg);
-        if (self.callback(authorization)) {
-          self.handled = true;
+        if (this.callback(authorization)) {
+          this.handled = true;
           return;
         }
         setTimeout(function () {
-          self.sendRefreshCode(
+          this.sendRefreshCode(
             clientId,
             scope,
             codeChallenge,
@@ -153,18 +146,17 @@ class MixinClient {
       fileReader.readAsArrayBuffer(event.data);
     });
 
-    self.ws.addEventListener("open", function (_) {
-      self.sendRefreshCode(clientId, scope, codeChallenge);
+    this.ws.addEventListener("open", function () {
+      this.sendRefreshCode(clientId, scope, codeChallenge);
     });
   }
 
   sendRefreshCode(clientId, scope, codeChallenge, authorization) {
-    const self = this;
-    if (self.handled) {
+    if (this.handled) {
       return;
     }
 
-    self.send({
+    this.send({
       id: uuidv4().toUpperCase(),
       action: "REFRESH_OAUTH_CODE",
       params: {
@@ -181,6 +173,7 @@ class MixinClient {
       this.ws.send(gzip(JSON.stringify(msg)));
     } catch (e) {
       if (e instanceof DOMException) {
+        console.error('DOMException')
       } else {
         console.error(e);
       }

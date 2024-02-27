@@ -5,14 +5,14 @@
 
   const bt = [
     {name: $_("swap"), icon: "swap", fn: ()=>{goto('/swap');}},
-    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/trade');}},
+    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/spot');}},
     {name: $_("grow"), icon: "earn", fn: ()=>{goto('/grow')}},
     {name: $_("arbitrage"), icon: "arbitrage", fn: ()=>{goto('/grow/arbitrage')}},
     {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},
 
     // Enable in v2
-    // {name: $_("invite"), icon: "invite", fn: ()=>{goto('/trade');}},
-    // {name: $_("loan"), icon: "loan", fn: ()=>{goto('/trade');}},
+    // {name: $_("invite"), icon: "invite", fn: ()=>{goto('/spot');}},
+    // {name: $_("loan"), icon: "loan", fn: ()=>{goto('/spot');}},
     // {name: $_("trade.acc"), icon: "trading_account", fn: ()=>{goto('/grow')}},
     // {name: $_("future"), icon: "future", fn: ()=>{goto('/grow/arbitrage')}},
     // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/home/more')}},

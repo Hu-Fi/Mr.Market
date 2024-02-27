@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { orderBookMode, orderBookModeDialog } from "$lib/stores/trade";
+  import { orderBookMode, orderBookModeDialog } from "$lib/stores/spot";
 
   const options = [
     {i: 0, v:$_('all'), fn:()=>{}},

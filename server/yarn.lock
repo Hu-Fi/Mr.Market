@@ -1076,15 +1076,15 @@
     iterare "1.2.1"
     tslib "2.6.2"
 
-"@nestjs/config@^3.0.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-3.1.1.tgz#51e23ed84debd08afb86acf7b92bc4bf341797da"
-  integrity sha512-qu5QlNiJdqQtOsnB6lx4JCXPQ96jkKUsOGd+JXfXwqJqZcOSAq6heNFg0opW4pq4J/VZoNwoo87TNnx9wthnqQ==
+"@nestjs/config@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/config/-/config-3.2.0.tgz#4ca70f88b0636f86741ba192dd51dd2f01eaa7c1"
+  integrity sha512-BpYRn57shg7CH35KGT6h+hT7ZucB6Qn2B3NBNdvhD4ApU8huS5pX/Wc2e/aO5trIha606Bz2a9t9/vbiuTBTww==
   dependencies:
-    dotenv "16.3.1"
+    dotenv "16.4.1"
     dotenv-expand "10.0.0"
     lodash "4.17.21"
-    uuid "9.0.0"
+    uuid "9.0.1"
 
 "@nestjs/core@10.2.10":
   version "10.2.10"
@@ -2810,7 +2810,12 @@ dotenv-expand@10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-10.0.0.tgz#12605d00fb0af6d0a592e6558585784032e4ef37"
   integrity sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==
 
-dotenv@16.3.1, dotenv@^16.0.3, dotenv@^16.3.1:
+dotenv@16.4.1:
+  version "16.4.1"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.1.tgz#1d9931f1d3e5d2959350d1250efab299561f7f11"
+  integrity sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==
+
+dotenv@^16.0.3, dotenv@^16.3.1:
   version "16.3.1"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
@@ -5289,11 +5294,6 @@ reflect-metadata@^0.1.13:
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.14.tgz#24cf721fe60677146bb77eeb0e1f9dece3d65859"
   integrity sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==
 
-reflect-metadata@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.2.1.tgz#8d5513c0f5ef2b4b9c3865287f3c0940c1f67f74"
-  integrity sha512-i5lLI6iw9AU3Uu4szRNPPEkomnkjRTaVt9hy/bn5g/oSzekBSMeLZblcjP74AW0vBabqERLLIrz+gR8QYR54Tw==
-
 regenerator-runtime@^0.14.0:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
@@ -6076,11 +6076,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
-
-uuid@9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
-  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 uuid@9.0.1, uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"

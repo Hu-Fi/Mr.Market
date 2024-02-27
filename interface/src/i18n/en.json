@@ -24,7 +24,7 @@
   "current_pair_only": "Current pair only",
   "cancel_all": "Cancel all orders",
   "cancel_order": "Cancel order",
-  "coins": "Token",
+  "token": "Token",
   "spot": "Spot",
   "perpetual": "Perpetual",
   "options": "Options",

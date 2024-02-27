@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   export let news = {id: 0, title: "Hufi goes live today", date: "2023-01-01", content:"Live"}
 </script>
 
@@ -20,7 +18,3 @@
     <span class="text-sm">{news.content}</span>
   </div>
 </div>
-
-<style>
-
-</style>

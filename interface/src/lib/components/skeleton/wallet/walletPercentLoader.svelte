@@ -4,7 +4,7 @@
 
     <!-- Text -->
     <div class="grid grid-cols-3 gap-4 content-center px-4">
-      {#each Array(3) as a, i}
+      {#each Array(3) as _}
         <div class="flex items-center justify-center space-x-2">
           <div class="h-2 w-0.5 rounded-full" />
 

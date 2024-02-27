@@ -15,11 +15,11 @@
     { f: 'days', key: $_('days'), value: daysBetweenToday(data.started) },
   ]
 
-  let actions = [
-    { f: 'delete', key: $_('delete'), fn: ()=> {} },
-    { f: 'buy', key: $_('buy_more'), fn: ()=> {} },
-    { f: 'info', key: $_('info'), fn: ()=> {} },
-  ]
+  // let actions = [
+  //   { f: 'delete', key: $_('delete'), fn: ()=> {} },
+  //   { f: 'buy', key: $_('buy_more'), fn: ()=> {} },
+  //   { f: 'info', key: $_('info'), fn: ()=> {} },
+  // ]
 
   $: makingProfit = Number(data.profit) >= 0
 </script>

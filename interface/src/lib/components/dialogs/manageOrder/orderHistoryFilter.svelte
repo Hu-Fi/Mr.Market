@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-  import { historyFilterDialog, historyFilterMode } from "$lib/stores/trade";
-  
-  let items = [
-    {index: 1, name: $_("limit_order"), fn: ()=>{}},
-    {index: 2, name: $_("market_order"), fn: ()=>{}},
-  ]
+  import { historyFilterDialog } from "$lib/stores/spot";
+  // historyFilterMode
+  // let items = [
+  //   {index: 1, name: $_("limit_order"), fn: ()=>{}},
+  //   {index: 2, name: $_("market_order"), fn: ()=>{}},
+  // ]
 </script>
 
 <dialog

@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { currentMarketMakingStatus, editMarketMakingDialog } from "$lib/stores/grow";
+  import { editMarketMakingDialog } from "$lib/stores/grow";
 
   // use $currentMarketMakingStatus for status
   export let statusStop = true;

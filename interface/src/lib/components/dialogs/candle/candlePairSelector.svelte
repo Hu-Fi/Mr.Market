@@ -1,17 +1,18 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { socket } from "$lib/stores/trade";
+  import { socket } from "$lib/stores/spot";
   import { onDestroy, onMount } from "svelte";
   import { pairsFn } from "$lib/helpers/hufi/coin";
   import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
   import NoResult from "$lib/components/common/NoResult.svelte";
   import { switchCandleStickPair } from "$lib/helpers/hufi/socket";
+  import { fetchCandleChartData } from "$lib/helpers/candle/candle";
   import { formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, SUPPORTED_EXCHANGES, UpColorText } from "$lib/helpers/constants";
-  import { CandlePairSelectorDialog as sd, CandlePairSearch, CandlePairExchangeFilter, CandlePairSelectorLoaded, CandlePairSelectorDialog } from "$lib/stores/market";
+  import { CandlePairSelectorDialog as sd, CandlePairSearch, CandlePairExchangeFilter, CandlePairSelectorLoaded, CandleChart } from "$lib/stores/market";
 
   let items = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
 
@@ -89,12 +90,13 @@
         {:else}
           {#each filteredPairs as c}
             <div class="w-full flex items-center justify-start space-x-2 py-3 h-16">
-              <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={()=>{
-                switchCandleStickPair($socket, c)
+              <button class="flex justify-between w-full items-center" data-dismiss="select_pair_modal" on:click={async ()=>{
+                switchCandleStickPair($socket, c);
+                $CandleChart.applyNewData(await fetchCandleChartData());
               }}>
                 <div class="flex items-center space-x-2.5">
                   <img src={findExchangeIconByIdentifier(c.exchange)} alt="-" loading="lazy" class="w-5 h-5" />
-                  <span class="flex items-center font-semibold text-base">
+                  <span class="flex items-center font-semibold text-sm">
                     {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
                   </span>
                 </div>

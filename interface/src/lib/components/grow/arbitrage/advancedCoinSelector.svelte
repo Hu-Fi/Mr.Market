@@ -1,6 +1,6 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
+  // import clsx from "clsx"
+  // import { _ } from "svelte-i18n"
   import EmptyToken from "$lib/images/empty-token.svg"
 </script>
 

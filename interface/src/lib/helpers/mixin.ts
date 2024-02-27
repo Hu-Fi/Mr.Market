@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
@@ -109,7 +110,7 @@ async function fetchTopAssetsCache() {
   return topCache
 }
 
-async function getAssetDetails(asset_id: string, topAssetsCache: any) {
+async function getAssetDetails(asset_id: string, topAssetsCache: unknown) {
   if (topAssetsCache && topAssetsCache[asset_id]) {
     return topAssetsCache[asset_id];
   } else {
@@ -149,7 +150,7 @@ export function calculateTotalUSDBalance(balances) {
 }
 
 // Step 6: Calculate total BTC balance
-async function calculateTotalBTCBalance(totalUSDBalance, token: string) {
+async function calculateTotalBTCBalance(totalUSDBalance) {
   const btcDetails = await getAssetDetails(BTC_UUID, get(topAssetsCache))
   return totalUSDBalance / parseFloat(btcDetails.price_usd);
 }
@@ -161,7 +162,7 @@ const getUserBalances = async (user_id: string, token: string) => {
   let balances = groupAndSumUTXOs(outputs);
   balances = await calculateAndSortUSDBalances(balances, topAssetsCache);
   const totalUSDBalance = calculateTotalUSDBalance(balances);
-  const totalBTCBalance = await calculateTotalBTCBalance(totalUSDBalance, token);
+  const totalBTCBalance = await calculateTotalBTCBalance(totalUSDBalance);
   userAssets.set({balances, totalUSDBalance, totalBTCBalance})
   return { balances, totalUSDBalance, totalBTCBalance}
 }

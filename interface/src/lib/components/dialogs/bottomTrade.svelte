@@ -5,13 +5,13 @@
   import { _, locale } from "svelte-i18n";
   import { langs } from "../../../i18n/i18n";
   import { showSettingShortcut, toggleTheme } from "$lib/stores/theme";
-  import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/trade";
+  import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
 
   const items = [
-    {title: $_("swap"), route: "/swap"},
-    {title: $_("spot"), route: "/trade"},
-    // {title: "Leverage", route: ""},
-    // {title: "Perpetual", route: ""},
+    {title: $_("swap"), route: '/swap'},
+    {title: $_("spot"), route: '/spot'},
+    // {title: "Leverage", route: "/leverage"},
+    // {title: "Perpetual", route: "/perpetual"},
   ]
 
   let toggleLanguage = false;
@@ -36,7 +36,7 @@
             <span class="font-medium">
               {item.title}
             </span>
-            {#if item.route === $page.url.pathname}
+            {#if $page.url.pathname.includes(item.route)}
               <div>
                 <!-- Circle check Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" /></svg>          
@@ -47,7 +47,7 @@
       {:else}
       <!-- Languages -->
         <div class="h-[240px] overflow-y-auto">
-          {#each Object.values(langs) as k, i}
+          {#each Object.values(langs) as k}
             <button class="w-full flex justify-between py-3" on:click={()=>{locale.set(k.key)}}>
               <span class="font-medium">
                 {k.name}

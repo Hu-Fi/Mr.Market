@@ -1,21 +1,27 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
+  import type { PairsData } from "$lib/types/hufi/exchanges";
   import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
   import { formatDecimals, formatUSMoney } from "$lib/helpers/utils";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
-  export let pair = {first: "BTC", second: "USDT", price: 43576, percentage: -0.87, favorite: false, icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png", "exchange": "binance"}
+  export let pair: PairsData;
 </script>
 
-<button class="flex items-center justify-between w-full p-4" on:click={()=>{console.log(`goto ${pair.first}/${pair.second}`)}}>
+<button class="flex items-center justify-between w-full p-4" on:click={() => {
+    goto(`/spot/${pair.exchange}/${pair.symbol.replace('/', '-')}`);
+    console.log(`/spot/${pair.exchange}/${pair.symbol.replace('/', '-')}`)
+  }
+}>
   <div class="flex space-x-3 items-center">
     <!-- Icon -->
-    <img class="w-8 h-8" src={pair.icon} alt={pair.name} />
+    <img class="w-8 h-8" src={findExchangeIconByIdentifier(pair.exchange)} alt={pair.exchange} />
 
     <!-- Title -->
     <div class="flex flex-col text-start">
       <div>
-        <span class="text-md font-semibold">{pair.first}</span><span class="text-xs opacity-50">/{pair.second}</span>
+        <span class="text-md font-semibold">{pair.symbol.split('/')[0]}</span><span class="text-xs opacity-50">/{pair.symbol.split('/')[1]}</span>
       </div>
       <span class="text-xs opacity-40 capitalize">
         {pair.exchange}
@@ -34,14 +40,19 @@
 
     <!-- Price change -->
     <div class="w-[4.5rem] flex items-center justify-end">
-      <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", pair.percentage > 0 ? UpColorBg : DownColorBg)}>
-        <span class="text-center text-xs font-extrabold text-base-100">
-          {formatDecimals(pair.percentage,2)}%
-        </span>
-      </div>
+      {#if pair.change}
+        <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", pair.change > 0 ? UpColorBg : DownColorBg)}>
+          <span class="text-center text-xs font-extrabold text-base-100">
+            {formatDecimals(pair.change,2)}%
+          </span>
+        </div>
+      {:else}
+        <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", 'bg-gray-400')}>
+          <span class="text-center text-xs font-extrabold text-base-100">
+            0%
+          </span>
+        </div>
+      {/if}
     </div>
   </div>
 </button>
-
-<style>
-</style>

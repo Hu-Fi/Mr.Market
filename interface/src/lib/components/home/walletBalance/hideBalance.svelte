@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { hideBalance } from "$lib/stores/home";
 </script>
 

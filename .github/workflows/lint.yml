@@ -1,0 +1,22 @@
+name: Lint
+on:
+  push:
+    branches: [ main, master, update ]
+  pull_request:
+    branches: [ main, master, update ]
+jobs:
+  test:
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ./interface
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Lint
+        run: npm run lint:fix

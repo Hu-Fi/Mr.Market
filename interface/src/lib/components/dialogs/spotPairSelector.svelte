@@ -10,7 +10,7 @@
   import { formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, SUPPORTED_EXCHANGES, UpColorText } from "$lib/helpers/constants";
-  import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/trade";
+  import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/spot";
 
   let tabItems = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
 
@@ -33,6 +33,7 @@
   $: if ($pairSelectorDialog === false) {
     pairSearch.set('')
     pairExchangeFilter.set('all')
+    loadPairs()
   }
 
   const loadPairs = async () => {
@@ -70,7 +71,7 @@
 
       <!-- Tabs -->
       <div class="tabs border-b w-full mt-3 px-3 overflow-x-auto no-scrollbar">
-        {#each tabItems as item, i}
+        {#each tabItems as item}
           <button class={clsx("tab", $pairExchangeFilter === item.name && "border-b border-base-content")} on:click={()=>{ pairExchangeFilter.set(item.name) }}>
             <span class={clsx("font-medium capitalize", $pairExchangeFilter === item.name ? "opacity-100" : "opacity-60")}>{item.name}</span>
           </button>
@@ -93,7 +94,7 @@
               }}>
                 <div class="flex items-center space-x-2.5">
                   <img src={findExchangeIconByIdentifier(c.exchange)} alt="-" loading="lazy" class="w-5 h-5" />
-                  <span class="flex items-center font-semibold text-base">
+                  <span class="flex items-center font-semibold text-sm">
                     {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
                   </span>
                 </div>

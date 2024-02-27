@@ -1,8 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
   import MixinMenu from "../common/MixinMenu.svelte";
-    import clsx from "clsx";
-    import { mixinConnected } from "$lib/stores/home";
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">

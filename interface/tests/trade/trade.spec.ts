@@ -5,7 +5,7 @@ test.use({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/trade');
+  await page.goto('http://127.0.0.1:5173/spot');
 })
 
 test('open/close pair selector', async ({ page, context }) => {

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { orderFilterDialog, orderFilterMode } from "$lib/stores/trade";
+  import { orderFilterDialog, orderFilterMode } from "$lib/stores/spot";
   
   let items = [
     {index: 0, name: $_("limit_order"), fn: ()=>{}},

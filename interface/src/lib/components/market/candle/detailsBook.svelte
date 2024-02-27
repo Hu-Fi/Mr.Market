@@ -34,7 +34,7 @@
   </div>
   
   <!-- Active Orders -->
-  <div class="w-full grid grid-cols-2 text-sm">
+  <div class="w-full grid grid-cols-2 text-xs">
     <!-- Buy -->
     <div class="flex flex-col">
       {#each $CandleBids as b, i}
@@ -45,7 +45,7 @@
           <span class={clsx("")}>
             {b.amount}
           </span>
-          <span class={clsx(UpColorText, "")}>
+          <span class={clsx(UpColorText, "opacity-60")}>
             {formatDecimals(b.price,2)}
           </span>
         </div>    
@@ -55,11 +55,11 @@
     <!-- Sell -->
     <div class="flex flex-col">
       {#each $CandleAsks as s, i}
-      <div class="flex items-center justify-between p-2 asks" style="
-        --asks-percentage: {getBgWidthPercentage($CandleAsks.map((item)=>item.amount), i)+"%"};
-        --asks-bg-color: {AsksBgColor};
-      ">
-          <span class={clsx(DownColorText, "")}>
+        <div class="flex items-center justify-between p-2 asks" style="
+          --asks-percentage: {getBgWidthPercentage($CandleAsks.map((item)=>item.amount), i)+"%"};
+          --asks-bg-color: {AsksBgColor};
+        ">
+          <span class={clsx(DownColorText, "opacity-60")}>
             {formatDecimals(s.price, 2)}
           </span>
           <span class={clsx("")}>

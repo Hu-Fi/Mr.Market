@@ -1,6 +1,6 @@
 import { describe, it } from "vitest"
 import { fetchOHLCV, pairsFn } from "./coin"
-import type { SupportedExchanges, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
+import type { SupportedExchanges } from "$lib/types/hufi/exchanges"
 import { SUPPORTED_TIMERANGES } from "../constants"
 
 describe('pairsFn', () => {

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { formatDecimals } from "$lib/helpers/utils";
   import { currencySymbol, userAssets } from "$lib/stores/wallet";
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-  import { currentCoin } from "$lib/stores/market";
+  // import { currentCoin } from "$lib/stores/market";
 
   const gotoCandleStick = () => {
     goto(`/market/candle/binance/BTC-USDT`)
@@ -17,7 +17,7 @@
     </button>
   
     <!-- Spot Button -->
-    <button class="btn hover:bg-base-content border-base-300 no-animation bg-base-content flex border items-center justify-center rounded-full grow" on:click={()=>{goto(`/trade`)}}> <!-- //pair.set({}) -->
+    <button class="btn hover:bg-base-content border-base-300 no-animation bg-base-content flex border items-center justify-center rounded-full grow" on:click={()=>{goto(`/spot`)}}> <!-- //pair.set({}) -->
       <span class="text-base-100"> {$_('spot_trading')} </span>
     </button>
   </div>

@@ -1,8 +1,13 @@
 // coingecko.service.ts
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CoinFullInfo, CoinGeckoClient, CoinMarket, CoinMarketChartResponse } from 'coingecko-api-v3';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  CoinFullInfo,
+  CoinGeckoClient,
+  CoinMarket,
+  CoinMarketChartResponse,
+} from 'coingecko-api-v3';
 
 @Injectable()
 export class CoingeckoProxyService {
@@ -16,71 +21,100 @@ export class CoingeckoProxyService {
       autoRetry: false,
     });
   }
-  
+
   // /coins/{id}
   async coinsId(id: string): Promise<CoinFullInfo> {
     try {
       const cachedData = await this.cacheService.get(id);
-      console.log('cache:',cachedData)
+      console.log('cache:', cachedData);
       if (!cachedData) {
-        const data = await this.coingecko.coinId({id})
+        const data = await this.coingecko.coinId({ id });
         await this.cacheService.set(id, data, this.cachingTTL);
-        return data
+        return data;
       }
-      return cachedData
-
+      return cachedData;
     } catch (error) {
       throw new Error(`Failed to GET /coins/id: ${error.message}`);
     }
   }
 
   // /coins/markets
-  async coinsMarkets(vs_currency: string = 'usd', per_page: number = 500): Promise<CoinMarket[]> {
+  async coinsMarkets(
+    vs_currency = 'usd',
+    per_page = 500,
+  ): Promise<CoinMarket[]> {
     try {
-      const key = `markets/${vs_currency}`
+      const key = `markets/${vs_currency}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
-      console.log('cached:', cachedData)
+      console.log('cached:', cachedData);
       if (!cachedData) {
-        const data = await this.coingecko.coinMarket({vs_currency: vs_currency, per_page})
+        const data = await this.coingecko.coinMarket({
+          vs_currency: vs_currency,
+          per_page,
+        });
         await this.cacheService.set(key, data, this.cachingTTL);
-        return data
+        return data;
       }
-      return cachedData
+      return cachedData;
     } catch (error) {
       throw new Error(`Failed to GET /coins/market: ${error.message}`);
     }
   }
 
   // /coins/{id}/market_chart
-  async coinsIdMarketChart(id: string, days: number | 'max' = 1, vs_currency: string = 'usd'): Promise<CoinMarketChartResponse> {
+  async coinsIdMarketChart(
+    id: string,
+    days: number | 'max' = 1,
+    vs_currency = 'usd',
+  ): Promise<CoinMarketChartResponse> {
     try {
-      const key = `chart/${id}-${days}-${vs_currency}`
-      const cachedData = await this.cacheService.get<CoinMarketChartResponse>(key);
-      console.log('cached',cachedData)
+      const key = `chart/${id}-${days}-${vs_currency}`;
+      const cachedData = await this.cacheService.get<CoinMarketChartResponse>(
+        key,
+      );
+      console.log('cached', cachedData);
       if (!cachedData) {
-        const data = await this.coingecko.coinIdMarketChart({id, vs_currency, days})
-        await this.cacheService.set(key, data, this.cachingTTL*2);
-        return data
+        const data = await this.coingecko.coinIdMarketChart({
+          id,
+          vs_currency,
+          days,
+        });
+        await this.cacheService.set(key, data, this.cachingTTL * 2);
+        return data;
       }
-      return cachedData
+      return cachedData;
     } catch (error) {
-      throw new Error(`Failed to GET /coins/{$id}/market_chart: ${error.message}`);
+      throw new Error(
+        `Failed to GET /coins/{$id}/market_chart: ${error.message}`,
+      );
     }
   }
 
   // /coins/{id}/market_chart/range
-  async coinIdMarketChartRange(id: string, from: number, to: number, vs_currency: string) {
+  async coinIdMarketChartRange(
+    id: string,
+    from: number,
+    to: number,
+    vs_currency: string,
+  ) {
     try {
-      const key = `chart/${id}-${from}-${to}-${vs_currency}`
+      const key = `chart/${id}-${from}-${to}-${vs_currency}`;
       const cachedData = await this.cacheService.get(key);
       if (!cachedData) {
-        const data = await this.coingecko.coinIdMarketChartRange({id, vs_currency, from, to})
+        const data = await this.coingecko.coinIdMarketChartRange({
+          id,
+          vs_currency,
+          from,
+          to,
+        });
         await this.cacheService.set(key, data, this.cachingTTL);
-        return data
+        return data;
       }
-      return cachedData
+      return cachedData;
     } catch (error) {
-      throw new Error(`Failed to GET /coins/{id}/market_chart/range: ${error.message}`);
-    } 
+      throw new Error(
+        `Failed to GET /coins/{id}/market_chart/range: ${error.message}`,
+      );
+    }
   }
 }

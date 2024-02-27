@@ -1,15 +1,14 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { page } from "$app/stores";
   import { onMount, onDestroy } from 'svelte'
   import { init, dispose } from "klinecharts";
-	import { CandleChart } from '$lib/stores/market';
-  import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
+	import { CandleChart, CandleChartLoaded, CandleNewData } from '$lib/stores/market';
 	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
 
   const klineStyle = {
     candle: {
+      // bar: { upColor: colors.green['500'], downColor: colors.red['500'], upBorderColor: colors.green['500'], downBorderColor: colors.red['500'], upWickColor: colors.green['500'], downWickColor: colors.red['500'] },
       tooltip:{ showRule: 'follow_cross', text: { family: 'Inter', size: 10 }, showType: 'rect' },
       priceMark: { high: { textFamily: 'Inter', textSize: 10 }, low: { textFamily: 'Inter', textSize: 10 }, last: { text: { family: 'Inter', size: 10 } } }
     },
@@ -31,19 +30,41 @@
     CandleChart.set(init('chart'))
     $CandleChart.setStyles(klineStyle)
     $CandleChart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
-
-    // Init chart
-    const data = await fetchCandleChartData();
-    $CandleChart.applyNewData(data);
+    $CandleChart.setMaxOffsetLeftDistance(100)
+    $CandleChart.setMaxOffsetRightDistance(100)
   })
   onDestroy(() => {
     dispose('chart')
   })
+
+  const updateData = () => {
+    const dataList = $CandleChart.getDataList()
+    const data0 = dataList[0]
+    const data1 = dataList[1]
+    if (!data0 || !data1) {
+      return
+    }
+    const gap = data1.timestamp - data0.timestamp
+    const last1 = dataList[dataList.length - 1]
+    if (!last1) {
+      return
+    }
+    let newData = {...$CandleNewData}
+    if (newData.timestamp - last1.timestamp < gap) {
+      newData.timestamp = last1.timestamp
+    } else {
+      newData.timestamp = last1.timestamp + gap
+    }
+    $CandleChart.updateData(newData, ()=>{console.log()});
+  }
+  $: if ($CandleChartLoaded && $CandleNewData != undefined){
+    updateData()
+  }
 </script>
 
 {#await $page.data.chart}
   <CoinChartLoader />
-{:then dt}
+{:then _}
   <div class="flex flex-col space-y-4">
     <KlineTabs />
     <div id="chart" class="h-[300px] w-full select-none"/>

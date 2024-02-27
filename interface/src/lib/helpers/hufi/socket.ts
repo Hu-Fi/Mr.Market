@@ -3,15 +3,15 @@ import { io } from "socket.io-client";
 import { goto } from "$app/navigation";
 import type { Socket } from "socket.io-client";
 import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
-import type { MarketDataType, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
-import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/trade";
-import { CandleChartLoaded, CandleLoaded, CandleOrderBookLoaded, CandlePair, CandlePairSelectorDialog, CandlePriceLoaded } from "$lib/stores/market";
+import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/spot";
+import type { CandleTab, MarketDataType, PairsData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
+import { CandleChartLoaded, CandleOrderBookLoaded, CandlePriceLoaded, CandlePair, CandlePairSelectorDialog, CandleTimeRange } from "$lib/stores/market";
 import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/hufi/marketDataDecoder";
+import { fetchCandleChartData } from "../candle/candle";
 
-// /trade
+// /spot
 export const connectOrderBook = (): Socket => {
-  let socket: Socket;
-  socket = io(`${HUFI_SOCKET_URL}:3012/marketdata`);
+  const socket = io(`${HUFI_SOCKET_URL}:3012/marketdata`);
 
   socket.on("connect", () => {
     subscribeOrderBook(socket);
@@ -25,7 +25,7 @@ export const connectOrderBook = (): Socket => {
 
   socket.on("orderBookData", (data) => {
     orderBookLoaded.set(true);
-    decodeOrderBook("binance", data);
+    decodeOrderBook(get(pair).exchange, data);
   });
 
   return socket;
@@ -46,10 +46,11 @@ export const unSubscribeOrderBook = (socket: Socket) => {
   })
 }
 
-export const switchSpotPair = (socket: Socket, c: any) => {
+export const switchSpotPair = (socket: Socket, p: PairsData) => {
   unSubscribeOrderBook(socket);
   orderBookLoaded.set(false);
-  pair.set(c);
+  pair.set(p);
+  goto(`/spot/${p.exchange}/${p.symbol.replace('/', '-')}`)
   pairSelectorDialog.set(false);
   subscribeOrderBook(socket)
 }
@@ -58,8 +59,7 @@ export const switchSpotPair = (socket: Socket, c: any) => {
 
 // /market/candle/{EXCHANGE}/{PAIR}
 export const connectCandleStick = (): Socket => {
-  let socket: Socket;
-  socket = io(`${HUFI_SOCKET_URL}:3012/marketdata`);
+  const socket = io(`${HUFI_SOCKET_URL}:3012/marketdata`);
 
   socket.on("connect", () => {
     subscribeCandleStick(socket);
@@ -68,20 +68,25 @@ export const connectCandleStick = (): Socket => {
 
   socket.on("disconnect", () => {
     orderBookLoaded.set(false);
+    CandleChartLoaded.set(false);
+    CandleOrderBookLoaded.set(false);
+    CandlePriceLoaded.set(false);
     console.log("CandleStick disconnected");
   });
 
   socket.on("tickerData", (data) => {
+    CandlePriceLoaded.set(true);
     decodeCandleTicker('binance', data);
   })
 
   socket.on('OHLCVData', (data) => {
-    CandleLoaded.set(true);
-    decodeCandleStick("binance", data);
+    CandleChartLoaded.set(true);
+    decodeCandleStick(get(pair).exchange, data);
   })
 
   socket.on("orderBookData", (data) => {
-    decodeCandleOrderbook("binance", data);
+    CandleOrderBookLoaded.set(true);
+    decodeCandleOrderbook(get(pair).exchange, data);
   });
 
   return socket;
@@ -99,17 +104,30 @@ export const switchCandleStickPair = (socket: Socket, pair: TickerData) => {
   subscribeCandleStick(socket);
 }
 
+export const switchCandleStickTimeFrame = async (socket: Socket, timeFrame: CandleTab) => {
+  // Unsubscribe WatchOHLCV
+  unSubscribeCandleStick(socket);
+  CandleTimeRange.set(timeFrame);
+  CandlePriceLoaded.set(false);
+  CandleChartLoaded.set(false);
+  CandleOrderBookLoaded.set(false);
+  CandlePairSelectorDialog.set(false);
+  // Subscribe WatchOHLCV
+  subscribeCandleStick(socket);
+  // Return fetchOHLCV data
+  return await fetchCandleChartData();
+}
+
 export const subscribeCandleStick = (socket: Socket) => {
   // CandleStick
   socket.emit("subscribeOHLCV", {
-    type: 'OHLCV' as MarketDataType,
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    timeFrame: `${get(CandleTimeRange).v}`,
   });
 
   // Price
   socket.emit("subscribeTicker", {
-    type: 'ticker' as MarketDataType,
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
   });
@@ -126,6 +144,13 @@ export const unSubscribeCandleStick = (socket: Socket) => {
     type: 'OHLCV' as MarketDataType,
     exchange: get(CandlePair).exchange as SupportedExchanges,
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    timeFrame: `${get(CandleTimeRange).v}`,
+  })
+  console.log('Unsub OHLCV:',{
+    type: 'OHLCV' as MarketDataType,
+    exchange: get(CandlePair).exchange as SupportedExchanges,
+    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    timeFrame: `${get(CandleTimeRange).v}`,
   })
 
   socket.emit("unsubscribeData", {

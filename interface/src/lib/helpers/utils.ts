@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
-import type { OrderBookPriceFormat } from "$lib/types/hufi/exchanges";
 
 export const BN = BigNumber.clone({ DECIMAL_PLACES: 8 })
 export const BN2 = BigNumber.clone({ DECIMAL_PLACES: 2 })
@@ -71,6 +70,8 @@ export const formatChartPrice = (s: string | number) => {
 }
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
+  console.log('lang:', lang)
+
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 8);
   } else if (num >= 10000000) {
@@ -85,6 +86,7 @@ export const formatWalletBalance = (num: number, lang: string = 'en') => {
 }
 
 export const formatWalletBalanceFull = (num: number, lang: string = 'en') => {
+  console.log('lang:', lang)
   if (num < 1 && num.toString().split('.')[1]?.length > 8) {
     return formatDecimals(num, 9);
   } else {

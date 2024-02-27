@@ -14,7 +14,7 @@ test('bottom navigation', async ({ page, context }) => {
   await page.getByTestId('bottom-nav-market').click();
   await page.waitForURL('**/market');
   await page.getByTestId('bottom-nav-trade').click();
-  await page.waitForURL('**/trade');
+  await page.waitForURL('**/spot');
   await page.getByTestId('bottom-nav-grow').click();
   await page.waitForURL('**/grow');
   await page.getByTestId('bottom-nav-wallet').click();
@@ -34,7 +34,7 @@ test('search token', async ({ page, context }) => {
     // Click on result
     await page.getByRole('button', { name: symbols[i] }).first().click();
     // Wait page change
-    await page.waitForURL('**/market/coin/**');
+    await page.waitForURL('**/market/token/**');
     // Check result
     await expect(page.getByText(symbols[i], { exact: true })).toHaveText(symbols[i]);
     // Back
@@ -65,7 +65,7 @@ test('app shortcuts', async ({ page, context }) => {
   await page.getByTestId('bottom-nav-home').click();
 
   await page.getByTestId('home-page-app-spot').click();
-  await page.waitForURL('**/trade');
+  await page.waitForURL('**/spot');
   await page.getByTestId('bottom-nav-home').click();
 
   await page.getByTestId('home-page-app-earn').click();

@@ -186,7 +186,7 @@ describe('formatUSMoney', () => {
 
 describe('toggleItemInArray', () => {
   it('toggle item in array', ()=>{
-    const arr: any = []
+    const arr: object[] = []
     const item = {chain_id: '123'}
     const item1 = {chain_id: '221'}
     toggleItemInArray(arr, 'chain_id', item)
@@ -215,7 +215,7 @@ describe('numberInArray', () => {
 
 describe('toggleNumberInArray', () => {
   it('toggle number in array', ()=>{
-    const arr: any = []
+    const arr: number[] = []
     const item = 1
     const item1 = 2
     toggleNumberInArray(arr, item)

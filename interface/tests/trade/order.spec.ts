@@ -5,7 +5,7 @@ test.use({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/trade');
+  await page.goto('http://127.0.0.1:5173/spot');
 })
 
 test('order filter dialog', async({ page, context }) => {
@@ -29,7 +29,7 @@ test('switch between tabs', async({ page, context }) => {
 
 test('enter order history', async({ page, context }) => {
   await page.getByTestId('go_history').click();
-  await page.waitForURL('**/trade/history**');
+  await page.waitForURL('**/spot/history**');
   await page.getByRole('button').first().click();
 })
 

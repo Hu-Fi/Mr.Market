@@ -1,6 +1,5 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import PairIcon from "$lib/components/common/pairIcon.svelte";
 
   export let exchange = "";
   export let exchangeIcon = '';
