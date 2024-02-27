@@ -1,11 +1,9 @@
 name: Runs All Unit Tests
-
 on:
   push:
-    branches: [ main, master, feature/v1, update ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master, feature/v1, update ]
-
+    branches: [ main, master ]
 jobs:
   test:
     timeout-minutes: 60
