@@ -1,22 +1,38 @@
-name: Lint
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+name: Lint Code Base
+
+on: [push, pull_request]
+
 jobs:
-  test:
-    timeout-minutes: 60
-    defaults:
-      run:
-        working-directory: ./interface
+  lint:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x] # Adjust node version as necessary
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm ci
-      - name: Run Lint
-        run: npm run lint:fix
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies for interface
+      run: |
+        npm install
+      working-directory: ./interface
+
+    - name: Lint interface
+      run: |
+        npm run lint:fix
+      working-directory: ./interface
+
+    - name: Install dependencies for server
+      run: |
+        yarn install
+      working-directory: ./server
+
+    - name: Lint server
+      run: |
+        yarn run lint
+      working-directory: ./server
