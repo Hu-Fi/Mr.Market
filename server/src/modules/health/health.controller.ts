@@ -6,7 +6,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
-  constructor(private healthService: HealthService) { }
+  constructor(private healthService: HealthService) {}
 
   @Get('/')
   @ApiOperation({ summary: 'Get server health status' })
@@ -29,9 +29,7 @@ export class HealthController {
   @ApiParam({ name: 'name', description: 'Exchange name', required: true })
   @ApiResponse({ status: 200, description: 'Health by exchange' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getHealthByExchange(
-    @Param('name') name: string,
-  ) {
+  async getHealthByExchange(@Param('name') name: string) {
     return this.healthService.getExchangeHealth(name);
   }
 }

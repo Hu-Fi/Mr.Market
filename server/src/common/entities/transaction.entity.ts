@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Transaction {
@@ -29,7 +35,6 @@ export class Transaction {
   @Column({ default: 'pending' })
   status: string; // Status of the transaction ('pending', 'completed', 'cancelled', etc.)
 
-
   @Column()
   orderId: string; // Unique identifier for the order
 
@@ -38,5 +43,4 @@ export class Transaction {
 
   @UpdateDateColumn()
   updatedAt: Date; // When the transaction was last updated
-
 }
