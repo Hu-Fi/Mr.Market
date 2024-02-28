@@ -19,12 +19,17 @@ export class TradeRepository {
     return this.repository.find({ where: { clientId } });
   }
 
-  async createTransaction(transactionData: Partial<Transaction>): Promise<Transaction> {
+  async createTransaction(
+    transactionData: Partial<Transaction>,
+  ): Promise<Transaction> {
     const transaction = this.repository.create(transactionData);
     return this.repository.save(transaction);
   }
 
-  async updateTransactionStatus(orderId: string, status: string): Promise<void> {
+  async updateTransactionStatus(
+    orderId: string,
+    status: string,
+  ): Promise<void> {
     await this.repository.update({ orderId }, { status });
   }
   // Add more custom methods as needed...

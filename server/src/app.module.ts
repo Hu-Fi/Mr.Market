@@ -12,6 +12,7 @@ import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import configuration from './config/configuration';
+import { AdminModule } from './modules/admin/admin.module';
 dotenv.config();
 
 @Module({
@@ -34,6 +35,7 @@ dotenv.config();
     MarketdataModule,
     CoingeckoModule,
     HealthModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

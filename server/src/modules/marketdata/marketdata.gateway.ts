@@ -29,7 +29,7 @@ export class MarketDataGateway
 
   constructor(private marketDataService: MarketdataService) {}
 
-  afterInit(server: SocketIOServer) {
+  afterInit() {
     // Any initialization logic if needed
   }
 
