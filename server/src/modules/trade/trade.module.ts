@@ -9,7 +9,7 @@ import { TradeRepository } from './trade.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([Transaction])],
   controllers: [TradeController],
-  providers: [TradeService,TradeRepository],
+  providers: [TradeService, TradeRepository],
   exports: [TradeService],
 })
 export class TradeModule {}

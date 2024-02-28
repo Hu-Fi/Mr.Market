@@ -1,4 +1,4 @@
-import { marketDataType } from "src/modules/marketdata/marketdata.service";
+import { marketDataType } from 'src/modules/marketdata/marketdata.service';
 
 export interface CompositeKey {
   type: marketDataType;
@@ -8,7 +8,13 @@ export interface CompositeKey {
   timeFrame?: string;
 }
 
-export const createCompositeKey = (type: marketDataType, exchange: string, symbol?: string, symbols?: string[], timeFrame?: string): string => {
+export const createCompositeKey = (
+  type: marketDataType,
+  exchange: string,
+  symbol?: string,
+  symbols?: string[],
+  timeFrame?: string,
+): string => {
   let key = '';
   if (type === 'orderbook' || type === 'ticker') {
     key = `${type}:${exchange}:${symbol}`;
@@ -17,8 +23,8 @@ export const createCompositeKey = (type: marketDataType, exchange: string, symbo
   } else if (type === 'tickers') {
     key = `${type}:${exchange}:${symbols}`;
   }
-  return key
-}
+  return key;
+};
 
 export const decodeCompositeKey = (compositeKey: string): CompositeKey => {
   const parts = compositeKey.split(':');

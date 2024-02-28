@@ -75,7 +75,7 @@ export class HealthService {
       try {
         allRequests.push(allExchanges[i].fetchBalance());
       } catch (e) {
-        healthMap.set(allExchanges[i].name, 'dead');
+        healthMap.set(allExchanges[i].name, 'dead' as HEALTH_STATE);
         this.logger.error(`Exchange ${allExchanges[i].name} is dead`);
       }
     }
@@ -83,10 +83,10 @@ export class HealthService {
     const responses = await Promise.all(allRequests);
     for (let i = 0; i < responses.length; i++) {
       if (!responses[i].balance) {
-        healthMap.set(allExchanges[i].name, 'dead');
+        healthMap.set(allExchanges[i].name, 'dead' as HEALTH_STATE);
         this.logger.error(`Exchange ${allExchanges[i].name} is dead`);
       }
-      healthMap.set(allExchanges[i].name, 'alive');
+      healthMap.set(allExchanges[i].name, 'alive' as HEALTH_STATE);
     }
 
     const result = Object.entries(healthMap);
@@ -109,6 +109,6 @@ export class HealthService {
         `Exchange ${exchange.name} is dead`,
       );
     }
-    return { statusCode: 200, message: 'alive' };
+    return { statusCode: 200, message: 'alive' as HEALTH_STATE };
   }
 }

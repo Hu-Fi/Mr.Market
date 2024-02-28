@@ -1,5 +1,5 @@
 export const SUPPORTED_PAIRS = {
-  'binance': [
+  binance: [
     'BTC/USDT',
     'ETH/USDT',
     'BNB/USDT',
@@ -8,17 +8,9 @@ export const SUPPORTED_PAIRS = {
     'SOL/USDT',
     'SUI/USDT',
   ],
-  'bitfinex': [
-    'BTC/USDT',
-    'ETH/USDT',
-  ],
-  'mexc': [
-    'BTC/USDT',
-    'ETH/USDT',
-    'BNB/USDT',
-    'UNI/USDT',
-  ],
-  'gate': [],
-  'lbank': [],
-  'okx': [],
-}
+  bitfinex: ['BTC/USDT', 'ETH/USDT'],
+  mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT'],
+  gate: [],
+  lbank: [],
+  okx: [],
+};

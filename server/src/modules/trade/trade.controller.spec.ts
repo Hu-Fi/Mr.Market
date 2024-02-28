@@ -26,13 +26,28 @@ describe('TradeController', () => {
   });
 
   it('should execute a market trade', async () => {
-    const dto: MarketTradeDto = { userId: '123',clientId:'client1',exchange:'binance',symbol: 'BTC/USD', side: 'buy', amount: 1 };
+    const dto: MarketTradeDto = {
+      userId: '123',
+      clientId: 'client1',
+      exchange: 'binance',
+      symbol: 'BTC/USD',
+      side: 'buy',
+      amount: 1,
+    };
     await controller.executeMarketTrade(dto);
     expect(mockTradeService.executeMarketTrade).toHaveBeenCalledWith(dto);
   });
 
   it('should execute a limit trade', async () => {
-    const dto: LimitTradeDto = { userId: '123',clientId:'client1',exchange:'binance',symbol: 'BTC/USD', side: 'sell', amount: 1, price: 50000 };
+    const dto: LimitTradeDto = {
+      userId: '123',
+      clientId: 'client1',
+      exchange: 'binance',
+      symbol: 'BTC/USD',
+      side: 'sell',
+      amount: 1,
+      price: 50000,
+    };
     await controller.executeLimitTrade(dto);
     expect(mockTradeService.executeLimitTrade).toHaveBeenCalledWith(dto);
   });
