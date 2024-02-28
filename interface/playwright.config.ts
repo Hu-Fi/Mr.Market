@@ -53,7 +53,7 @@ export default defineConfig({
     //   use: { ...devices['Pixel 7'] },
     // },
     {
-      name: 'Mobile Chrome',
+      name: 'chromium',
       use: { ...devices['Galaxy S9+'] },
     },
     // {
@@ -61,7 +61,7 @@ export default defineConfig({
     //   use: { ...devices['iPhone 12'] },
     // },
     {
-      name: 'Mobile Safari',
+      name: 'webkit',
       use: { ...devices['iPhone 14'] },
     },
 

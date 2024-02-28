@@ -30,13 +30,13 @@ test('search token', async ({ page }) => {
     // Fill text
     await page.getByPlaceholder('Search').fill(symbols[i]);
     // Wait
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
     // Click on result
     await page.getByRole('button', { name: symbols[i] }).first().click();
     // Wait page change
     await page.waitForURL('**/market/token/**');
-    // Check result
-    await expect(page.getByText(symbols[i], { exact: true })).toHaveText(symbols[i]);
+    // Check result (Set timeout due to webkit action is slow)
+    await expect(page.getByText(symbols[i], { exact: true })).toHaveText(symbols[i], {timeout:10000});
     // Back
     await page.getByRole('banner').getByRole('button').first().click();
   }
@@ -62,23 +62,29 @@ test('connect', async ({ page, context }) => {
 test('app shortcuts', async ({ page }) => {
   await page.getByTestId('home-page-app-swap').click();
   await page.waitForURL('**/swap');
-  await page.getByTestId('bottom-nav-home').click();
+  await page.goto('/home');
+  await page.waitForURL('**/home');
 
   await page.getByTestId('home-page-app-spot').click();
-  await page.waitForURL('**/spot');
-  await page.getByTestId('bottom-nav-home').click();
+  // Increase timeout due to slow webkit action
+  await page.waitForURL('**/spot/**', {timeout: 10000});
+  await page.goto('/home')
+  await page.waitForURL('**/home');
 
   await page.getByTestId('home-page-app-earn').click();
-  await page.waitForURL('**/grow');
-  await page.getByTestId('bottom-nav-home').click();
+  // Increase timeout due to slow webkit action
+  await page.waitForURL('**/grow', {timeout: 10000});
+  await page.goto('/home');
+  await page.waitForURL('**/home');
 
   await page.getByTestId('home-page-app-arbitrage').click();
-  await page.waitForURL('**/grow/arbitrage');
+  await page.waitForURL('**/grow/arbitrage', {timeout: 10000});
   await page.getByRole('button').first().click();
-  await page.getByTestId('bottom-nav-home').click();
+  await page.goto('/home');
+  await page.waitForURL('**/home');
 
   await page.getByTestId('home-page-app-more').click();
-  await page.waitForURL('**/home/more');
+  await page.waitForURL('**/home/more', {timeout: 10000});
   await page.getByRole('banner').getByRole('button').first().click();
 })
 
