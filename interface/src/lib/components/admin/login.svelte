@@ -1,25 +1,24 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-
-  let submitted = false;
-  let checked = false;
-  let correct = false;
+  import { AdminPassword } from "$lib/helpers/hufi/admin";
+  import { submitted, checked, correct } from "$lib/stores/admin";
+  
   let loading = false;
   let password = '';
 
   const login = async () => {
     loading = true;
     if (await checkPassword(password)) {
-      goto('');
+      submitted.set(true);
+      checked.set(true);
+      correct.set(true);
+      loading = false;
       return;
     }
-    setTimeout(() => {
-      submitted = true;
-      checked = true;
-      correct = false;
-      loading = false;
-    }, 3000);
+    submitted.set(true);
+    checked.set(true);
+    correct.set(false);
+    loading = false;
   };
 
   const checkPassword = async (pass: string):Promise<boolean> => {
@@ -27,7 +26,8 @@
     if (!pass) {
       return false;
     }
-    return true;
+    const r = await AdminPassword(pass)
+    return r.result;
   }
 </script>
 
@@ -41,7 +41,7 @@
     <label
       for="password"
       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >Your password</label
+      >{$_('enter_password')}</label
     >
     <input
       type="password"
@@ -53,7 +53,7 @@
       required
     />
   </div>
-  {#if submitted && checked && !correct}
+  {#if $submitted && $checked && !$correct}
     <div>
       <span class="text-red-400 capitalize">
         {$_("error")}: {$_("password_incorrect")}
