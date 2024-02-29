@@ -5,7 +5,7 @@
   import { autoCheckPassword, checkPassword } from "$lib/helpers/hufi/admin";
   import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
 
-  let password = "";
+  let password = "123123";
 
   const login = async (pass: string) => {
     loginLoading.set(true);

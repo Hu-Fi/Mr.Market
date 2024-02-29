@@ -1,12 +1,9 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
-
   const txs = [
     {
       snapshot: '61164483-18e0-480f-a2c4-a153ca244b9d',
-      timestamp: 1709133923,
-      amount: 123123,
+      timestamp: '2024-02-29',
+      amount: 23351,
       type: 'spot_buy',
     }
   ]
@@ -71,7 +68,7 @@
                     <td
                       class="p-4 whitespace-nowrap text-sm font-normal text-gray-500"
                     >
-                      {new Date(tx.timestamp).toISOString()}
+                      {tx.timestamp}
                     </td>
                     <td
                       class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900"
