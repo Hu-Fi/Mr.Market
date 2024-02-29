@@ -1,34 +1,33 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { AdminPassword } from "$lib/helpers/hufi/admin";
-  import { submitted, checked, correct } from "$lib/stores/admin";
-  
-  let loading = false;
-  let password = '';
+  import { onMount } from "svelte";
+  import { autoCheckPassword, checkPassword } from "$lib/helpers/hufi/admin";
+  import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
+    import { goto } from "$app/navigation";
 
-  const login = async () => {
-    loading = true;
-    if (await checkPassword(password)) {
+  let password = "";
+
+  const login = async (pass: string) => {
+    loginLoading.set(true);
+    if (await checkPassword(pass)) {
       submitted.set(true);
       checked.set(true);
       correct.set(true);
-      loading = false;
-      return;
+      localStorage.setItem("admin-password", pass);
+      loginLoading.set(false);
+      goto('/manage/dashboard')
+      return true;
     }
     submitted.set(true);
     checked.set(true);
     correct.set(false);
-    loading = false;
+    
+    return false;
   };
 
-  const checkPassword = async (pass: string):Promise<boolean> => {
-    // Fetch API
-    if (!pass) {
-      return false;
-    }
-    const r = await AdminPassword(pass)
-    return r.result;
-  }
+  onMount(() => {
+    autoCheckPassword();
+  });
 </script>
 
 <div
@@ -41,7 +40,7 @@
     <label
       for="password"
       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >{$_('enter_password')}</label
+      >{$_("enter_password")}</label
     >
     <input
       type="password"
@@ -63,11 +62,11 @@
   <button
     type="submit"
     on:click={() => {
-      login();
+      login(password);
     }}
     class="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-center text-white bg-base-content rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
   >
-    {#if loading}
+    {#if $loginLoading}
       <span class="loading"> </span>
     {:else}
       <span>{$_("login")}</span>

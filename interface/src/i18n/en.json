@@ -256,5 +256,12 @@
   "bids": "Bids",
 
   "password_incorrect": "Password incorrect",
-  "enter_password": "Enter password"
+  "enter_password": "Enter password",
+  "dashboard": "Dashboard",
+  "users": "Users",
+  "database": "Database",
+  "config": "Config",
+  "exit": "Exit",
+  "health": "Health",
+  "message": "Message"
 }
