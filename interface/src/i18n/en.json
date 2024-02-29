@@ -276,5 +276,9 @@
   "view_all": "View all",
   "total_users": "Total users",
   "active_users": "Active users",
-  "user_signups_this_week": "User signups this week"
+  "user_signups_this_week": "User signups this week",
+  "max_amount_to_keep_in_bot": "Max amount to keep in bot",
+  "spot_fee": "Spot fee",
+  "settings":"Settings",
+  "save": "Save"
 }

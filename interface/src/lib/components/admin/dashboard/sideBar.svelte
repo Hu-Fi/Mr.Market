@@ -14,7 +14,7 @@
     "exchanges",
     // "revenue",
     "health",
-    "message",
+    // "message",
     "config",
     "exit",
   ];
