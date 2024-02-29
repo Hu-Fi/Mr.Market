@@ -4,7 +4,7 @@
   import { exit } from "$lib/helpers/hufi/admin";
   import SideBarIcons from "./sideBarIcons.svelte";
 
-  const paths = ["dashboard", "users", "database", "health", "message", "config", "exit"];
+  const paths = ["dashboard", "orders", "users", "database", "health", "message", "config", "exit"];
   const items = paths.map((path) => {
     return {
       key: path,

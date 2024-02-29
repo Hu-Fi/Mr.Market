@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -17,6 +18,12 @@ dotenv.config();
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
     ConfigModule.forRoot({
       load: [configuration],
     }),

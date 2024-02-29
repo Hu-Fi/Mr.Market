@@ -14,7 +14,7 @@
 
 <div
   id="main-content"
-  class=" w-full bg-gray-50 lg:ml-64"
+  class=" w-full bg-gray-50"
 >
   <main class="">
     <div class="pt-6 px-4">

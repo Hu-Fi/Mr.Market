@@ -263,5 +263,8 @@
   "config": "Config",
   "exit": "Exit",
   "health": "Health",
-  "message": "Message"
+  "message": "Message",
+  "last_update": "Last update",
+  "volume": "Volume",
+  "actions": "Actions"
 }

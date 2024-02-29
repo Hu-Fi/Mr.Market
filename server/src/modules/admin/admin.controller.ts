@@ -4,9 +4,6 @@ import {
   Body,
   BadRequestException,
   Logger,
-  HttpCode,
-  HttpStatus,
-  Param,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,6 +13,7 @@ import {
 } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { AdminPasswordDto } from './admin.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -23,6 +21,7 @@ export class AdminController {
   private readonly logger = new Logger(AdminController.name);
   constructor(private readonly tradeService: AdminService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('/password')
   @ApiOperation({ summary: 'Check password correctness' })
   @ApiResponse({ status: 200, description: 'Password correct.' })

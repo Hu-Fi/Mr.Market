@@ -1,9 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import { autoCheckPassword, checkPassword } from "$lib/helpers/hufi/admin";
   import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
-    import { goto } from "$app/navigation";
 
   let password = "";
 
