@@ -1,20 +1,36 @@
 <script>
+  import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { exit } from "$lib/helpers/hufi/admin";
   import SideBarIcons from "./sideBarIcons.svelte";
 
-  const paths = ["dashboard", "orders", "users", "database", "health", "message", "config", "exit"];
+  const paths = [
+    "dashboard",
+    "orders",
+    "users",
+    "database",
+    "exchanges",
+    // "revenue",
+    "health",
+    "message",
+    "config",
+    "exit",
+  ];
   const items = paths.map((path) => {
     return {
       key: path,
       name: $_(path),
       value: `/manage/${path}`,
-      fn: path === 'exit' ? () => {
-        exit()
-      } : () => {
-        goto(`/manage/${path}`)
-      },
+      fn:
+        path === "exit"
+          ? () => {
+              exit();
+            }
+          : () => {
+              goto(`/manage/${path}`);
+            },
     };
   });
 </script>
@@ -33,8 +49,11 @@
           {#each items as item}
             <li>
               <button
-                on:click={()=>item.fn()}
-                class="text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group"
+                on:click={() => item.fn()}
+                class={clsx(
+                  "w-full text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group",
+                  $page.url.pathname.includes(item.key) && "bg-gray-100",
+                )}
               >
                 <SideBarIcons name={item.key} />
                 <span class="ml-3">{item.name}</span>

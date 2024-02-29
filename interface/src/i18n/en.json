@@ -264,7 +264,17 @@
   "exit": "Exit",
   "health": "Health",
   "message": "Message",
+  "exchanges": "Exchanges",
+  "revenue": "Revenue",
   "last_update": "Last update",
   "volume": "Volume",
-  "actions": "Actions"
+  "actions": "Actions",
+  "type": "Type",
+  "user_id": "User ID",
+  "symbol": "Symbol",
+  "state": "State",
+  "view_all": "View all",
+  "total_users": "Total users",
+  "active_users": "Active users",
+  "user_signups_this_week": "User signups this week"
 }

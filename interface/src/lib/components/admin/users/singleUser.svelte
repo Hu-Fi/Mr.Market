@@ -1,6 +1,4 @@
 <script lang="ts">
-  import clsx from "clsx";
-  import { _ } from "svelte-i18n";
   import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
 
   // TODO: replace this with our own API response

@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
-  import SingleUser from "$lib/components/admin/users/singleUser.svelte";
 
   let users: UserResponse[] = [
     {
@@ -82,22 +80,48 @@
   ];
 </script>
 
-<div class="overflow-x-auto">
-  <table class="table">
-    <!-- head -->
-    <thead>
-      <tr>
-        <th></th>
-        <th>{$_("name")}</th>
-        <th>{$_("last_update")}</th>
-        <th>{$_("volume")}</th>
-        <th>{$_("actions")}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each users as user}
-        <SingleUser {user} />
-      {/each}
-    </tbody>
-  </table>
+<div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
+  <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-bold leading-none text-gray-900">
+        Latest Users
+      </h3>
+      <a
+        href="/manage/users"
+        class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
+      >
+        View all
+      </a>
+    </div>
+    <div class="flow-root">
+      <ul role="list" class="divide-y divide-gray-200">
+        {#each users as user}
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <img
+                  class="h-8 w-8 rounded-full"
+                  src={user.avatar_url}
+                  alt=""
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {user.full_name}
+                </p>
+                <p class="text-sm text-gray-500 truncate">
+                  {user.identity_number}
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base text-gray-900"
+              >
+                {user.created_at}
+              </div>
+            </div>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  </div>
 </div>
