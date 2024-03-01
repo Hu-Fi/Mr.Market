@@ -29,4 +29,7 @@ export default () => ({
       },
     ],
   },
+  admin: {
+    pass: process.env.ADMIN_PASSWORD,
+  },
 });

@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -12,10 +13,17 @@ import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import configuration from './config/configuration';
+import { AdminModule } from './modules/admin/admin.module';
 dotenv.config();
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
     ConfigModule.forRoot({
       load: [configuration],
     }),
@@ -34,6 +42,7 @@ dotenv.config();
     MarketdataModule,
     CoingeckoModule,
     HealthModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

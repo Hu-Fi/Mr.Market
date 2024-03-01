@@ -1186,6 +1186,11 @@
   dependencies:
     tslib "2.5.3"
 
+"@nestjs/throttler@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/throttler/-/throttler-5.1.2.tgz#dc65634153c8b887329b1cc6061db2e556517dcb"
+  integrity sha512-60MqhSLYUqWOgc38P6C6f76JIpf6mVjly7gpuPBCKtVd0p5e8Fq855j7bJuO4/v25vgaOo1OdVs0U1qtgYioGw==
+
 "@nestjs/typeorm@^10.0.1":
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/@nestjs/typeorm/-/typeorm-10.0.1.tgz#0b5c36c21a06c274f9d283e73988b887e7f0635b"
@@ -3161,7 +3166,7 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-express@4.18.2:
+express@4.18.2, express@^4.18.2:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
   integrity sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==
