@@ -1,0 +1,23 @@
+name: Runs All Server Unit Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  test:
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ./server
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: yarn
+      - name: Execute Unit tests
+        run: yarn test
