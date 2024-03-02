@@ -75,14 +75,8 @@ export class StrategyService {
   }
 
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
-    const {
-      userId,
-      clientId,
-      pair,
-      minProfitability,
-      exchangeAName,
-      exchangeBName,
-    } = strategyParamsDto;
+    const { userId, clientId, pair, exchangeAName, exchangeBName } =
+      strategyParamsDto;
     const strategyKey = `${userId}-${clientId}-Arbitrage`;
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
@@ -361,11 +355,7 @@ export class StrategyService {
     return { adjustedAmount, adjustedPrice };
   }
 
-  private async cancelAllOrders(
-    exchange: ccxt.Exchange,
-    pair: string,
-    strategyKey: string,
-  ) {
+  private async cancelAllOrders(exchange: ccxt.Exchange, pair: string) {
     // Fetch and cancel all open orders for the pair
     const orders = await exchange.fetchOpenOrders(pair);
     for (const order of orders) {
@@ -620,9 +610,9 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
-    this.strategyInstances.forEach((instance, key) => {
+    for (const instance of this.strategyInstances.values()) {
       clearInterval(instance.intervalId);
-    });
+    }
     this.strategyInstances.clear();
 
     this.activeOrderBookWatches.clear();

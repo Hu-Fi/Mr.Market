@@ -5,10 +5,11 @@ import { Transaction } from 'src/common/entities/transaction.entity';
 import { UserBalance } from 'src/common/entities/user-balance.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Transaction]),TypeOrmModule.forFeature([UserBalance])],
-    providers: [TransactionsService],
-    exports: [TransactionsService] 
+  imports: [
+    TypeOrmModule.forFeature([Transaction]),
+    TypeOrmModule.forFeature([UserBalance]),
+  ],
+  providers: [TransactionsService],
+  exports: [TransactionsService],
 })
-export class TransactionsModule {
-    
-}
+export class TransactionsModule {}
