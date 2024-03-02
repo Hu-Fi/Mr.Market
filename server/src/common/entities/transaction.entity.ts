@@ -12,28 +12,22 @@ export class Transaction {
   id: number;
 
   @Column()
-  userId: string; // Identifier for the sub-user
+  userId: string;
 
   @Column()
-  clientId: string; // Identifier for the client
+  exchange: string;
+
+  @Column('decimal', { precision: 10, scale: 2 })
+  amount: number;
 
   @Column()
-  symbol: string; // E.g., 'BTC/USD'
+  currency: string;
 
   @Column()
-  side: string; // 'buy' or 'sell'
-
-  @Column()
-  type: string; // 'market' or 'limit'
-
-  @Column('decimal', { precision: 18, scale: 10 })
-  amount: number; // Quantity of the asset
-
-  @Column('decimal', { precision: 18, scale: 10 })
-  price: number; // Price at which the trade was executed
+  type: 'deposit' | 'withdrawal';
 
   @Column({ default: 'pending' })
-  status: string; // Status of the transaction ('pending', 'completed', 'cancelled', etc.)
+  status: 'pending' | 'completed' | 'failed';
 
   @Column()
   orderId: string; // Unique identifier for the order

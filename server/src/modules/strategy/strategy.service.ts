@@ -5,7 +5,12 @@ import {
 } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 import { TradeService } from '../trade/trade.service';
-import { StrategyDto } from './strategy.dto';
+import {
+  ArbitrageStrategyDto,
+  PureMarketMakingStrategyDto,
+} from './strategy.dto';
+import { PerformanceService } from '../performance/performance.service';
+import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 
 @Injectable()
 export class StrategyService {
@@ -21,8 +26,15 @@ export class StrategyService {
   >();
   private exchanges = new Map<string, ccxt.Exchange>();
   private activeOrderBookWatches = new Map<string, Set<string>>(); // Tracks active watches for each strategy
+  private activeOrders: Map<
+    string,
+    { exchange: ccxt.Exchange; orderId: string }[]
+  > = new Map();
 
-  constructor(private tradeService: TradeService) {
+  constructor(
+    private tradeService: TradeService,
+    private performanceService: PerformanceService,
+  ) {
     this.initializeExchanges();
     process.on('SIGINT', () => this.handleShutdown());
     process.on('SIGTERM', () => this.handleShutdown());
@@ -62,7 +74,7 @@ export class StrategyService {
     return supportedExchanges;
   }
 
-  async startArbitrageStrategyForUser(strategyParamsDto: StrategyDto) {
+  async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
     const {
       userId,
       clientId,
@@ -71,7 +83,7 @@ export class StrategyService {
       exchangeAName,
       exchangeBName,
     } = strategyParamsDto;
-    const strategyKey = `${userId}-${clientId}`;
+    const strategyKey = `${userId}-${clientId}-Arbitrage`;
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
 
@@ -103,26 +115,32 @@ export class StrategyService {
       this.evaluateArbitrageOpportunityVWAP(
         exchangeA,
         exchangeB,
-        userId,
-        clientId,
-        pair,
-        strategyParamsDto.amountToTrade,
-        minProfitability,
+        strategyParamsDto,
       );
-    }, 1000); // Run every 1 seconds
+    }, 1000); // Run every 1 second
 
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
 
-  async stopArbitrageStrategyForUser(userId: string, clientId: string) {
-    const strategyKey = `${userId}-${clientId}`;
+  async stopStrategyForUser(
+    userId: string,
+    clientId: string,
+    strategyType?: string,
+  ) {
+    let strategyKey;
+    if ((strategyType = 'Arbitrage')) {
+      strategyKey = `${userId}-${clientId}-Arbitrage`;
+    }
+    if ((strategyType = 'pureMarketMaking')) {
+      strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+    }
     const strategyInstance = this.strategyInstances.get(strategyKey);
-
+    this.logger.log(strategyKey);
     if (strategyInstance) {
       clearInterval(strategyInstance.intervalId);
       this.strategyInstances.delete(strategyKey);
       this.logger.log(
-        `Stopped arbitrage strategy for user ${userId}, client ${clientId}`,
+        `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
       );
 
       // Remove the pairs from active watches
@@ -160,19 +178,258 @@ export class StrategyService {
     }
   }
 
+  async executePureMarketMakingStrategy(
+    strategyParamsDto: PureMarketMakingStrategyDto,
+  ) {
+    const {
+      userId,
+      clientId,
+      pair,
+      exchangeName,
+      bidSpread,
+      askSpread,
+      orderAmount,
+      orderRefreshTime,
+      numberOfLayers,
+      priceSourceType,
+      amountChangePerLayer,
+      amountChangeType,
+      ceilingPrice,
+      floorPrice,
+    } = strategyParamsDto;
+    const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+
+    // Ensure the strategy is not already running
+    if (this.strategyInstances.has(strategyKey)) {
+      this.logger.error(`Strategy ${strategyKey} is already running.`);
+      return;
+    }
+
+    // Start the strategy
+    this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
+    const intervalId = setInterval(async () => {
+      try {
+        await this.manageMarketMakingOrdersWithLayers(
+          userId,
+          clientId,
+          exchangeName,
+          pair,
+          bidSpread,
+          askSpread,
+          orderAmount,
+          numberOfLayers,
+          priceSourceType,
+          amountChangePerLayer,
+          amountChangeType,
+          ceilingPrice,
+          floorPrice,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Error executing pure market making strategy for ${strategyKey}: ${error.message}`,
+        );
+        clearInterval(intervalId); // Optionally stop the strategy on error
+      }
+    }, orderRefreshTime);
+
+    // Track the strategy instance
+    this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+  }
+
+  // Add endpoint to keep track of the user id and client id
+  // Ceiling and floor price hard ceiling and hard floor, and make it auto adjustable every x seconds
+  // Track inventory cost,
+  private async manageMarketMakingOrdersWithLayers(
+    userId: string,
+    clientId: string,
+    exchangeName: string,
+    pair: string,
+    bidSpread: number,
+    askSpread: number,
+    baseOrderAmount: number,
+    numberOfLayers: number,
+    priceSourceType: PriceSourceType,
+    amountChangePerLayer: number,
+    amountChangeType: 'fixed' | 'percentage',
+    ceilingPrice?: number,
+    floorPrice?: number,
+  ) {
+    const currentPrice = await this.getCurrentMarketPrice(exchangeName, pair);
+    const priceSource = await this.getPriceSource(
+      exchangeName,
+      pair,
+      priceSourceType,
+    );
+    const exchange = this.exchanges.get(exchangeName);
+
+    // Check if ceilingPrice and floorPrice are defined and if current price is outside the specified range
+    if (
+      (ceilingPrice !== undefined && currentPrice > ceilingPrice) ||
+      (floorPrice !== undefined && currentPrice < floorPrice)
+    ) {
+      this.logger.error(
+        `Current price (${currentPrice}) is outside the specified range (Floor: ${floorPrice}, Ceiling: ${ceilingPrice}). Shutting down strategy for ${userId}-${clientId}.`,
+      );
+      await this.stopStrategyForUser(userId, clientId, 'pureMarketMaking');
+      return;
+    }
+
+    // Cancel all existing orders for this strategy
+    await this.cancelAllOrders(
+      exchange,
+      pair,
+      `${userId}-${clientId}-pureMarketMaking`,
+    );
+
+    let currentOrderAmount = baseOrderAmount;
+
+    for (let layer = 1; layer <= numberOfLayers; layer++) {
+      // Adjust the order amount for the current layer
+      if (layer > 1) {
+        // Skip the first layer as it uses the base order amount
+        if (amountChangeType === 'fixed') {
+          currentOrderAmount += amountChangePerLayer;
+        } else if (amountChangeType === 'percentage') {
+          currentOrderAmount +=
+            currentOrderAmount * (amountChangePerLayer / 100);
+        }
+      }
+
+      const layerBidSpreadPercentage = bidSpread * layer;
+      const layerAskSpreadPercentage = askSpread * layer;
+
+      const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
+      const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
+
+      // Adjust buy and sell prices and amounts to exchange precision
+      const {
+        adjustedAmount: adjustedBuyAmount,
+        adjustedPrice: adjustedBuyPrice,
+      } = await this.adjustOrderParameters(
+        exchange,
+        pair,
+        currentOrderAmount,
+        buyPrice,
+      );
+      const {
+        adjustedAmount: adjustedSellAmount,
+        adjustedPrice: adjustedSellPrice,
+      } = await this.adjustOrderParameters(
+        exchange,
+        pair,
+        currentOrderAmount,
+        sellPrice,
+      );
+
+      // Place buy and sell orders with adjusted parameters
+      await this.tradeService.executeLimitTrade({
+        userId,
+        clientId,
+        exchange: exchangeName,
+        symbol: pair,
+        side: 'buy',
+        amount: parseFloat(adjustedBuyAmount),
+        price: parseFloat(adjustedBuyPrice),
+      });
+      await this.tradeService.executeLimitTrade({
+        userId,
+        clientId,
+        exchange: exchangeName,
+        symbol: pair,
+        side: 'sell',
+        amount: parseFloat(adjustedSellAmount),
+        price: parseFloat(adjustedSellPrice),
+      });
+    }
+  }
+
+  private async adjustOrderParameters(
+    exchange: ccxt.Exchange,
+    symbol: string,
+    amount: number,
+    price: number,
+  ): Promise<{ adjustedAmount: string; adjustedPrice: string }> {
+    // Ensure market data is loaded
+    if (!exchange.markets) {
+      throw new Error('Exchange markets not loaded');
+    }
+
+    // Adjust amount and price to the exchange's precision
+    const adjustedAmount = await exchange.amountToPrecision(symbol, amount);
+    const adjustedPrice = await exchange.priceToPrecision(symbol, price);
+    this.logger.log(`Adjusted Buy Order: ${adjustedAmount} @ ${adjustedPrice}`);
+    return { adjustedAmount, adjustedPrice };
+  }
+
+  private async cancelAllOrders(
+    exchange: ccxt.Exchange,
+    pair: string,
+    strategyKey: string,
+  ) {
+    // Fetch and cancel all open orders for the pair
+    const orders = await exchange.fetchOpenOrders(pair);
+    for (const order of orders) {
+      await exchange.cancelOrder(order.id, pair);
+    }
+  }
+
+  private async getCurrentMarketPrice(
+    exchangeName: string,
+    pair: string,
+  ): Promise<number> {
+    const exchange = this.exchanges.get(exchangeName);
+    if (!exchange) {
+      throw new Error(`Exchange ${exchangeName} is not configured.`);
+    }
+    const ticker = await exchange.fetchTicker(pair);
+    return ticker.last; // Using the last trade price as the current price
+  }
+
+  private async getPriceSource(
+    exchangeName: string,
+    pair: string,
+    priceSourceType: PriceSourceType,
+  ): Promise<number> {
+    const exchange = this.exchanges.get(exchangeName);
+    if (!exchange) {
+      throw new Error(`Exchange ${exchangeName} is not configured.`);
+    }
+    const orderBook = await exchange.fetchOrderBook(pair);
+    switch (priceSourceType) {
+      case PriceSourceType.MID_PRICE:
+        return (orderBook.bids[0][0] + orderBook.asks[0][0]) / 2;
+      case PriceSourceType.BEST_ASK:
+        return orderBook.asks[0][0];
+      case PriceSourceType.BEST_BID:
+        return orderBook.bids[0][0];
+      case PriceSourceType.LAST_PRICE:
+        const ticker = await exchange.fetchTicker(pair);
+        return ticker.last;
+      default:
+        throw new Error(`Invalid price source type: ${priceSourceType}`);
+    }
+  }
   private async evaluateArbitrageOpportunityVWAP(
     exchangeA,
     exchangeB,
-    userId: string,
-    clientId: string,
-    symbol: string,
-    amountToTrade: number,
-    minProfitability: number,
+    strategyParamsDto: ArbitrageStrategyDto,
   ) {
-    const cacheKeyA = symbol + '-' + exchangeA.id;
-    const cacheKeyB = symbol + '-' + exchangeB.id;
+    const { userId, clientId, pair, amountToTrade, minProfitability } =
+      strategyParamsDto;
+    const cacheKeyA = `${pair}-${exchangeA.id}`;
+    const cacheKeyB = `${pair}-${exchangeB.id}`;
     const cachedOrderBookA = this.orderBookCache.get(cacheKeyA);
     const cachedOrderBookB = this.orderBookCache.get(cacheKeyB);
+    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+
+    // Check and clean filled orders before evaluating opportunities
+    const allOrdersFilled = await this.checkAndCleanFilledOrders(strategyKey);
+    if (!allOrdersFilled) {
+      this.logger.log(
+        `Waiting for open orders to fill for ${strategyKey} before evaluating new opportunities.`,
+      );
+      return;
+    }
 
     if (
       cachedOrderBookA &&
@@ -183,24 +440,26 @@ export class StrategyService {
       const vwapA = this.calculateVWAPForAmount(
         cachedOrderBookA.data,
         amountToTrade,
+        'buy',
       );
       const vwapB = this.calculateVWAPForAmount(
         cachedOrderBookB.data,
         amountToTrade,
+        'sell',
       );
 
       if ((vwapB - vwapA) / vwapA >= minProfitability) {
+        // Execute trades
         this.logger.log(
-          `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${symbol} (VWAP): Buy on ${exchangeA.name} at ${vwapA}, sell on ${exchangeB.name} at ${vwapB}`,
+          `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeA.name} at ${vwapA}, sell on ${exchangeB.name} at ${vwapB}`,
         );
-        // Implement trade execution logic or further analysis
-      }
-
-      if ((vwapA - vwapB) / vwapB >= minProfitability) {
+        //  await this.executeArbitrageTradeWithLimitOrders(exchangeA, exchangeB, pair, amountToTrade, userId, clientId, vwapA, vwapB);
+      } else if ((vwapA - vwapB) / vwapB >= minProfitability) {
+        // Execute trades in reverse direction
         this.logger.log(
-          `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${symbol} (VWAP): Buy on ${exchangeB.name} at ${vwapB}, sell on ${exchangeA.name} at ${vwapA}`,
+          `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeB.name} at ${vwapB}, sell on ${exchangeA.name} at ${vwapA}`,
         );
-        // Implement trade execution logic or further analysis
+        // await this.executeArbitrageTradeWithLimitOrders(exchangeB, exchangeA, pair, amountToTrade, userId, clientId, vwapB, vwapA);
       }
     } else {
       this.logger.log(
@@ -209,14 +468,109 @@ export class StrategyService {
     }
   }
 
+  private async executeArbitrageTradeWithLimitOrders(
+    exchangeA: ccxt.Exchange,
+    exchangeB: ccxt.Exchange,
+    symbol: string,
+    amount: number,
+    userId: string,
+    clientId: string,
+    buyPrice: number,
+    sellPrice: number,
+  ) {
+    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    try {
+      // Place buy limit order on Exchange A
+      const buyOrder = await this.tradeService.executeLimitTrade({
+        userId,
+        clientId,
+        exchange: exchangeA.id,
+        symbol,
+        side: 'buy',
+        amount,
+        price: buyPrice,
+      });
+      // keep count of open orders
+      const orderADetails = { exchange: exchangeA, orderId: buyOrder.id };
+      this.activeOrders.set(strategyKey, [
+        ...(this.activeOrders.get(strategyKey) || []),
+        orderADetails,
+      ]);
+
+      // Proceed to place sell limit order on Exchange B
+      const sellOrder = await this.tradeService.executeLimitTrade({
+        userId,
+        clientId,
+        exchange: exchangeB.id,
+        symbol,
+        side: 'sell',
+        amount,
+        price: sellPrice,
+      });
+      const orderBDetails = { exchange: exchangeB, orderId: sellOrder.id };
+      this.activeOrders.set(strategyKey, [
+        ...(this.activeOrders.get(strategyKey) || []),
+        orderBDetails,
+      ]);
+
+      // Calculate fees for both orders
+      // This example assumes fees are returned with the order info and are in the quote currency
+      const buyFee = buyOrder.fee ? buyOrder.fee.cost : 0; // Adjust based on your fee structure
+      const sellFee = sellOrder.fee ? sellOrder.fee.cost : 0;
+
+      // Calculate profit/loss, adjusting for fees
+      const profitLoss =
+        sellPrice * amount - sellFee - (buyPrice * amount + buyFee);
+
+      // Log and record the trade execution and performance
+      this.logger.log(
+        `Arbitrage trade executed with limit orders for user ${userId}, client ${clientId}: Buy on ${exchangeA.id} at ${buyPrice}, sell on ${exchangeB.id} at ${sellPrice}, Profit/Loss: ${profitLoss}`,
+      );
+
+      await this.performanceService.recordPerformance({
+        userId,
+        clientId,
+        strategyType: 'arbitrage',
+        profitLoss,
+        additionalMetrics: {
+          buyExchange: exchangeA.id,
+          sellExchange: exchangeB.id,
+          buyPrice,
+          sellPrice,
+          executedAmount: amount,
+          buyOrderId: buyOrder.id,
+          sellOrderId: sellOrder.id,
+          buyFee,
+          sellFee,
+        },
+        executedAt: new Date(),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to execute arbitrage trade with limit orders: ${error.message}`,
+      );
+    }
+  }
+
   private calculateVWAPForAmount(
     orderBook: ccxt.OrderBook,
     amountToTrade: number,
+    direction: 'buy' | 'sell',
   ): number {
     let volumeAccumulated = 0;
     let volumePriceProductSum = 0;
+    let orderList = [];
 
-    for (const [price, volume] of orderBook.asks) {
+    // Determine whether to use asks or bids based on the trade direction
+    if (direction === 'buy') {
+      // When buying, we look at the asks as we want to know the price we'll buy at
+      orderList = orderBook.asks;
+    } else if (direction === 'sell') {
+      // When selling, we look at the bids as we want to know the price we'll sell at
+      orderList = orderBook.bids;
+    }
+
+    for (const [price, volume] of orderList) {
       const volumeToUse = Math.min(volume, amountToTrade - volumeAccumulated);
       volumePriceProductSum += volumeToUse * price;
       volumeAccumulated += volumeToUse;
@@ -228,6 +582,37 @@ export class StrategyService {
       : 0;
   }
 
+  private async checkAndCleanFilledOrders(
+    strategyKey: string,
+  ): Promise<boolean> {
+    const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
+    let allOrdersFilled = true; // Assume all orders are filled initially
+
+    for (let i = 0; i < activeOrdersForStrategy.length; i++) {
+      const { exchange, orderId } = activeOrdersForStrategy[i];
+      try {
+        const order = await exchange.fetchOrder(orderId);
+        if (order.status !== 'closed' && order.status !== 'filled') {
+          allOrdersFilled = false; // Found an order that's not filled
+          break; // No need to check further
+        }
+      } catch (error) {
+        this.logger.error(
+          `Error checking order status for ${orderId} on ${exchange.id}: ${error.message}`,
+        );
+        allOrdersFilled = false; // Error occurred, assume not all orders are filled
+        break; // Exit the loop
+      }
+    }
+
+    // If all orders are filled, clean them up from the tracking list
+    if (allOrdersFilled) {
+      this.activeOrders.delete(strategyKey); // All orders for this strategy are filled, so remove them from tracking
+    }
+
+    return allOrdersFilled;
+  }
+
   private isDataFresh(timestamp: number): boolean {
     const freshnessThreshold = 10000; // 30 seconds
     return Date.now() - timestamp < freshnessThreshold;
@@ -235,7 +620,7 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
-    this.strategyInstances.forEach((instance) => {
+    this.strategyInstances.forEach((instance, key) => {
       clearInterval(instance.intervalId);
     });
     this.strategyInstances.clear();
