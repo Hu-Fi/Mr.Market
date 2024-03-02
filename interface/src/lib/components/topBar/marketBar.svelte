@@ -1,43 +1,13 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import { darkTheme } from "$lib/stores/theme";
   import MixinMenu from "../common/MixinMenu.svelte";
-
-  import { activeTab, setActiveTab } from "$lib/stores/market";
-    import { darkTheme } from "$lib/stores/theme";
-  
-  let items = [
-    { name: $_("coins"), fn: () => {} },
-    { name: $_("spot"), fn: () => {} },
-    // { name: $_("leverage"), fn: () => {} },
-    // { name: $_("perpetual"), fn: () => {} },
-    // { name: $_("options"), fn: () => {} },
-  ];
+  import Tabs from "$lib/components/market/elements/tabs.svelte";
 </script>
 
 <div class={clsx("flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px] border-b-[0.8px]", $darkTheme ? "border-slate-700" : "border-slate-200")}>
-  <div class="tabs w-full overflow-x-auto no-scrollbar flex">
-    {#each items as item, i}
-      <button
-        class={clsx(
-          "btn btn-sm btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none px-3 first:pl-4 flex flex-col",
-          $activeTab === i && "border-base-content",
-        )}
-        on:click={() => {
-          setActiveTab(i)
-          item.fn();
-        }}
-      >
-        <span
-          class={clsx(
-            "font-bold",
-            $activeTab === i ? "opacity-100" : "opacity-60",
-          )}>{item.name}</span
-        >
-      </button>
-    {/each}
-  </div>
+  <Tabs />
 
   <div class="backdrop-blur-lg w-4 h-full bg-base-100/30" />
   <div class="flex items-center space-x-4">

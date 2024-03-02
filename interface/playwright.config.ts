@@ -32,15 +32,15 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
     // {
     //   name: 'webkit',
@@ -48,12 +48,12 @@ export default defineConfig({
     // },
 
     /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 7'] },
+    // },
     {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 7'] },
-    },
-    {
-      name: 'Mobile Chrome',
+      name: 'chromium',
       use: { ...devices['Galaxy S9+'] },
     },
     // {
@@ -61,7 +61,7 @@ export default defineConfig({
     //   use: { ...devices['iPhone 12'] },
     // },
     {
-      name: 'Mobile Safari',
+      name: 'webkit',
       use: { ...devices['iPhone 14'] },
     },
 
@@ -80,6 +80,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: 'http://127.0.0.1:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
   },
 });

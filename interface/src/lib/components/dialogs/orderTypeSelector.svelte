@@ -1,8 +1,7 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
-  import { orderType, orderTypeDialog } from "$lib/stores/trade";
+  import { orderType, orderTypeDialog } from "$lib/stores/spot";
 
   let items = [
     {index: 0, name: $_("limit_order"), fn: ()=>{}},

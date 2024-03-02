@@ -8,7 +8,7 @@ import { Trade } from 'src/common/entities/trade.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Trade])],
   controllers: [TradeController],
-  providers: [TradeService,TradeRepository],
+  providers: [TradeService, TradeRepository],
   exports: [TradeService],
 })
 export class TradeModule {}

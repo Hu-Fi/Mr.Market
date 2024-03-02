@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { sortCoins } from "$lib/helpers/sortTable";
   import { activeCoinTab, asc, selectedField } from "$lib/stores/home";
@@ -33,13 +32,13 @@
   $: sortedTokens = sortCoins($selectedField, tokens, $asc)
 
   let resolved = false;
-  $page.data.market.then(x => {resolved = true, defaults=x, marketData.set(x)} ).catch(x => resolved = true)
+  $page.data.market.then(x => {resolved = true, defaults=x, marketData.set(x)} ).catch(() => resolved = true)
 </script>
 
 <div class="w-full mb-24">
   {#if !resolved}
     <!-- Loading -->
-    {#each Array(12) as i}
+    {#each Array(12) as _}
       <SingleTokenLoader />
     {/each} 
   {:else} 

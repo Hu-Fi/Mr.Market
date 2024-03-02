@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import Entrance from "./elements/entrance.svelte";
   import Ongoing from "./elements/ongoing.svelte";
   import GrowAddMore from "$lib/components/dialogs/grow/growAddMore.svelte";

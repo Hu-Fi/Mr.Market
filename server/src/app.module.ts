@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
+
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 import { TradeModule } from './modules/trade/trade.module';
 import { Transaction } from './common/entities/transaction.entity';
 import { StrategyModule } from './modules/strategy/strategy.module';
@@ -14,11 +17,22 @@ import { PerformanceModule } from './modules/performance/performance.module';
 import { UserBalance } from './common/entities/user-balance.entity';
 import { Performance } from './common/entities/performance.entity';
 import { HealthModule } from './modules/health/health.module';
-
+import { CoingeckoModule } from './modules/coingecko/coingecko.module';
+import configuration from './config/configuration';
+import { AdminModule } from './modules/admin/admin.module';
 dotenv.config();
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 60,
+      },
+    ]),
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -32,11 +46,11 @@ dotenv.config();
     TradeModule,
     StrategyModule,
     MarketdataModule,
-
     PerformanceModule,
     // TransactionsModule
-
+    CoingeckoModule,
     HealthModule,
+    AdminModule,
 
   ],
   controllers: [AppController],

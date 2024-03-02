@@ -1,12 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { goto } from "$app/navigation";
   import { editArbitrageDialog } from "$lib/stores/grow";
 
   let items = [
-    { name: $_("deposit"), intro: $_('deposit_info', {values:{grow_type:$_("arbitrage")}}),  icon:'arbitrage', fn: () => {console.log(0)} },
-    { name: $_("withdraw"), intro: $_('withdraw_info', {values:{grow_type:$_("arbitrage")}}),icon: 'market_making', fn: () => {console.log(1)} },
-    { name: $_("delete"), intro: $_('delete_info', {values:{grow_type:$_("arbitrage")}}),  icon: 'auto_invest', fn: () => {console.log(2)} },
+    { name: $_("deposit"), intro: $_('deposit_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(0)} },
+    { name: $_("withdraw"), intro: $_('withdraw_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(1)} },
+    { name: $_("delete"), intro: $_('delete_info', {values:{grow_type:$_("arbitrage")}}), fn: () => {console.log(2)} },
   ];
 </script>
 

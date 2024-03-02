@@ -1,12 +1,14 @@
-import { marketQueryFn } from '$lib/helpers/hufi/coin.js';
+import { marketQueryFn, pairsFn } from '$lib/helpers/hufi/coin.js';
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({params}) {
+export async function load() {
   try {
     const market = marketQueryFn()
+    const pairs = pairsFn()
     return {
-      market
+      market,
+      pairs
     }
   } catch (e) {
     console.log(e)

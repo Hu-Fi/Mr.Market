@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import { assetDetailDialog, assetDetailAsset } from "$lib/stores/wallet";
 	// import History from '$lib/components/wallet/balance/details/history.svelte';
 	import Actions from '$lib/components/wallet/balance/details/actions.svelte';

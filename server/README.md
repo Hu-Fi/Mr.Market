@@ -1,81 +1,35 @@
-# Mr.Market Server
+## Mixin Bot 
 
-This is a NestJS project designed for real-time market data processing with WebSocket and REST API support for running strategies and making direct trades on exchanges.
+The backend server for Mr.market on Mixin.
 
+## Getting Started
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/)
-- [PostgreSQL](https://www.postgresql.org/download/) (for local database setup)
+Install dependencies with yarn
 
-### Installation
-
-Follow these steps to get your development environment running:
-
-1. **Clone the Repository**
-
-   ```bash
-   git clone https://github.com/Hu-Fi/Mr.Market.git
-   cd server
-   ```
-
-2. **Install Dependencies**
-
-```bash
-npm install
+```
+yarn
 ```
 
-3. **Set Up Environment Variables**
+### Run development server
 
-Copy the .env.example file to a new file named .env.
-
-```bash
-cp .env.example .env
+```
+yarn start
 ```
 
-4. **Fill in the necessary details in .env:**
+## Tests
 
-```makefile
+TBD
 
-POSTGRES_HOST=localhost
-POSTGRES_USER=<YourUsername>
-POSTGRES_PASSWORD=<YourPassword>
-POSTGRES_DATABASE=<YourDatabase>
-POSTGRES_PORT=5432
-POSTGRES_SSL=false
-BINANCE_API_KEY=<YourBinanceApiKey>
-BINANCE_SECRET=<YourBinanceSecret>
-MEXC_API_KEY=<YourMexcApiKey>
-MEXC_SECRET=<YourMexcSecret>
-BITFINEX_API_KEY=<YourBitfinexApiKey>
-BITFINEX_SECRET=<YourBitfinexSecret>
-```
-5. **Running the Application**
+## Built With
 
-Start the application in development mode:
+* [Nest.js](https://nestjs.com/) - Backend API framework
 
-```bash
-Copy code
-npm run start:dev
-```
+## Contributing
 
-The server will be running on http://localhost:3000.
+Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
 
+## License
 
-6. **Testing**
-
-To run the automated tests for this system:
-
-```bash
-Copy code
-npm test
-```
-
-7. **Built With**
-
-NestJS - The web framework used
-TypeORM - Object-Relational Mapping (ORM) library
-ccxt - Library for cryptocurrency trading supporting many exchanges
-PostgreSQL - Open Source Relational Database
-
+This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details

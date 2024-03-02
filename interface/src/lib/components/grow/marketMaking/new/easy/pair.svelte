@@ -155,7 +155,7 @@
         <button
           class={clsx(
             "flex items-center justify-center shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
-            false ? "border-primary" : "",
+            "",
           )}
           on:click={() => {
             createMMEasyPair.set(item);

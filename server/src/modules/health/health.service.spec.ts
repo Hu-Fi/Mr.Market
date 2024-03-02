@@ -17,16 +17,16 @@ describe('HealthService', () => {
   });
 
   it('should return pong', async () => {
-    expect(await service.ping()).toBe('pong')
-  })
+    expect(await service.ping()).toBe('pong');
+  });
 
   // We need a test api key to run this test if we want to
   it.skip('should return a health map', async () => {
-    expect(Object.values(await service.getAllHealth()).length).not.toBe(0)
-  })
+    expect(Object.values(await service.getAllHealth()).length).not.toBe(0);
+  });
 
   // We need a test api key to run this test if we want to
   it.skip('should be alive', async () => {
-    expect(await service.getExchangeHealth('binance')).toBeDefined()
-  })
+    expect(await service.getExchangeHealth('binance')).toBeDefined();
+  });
 });

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { formatTimestampToTime } from "$lib/helpers/utils";
   import type { ArbitrageDetailHistoryType } from "$lib/types/hufi/arbitrage";
-    import { formatTimestampToTime } from "$lib/helpers/utils";
 
   export let type: ArbitrageDetailHistoryType = 'sell'
 </script>

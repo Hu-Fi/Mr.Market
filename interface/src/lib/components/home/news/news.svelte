@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _, locale } from "svelte-i18n"
+  import { locale } from "svelte-i18n"
   import SingleNews from "./singleNews.svelte";
   import newsEN from "../../../../assets/news/news-EN.json";
   import newsZH from "../../../../assets/news/news-ZH.json";

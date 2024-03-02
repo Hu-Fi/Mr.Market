@@ -1,7 +1,7 @@
 import type { StrategyDto } from "$lib/types/hufi/arbitrage";
 import { HUFI_BACKEND_URL } from "../constants"
 
-const hufiExecuteArbitrage = async (strategyParamsDto: StrategyDto) => {
+export const executeArbitrage = async (strategyParamsDto: StrategyDto) => {
   const response = await fetch(`${HUFI_BACKEND_URL}/strategy/execute-arbitrage`, {
     method: 'POST',
     headers: {
@@ -18,7 +18,7 @@ const hufiExecuteArbitrage = async (strategyParamsDto: StrategyDto) => {
   }
 }
 
-const hufiStopArbitrage = async (userId: string, clientId: string) => {
+export const stopArbitrage = async (userId: string, clientId: string) => {
   const response = await fetch(`${HUFI_BACKEND_URL}/strategy/stop-arbitrage?userId=${userId}&clientId=${clientId}`, {
     method: 'GET',
   });

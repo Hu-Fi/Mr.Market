@@ -4,7 +4,7 @@
   </div>
   
   <div class="mt-2 grid grid-flow-row grid-cols-6 gap-4">
-    {#each Array(6) as i}
+    {#each Array(6) as _}
       <div
         class="skeleton min-w-8 h-6 w-10 rounded-md"
       />

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Market from "$lib/components/market/market.svelte";
+  import { goto } from "$app/navigation";
+  goto('/market/token')
 </script>
-
-<Market />

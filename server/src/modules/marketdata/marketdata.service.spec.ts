@@ -15,4 +15,12 @@ describe('MarketdataService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('get tickers', async () => {
+    console.log(await service.getTickers('binance', ['BTC/USDT', 'ETH/USDT']));
+  });
+
+  it('get OHLCV', async () => {
+    console.log(await service.getOHLCVData('binance', 'BTC/USDT'));
+  });
 });

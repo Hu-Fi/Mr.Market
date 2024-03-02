@@ -1,9 +1,10 @@
-[Vercel production location](https://mr-market-one.vercel.app/home)
+This is highly alpha code. Do not use it or you will lose all your money
 
-![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=mr-market-one)
-![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg)
-![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
 
+| | | | |
+| --- | --- | --- | --- |
+| ![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=mr-market-one) | ![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg) |![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)| ![Lint](https://github.com/Hu-Fi/Mr.Market/actions/workflows/lint.yml/badge.svg)|
+|[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market)| [Vercel deployment](https://mr-market-one.vercel.app/home)
 # What is Mr.Market
 
 Mr Market is an CeFi crypto bot and the reference exchange oracle for Hu Fi. Mr Market has three main functions

@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TradeService } from './trade.service';
 import { MarketTradeDto, LimitTradeDto } from './trade.dto';
-import { Repository } from 'typeorm';
-import { Transaction } from '../../common/entities/transaction.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TradeRepository } from './trade.repository';
 
@@ -40,7 +38,8 @@ describe('TradeService', () => {
     // Resetting mocks before each test
     mockTradeRepository.createTransaction.mockReset();
     // Mock the CCXT exchange createOrder method setup...
-    service['exchange'].createOrder = jest.fn()
+    service['exchange'].createOrder = jest
+      .fn()
       .mockImplementation((symbol, side, amount, price) => {
         const mockResponse = {
           id: 'order123',
@@ -68,7 +67,7 @@ describe('TradeService', () => {
       const marketTradeDto: MarketTradeDto = {
         userId: 'user123',
         clientId: 'client123',
-        exchange:'binance',
+        exchange: 'binance',
         symbol: 'BTC/USD',
         side: 'buy',
         amount: 1,
@@ -94,7 +93,7 @@ describe('TradeService', () => {
       const limitTradeDto: LimitTradeDto = {
         userId: 'user123',
         clientId: 'client123',
-        exchange:'binance',
+        exchange: 'binance',
         symbol: 'BTC/USD',
         side: 'sell',
         amount: 1,

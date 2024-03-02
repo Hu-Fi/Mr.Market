@@ -34,14 +34,14 @@
         <span class="text-xs mx-2">
           1 {$OutputAsset.symbol} = {!$Output || !$Input
             ? "..."
-            : BN($Output).div($Input)}
+            : BN($Input).div($Output)}
           {$InputAsset.symbol}
         </span>
       {:else}
         <span class="text-xs mx-2">
           1 {$InputAsset.symbol} = {!$Output || !$Input
             ? "..."
-            : BN($Input).div($Output)}
+            : BN($Output).div($Input)}
           {$OutputAsset.symbol}
         </span>
       {/if}

@@ -1,39 +1,47 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { activeTab, setActiveTab } from "$lib/stores/market";
-  
-  let items = [
-    { name: $_("coins"), fn: () => {} },
-    { name: $_("spot"), fn: () => {} },
-    // { name: $_("leverage"), fn: () => {} },
-    // { name: $_("perpetual"), fn: () => {} },
-    // { name: $_("options"), fn: () => {} },
+  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
+
+  const MARKET_BAR_ITEMS = [
+    {
+      name: $_("token"),
+      key: "/market/token",
+      fn: () => {
+        goto("/market/token");
+      },
+    },
+    {
+      name: $_("spot"),
+      key: "/market/spot",
+      fn: () => {
+        goto("/market/spot");
+      },
+    },
   ];
+  $: active = $page.url.pathname.includes(MARKET_BAR_ITEMS[0].key)
+    ? 0
+    : $page.url.pathname.includes(MARKET_BAR_ITEMS[1].key)
+      ? 1
+      : 0;
 </script>
 
-<!-- Tabs -->
-<div class="tabs w-full overflow-x-auto no-scrollbar flex border-y-[0.8px] py-1">
-  {#each items as item, i}
+<div class="tabs w-full overflow-x-auto no-scrollbar flex">
+  {#each MARKET_BAR_ITEMS as item, i}
     <button
       class={clsx(
         "btn btn-sm btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none px-3 first:pl-4 flex flex-col",
-        $activeTab === i && "border-base-content",
+        active === i && "border-base-content",
       )}
       on:click={() => {
-        setActiveTab(i)
         item.fn();
       }}
     >
       <span
-        class={clsx(
-          "font-bold",
-          $activeTab === i ? "opacity-100" : "opacity-60",
-        )}>{item.name}</span
+        class={clsx("font-bold", active === i ? "opacity-100" : "opacity-60")}
+        >{item.name}</span
       >
     </button>
   {/each}
 </div>
-
-<style>
-</style>

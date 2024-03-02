@@ -17,8 +17,8 @@
     authorize(
       { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
       { 
-        onShowUrl: (url: string) => { window.open(url) }, onError: (error: any) => { console.error(error); return; },
-        onSuccess: async (token: any) => { await AfterMixinOauth(token)},
+        onShowUrl: (url: string) => { window.open(url) }, onError: (error: Error) => { console.error(error); return; },
+        onSuccess: async (token: string) => { await AfterMixinOauth(token)},
       },
     );
     mixinConnectLoading.set(false);
