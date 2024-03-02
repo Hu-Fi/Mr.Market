@@ -20,7 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/axios": "^2.0.0",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "10.2.10",
     "@nestjs/config": "^3.2.0",
