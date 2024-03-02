@@ -17,7 +17,10 @@ export class PerformanceService {
     return this.performanceRepository.save(performance);
   }
 
-  async getPerformanceByUserAndStrategy(userId: string, strategyType?: string): Promise<Performance[]> {
+  async getPerformanceByUserAndStrategy(
+    userId: string,
+    strategyType?: string,
+  ): Promise<Performance[]> {
     const whereClause = strategyType ? { userId, strategyType } : { userId };
     return this.performanceRepository.find({ where: whereClause });
   }

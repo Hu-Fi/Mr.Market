@@ -1,10 +1,7 @@
 // market-data.controller.ts
-import { Controller,Body, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { MarketdataService } from './marketdata.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TickersDto } from './marketdata.dto';
-
-
 
 @ApiTags('marketdata')
 @Controller('marketdata')
@@ -55,16 +52,14 @@ export class MarketDataController {
     );
   }
 
-@Get('/supported-symbols')
-@ApiOperation({ summary: 'Get supported symbols' })
-@ApiQuery({ name: 'exchange', description: 'Exchange name', required: true })
-@ApiResponse({ status: 200, description: 'Supported symbols' })
-@ApiResponse({ status: 400, description: 'Bad Request' })
-async getSupportedSymbols(
-  @Query('exchange') exchange: string,
-) {
-  return this.marketDataService.getSupportedSymbols(exchange);
-}
+  @Get('/supported-symbols')
+  @ApiOperation({ summary: 'Get supported symbols' })
+  @ApiQuery({ name: 'exchange', description: 'Exchange name', required: true })
+  @ApiResponse({ status: 200, description: 'Supported symbols' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getSupportedSymbols(@Query('exchange') exchange: string) {
+    return this.marketDataService.getSupportedSymbols(exchange);
+  }
   @Get('/tickers')
   @ApiOperation({ summary: 'Get tickers' })
   @ApiQuery({
@@ -90,7 +85,6 @@ async getSupportedSymbols(
     const symbolsCap = symbolsArray.map((symbol) => symbol.toUpperCase());
     return this.marketDataService.getTickers(exchange, symbolsCap);
   }
-
 
   @Get('/tickers/pairs')
   @ApiOperation({ summary: 'Get supported pairs with real time price info' })

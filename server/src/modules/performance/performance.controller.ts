@@ -8,8 +8,11 @@ export class PerformanceController {
   @Get('/:userId')
   getPerformanceByUser(
     @Param('userId') userId: string,
-    @Query('strategyType') strategyType?: string
+    @Query('strategyType') strategyType?: string,
   ) {
-    return this.performanceService.getPerformanceByUserAndStrategy(userId, strategyType);
+    return this.performanceService.getPerformanceByUserAndStrategy(
+      userId,
+      strategyType,
+    );
   }
 }

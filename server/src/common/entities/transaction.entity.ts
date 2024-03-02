@@ -1,4 +1,3 @@
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -13,10 +12,10 @@ export class Transaction {
   id: number;
 
   @Column()
-  userId: string; 
+  userId: string;
 
   @Column()
-  exchange: string; 
+  exchange: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
@@ -28,7 +27,6 @@ export class Transaction {
   type: 'deposit' | 'withdrawal';
 
   @Column({ default: 'pending' })
-
   status: 'pending' | 'completed' | 'failed';
 
   @Column()
@@ -40,4 +38,3 @@ export class Transaction {
   @UpdateDateColumn()
   updatedAt: Date; // When the transaction was last updated
 }
-
