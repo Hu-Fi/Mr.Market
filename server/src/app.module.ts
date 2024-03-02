@@ -40,7 +40,7 @@ dotenv.config();
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [Trade,Performance,Transaction,UserBalance],
+      entities: [Trade, Performance, Transaction, UserBalance],
       synchronize: true,
     }),
     TradeModule,
@@ -51,7 +51,6 @@ dotenv.config();
     CoingeckoModule,
     HealthModule,
     AdminModule,
-
   ],
   controllers: [AppController],
   providers: [AppService],
