@@ -1,5 +1,4 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import binance from "$lib/images/exchanges/binance.png";
   import Exchange from "$lib/components/grow/marketMaking/details/exchange.svelte";

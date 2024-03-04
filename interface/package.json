@@ -7,8 +7,8 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "eslint './src/lib/**/*.{js,ts,svelte}'",
-    "lint:fix": "eslint --fix './src/lib/**/*.{js,ts,svelte}'",
+    "lint": "eslint './src/lib/**/*.{js,ts,svelte}' './src/routes/**/*.{ts,svelte}'",
+    "lint:fix": "eslint --fix './src/lib/**/*.{js,ts,svelte}' './src/routes/**/*.{ts,svelte}'",
     "test:unit": "vitest",
     "test:e2e": "playwright test"
   },

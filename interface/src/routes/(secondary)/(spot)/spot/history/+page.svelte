@@ -1,12 +1,10 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
   import SingleSpotHistory from "$lib/components/spot/history/singleSpotHistory.svelte";
 	import OrderHistoryFilter from '$lib/components/dialogs/manageOrder/orderHistoryFilter.svelte';
 </script>
 
 <div class="mx-6">
-  {#each Array(10) as a}
+  {#each Array(10) as _}
     <SingleSpotHistory />
   {/each}
 </div>
