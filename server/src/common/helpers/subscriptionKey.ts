@@ -25,24 +25,26 @@ export const createCompositeKey = (
   }
   return key;
 };
-
 export const decodeCompositeKey = (compositeKey: string): CompositeKey => {
   const parts = compositeKey.split(':');
   const type = parts[0] as marketDataType;
   const exchange = parts[1];
   let decodedKey: CompositeKey = { type, exchange };
 
-  if (type === 'orderbook' || type === 'ticker') {
-    const symbol = parts[2];
-    decodedKey = { ...decodedKey, symbol };
-  } else if (type === 'OHLCV') {
-    const symbol = parts[2];
-    const timeFrame = parts[3];
-    decodedKey = { ...decodedKey, symbol, timeFrame };
-  } else if (type === 'tickers') {
-    const symbols = parts.slice(2);
-    decodedKey = { ...decodedKey, symbols };
+  switch (type) {
+    case 'orderbook':
+    case 'ticker':
+      decodedKey.symbol = parts[2];
+      break;
+    case 'OHLCV':
+      decodedKey.symbol = parts[2];
+      decodedKey.timeFrame = parts[3];
+      break;
+    case 'tickers':
+      decodedKey.symbols = parts[2].split(','); // Split the string into an array
+      break;
   }
 
   return decodedKey;
 };
+

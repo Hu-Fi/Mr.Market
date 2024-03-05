@@ -16,13 +16,15 @@ import {
   createCompositeKey,
   decodeCompositeKey,
 } from 'src/common/helpers/subscriptionKey';
+import { CustomLogger } from '../logger/logger.service';
 
-@WebSocketGateway(3012, { namespace: '/marketdata', cors: true })
+const webSocketPort = process.env.WS_PORT || "3012";
+@WebSocketGateway(parseInt(webSocketPort) , { namespace: '/marketdata', cors: true })
 export class MarketDataGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: SocketIOServer;
-  private readonly logger = new Logger(MarketDataGateway.name);
+  private readonly logger = new CustomLogger(MarketDataGateway.name);
 
   private clientSubscriptions = new Map<string, Set<string>>();
   private clients = new Map<string, Socket>();

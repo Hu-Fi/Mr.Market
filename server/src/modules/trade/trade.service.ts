@@ -7,12 +7,13 @@ import {
 import * as ccxt from 'ccxt';
 import { TradeRepository } from './trade.repository';
 import { MarketTradeDto, LimitTradeDto } from './trade.dto';
+import { CustomLogger } from '../logger/logger.service';
 
 @Injectable()
 export class TradeService {
   private exchange: ccxt.Exchange;
   private exchanges = new Map<string, ccxt.Exchange>();
-  private readonly logger = new Logger(TradeService.name);
+  private readonly logger = new CustomLogger(TradeService.name);
 
   constructor(private tradeRepository: TradeRepository) {
     this.initializeExchange();
@@ -65,7 +66,7 @@ export class TradeService {
         side,
         amount,
       );
-      this.logger.log(`Market trade executed`, order);
+      this.logger.log(`Market trade executed`, order.toString());
       await this.tradeRepository.createTrade({
         userId,
         clientId,

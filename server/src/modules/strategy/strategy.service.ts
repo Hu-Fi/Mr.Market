@@ -11,10 +11,11 @@ import {
 } from './strategy.dto';
 import { PerformanceService } from '../performance/performance.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
+import { CustomLogger } from '../logger/logger.service';
 
 @Injectable()
 export class StrategyService {
-  private readonly logger = new Logger(StrategyService.name);
+  private readonly logger = new CustomLogger(StrategyService.name);
 
   private orderBookCache = new Map<
     string,
@@ -75,8 +76,13 @@ export class StrategyService {
   }
 
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
-    const { userId, clientId, pair, exchangeAName, exchangeBName } =
-      strategyParamsDto;
+    const {
+      userId,
+      clientId,
+      pair,
+      exchangeAName,
+      exchangeBName,
+    } = strategyParamsDto;
     const strategyKey = `${userId}-${clientId}-Arbitrage`;
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
@@ -121,11 +127,12 @@ export class StrategyService {
     clientId: string,
     strategyType?: string,
   ) {
+    this.logger.log(`Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`)
     let strategyKey;
-    if ((strategyType = 'Arbitrage')) {
+    if (strategyType === 'Arbitrage') {
       strategyKey = `${userId}-${clientId}-Arbitrage`;
     }
-    if ((strategyType = 'pureMarketMaking')) {
+    if (strategyType === 'pureMarketMaking') {
       strategyKey = `${userId}-${clientId}-pureMarketMaking`;
     }
     const strategyInstance = this.strategyInstances.get(strategyKey);
@@ -355,7 +362,11 @@ export class StrategyService {
     return { adjustedAmount, adjustedPrice };
   }
 
-  private async cancelAllOrders(exchange: ccxt.Exchange, pair: string) {
+  private async cancelAllOrders(
+    exchange: ccxt.Exchange,
+    pair: string,
+    strategyKey: string,
+  ) {
     // Fetch and cancel all open orders for the pair
     const orders = await exchange.fetchOpenOrders(pair);
     for (const order of orders) {
@@ -610,9 +621,9 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
-    for (const instance of this.strategyInstances.values()) {
+    this.strategyInstances.forEach((instance, key) => {
       clearInterval(instance.intervalId);
-    }
+    });
     this.strategyInstances.clear();
 
     this.activeOrderBookWatches.clear();
