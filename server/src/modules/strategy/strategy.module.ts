@@ -8,7 +8,7 @@ import { PerformanceModule } from '../performance/performance.module';
 import { LoggerModule } from '../logger/logger.module';
 
 @Module({
-  imports: [TradeModule, PerformanceModule,LoggerModule],
+  imports: [TradeModule, PerformanceModule, LoggerModule],
   controllers: [StrategyController],
   providers: [StrategyService],
   exports: [StrategyService], // Export the service if it will be used outside this module

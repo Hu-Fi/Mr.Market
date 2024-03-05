@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -18,8 +17,11 @@ import {
 } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
 
-const webSocketPort = process.env.WS_PORT || "3012";
-@WebSocketGateway(parseInt(webSocketPort) , { namespace: '/marketdata', cors: true })
+const webSocketPort = process.env.WS_PORT || '3012';
+@WebSocketGateway(parseInt(webSocketPort), {
+  namespace: '/marketdata',
+  cors: true,
+})
 export class MarketDataGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

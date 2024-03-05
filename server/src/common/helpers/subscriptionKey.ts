@@ -29,7 +29,7 @@ export const decodeCompositeKey = (compositeKey: string): CompositeKey => {
   const parts = compositeKey.split(':');
   const type = parts[0] as marketDataType;
   const exchange = parts[1];
-  let decodedKey: CompositeKey = { type, exchange };
+  const decodedKey: CompositeKey = { type, exchange };
 
   switch (type) {
     case 'orderbook':
@@ -47,4 +47,3 @@ export const decodeCompositeKey = (compositeKey: string): CompositeKey => {
 
   return decodedKey;
 };
-

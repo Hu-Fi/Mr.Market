@@ -11,7 +11,7 @@ export class AppController {
     console.log('redirectToDocs');
   }
   @Get()
-  getHello(){
+  getHello() {
     return this.appService.getHello();
   }
 }
