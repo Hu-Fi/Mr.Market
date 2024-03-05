@@ -20,10 +20,13 @@ import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import configuration from './config/configuration';
 import { AdminModule } from './modules/admin/admin.module';
+import { LoggerModule } from './modules/logger/logger.module';
+import { CustomLogger } from './modules/logger/logger.service';
 dotenv.config();
 
 @Module({
   imports: [
+    LoggerModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -53,6 +56,6 @@ dotenv.config();
     AdminModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [CustomLogger,AppService],
 })
 export class AppModule {}

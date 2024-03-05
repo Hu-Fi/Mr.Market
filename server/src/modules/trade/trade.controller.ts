@@ -16,11 +16,12 @@ import {
 } from '@nestjs/swagger';
 import { TradeService } from './trade.service';
 import { MarketTradeDto, LimitTradeDto } from './trade.dto';
+import { CustomLogger } from '../logger/logger.service';
 
 @ApiTags('trade')
 @Controller('trade')
 export class TradeController {
-  private readonly logger = new Logger(TradeController.name);
+  private readonly logger = new CustomLogger(TradeController.name);
 
   constructor(private readonly tradeService: TradeService) {}
 
