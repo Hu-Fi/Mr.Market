@@ -20,7 +20,13 @@ describe('Key Utils', () => {
       const timeFrame = '1m';
       const expectedKey = 'OHLCV:binance:BTC/USD:1m';
 
-      const key = createCompositeKey(type, exchange, symbol, undefined, timeFrame);
+      const key = createCompositeKey(
+        type,
+        exchange,
+        symbol,
+        undefined,
+        timeFrame,
+      );
       expect(key).toEqual(expectedKey);
     });
 
@@ -62,16 +68,15 @@ describe('Key Utils', () => {
     });
 
     it('should decode a composite key for tickers correctly', () => {
-        const compositeKey = 'tickers:binance:BTC/USD,ETH/USD';
-        const expected = {
-          type: 'tickers',
-          exchange: 'binance',
-          symbols: ["BTC/USD", "ETH/USD"],
-        };
-      
-        const decodedKey = decodeCompositeKey(compositeKey);
-        expect(decodedKey).toEqual(expected);
-      });
-      
+      const compositeKey = 'tickers:binance:BTC/USD,ETH/USD';
+      const expected = {
+        type: 'tickers',
+        exchange: 'binance',
+        symbols: ['BTC/USD', 'ETH/USD'],
+      };
+
+      const decodedKey = decodeCompositeKey(compositeKey);
+      expect(decodedKey).toEqual(expected);
+    });
   });
 });

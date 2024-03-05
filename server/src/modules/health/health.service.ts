@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 import { CustomLogger } from '../logger/logger.service';

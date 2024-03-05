@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   BadRequestException,
-  Logger,
   HttpCode,
   HttpStatus,
   Param,

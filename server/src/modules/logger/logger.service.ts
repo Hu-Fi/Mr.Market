@@ -22,7 +22,10 @@ export class CustomLogger extends Logger {
     let filePath;
     let fileNumber = 1;
     do {
-      filePath = path.join(this.logsDir, `${baseName}_${fileNumber}_${date}.log`);
+      filePath = path.join(
+        this.logsDir,
+        `${baseName}_${fileNumber}_${date}.log`,
+      );
       fileNumber++;
     } while (fs.existsSync(filePath));
     return filePath;
@@ -38,7 +41,9 @@ export class CustomLogger extends Logger {
 
   private formatMessage(level: string, message: any, context?: string): string {
     const timestamp = new Date().toISOString();
-    return `[${timestamp}] [${level.toUpperCase()}] [${context || this.context}] ${message}\n`;
+    return `[${timestamp}] [${level.toUpperCase()}] [${
+      context || this.context
+    }] ${message}\n`;
   }
 
   log(message: any, context?: string) {
@@ -49,12 +54,15 @@ export class CustomLogger extends Logger {
 
   error(message: any, trace?: string, context?: string) {
     super.error(message, trace, context); // NestJS's internal error logging
-    const formattedMessage = this.formatMessage('error', `${message}, Trace: ${trace}`, context);
+    const formattedMessage = this.formatMessage(
+      'error',
+      `${message}, Trace: ${trace}`,
+      context,
+    );
     this.writeToFile(this.errorFilePath, formattedMessage);
   }
 
   // Implement warn, debug, verbose similarly...
-
 
   onModuleInit() {
     this.log('Logger module initialized', 'Logger');
@@ -63,7 +71,4 @@ export class CustomLogger extends Logger {
   onModuleDestroy() {
     this.log('Logger module destroyed. Performing cleanup...', 'Logger');
   }
-
 }
-
-

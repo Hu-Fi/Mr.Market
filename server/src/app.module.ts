@@ -58,6 +58,6 @@ dotenv.config();
     AdminModule,
   ],
   controllers: [AppController],
-  providers: [CustomLogger,AppService],
+  providers: [CustomLogger, AppService],
 })
 export class AppModule {}

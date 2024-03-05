@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 import { TradeService } from '../trade/trade.service';
 import {
@@ -76,13 +72,8 @@ export class StrategyService {
   }
 
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
-    const {
-      userId,
-      clientId,
-      pair,
-      exchangeAName,
-      exchangeBName,
-    } = strategyParamsDto;
+    const { userId, clientId, pair, exchangeAName, exchangeBName } =
+      strategyParamsDto;
     const strategyKey = `${userId}-${clientId}-Arbitrage`;
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
@@ -127,7 +118,9 @@ export class StrategyService {
     clientId: string,
     strategyType?: string,
   ) {
-    this.logger.log(`Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`)
+    this.logger.log(
+      `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
+    );
     let strategyKey;
     if (strategyType === 'Arbitrage') {
       strategyKey = `${userId}-${clientId}-Arbitrage`;
@@ -367,6 +360,7 @@ export class StrategyService {
     pair: string,
     strategyKey: string,
   ) {
+    this.logger.log('Cancelling Orders for', strategyKey);
     // Fetch and cancel all open orders for the pair
     const orders = await exchange.fetchOpenOrders(pair);
     for (const order of orders) {
@@ -621,7 +615,7 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
-    this.strategyInstances.forEach((instance, key) => {
+    this.strategyInstances.forEach((instance) => {
       clearInterval(instance.intervalId);
     });
     this.strategyInstances.clear();
