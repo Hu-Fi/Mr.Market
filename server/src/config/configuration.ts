@@ -32,4 +32,10 @@ export default () => ({
   admin: {
     pass: process.env.ADMIN_PASSWORD,
   },
+  mixin: {
+    app_id: process.env.MIXIN_APP_ID,
+    session_id: process.env.MIXIN_SESSION_ID,
+    server_public_key: process.env.MIXIN_SERVER_PUBLIC_KEY,
+    session_private_key: process.env.MIXIN_SESSION_PRIVATE_KEY,
+  },
 });

@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@mixin.dev/mixin-node-sdk": "^7.0.8",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "10.2.10",

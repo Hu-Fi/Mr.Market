@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppService } from './app.service';
@@ -43,6 +44,7 @@ dotenv.config();
       entities: [Trade, Performance, Transaction, UserBalance],
       synchronize: true,
     }),
+    ScheduleModule.forRoot(),
     TradeModule,
     StrategyModule,
     MarketdataModule,
