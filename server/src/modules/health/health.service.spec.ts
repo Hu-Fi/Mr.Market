@@ -1,32 +1,50 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthService } from './health.service';
+import { CustomLogger } from '../logger/logger.service';
 
 describe('HealthService', () => {
   let service: HealthService;
 
   beforeEach(async () => {
+    jest.clearAllMocks(); // Ensures clean state between tests
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HealthService],
+      providers: [HealthService, CustomLogger],
     }).compile();
 
     service = module.get<HealthService>(HealthService);
+
+    ['bitfinex', 'mexc', 'binance'].forEach((exchangeName) => {
+      const exchangeMock = service['exchanges'].get(exchangeName);
+      if (exchangeMock) {
+        exchangeMock.fetchBalance = jest.fn().mockResolvedValue({ total: 100 });
+      }
+    });
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('ping should return "pong"', async () => {
+    await expect(service.ping()).resolves.toEqual('pong');
   });
 
-  it('should return pong', async () => {
-    expect(await service.ping()).toBe('pong');
+  it('getExchangeHealth should return health status of a specific exchange', async () => {
+    const healthStatus = await service.getExchangeHealth('binance');
+    expect(healthStatus).toEqual({ statusCode: 200, message: 'alive' });
   });
 
-  // We need a test api key to run this test if we want to
-  it.skip('should return a health map', async () => {
-    expect(Object.values(await service.getAllHealth()).length).not.toBe(0);
+  it('getExchangeHealth should throw BadRequestException if exchange not found', async () => {
+    await expect(service.getExchangeHealth('unknown')).rejects.toThrow(
+      'Exchange not found',
+    );
   });
 
-  // We need a test api key to run this test if we want to
-  it.skip('should be alive', async () => {
-    expect(await service.getExchangeHealth('binance')).toBeDefined();
+  it('getExchangeHealth should mark an exchange as dead if fetchBalance fails', async () => {
+    const binanceMock = service['exchanges'].get('binance');
+    binanceMock.fetchBalance = jest
+      .fn()
+      .mockRejectedValue(new Error('Exchange binance is dead'));
+
+    await expect(service.getExchangeHealth('binance')).rejects.toThrow(
+      'Exchange binance is dead',
+    );
   });
 });

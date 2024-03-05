@@ -1,9 +1,10 @@
 import * as ccxt from 'ccxt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
+import { CustomLogger } from '../logger/logger.service';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -11,7 +12,7 @@ export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 export class MarketdataService {
   private exchange: ccxt.Exchange;
   private exchanges = new Map<string, ccxt.Exchange>();
-  private readonly logger = new Logger(MarketdataService.name);
+  private readonly logger = new CustomLogger(MarketdataService.name);
   private activeSubscriptions = new Map<string, boolean>(); // Track active subscriptions
 
   private cachingTTL: 10; // 10s

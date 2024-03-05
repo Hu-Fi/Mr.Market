@@ -2,8 +2,10 @@ import * as fs from 'fs';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { CustomLogger } from './modules/logger/logger.service';
 
 async function bootstrap() {
+  const logger = new CustomLogger(AppModule.name);
   const dev = true;
   if (dev) {
     const app = await NestFactory.create(AppModule);
@@ -15,7 +17,7 @@ async function bootstrap() {
 
     // Global request logging
     app.use((req, res, next) => {
-      console.log(`Incoming request: ${req.method} ${req.url}`);
+      logger.log(`Incoming request: ${req.method} ${req.url}`);
       next();
     });
 
@@ -27,7 +29,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
 
-    await app.listen(3000);
+    const port = process.env.PORT || 3000;
+    await app.listen(port);
   } else {
     const httpsOptions = {
       key: fs.readFileSync(
@@ -54,7 +57,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
 
-    await app.listen(3000);
+    const port = process.env.PORT || 3000;
+    await app.listen(port);
   }
 }
 bootstrap();

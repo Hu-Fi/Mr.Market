@@ -2,16 +2,16 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
 } from '@nestjs/common';
 import * as ccxt from 'ccxt';
+import { CustomLogger } from '../logger/logger.service';
 
 type HEALTH_STATE = 'alive' | 'dead';
 
 @Injectable()
 export class HealthService {
   private exchanges = new Map<string, ccxt.Exchange>();
-  private readonly logger = new Logger(HealthService.name);
+  private readonly logger = new CustomLogger(HealthService.name);
 
   constructor() {
     // Enable this with api keys in .env

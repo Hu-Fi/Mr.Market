@@ -10,4 +10,8 @@ export class AppController {
   redirectToDocs() {
     console.log('redirectToDocs');
   }
+  @Get()
+  getHello() {
+    return this.appService.getHello();
+  }
 }
