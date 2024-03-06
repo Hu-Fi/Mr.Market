@@ -4,7 +4,9 @@ import * as fs from 'fs';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CustomLogger extends Logger {
-  private readonly logsDir = path.join(process.cwd(), '..', '..', 'logs');
+  private readonly logsDir = process.env.IS_DEV
+    ? path.join(__dirname, '..', '..', 'logs')
+    : path.join('/tmp/', '..', '..', 'logs');
   private logFilePath: string;
   private errorFilePath: string;
 
