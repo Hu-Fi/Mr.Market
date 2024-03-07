@@ -1,6 +1,6 @@
 import axios from 'axios';
 import symbolsMap from './symbols.json';
-import { FeeResponse } from 'src/types/withdrawal/bigone/bigone';
+import { FeeResponse } from 'src/common/types/withdrawal/bigone';
 
 const FEE_BASE_URL = 'https://bigone.com';
 
