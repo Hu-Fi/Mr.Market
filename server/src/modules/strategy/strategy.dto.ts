@@ -101,15 +101,13 @@ export class PureMarketMakingStrategyDto {
   amountChangeType: 'fixed' | 'percentage';
 
   @ApiProperty({
-    description:
-      'Ceiling Price, No orders above this price',
+    description: 'Ceiling Price, No orders above this price',
     example: '0',
   })
   ceilingPrice?: number;
 
   @ApiProperty({
-    description:
-      'Floor price, No orders below this price.',
+    description: 'Floor price, No orders below this price.',
     example: '0',
   })
   floorPrice?: number;

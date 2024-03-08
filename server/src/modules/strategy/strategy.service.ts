@@ -121,19 +121,19 @@ export class StrategyService {
     this.logger.log(
       `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
     );
-  
+
     let strategyKey;
     if (strategyType === 'Arbitrage') {
       strategyKey = `${userId}-${clientId}-Arbitrage`;
     } else if (strategyType === 'pureMarketMaking') {
       strategyKey = `${userId}-${clientId}-pureMarketMaking`;
     }
-  
+
     // Cancel all orders for this strategy before stopping
     if (strategyKey) {
       await this.cancelAllStrategyOrders(strategyKey);
     }
-  
+
     const strategyInstance = this.strategyInstances.get(strategyKey);
     this.logger.log(strategyKey);
     if (strategyInstance) {
@@ -142,7 +142,7 @@ export class StrategyService {
       this.logger.log(
         `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
       );
-  
+
       // Remove the pairs from active watches
       this.activeOrderBookWatches.delete(strategyKey);
     }
@@ -620,29 +620,33 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
-  
+
     // Cancel all orders before shutting down strategies
     this.strategyInstances.forEach((_, strategyKey) => {
-      this.cancelAllStrategyOrders(strategyKey).then(() => {
-        this.logger.log(`All orders canceled for ${strategyKey}`);
-      }).catch(error => {
-        this.logger.error(`Failed to cancel orders for ${strategyKey}: ${error}`);
-      });
+      this.cancelAllStrategyOrders(strategyKey)
+        .then(() => {
+          this.logger.log(`All orders canceled for ${strategyKey}`);
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Failed to cancel orders for ${strategyKey}: ${error}`,
+          );
+        });
     });
-  
+
     this.strategyInstances.forEach((instance) => {
       clearInterval(instance.intervalId);
     });
     this.strategyInstances.clear();
     this.activeOrderBookWatches.clear();
-  
+
     process.exit(0);
   }
 
   private async cancelAllStrategyOrders(strategyKey: string) {
     const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
-  
-    for (let orderDetail of activeOrdersForStrategy) {
+
+    for (const orderDetail of activeOrdersForStrategy) {
       const { exchange, orderId } = orderDetail;
       try {
         await exchange.cancelOrder(orderId);
@@ -651,7 +655,7 @@ export class StrategyService {
         this.logger.error(`Failed to cancel order ${orderId}: ${error}`);
       }
     }
-  
+
     // Remove strategy from activeOrders map after canceling all orders
     this.activeOrders.delete(strategyKey);
   }
