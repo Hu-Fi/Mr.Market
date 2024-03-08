@@ -24,6 +24,7 @@ import configuration from './config/configuration';
 import { AdminModule } from './modules/admin/admin.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { CustomLogger } from './modules/logger/logger.service';
+import { MixinModule } from './modules/mixin/mixin.module';
 dotenv.config();
 
 @Module({
@@ -58,6 +59,7 @@ dotenv.config();
     CoingeckoModule,
     HealthModule,
     AdminModule,
+    MixinModule,
   ],
   controllers: [AppController],
   providers: [CustomLogger, AppService],

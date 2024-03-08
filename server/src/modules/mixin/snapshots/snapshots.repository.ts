@@ -1,4 +1,4 @@
-// In trade.repository.ts
+// In snapshots.repository.ts
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ export class SnapshotsRepository {
     private readonly repository: Repository<Snapshot>,
   ) {}
 
-  async findSnapshotsByID(snapshot_id: string): Promise<Snapshot[]> {
+  async findSnapshotByID(snapshot_id: string): Promise<Snapshot[]> {
     return this.repository.find({ where: { snapshot_id } });
   }
 

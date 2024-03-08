@@ -19,6 +19,7 @@ import {
 } from '@mixin.dev/mixin-node-sdk';
 import { SnapshotsRepository } from './snapshots.repository';
 import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
+import { SpotOrderCreateEvent } from '../events/spot.event';
 
 @Injectable()
 export class SnapshotsService {
@@ -101,11 +102,12 @@ export class SnapshotsService {
     const ghosts = await this.client.utxo.ghostKey(
       recipients.map((r, i) => ({
         hint: randomUUID(),
-        receivers: r.members,
+        receivers: r[0].members,
         index: i,
       })),
     );
     const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
+    // @ts-expect-error tx type
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -117,6 +119,7 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
+      // @ts-expect-error tx type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -143,23 +146,23 @@ export class SnapshotsService {
     }
   }
 
+  // 1. Check snapshot doesn't exist in db
+  // 2. Decode memo, refund if memo format check failed
+  // 3. Emit event based on memo format
+  // 4. Create snapshot in db
   private async handleSnapshot(snapshot: SafeSnapshot) {
-    // 1. Create if snapshot doesn't exist
-    // 2. Decode memo, refund if memo format check failed
-    // 3. Emit event based on memo format
-    const s = await this.snapshotsRepository.findSnapshotsByID(
+    const s = await this.snapshotsRepository.findSnapshotByID(
       snapshot.snapshot_id,
     );
     if (s) {
-      // Snapshot processed
       return;
     }
     if (!snapshot.memo) {
-      this.refund(snapshot);
+      await this.refund(snapshot);
       return;
     }
     if (snapshot.memo.length === 0) {
-      this.refund(snapshot);
+      await this.refund(snapshot);
       return;
     }
 
@@ -167,11 +170,13 @@ export class SnapshotsService {
     switch (tradingType) {
       case 'SP':
         const details = decodeSpotMemo(snapshot.memo);
-        // Emit spot event
+        let spotOrderCreateEvent = new SpotOrderCreateEvent();
+        spotOrderCreateEvent = { ...details };
+        this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
       default:
-        // Refund
+        await this.refund(snapshot);
         break;
     }
     this.snapshotsRepository.createSnapshot(snapshot);
