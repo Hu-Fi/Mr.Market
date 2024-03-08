@@ -17,9 +17,9 @@ import {
   signSafeTransaction,
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
-import { SnapshotsRepository } from './snapshots.repository';
 import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
-import { SpotOrderCreateEvent } from '../events/spot.event';
+import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
+import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 
 @Injectable()
 export class SnapshotsService {
@@ -146,6 +146,17 @@ export class SnapshotsService {
     }
   }
 
+  async getAssetBalance(asset_id: string): Promise<number> {
+    try {
+      return Number(
+        await this.client.utxo.safeAssetBalance({ asset: asset_id }),
+      );
+    } catch (e) {
+      this.logger.error(`Mixin getAssetBalance() => ${e}`);
+      return 0;
+    }
+  }
+
   // 1. Check snapshot doesn't exist in db
   // 2. Decode memo, refund if memo format check failed
   // 3. Emit event based on memo format
@@ -171,7 +182,7 @@ export class SnapshotsService {
       case 'SP':
         const details = decodeSpotMemo(snapshot.memo);
         let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...details };
+        spotOrderCreateEvent = { ...details, snapshot };
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
