@@ -28,16 +28,16 @@ The frontend user interface for Mr.market on Mixin.
 
 ### Prerequisites
 
-Install dependencies with npm
+Install dependencies with yarn
 
 ```
-npm install
+yarn install
 ```
 
 ### Run development server
 
 ```
-npm run dev
+yarn dev
 ```
 
 If you're using bun:
@@ -59,19 +59,58 @@ npx playwright install msedge
 
 Unit testing
 ```
-npm run test:unit
+yarn test:unit
 ```
 
 E2E testing
 
 ```
-npm run test:e2e
+yarn test:e2e
 ```
 
 ## Built With
 
 * [Svelte](https://svelte.dev/) - Web framework
 * [Daisy UI](https://daisyui.com/) - UI framework
+
+---
+
+The backend server for Mr.market.
+
+## Getting Started
+
+### Prerequisites
+
+Install dependencies with yarn
+
+```
+yarn
+```
+
+### Run development server
+
+```
+yarn start
+```
+
+## Tests
+
+```
+yarn test
+```
+
+## Built With
+
+* [Nest.js](https://nestjs.com/) - Backend API framework
+
+## Contributing
+
+Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+
+This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details
+
 
 # License
 
