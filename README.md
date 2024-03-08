@@ -31,13 +31,13 @@ The frontend user interface for Mr.market on Mixin.
 Install dependencies with yarn
 
 ```
-yarn install
+npm install
 ```
 
 ### Run development server
 
 ```
-yarn dev
+npm dev
 ```
 
 If you're using bun:
@@ -59,13 +59,13 @@ npx playwright install msedge
 
 Unit testing
 ```
-yarn test:unit
+npm run test:unit
 ```
 
 E2E testing
 
 ```
-yarn test:e2e
+npm run test:e2e
 ```
 
 ## Built With
