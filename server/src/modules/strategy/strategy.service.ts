@@ -169,10 +169,12 @@ export class StrategyService {
           data: newOrderbook,
           timestamp: Date.now(),
         });
-        // Notify strategies if needed
       } catch (error) {
-        this.logger.error(`Error in watchOrderBook: ${error.message}`);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        this.logger.error(
+          `Error in watchOrderBook for ${symbol} on ${exchange.id}: ${error.message}`,
+        );
+        // Decide on a retry mechanism or skip to the next cycle
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying or moving on
       }
     }
   }
@@ -227,7 +229,7 @@ export class StrategyService {
         this.logger.error(
           `Error executing pure market making strategy for ${strategyKey}: ${error.message}`,
         );
-        clearInterval(intervalId); // Optionally stop the strategy on error
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying or moving on
       }
     }, orderRefreshTime);
 
@@ -366,10 +368,23 @@ export class StrategyService {
     strategyKey: string,
   ) {
     this.logger.log('Cancelling Orders for', strategyKey);
-    // Fetch and cancel all open orders for the pair
-    const orders = await exchange.fetchOpenOrders(pair);
-    for (const order of orders) {
-      await exchange.cancelOrder(order.id, pair);
+    try {
+      const orders = await exchange.fetchOpenOrders(pair);
+      for (const order of orders) {
+        try {
+          await exchange.cancelOrder(order.id, pair);
+        } catch (error) {
+          this.logger.error(
+            `Failed to cancel order ${order.id} for ${pair} on ${exchange.id}: ${error.message}`,
+          );
+          // Decide whether to retry or continue with the next order
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
+      );
+      // Handle the error, e.g., by logging and possibly retrying later
     }
   }
 
