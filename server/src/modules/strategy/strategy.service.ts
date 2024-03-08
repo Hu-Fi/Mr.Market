@@ -236,7 +236,6 @@ export class StrategyService {
   }
 
   // Add endpoint to keep track of the user id and client id
-  // Ceiling and floor price hard ceiling and hard floor, and make it auto adjustable every x seconds
   // Track inventory cost,
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
@@ -253,39 +252,21 @@ export class StrategyService {
     ceilingPrice?: number,
     floorPrice?: number,
   ) {
-    const currentPrice = await this.getCurrentMarketPrice(exchangeName, pair);
-    const priceSource = await this.getPriceSource(
-      exchangeName,
-      pair,
-      priceSourceType,
-    );
+    // Fetch the current market price based on the specified price source type
+    const priceSource = await this.getPriceSource(exchangeName, pair, priceSourceType);
     const exchange = this.exchanges.get(exchangeName);
-
-    // Check if ceilingPrice and floorPrice are defined and if current price is outside the specified range
-    if (
-      (ceilingPrice !== undefined && currentPrice > ceilingPrice) ||
-      (floorPrice !== undefined && currentPrice < floorPrice)
-    ) {
-      this.logger.error(
-        `Current price (${currentPrice}) is outside the specified range (Floor: ${floorPrice}, Ceiling: ${ceilingPrice}). Shutting down strategy for ${userId}-${clientId}.`,
-      );
-      await this.stopStrategyForUser(userId, clientId, 'pureMarketMaking');
-      return;
-    }
-
+  
     // Cancel all existing orders for this strategy
     await this.cancelAllOrders(
       exchange,
       pair,
       `${userId}-${clientId}-pureMarketMaking`,
     );
-
+  
     let currentOrderAmount = baseOrderAmount;
-
+  
     for (let layer = 1; layer <= numberOfLayers; layer++) {
-      // Adjust the order amount for the current layer
       if (layer > 1) {
-        // Skip the first layer as it uses the base order amount
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
@@ -293,54 +274,70 @@ export class StrategyService {
             currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
-
+  
       const layerBidSpreadPercentage = bidSpread * layer;
       const layerAskSpreadPercentage = askSpread * layer;
-
+  
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
-
-      // Adjust buy and sell prices and amounts to exchange precision
-      const {
-        adjustedAmount: adjustedBuyAmount,
-        adjustedPrice: adjustedBuyPrice,
-      } = await this.adjustOrderParameters(
-        exchange,
-        pair,
-        currentOrderAmount,
-        buyPrice,
-      );
-      const {
-        adjustedAmount: adjustedSellAmount,
-        adjustedPrice: adjustedSellPrice,
-      } = await this.adjustOrderParameters(
-        exchange,
-        pair,
-        currentOrderAmount,
-        sellPrice,
-      );
-
-      // Place buy and sell orders with adjusted parameters
-      await this.tradeService.executeLimitTrade({
-        userId,
-        clientId,
-        exchange: exchangeName,
-        symbol: pair,
-        side: 'buy',
-        amount: parseFloat(adjustedBuyAmount),
-        price: parseFloat(adjustedBuyPrice),
-      });
-      await this.tradeService.executeLimitTrade({
-        userId,
-        clientId,
-        exchange: exchangeName,
-        symbol: pair,
-        side: 'sell',
-        amount: parseFloat(adjustedSellAmount),
-        price: parseFloat(adjustedSellPrice),
-      });
+  
+      // Conditionally place buy and sell orders based on ceiling and floor price logic
+      if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
+        // Place buy orders as market price is not above the ceiling
+        const {
+          adjustedAmount: adjustedBuyAmount,
+          adjustedPrice: adjustedBuyPrice,
+        } = await this.adjustOrderParameters(
+          exchange,
+          pair,
+          currentOrderAmount,
+          buyPrice,
+        );
+  
+        await this.tradeService.executeLimitTrade({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          symbol: pair,
+          side: 'buy',
+          amount: parseFloat(adjustedBuyAmount),
+          price: parseFloat(adjustedBuyPrice),
+        });
+      } else {
+        this.logger.log(
+          `Skipping buy order for ${pair} as price source ${priceSource} is above the ceiling price ${ceilingPrice}.`,
+        );
+      }
+  
+      if (floorPrice === undefined || priceSource >= floorPrice) {
+        // Place sell orders as market price is not below the floor
+        const {
+          adjustedAmount: adjustedSellAmount,
+          adjustedPrice: adjustedSellPrice,
+        } = await this.adjustOrderParameters(
+          exchange,
+          pair,
+          currentOrderAmount,
+          sellPrice,
+        );
+  
+        await this.tradeService.executeLimitTrade({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          symbol: pair,
+          side: 'sell',
+          amount: parseFloat(adjustedSellAmount),
+          price: parseFloat(adjustedSellPrice),
+        });
+      } else {
+        this.logger.log(
+          `Skipping sell order for ${pair} as price source ${priceSource} is below the floor price ${floorPrice}.`,
+        );
+      }
     }
   }
+  
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,
