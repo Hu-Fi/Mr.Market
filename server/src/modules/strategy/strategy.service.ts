@@ -253,18 +253,22 @@ export class StrategyService {
     floorPrice?: number,
   ) {
     // Fetch the current market price based on the specified price source type
-    const priceSource = await this.getPriceSource(exchangeName, pair, priceSourceType);
+    const priceSource = await this.getPriceSource(
+      exchangeName,
+      pair,
+      priceSourceType,
+    );
     const exchange = this.exchanges.get(exchangeName);
-  
+
     // Cancel all existing orders for this strategy
     await this.cancelAllOrders(
       exchange,
       pair,
       `${userId}-${clientId}-pureMarketMaking`,
     );
-  
+
     let currentOrderAmount = baseOrderAmount;
-  
+
     for (let layer = 1; layer <= numberOfLayers; layer++) {
       if (layer > 1) {
         if (amountChangeType === 'fixed') {
@@ -274,13 +278,13 @@ export class StrategyService {
             currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
-  
+
       const layerBidSpreadPercentage = bidSpread * layer;
       const layerAskSpreadPercentage = askSpread * layer;
-  
+
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
-  
+
       // Conditionally place buy and sell orders based on ceiling and floor price logic
       if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
         // Place buy orders as market price is not above the ceiling
@@ -293,7 +297,7 @@ export class StrategyService {
           currentOrderAmount,
           buyPrice,
         );
-  
+
         await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -308,7 +312,7 @@ export class StrategyService {
           `Skipping buy order for ${pair} as price source ${priceSource} is above the ceiling price ${ceilingPrice}.`,
         );
       }
-  
+
       if (floorPrice === undefined || priceSource >= floorPrice) {
         // Place sell orders as market price is not below the floor
         const {
@@ -320,7 +324,7 @@ export class StrategyService {
           currentOrderAmount,
           sellPrice,
         );
-  
+
         await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -337,7 +341,6 @@ export class StrategyService {
       }
     }
   }
-  
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,
