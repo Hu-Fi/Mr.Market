@@ -46,7 +46,7 @@ export class SnapshotsService {
     this.client = MixinApi({
       keystore: this.keystore,
     });
-    this.events = eventEmitter;
+    this.events = this.eventEmitter;
   }
 
   async fetchAndProcessSnapshots() {

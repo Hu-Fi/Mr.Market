@@ -50,8 +50,8 @@ jest.mock('@nestjs/config', () => ({
 }));
 
 const mockSnapshotsRepository = {
-  // Add methods here as necessary, for example:
-  // createSnapshot: jest.fn().mockResolvedValue(/* Mock return value */),
+  findSnapshotByID: jest.fn().mockResolvedValue([]),
+  createSnapshot: jest.fn().mockResolvedValue([]),
 };
 
 describe('SnapshotsService', () => {
@@ -59,6 +59,7 @@ describe('SnapshotsService', () => {
   let service: SnapshotsService;
 
   beforeEach(async () => {
+    mockSnapshotsRepository.findSnapshotByID = jest.fn().mockResolvedValue([]);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SnapshotsService,

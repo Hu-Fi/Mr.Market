@@ -49,6 +49,7 @@ dotenv.config();
       database: process.env.POSTGRES_DATABASE,
       entities: [Trade, Performance, Transaction, UserBalance],
       synchronize: true,
+      ssl: Boolean(process.env.POSTGRES_SSL) || true,
     }),
     ScheduleModule.forRoot(),
     TradeModule,
