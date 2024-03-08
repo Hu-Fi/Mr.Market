@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SnapshotsService } from './snapshots.service';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { MixinApi } from '@mixin.dev/mixin-node-sdk';
 import { SnapshotsRepository } from './snapshots.repository';
 
 jest.mock('@nestjs/config');
@@ -58,7 +57,6 @@ const mockSnapshotsRepository = {
 describe('SnapshotsService', () => {
   let config: ConfigService;
   let service: SnapshotsService;
-  let mixinApiMock: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -75,7 +73,6 @@ describe('SnapshotsService', () => {
 
     service = module.get<SnapshotsService>(SnapshotsService);
     config = module.get<ConfigService>(ConfigService);
-    mixinApiMock = MixinApi();
   });
 
   it('should be defined', () => {

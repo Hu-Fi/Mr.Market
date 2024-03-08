@@ -32,4 +32,4 @@ export const decodeSpotMemo = (memo: string): MemoDetails => {
   };
 };
 
-export const decodeSwapMemo = (memo: string) => {};
+export const decodeSwapMemo = () => {};
