@@ -31,6 +31,7 @@ export default () => ({
   },
   admin: {
     pass: process.env.ADMIN_PASSWORD,
+    jwt_secret: process.env.JWT_SECRET,
   },
   mixin: {
     app_id: process.env.MIXIN_APP_ID,

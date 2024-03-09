@@ -21,10 +21,10 @@ import { Performance } from './common/entities/performance.entity';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import configuration from './config/configuration';
-import { AdminModule } from './modules/admin/admin.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { CustomLogger } from './modules/logger/logger.service';
 import { MixinModule } from './modules/mixin/mixin.module';
+import { AdminController } from './modules/admin/admin.controller';
 dotenv.config();
 
 @Module({
@@ -59,10 +59,9 @@ dotenv.config();
     // TransactionsModule
     CoingeckoModule,
     HealthModule,
-    AdminModule,
     MixinModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AdminController],
   providers: [CustomLogger, AppService],
 })
 export class AppModule {}

@@ -81,6 +81,7 @@ export class SpotOrderListener {
     }
 
     // 4. Generate and write order to db
+
     // 5. Emit event to 'exchange place order' event handler
   }
 }

@@ -1,16 +1,34 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { SpotOrderType } from '../types/memo/memo';
+import { SpotOrderStatus } from '../types/orders/orders';
+import { PairsMapValue } from '../types/pairs/pairs';
 
 @Entity()
 export class SpotOrder {
   @PrimaryColumn()
-  order_id: string;
+  order_id: string; // UUID
 
   @Column()
-  state: string;
+  snapshot_id: string; // Mixin snapshot UUID
 
   @Column()
-  snapshot_id: string;
+  type: SpotOrderType;
 
   @Column()
-  created_at: string;
+  state: SpotOrderStatus;
+
+  @Column()
+  symbol: PairsMapValue;
+
+  @Column()
+  base_asset_id: string; // Mixin asset UUID
+
+  @Column()
+  target_asset_id: string; // Mixin asset UUID
+
+  @Column()
+  created_at: string; // timestamp
+
+  @Column()
+  updated_at: string; // timestamp
 }
