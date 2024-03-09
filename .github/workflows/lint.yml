@@ -17,22 +17,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies for interface
-      run: |
-        npm install
-      working-directory: ./interface
-
-    - name: Lint interface
-      run: |
-        npm run lint:fix
-      working-directory: ./interface
-
     - name: Install dependencies for server
       run: |
         yarn install
-      working-directory: ./server
 
     - name: Lint server
       run: |
         yarn run lint
-      working-directory: ./server
