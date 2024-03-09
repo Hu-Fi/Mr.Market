@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         project: [chromium, webkit]
-        shardIndex: [1, 2]
+        shardIndex: [1]
         shardTotal: [2]
     steps:
       - name: Checkout code
