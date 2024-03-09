@@ -138,7 +138,7 @@ export class TradeService {
   async cancelOrder(orderId: string, symbol: string): Promise<void> {
     try {
       const result = await this.exchange.cancelOrder(orderId, symbol);
-      this.logger.log(`Order cancelled: ${orderId}`, result);
+     // this.logger.log(`Order cancelled: ${orderId}`, result);
       //  update the transaction status in database
       await this.tradeRepository.updateTradeStatus(orderId, 'cancelled');
     } catch (error) {
