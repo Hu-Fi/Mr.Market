@@ -1,39 +1,14 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { APIKeysConfig } from '../../common/entities/api-keys.entity';
-import { CustomConfig } from '../../common/entities/custom-config.entity';
+import { CustomConfig } from 'src/common/entities/custom-config.entity';
 
 @Injectable()
 export class CustomConfigRepository {
   constructor(
     @InjectRepository(CustomConfig)
     private readonly customRepository: Repository<CustomConfig>,
-    @InjectRepository(APIKeysConfig)
-    private readonly apiKeysRepository: Repository<APIKeysConfig>,
   ) {}
-
-  async addAPIKey(apiKey: APIKeysConfig) {
-    return this.apiKeysRepository.save(apiKey);
-  }
-
-  async removeAPIKey(keyId: string) {
-    const apiKey = await this.apiKeysRepository.findOne({
-      where: { key_id: keyId },
-    });
-    if (!apiKey) {
-      // Handle key not found error
-      return;
-    }
-    await this.apiKeysRepository.remove(apiKey);
-  }
-
-  async pickAPIKeyOnDemand() {
-    // exchange: string, exchangeIndex: string
-    // return this.apiKeysRepository.findOne({
-    //   where: { exchange, exchangeIndex },
-    // });
-  }
 
   async modifySpotFee(configId: number = 0, newSpotFee: string) {
     const config = await this.customRepository.findOne({

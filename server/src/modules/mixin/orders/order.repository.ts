@@ -1,8 +1,8 @@
-// In snapshots.repository.ts
+// In order.repository.ts
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SpotOrder } from '../../../common/entities/spot-order.entity';
+import { SpotOrder } from 'src/common/entities/spot-order.entity';
 
 @Injectable()
 export class SpotOrderRepository {
