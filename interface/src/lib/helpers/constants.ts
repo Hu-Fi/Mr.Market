@@ -1,18 +1,18 @@
 import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
-import { PUBLIC_APP_URL, PUBLIC_SHOW_BAR, PUBLIC_BOT_ID, PUBLIC_OAUTH_SCOPE, PUBLIC_MIXIN_MESSENGER_INSTALL, PUBLIC_MIXIN_API_BASE_URL, PUBLIC_HUFI_SOCKET_URL, PUBLIC_HUFI_BACKEND_URL, PUBLIC_HUMAN_PROTOCOL_GROUP_URL } from '$env/static/public'
+import { env } from '$env/dynamic/public';
 
 export const AppName = "Mr.market"
-export const AppURL = PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
+export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
 
-export const SHOW_BAR = PUBLIC_SHOW_BAR || true
-export const BOT_ID = PUBLIC_BOT_ID || '3fb68263-4f06-476e-83db-503d25d56b93'
-export const OAUTH_SCOPE = PUBLIC_OAUTH_SCOPE || 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ'
-export const MIXIN_MESSENGER_INSTALL = PUBLIC_MIXIN_MESSENGER_INSTALL || 'https://messenger.mixin.one/install'
-export const MIXIN_API_BASE_URL = PUBLIC_MIXIN_API_BASE_URL || 'https://api.mixin.one'
+export const SHOW_BAR = env.PUBLIC_SHOW_BAR || true
+export const BOT_ID = env.PUBLIC_BOT_ID || '3fb68263-4f06-476e-83db-503d25d56b93'
+export const OAUTH_SCOPE = env.PUBLIC_OAUTH_SCOPE || 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ'
+export const MIXIN_MESSENGER_INSTALL = env.PUBLIC_MIXIN_MESSENGER_INSTALL || 'https://messenger.mixin.one/install'
+export const MIXIN_API_BASE_URL = env.PUBLIC_MIXIN_API_BASE_URL || 'https://api.mixin.one'
 
-export const HUFI_SOCKET_URL = PUBLIC_HUFI_SOCKET_URL || '//bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi'
-export const HUFI_BACKEND_URL = PUBLIC_HUFI_BACKEND_URL || 'https://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi:3000'
-export const HUMAN_PROTOCOL_GROUP_URL = PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
+export const HUFI_SOCKET_URL = env.PUBLIC_HUFI_SOCKET_URL || '//bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi'
+export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://bc6e1fa0-3c5a-4235-809c-c4fcc4a5d859.mvg.fi:3000'
+export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const SUPPORTED_PAIRS: {
   [k in SupportedExchanges]: SupportedPairs[]
