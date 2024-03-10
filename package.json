@@ -4,9 +4,9 @@
   "description": "This is highly alpha code. Do not use it or you will lose all your money",
   "main": "index.js",
   "scripts": {
-    "install": "npm run install:interface && npm run install:server",
+    "install:all": "npm run install:interface && npm run install:server",
     "install:interface": "npm install --prefix interface",
-    "install:server": "npm install --prefix server",
+    "install:server": "yarn install --cwd ./server",
     "start": "npm run start:server & npm run start:interface",
     "start:interface": "npm --prefix interface run dev",
     "start:server": "npm --prefix server run start:dev",

@@ -35,7 +35,7 @@ The frontend user interface for Mr.market on Mixin.
 Install dependencies for interface and server
 
 ```
-npm run install
+npm run install:all
 ```
 
 Install dependencies for interface
@@ -48,6 +48,17 @@ Install dependencies for server
 
 ```
 npm run install:server
+```
+
+### Modify environment variables
+
+For backend:
+```
+Move /server/.env.example to /server/.env, and modify it
+```
+For interface:
+```
+Move /interface/.env.example to /interface/.env, and modify it
 ```
 
 ### Run development server
