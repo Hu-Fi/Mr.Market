@@ -41,7 +41,7 @@ npm install
 ### Run development server
 
 ```
-npm dev
+npm run dev
 ```
 
 If you're using bun:
