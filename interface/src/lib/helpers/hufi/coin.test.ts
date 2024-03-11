@@ -1,7 +1,13 @@
-import { describe, it } from "vitest"
+import { describe, it, vi } from "vitest"
 import { fetchOHLCV, pairsFn } from "./coin"
 import type { SupportedExchanges } from "$lib/types/hufi/exchanges"
-import { SUPPORTED_TIMERANGES } from "../constants"
+import { SUPPORTED_TIMERANGES } from "$lib/helpers/constants"
+
+vi.mock('$env/dynamic/public', () => {
+  return {
+    env: {}
+  };
+});
 
 describe.skip('pairsFn', () => {
   it('get pairs', async () => {
