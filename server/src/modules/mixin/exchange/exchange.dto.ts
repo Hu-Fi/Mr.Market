@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ExchangeIndex, SpotOrderType } from 'src/common/types/memo/memo';
-import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { SpotOrderStatus } from 'src/common/types/orders/states';
 import { PairsMapValue } from 'src/common/types/pairs/pairs';
 
 export class ExchangePlaceSpotEventDto {

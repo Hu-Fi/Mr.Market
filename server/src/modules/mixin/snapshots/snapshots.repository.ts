@@ -2,7 +2,7 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Snapshot } from '../../../common/entities/snapshots.entity';
+import { Snapshot } from 'src/common/entities/snapshots.entity';
 
 @Injectable()
 export class SnapshotsRepository {

@@ -2,8 +2,8 @@ import { randomUUID } from 'crypto';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   MixinApi,
   SafeSnapshot,
@@ -169,10 +169,6 @@ export class SnapshotsService {
     }
   }
 
-  // 1. Check snapshot doesn't exist in db
-  // 2. Decode memo, refund if memo format check failed
-  // 3. Emit event based on memo format
-  // 4. Create snapshot in db
   private async handleSnapshot(snapshot: SafeSnapshot) {
     const s = await this.snapshotsRepository.findSnapshotByID(
       snapshot.snapshot_id,

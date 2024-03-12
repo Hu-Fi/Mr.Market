@@ -4,7 +4,7 @@ import {
   SpotOrderType,
   TradingType,
 } from 'src/common/types/memo/memo';
-import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { SpotOrderStatus } from 'src/common/types/orders/states';
 import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 
 export class SpotOrderCreateEvent {
@@ -36,4 +36,6 @@ export class MixinReleaseTokenEvent {
   userId: string;
   assetId: string;
   amount: string;
+  createdAt: string;
+  updatedAt: string;
 }

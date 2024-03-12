@@ -1,18 +1,28 @@
 // exchange.service.ts
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
+import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getSymbolByAssetID } from 'src/common/helpers/utils';
-import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  getRFC3339Timestamp,
+  getSymbolByAssetID,
+} from 'src/common/helpers/utils';
+import {
+  STATE_TEXT_MAP,
+  SpotOrderStatus,
+} from 'src/common/types/orders/states';
 import { ExchangePlaceSpotEventDto } from 'src/modules/mixin/exchange/exchange.dto';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
-import { SpotOrderType } from 'src/common/types/memo/memo';
 import {
   ErrorResponse,
   SuccessResponse,
 } from 'src/common/types/exchange/exchange';
-import { Cron } from '@nestjs/schedule';
+import {
+  MixinReleaseHistory,
+  MixinReleaseToken,
+} from 'src/common/types/exchange/mixinRelease';
 
 @Injectable()
 export class ExchangeService {
@@ -21,6 +31,7 @@ export class ExchangeService {
   constructor(
     @InjectRepository(ExchangeRepository)
     private exchangeRepository: ExchangeRepository,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async onModuleInit() {
@@ -31,12 +42,13 @@ export class ExchangeService {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
 
     for (const key of apiKeys) {
-      const exchange = key.exchangeIndex;
+      const keyId = key.key_id;
+      const exchangeName = key.exchange;
       const apiKey = key.api_key;
       const apiSecret = key.api_secret;
 
-      if (!this.exchangeInstances[exchange]) {
-        this.exchangeInstances[exchange] = new ccxt[exchange]({
+      if (!this.exchangeInstances[keyId]) {
+        this.exchangeInstances[keyId] = new ccxt[exchangeName]({
           apiKey,
           secret: apiSecret,
         });
@@ -129,12 +141,43 @@ export class ExchangeService {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
-  async updateSpotOrderState(order_id: string, state: SpotOrderStatus) {
-    return await this.exchangeRepository.updateSpotOrderState(order_id, state);
+  async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {
+    await this.exchangeRepository.updateSpotOrderUpdatedAt(
+      orderId,
+      getRFC3339Timestamp(),
+    );
+    return await this.exchangeRepository.updateSpotOrderState(orderId, state);
+  }
+
+  async updateSpotOrderApiKeyId(orderId: string, api_key_id: string) {
+    await this.exchangeRepository.updateSpotOrderUpdatedAt(
+      orderId,
+      getRFC3339Timestamp(),
+    );
+    return await this.exchangeRepository.updateSpotOrderApiKeyId(
+      orderId,
+      api_key_id,
+    );
   }
 
   async getOrderByState(state: SpotOrderStatus) {
     return await this.exchangeRepository.getOrderByState(state);
+  }
+
+  async addMixinReleaseToken(data: MixinReleaseToken) {
+    return await this.exchangeRepository.addMixinReleaseToken(data);
+  }
+
+  async readMixinReleaseToken(orderId: string) {
+    return await this.exchangeRepository.readMixinReleaseToken(orderId);
+  }
+
+  async addMixinReleaseHistory(data: MixinReleaseHistory) {
+    return await this.exchangeRepository.addMixinReleaseHistory(data);
+  }
+
+  async readMixinReleaseHistory(orderId: string) {
+    return await this.exchangeRepository.readMixinReleaseHistory(orderId);
   }
 
   async placeOrder(
@@ -142,6 +185,7 @@ export class ExchangeService {
     exchange: string,
     limit: boolean,
     buy: boolean,
+    apiKeyId: string,
     apiKey: string,
     apiSecret: string,
     symbol: string,
@@ -166,14 +210,55 @@ export class ExchangeService {
       return await e.createMarketSellOrder(symbol, amount);
     }
 
-    await this.updateSpotOrderState(orderId, '1001');
+    await this.updateSpotOrderState(orderId, STATE_TEXT_MAP['PLACED']);
+    await this.updateSpotOrderApiKeyId(orderId, apiKeyId);
   }
 
   // Every 3 seconds
   @Cron('*/20 * * * * *')
   async placedOrderUpdater() {
-    const orders = await this.getOrderByState('1001');
-    // Fetch order if method available
-    console.log(orders);
+    const orders = await this.getOrderByState(STATE_TEXT_MAP['PLACED']);
+
+    orders.forEach(async (o) => {
+      const instance = this.exchangeInstances[o.exchangeIndex];
+      if (!instance.has['fetchOrder']) {
+        return await this.updateSpotOrderState(
+          o.orderId,
+          STATE_TEXT_MAP['EXCHANGE_DOESNT_SUPPORT_FETCH_ORDER'],
+        );
+      }
+
+      const order = await instance.fetchOrder(o.orderId);
+
+      // Determine order state and update
+      if (order.status === 'open') {
+        if (order.filled === 0) {
+          return;
+        }
+        if (order.filled != order.amount) {
+          await this.updateSpotOrderState(
+            o.orderId,
+            STATE_TEXT_MAP['PARTIAL_FILLED'],
+          );
+          return;
+        }
+      }
+      if (order.status === 'canceled') {
+        await this.updateSpotOrderState(o.orderId, STATE_TEXT_MAP['CANCELED']);
+        return;
+      }
+      if (order.status === 'closed') {
+        await this.updateSpotOrderState(o.orderId, STATE_TEXT_MAP['FILLED']);
+      }
+
+      // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
+      const releaseOrder = await this.readMixinReleaseToken(o.orderId);
+      this.eventEmitter.emit('mixin.release', {
+        orderId: releaseOrder.orderId,
+        userId: releaseOrder.userId,
+        assetId: releaseOrder.assetId,
+        amount: releaseOrder.amount,
+      });
+    });
   }
 }

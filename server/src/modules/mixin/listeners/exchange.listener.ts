@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { getExchangeNameByIndex } from 'src/common/helpers/utils';
-import { ExchangePlaceSpotEvent } from 'src/modules/mixin/events/spot.event';
+import {
+  ExchangePlaceSpotEvent,
+  MixinReleaseTokenEvent,
+} from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 
@@ -13,17 +17,19 @@ export class ExchangeListener {
   ) {}
 
   @OnEvent('exchange.spot.place')
-  async handlePlaceSpotOrderEvent(event: ExchangePlaceSpotEvent) {
+  async handlePlaceSpotOrderEvent(payload: {
+    event: ExchangePlaceSpotEvent;
+    mixinEvent: MixinReleaseTokenEvent;
+  }) {
+    const { event, mixinEvent } = payload;
     const exchangeName = getExchangeNameByIndex(event.exchangeIndex);
 
     let baseSymbol = event.symbol.split('/')[0];
     let targetSymbol = event.symbol.split('/')[1];
     if (baseSymbol.includes('USDT')) {
-      // USDT-ERC20 to USDT
       baseSymbol = 'USDT';
     }
     if (targetSymbol.includes('USDT')) {
-      // USDT-ERC20 to USDT
       targetSymbol = 'USDT';
     }
     const orderTypeBuy = event.type.endsWith('B');
@@ -35,7 +41,10 @@ export class ExchangeListener {
       event.amount,
     );
     if (key.type === 'error') {
-      await this.exchangeService.updateSpotOrderState(event.orderId, '90011');
+      await this.exchangeService.updateSpotOrderState(
+        event.orderId,
+        STATE_TEXT_MAP['EXCHANGE_BALANCE_NOT_ENOUGH'],
+      );
       return;
     }
 
@@ -47,21 +56,36 @@ export class ExchangeListener {
         estimateReceiveAmount,
       ))
     ) {
-      await this.exchangeService.updateSpotOrderState(event.orderId, '90012');
+      await this.exchangeService.updateSpotOrderState(
+        event.orderId,
+        STATE_TEXT_MAP['MIXIN_BALANCE_NOT_ENOUGH'],
+      );
       return;
     }
 
     const orderTypeLimit = event.type.endsWith('L');
     // Place order
-    this.exchangeService.placeOrder(
+    await this.exchangeService.placeOrder(
       event.orderId,
       exchangeName,
       orderTypeLimit,
       orderTypeBuy,
       key.id,
+      key.api_key,
       key.secret,
       `${baseSymbol}/${targetSymbol}`,
       event.amount,
     );
+
+    await this.exchangeService.addMixinReleaseToken({
+      orderId: mixinEvent.orderId,
+      userId: mixinEvent.userId,
+      assetId: mixinEvent.assetId,
+      state: STATE_TEXT_MAP['MIXIN_RELEASE_INIT'],
+      amount: mixinEvent.amount,
+      createdAt: mixinEvent.createdAt,
+      updatedAt: mixinEvent.updatedAt,
+    });
+    // Jump to step 3, update order state (exchange.service.ts)
   }
 }

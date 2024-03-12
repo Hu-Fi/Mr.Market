@@ -1,18 +1,18 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 import { SpotOrderType } from 'src/common/types/memo/memo';
-import { SpotOrderStatus } from 'src/common/types/orders/orders';
 import { PairsMapValue } from 'src/common/types/pairs/pairs';
+import { SpotOrderStatus } from 'src/common/types/orders/states';
 
 @Entity()
 export class SpotOrder {
   @PrimaryColumn()
-  order_id: string; // UUID
+  orderId: string; // UUID
 
   @Column()
-  snapshot_id: string; // Mixin snapshot UUID
+  snapshotId: string; // Mixin snapshot UUID
 
   @Column()
-  exchange_index: string; // Index of exchange
+  exchangeIndex: string; // Index of exchange
 
   @Column()
   type: SpotOrderType;
@@ -24,14 +24,17 @@ export class SpotOrder {
   symbol: PairsMapValue;
 
   @Column()
-  base_asset_id: string; // Mixin asset UUID
+  baseAssetId: string; // Mixin asset UUID
 
   @Column()
-  target_asset_id: string; // Mixin asset UUID
+  targetAssetId: string; // Mixin asset UUID
 
   @Column()
-  created_at: string; // timestamp
+  apiKeyId: string; // API key id used for place order
 
   @Column()
-  updated_at: string; // timestamp
+  createdAt: string; // timestamp
+
+  @Column()
+  updatedAt: string; // timestamp
 }

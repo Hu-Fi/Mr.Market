@@ -1,9 +1,13 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { SpotOrderStatus } from 'src/common/types/orders/states';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import {
+  MixinReleaseHistory,
+  MixinReleaseToken,
+} from 'src/common/entities/mixin-release.eneity';
 
 @Injectable()
 export class ExchangeRepository {
@@ -12,6 +16,10 @@ export class ExchangeRepository {
     private readonly apiKeysRepository: Repository<APIKeysConfig>,
     @InjectRepository(SpotOrder)
     private readonly spotOrderRepository: Repository<SpotOrder>,
+    @InjectRepository(MixinReleaseToken)
+    private readonly mixinReleaseRepository: Repository<MixinReleaseToken>,
+    @InjectRepository(MixinReleaseHistory)
+    private readonly mixinReleaseHistoryRepository: Repository<MixinReleaseHistory>,
   ) {}
 
   // API Key related methods
@@ -38,22 +46,51 @@ export class ExchangeRepository {
     return await this.apiKeysRepository.find({ where: { exchange } });
   }
 
-  async getOrderByID(order_id: string): Promise<SpotOrder[]> {
-    return this.spotOrderRepository.find({ where: { order_id } });
+  async getOrderByID(orderId: string): Promise<SpotOrder[]> {
+    return await this.spotOrderRepository.find({ where: { orderId } });
   }
 
   async getOrderByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
-    return this.spotOrderRepository.find({ where: { state } });
+    return await this.spotOrderRepository.find({ where: { state } });
   }
 
   async createSpotOrder(
     transactionData: Partial<SpotOrder>,
   ): Promise<SpotOrder> {
     const transaction = this.spotOrderRepository.create(transactionData);
-    return this.spotOrderRepository.save(transaction);
+    return await this.spotOrderRepository.save(transaction);
   }
 
-  async updateSpotOrderState(order_id: string, state: SpotOrderStatus) {
-    return this.spotOrderRepository.update({ order_id }, { state });
+  async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {
+    return await this.spotOrderRepository.update({ orderId }, { state });
+  }
+
+  async updateSpotOrderUpdatedAt(orderId: string, updatedAt: string) {
+    return await this.spotOrderRepository.update({ orderId }, { updatedAt });
+  }
+
+  async updateSpotOrderApiKeyId(orderId: string, apiKeyId: string) {
+    return await this.spotOrderRepository.update({ orderId }, { apiKeyId });
+  }
+
+  async addMixinReleaseToken(transactionData: Partial<MixinReleaseToken>) {
+    const transaction = this.mixinReleaseRepository.create(transactionData);
+    return await this.mixinReleaseRepository.save(transaction);
+  }
+
+  async readMixinReleaseToken(orderId: string) {
+    return await this.mixinReleaseRepository.findOne({ where: { orderId } });
+  }
+
+  async readMixinReleaseHistory(orderId: string) {
+    return await this.mixinReleaseHistoryRepository.exist({
+      where: { orderId },
+    });
+  }
+
+  async addMixinReleaseHistory(transactionData: Partial<MixinReleaseHistory>) {
+    const transaction =
+      this.mixinReleaseHistoryRepository.create(transactionData);
+    return await this.mixinReleaseHistoryRepository.save(transaction);
   }
 }

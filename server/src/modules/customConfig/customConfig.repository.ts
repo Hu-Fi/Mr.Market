@@ -10,6 +10,17 @@ export class CustomConfigRepository {
     private readonly customRepository: Repository<CustomConfig>,
   ) {}
 
+  async readSpotFee(configId: number = 0) {
+    const config = await this.customRepository.findOne({
+      where: { config_id: configId },
+    });
+    if (!config) {
+      // Handle config not found error
+      return;
+    }
+    return config.spot_fee;
+  }
+
   async modifySpotFee(configId: number = 0, newSpotFee: string) {
     const config = await this.customRepository.findOne({
       where: { config_id: configId },

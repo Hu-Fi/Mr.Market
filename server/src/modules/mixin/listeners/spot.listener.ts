@@ -14,8 +14,10 @@ import {
 import { PairsMapKey } from 'src/common/types/pairs/pairs';
 import {
   ExchangePlaceSpotEvent,
+  MixinReleaseTokenEvent,
   SpotOrderCreateEvent,
 } from 'src/modules/mixin/events/spot.event';
+import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 
 @Injectable()
@@ -49,9 +51,9 @@ export class SpotOrderListener {
 
     // Determine direction by spot order type
     let buy: boolean;
-    if (event.spotOrderType === 'MB' || event.spotOrderType === 'LB') {
+    if (event.spotOrderType.endsWith('B')) {
       buy = true;
-    } else if (event.spotOrderType === 'MS' || event.spotOrderType === 'LS') {
+    } else if (event.spotOrderType.endsWith('S')) {
       buy = false;
     } else {
       return;
@@ -70,12 +72,13 @@ export class SpotOrderListener {
 
     // Generate and write order to db
     const timeNow = getRFC3339Timestamp();
+    const orderId = randomUUID();
     const order: ExchangePlaceSpotEvent = {
-      orderId: randomUUID(),
+      orderId,
       exchangeIndex: event.exchangeIndex,
       snapshotId: event.snapshot.snapshot_id,
       type: event.spotOrderType,
-      state: '1000',
+      state: STATE_TEXT_MAP['CREATED'],
       symbol: symbol,
       baseAssetId: baseAssetID,
       targetAssetId: targetAssetID,
@@ -83,8 +86,18 @@ export class SpotOrderListener {
       createdAt: timeNow,
       updatedAt: timeNow,
     };
+
+    const mixinEvent: MixinReleaseTokenEvent = {
+      orderId,
+      userId: event.snapshot.opponent_id,
+      assetId: buy ? baseAssetID : targetAssetID,
+      amount: '',
+      createdAt: timeNow,
+      updatedAt: timeNow,
+    };
     await this.exchangeService.createSpotOrder(order);
 
-    this.eventEmitter.emit('exchange.spot.place', { order });
+    // Jump to step 2: place order in exchange (exchange.listener.ts)
+    this.eventEmitter.emit('exchange.spot.place', { order, mixinEvent });
   }
 }
