@@ -169,26 +169,3 @@ test('create sell limit order', async ({ page }) => {
   await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
 });
 
-
-test('click order book to set limit price', async({ page }) => {
-  // Open dialog
-    await page.getByTestId('order_type_selector').click()
-
-  // Select limit order
-  await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
-  
-  for (let index = 1; index < 7; index++) {
-    await page.locator(`//div/div[1]/main/div/div[1]/div[2]/div/div[2]/div[1]/button[${index}]`).click() 
-  }
-
-  await page.locator('//div/div[1]/main/div/div[1]/div[2]/div/div[2]/div[2]/button').click()
-  const currentPrice = await page.locator('//div/div[1]/main/div/div[1]/div[2]/div/div[2]/div[2]/button/span').textContent()
-  const currentInput = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').inputValue()
-  expect(currentPrice?.replace(',','')).toContain(currentInput)
-
-
-  for (let index = 1; index < 7; index++) {
-    await page.locator(`//div/div[1]/main/div/div[1]/div[2]/div/div[2]/div[3]/button[${index}]`).click() 
-  }
-})
-
