@@ -121,13 +121,19 @@ export class StrategyService {
     this.logger.log(
       `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
     );
+
     let strategyKey;
     if (strategyType === 'Arbitrage') {
       strategyKey = `${userId}-${clientId}-Arbitrage`;
-    }
-    if (strategyType === 'pureMarketMaking') {
+    } else if (strategyType === 'pureMarketMaking') {
       strategyKey = `${userId}-${clientId}-pureMarketMaking`;
     }
+
+    // Cancel all orders for this strategy before stopping
+    if (strategyKey) {
+      await this.cancelAllStrategyOrders(strategyKey);
+    }
+
     const strategyInstance = this.strategyInstances.get(strategyKey);
     this.logger.log(strategyKey);
     if (strategyInstance) {
@@ -141,7 +147,6 @@ export class StrategyService {
       this.activeOrderBookWatches.delete(strategyKey);
     }
   }
-
   private async watchSymbols(
     exchangeA,
     exchangeB,
@@ -164,10 +169,12 @@ export class StrategyService {
           data: newOrderbook,
           timestamp: Date.now(),
         });
-        // Notify strategies if needed
       } catch (error) {
-        this.logger.error(`Error in watchOrderBook: ${error.message}`);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        this.logger.error(
+          `Error in watchOrderBook for ${symbol} on ${exchange.id}: ${error.message}`,
+        );
+        // Decide on a retry mechanism or skip to the next cycle
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for 2 seconds before retrying or moving on
       }
     }
   }
@@ -222,7 +229,7 @@ export class StrategyService {
         this.logger.error(
           `Error executing pure market making strategy for ${strategyKey}: ${error.message}`,
         );
-        clearInterval(intervalId); // Optionally stop the strategy on error
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying or moving on
       }
     }, orderRefreshTime);
 
@@ -231,7 +238,6 @@ export class StrategyService {
   }
 
   // Add endpoint to keep track of the user id and client id
-  // Ceiling and floor price hard ceiling and hard floor, and make it auto adjustable every x seconds
   // Track inventory cost,
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
@@ -248,25 +254,13 @@ export class StrategyService {
     ceilingPrice?: number,
     floorPrice?: number,
   ) {
-    const currentPrice = await this.getCurrentMarketPrice(exchangeName, pair);
+    // Fetch the current market price based on the specified price source type
     const priceSource = await this.getPriceSource(
       exchangeName,
       pair,
       priceSourceType,
     );
     const exchange = this.exchanges.get(exchangeName);
-
-    // Check if ceilingPrice and floorPrice are defined and if current price is outside the specified range
-    if (
-      (ceilingPrice !== undefined && currentPrice > ceilingPrice) ||
-      (floorPrice !== undefined && currentPrice < floorPrice)
-    ) {
-      this.logger.error(
-        `Current price (${currentPrice}) is outside the specified range (Floor: ${floorPrice}, Ceiling: ${ceilingPrice}). Shutting down strategy for ${userId}-${clientId}.`,
-      );
-      await this.stopStrategyForUser(userId, clientId, 'pureMarketMaking');
-      return;
-    }
 
     // Cancel all existing orders for this strategy
     await this.cancelAllOrders(
@@ -278,9 +272,7 @@ export class StrategyService {
     let currentOrderAmount = baseOrderAmount;
 
     for (let layer = 1; layer <= numberOfLayers; layer++) {
-      // Adjust the order amount for the current layer
       if (layer > 1) {
-        // Skip the first layer as it uses the base order amount
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
@@ -295,45 +287,60 @@ export class StrategyService {
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
 
-      // Adjust buy and sell prices and amounts to exchange precision
-      const {
-        adjustedAmount: adjustedBuyAmount,
-        adjustedPrice: adjustedBuyPrice,
-      } = await this.adjustOrderParameters(
-        exchange,
-        pair,
-        currentOrderAmount,
-        buyPrice,
-      );
-      const {
-        adjustedAmount: adjustedSellAmount,
-        adjustedPrice: adjustedSellPrice,
-      } = await this.adjustOrderParameters(
-        exchange,
-        pair,
-        currentOrderAmount,
-        sellPrice,
-      );
+      // Conditionally place buy and sell orders based on ceiling and floor price logic
+      if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
+        // Place buy orders as market price is not above the ceiling
+        const {
+          adjustedAmount: adjustedBuyAmount,
+          adjustedPrice: adjustedBuyPrice,
+        } = await this.adjustOrderParameters(
+          exchange,
+          pair,
+          currentOrderAmount,
+          buyPrice,
+        );
 
-      // Place buy and sell orders with adjusted parameters
-      await this.tradeService.executeLimitTrade({
-        userId,
-        clientId,
-        exchange: exchangeName,
-        symbol: pair,
-        side: 'buy',
-        amount: parseFloat(adjustedBuyAmount),
-        price: parseFloat(adjustedBuyPrice),
-      });
-      await this.tradeService.executeLimitTrade({
-        userId,
-        clientId,
-        exchange: exchangeName,
-        symbol: pair,
-        side: 'sell',
-        amount: parseFloat(adjustedSellAmount),
-        price: parseFloat(adjustedSellPrice),
-      });
+        await this.tradeService.executeLimitTrade({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          symbol: pair,
+          side: 'buy',
+          amount: parseFloat(adjustedBuyAmount),
+          price: parseFloat(adjustedBuyPrice),
+        });
+      } else {
+        this.logger.log(
+          `Skipping buy order for ${pair} as price source ${priceSource} is above the ceiling price ${ceilingPrice}.`,
+        );
+      }
+
+      if (floorPrice === undefined || priceSource >= floorPrice) {
+        // Place sell orders as market price is not below the floor
+        const {
+          adjustedAmount: adjustedSellAmount,
+          adjustedPrice: adjustedSellPrice,
+        } = await this.adjustOrderParameters(
+          exchange,
+          pair,
+          currentOrderAmount,
+          sellPrice,
+        );
+
+        await this.tradeService.executeLimitTrade({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          symbol: pair,
+          side: 'sell',
+          amount: parseFloat(adjustedSellAmount),
+          price: parseFloat(adjustedSellPrice),
+        });
+      } else {
+        this.logger.log(
+          `Skipping sell order for ${pair} as price source ${priceSource} is below the floor price ${floorPrice}.`,
+        );
+      }
     }
   }
 
@@ -361,10 +368,23 @@ export class StrategyService {
     strategyKey: string,
   ) {
     this.logger.log('Cancelling Orders for', strategyKey);
-    // Fetch and cancel all open orders for the pair
-    const orders = await exchange.fetchOpenOrders(pair);
-    for (const order of orders) {
-      await exchange.cancelOrder(order.id, pair);
+    try {
+      const orders = await exchange.fetchOpenOrders(pair);
+      for (const order of orders) {
+        try {
+          await exchange.cancelOrder(order.id, pair);
+        } catch (error) {
+          this.logger.error(
+            `Failed to cancel order ${order.id} for ${pair} on ${exchange.id}: ${error.message}`,
+          );
+          // Decide whether to retry or continue with the next order
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
+      );
+      // Handle the error, e.g., by logging and possibly retrying later
     }
   }
 
@@ -615,13 +635,43 @@ export class StrategyService {
 
   private handleShutdown() {
     this.logger.log('Shutting down strategy service...');
+
+    // Cancel all orders before shutting down strategies
+    this.strategyInstances.forEach((_, strategyKey) => {
+      this.cancelAllStrategyOrders(strategyKey)
+        .then(() => {
+          this.logger.log(`All orders canceled for ${strategyKey}`);
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Failed to cancel orders for ${strategyKey}: ${error}`,
+          );
+        });
+    });
+
     this.strategyInstances.forEach((instance) => {
       clearInterval(instance.intervalId);
     });
     this.strategyInstances.clear();
-
     this.activeOrderBookWatches.clear();
 
     process.exit(0);
+  }
+
+  private async cancelAllStrategyOrders(strategyKey: string) {
+    const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
+
+    for (const orderDetail of activeOrdersForStrategy) {
+      const { exchange, orderId } = orderDetail;
+      try {
+        await exchange.cancelOrder(orderId);
+        this.logger.log(`Order ${orderId} canceled successfully.`);
+      } catch (error) {
+        this.logger.error(`Failed to cancel order ${orderId}: ${error}`);
+      }
+    }
+
+    // Remove strategy from activeOrders map after canceling all orders
+    this.activeOrders.delete(strategyKey);
   }
 }
