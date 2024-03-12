@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
-import { SpotOrderType } from '../types/memo/memo';
-import { SpotOrderStatus } from '../types/orders/orders';
-import { PairsMapValue } from '../types/pairs/pairs';
+import { SpotOrderType } from 'src/common/types/memo/memo';
+import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { PairsMapValue } from 'src/common/types/pairs/pairs';
 
 @Entity()
 export class SpotOrder {
@@ -10,6 +10,9 @@ export class SpotOrder {
 
   @Column()
   snapshot_id: string; // Mixin snapshot UUID
+
+  @Column()
+  exchange_index: string; // Index of exchange
 
   @Column()
   type: SpotOrderType;

@@ -1,7 +1,7 @@
 import {
-  tradingTypeMap,
-  spotOrderTypeMap,
-  spotExchangeMap,
+  TARDING_TYPE_MAP,
+  SPOT_ORDER_TYPE_MAP,
+  SPOT_EXCHANGE_MAP,
 } from 'src/common/constants/memo';
 import {
   MemoDetails,
@@ -24,9 +24,9 @@ export const decodeSpotMemo = (memo: string): MemoDetails => {
   ] = parts;
 
   return {
-    tradingType: tradingTypeMap[tradingType] as TradingType,
-    spotOrderType: spotOrderTypeMap[spotOrderType] as SpotOrderType,
-    exchange: spotExchangeMap[exchange] as ExchangeIndex,
+    tradingType: TARDING_TYPE_MAP[tradingType] as TradingType,
+    spotOrderType: SPOT_ORDER_TYPE_MAP[spotOrderType] as SpotOrderType,
+    exchangeIndex: SPOT_EXCHANGE_MAP[exchange] as ExchangeIndex,
     destId: destId as PairsMapKey,
     limitPrice: parts.length === 6 ? limitPriceOrRefId : undefined,
     refId: parts.length === 6 ? refId : limitPriceOrRefId,

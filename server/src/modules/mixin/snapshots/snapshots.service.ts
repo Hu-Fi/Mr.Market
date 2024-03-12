@@ -18,6 +18,7 @@ import {
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
 import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
+import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 
@@ -107,7 +108,6 @@ export class SnapshotsService {
       })),
     );
     const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
-    // @ts-expect-error tx type
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -119,7 +119,6 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
-      // @ts-expect-error tx type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -146,14 +145,27 @@ export class SnapshotsService {
     }
   }
 
-  async getAssetBalance(asset_id: string): Promise<number> {
+  async getAssetBalance(asset_id: SymbolAssetIdMapValue): Promise<string> {
     try {
-      return Number(
-        await this.client.utxo.safeAssetBalance({ asset: asset_id }),
-      );
+      return await this.client.utxo.safeAssetBalance({ asset: asset_id });
     } catch (e) {
       this.logger.error(`Mixin getAssetBalance() => ${e}`);
-      return 0;
+      return '0';
+    }
+  }
+
+  async checkMixinBalanceEnough(
+    asset_id: SymbolAssetIdMapValue,
+    amount: string,
+  ): Promise<boolean> {
+    try {
+      const balance = this.getAssetBalance(asset_id);
+      if (BigNumber(balance).isLessThan(amount)) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -193,9 +205,9 @@ export class SnapshotsService {
     this.snapshotsRepository.createSnapshot(snapshot);
   }
 
-  // Every minute at 0 second
-  @Cron('0 * * * * *')
+  // Every 5 seconds
+  @Cron('*/12 * * * * *')
   async handleSnapshots(): Promise<void> {
-    this.logger.debug('Called when the current second is 45');
+    await this.fetchAndProcessSnapshots();
   }
 }

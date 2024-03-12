@@ -4,14 +4,36 @@ import {
   SpotOrderType,
   TradingType,
 } from 'src/common/types/memo/memo';
-import { PairsMapKey } from 'src/common/types/pairs/pairs';
+import { SpotOrderStatus } from 'src/common/types/orders/orders';
+import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 
 export class SpotOrderCreateEvent {
   tradingType: TradingType;
   spotOrderType: SpotOrderType;
-  exchange: ExchangeIndex;
+  exchangeIndex: ExchangeIndex;
   destId: PairsMapKey;
   limitPrice?: string;
   refId: string;
   snapshot: SafeSnapshot;
+}
+
+export class ExchangePlaceSpotEvent {
+  orderId: string;
+  exchangeIndex: ExchangeIndex;
+  snapshotId: string;
+  type: SpotOrderType;
+  state: SpotOrderStatus;
+  symbol: PairsMapValue;
+  baseAssetId: string;
+  targetAssetId: string;
+  amount: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export class MixinReleaseTokenEvent {
+  orderId: string;
+  userId: string;
+  assetId: string;
+  amount: string;
 }

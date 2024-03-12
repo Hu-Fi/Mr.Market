@@ -1,6 +1,9 @@
-import { PAIRS_MAP } from '../constants/pairs';
-import { PairsMapKey } from '../types/pairs/pairs';
-import { generateRandomSequence, getPairSymbolByKey } from './utils';
+import { PAIRS_MAP } from 'src/common/constants/pairs';
+import { PairsMapKey } from 'src/common/types/pairs/pairs';
+import {
+  generateRandomSequence,
+  getPairSymbolByKey,
+} from 'src/common/helpers/utils';
 
 describe('generateRandomSequence', () => {
   it('random 4 positions word', () => {

@@ -1,5 +1,12 @@
-import { PAIRS_MAP, SYMBOL_ASSET_ID_MAP } from '../constants/pairs';
-import { PairsMapKey, PairsMapValue } from '../types/pairs/pairs';
+import { PAIRS_MAP, SYMBOL_ASSET_ID_MAP } from 'src/common/constants/pairs';
+import {
+  PairsMapKey,
+  PairsMapValue,
+  SymbolAssetIdMapKey,
+  SymbolAssetIdMapValue,
+} from 'src/common/types/pairs/pairs';
+import { ExchangeIndex } from 'src/common/types/memo/memo';
+import { SPOT_EXCHANGE_MAP } from '../constants/memo';
 
 // used for generating 4 positions key mapped to trading symbol
 export const generateRandomSequence = () => {
@@ -25,8 +32,12 @@ export const generateRandomSequence = () => {
   return sequence;
 };
 
-export const getPairSymbolByKey = (key: PairsMapKey) => {
+export const getPairSymbolByKey = (key: PairsMapKey): PairsMapValue => {
   return PAIRS_MAP[key] || '';
+};
+
+export const getExchangeNameByIndex = (index: ExchangeIndex) => {
+  return SPOT_EXCHANGE_MAP[index] || '';
 };
 
 export const getAssetIDBySymbol = (value: PairsMapValue) => {
@@ -39,4 +50,18 @@ export const getAssetIDBySymbol = (value: PairsMapValue) => {
     baseAssetID,
     targetAssetID,
   };
+};
+
+export const getSymbolByAssetID = (
+  asset_id: SymbolAssetIdMapValue,
+): SymbolAssetIdMapKey => {
+  return SYMBOL_ASSET_ID_MAP[asset_id] || '';
+};
+
+export const getRFC3339Timestamp = () => {
+  const now = new Date();
+  const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+  const msFromEpochWithOffset = now.getTime() - offsetMs;
+  const isoString = new Date(msFromEpochWithOffset).toISOString();
+  return isoString.slice(0, -1) + 'Z';
 };

@@ -1,6 +1,4 @@
-import { TradingType, SpotOrderType, ExchangeIndex } from '../types/memo/memo';
-
-export const tradingTypeMap: Record<TradingType, string> = {
+export const TARDING_TYPE_MAP: Record<string, string> = {
   SP: 'Spot',
   SW: 'Swap',
   MM: 'Market Making',
@@ -9,14 +7,14 @@ export const tradingTypeMap: Record<TradingType, string> = {
   PE: 'Perpetual',
 };
 
-export const spotOrderTypeMap: Record<SpotOrderType, string> = {
+export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
   LB: 'Limit Buy',
   LS: 'Limit Sell',
   MB: 'Market Buy',
   MS: 'Market Sell',
 };
 
-export const spotExchangeMap: Record<ExchangeIndex, string> = {
+export const SPOT_EXCHANGE_MAP: Record<string, string> = {
   '01': 'binance',
   '02': 'bitfinex',
   '03': 'mexc',

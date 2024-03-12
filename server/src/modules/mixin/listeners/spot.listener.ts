@@ -1,22 +1,29 @@
+import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
+import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import {
   isExchangeIndexValid,
   isSpotOrderTypeValid,
   isTradingTypeValid,
 } from 'src/common/helpers/checks/spotChecks';
-import { SpotOrderCreateEvent } from '../events/spot.event';
-import { SnapshotsService } from '../snapshots/snapshots.service';
-import BigNumber from 'bignumber.js';
 import {
   getAssetIDBySymbol,
   getPairSymbolByKey,
+  getRFC3339Timestamp,
 } from 'src/common/helpers/utils';
 import { PairsMapKey } from 'src/common/types/pairs/pairs';
+import {
+  ExchangePlaceSpotEvent,
+  SpotOrderCreateEvent,
+} from 'src/modules/mixin/events/spot.event';
+import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 
 @Injectable()
 export class SpotOrderListener {
-  constructor(private snapshotService: SnapshotsService) {}
+  constructor(
+    private exchangeService: ExchangeService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   @OnEvent('spot.create')
   async handleSpotOrderCreateEvent(event: SpotOrderCreateEvent) {
@@ -27,7 +34,7 @@ export class SpotOrderListener {
     if (!isSpotOrderTypeValid(event.spotOrderType)) {
       return;
     }
-    if (!isExchangeIndexValid(event.exchange)) {
+    if (!isExchangeIndexValid(event.exchangeIndex)) {
       return;
     }
 
@@ -37,6 +44,7 @@ export class SpotOrderListener {
       // unsupported symbol
       return;
     }
+    // BTC/USDT-ERC20, baseAssetID = BTC_UUID, targetAssetID = USDT_ERC20_UUID
     const { baseAssetID, targetAssetID } = getAssetIDBySymbol(symbol);
 
     // Determine direction by spot order type
@@ -51,37 +59,32 @@ export class SpotOrderListener {
 
     // Check payment asset correctness
     if (buy && targetAssetID != event.snapshot.asset_id) {
-      // Buy BTC/USDT, pay USDT
+      // Buy BTC/USDT, pay USDT, check payment asset is USDT
       return;
     }
 
     if (!buy && baseAssetID != event.snapshot.asset_id) {
-      // Sell BTC/USDT, pay BTC
+      // Sell BTC/USDT, pay BTC, check payment asset is BTC
       return;
     }
 
-    // Check balance
-    // Use a exchange service to actively pick api key (by balance map) to check
-    if (buy) {
-      // Buy BTC/USDT
-      // Check USDT balance in exchange
-      // Check BTC balance in mixin
-    } else {
-      // Sell BTC/USDT
-      // Check BTC balance in exchange
-      // Check USDT balance in mixin
+    // Generate and write order to db
+    const timeNow = getRFC3339Timestamp();
+    const order: ExchangePlaceSpotEvent = {
+      orderId: randomUUID(),
+      exchangeIndex: event.exchangeIndex,
+      snapshotId: event.snapshot.snapshot_id,
+      type: event.spotOrderType,
+      state: '1000',
+      symbol: symbol,
+      baseAssetId: baseAssetID,
+      targetAssetId: targetAssetID,
+      amount: event.snapshot.amount,
+      createdAt: timeNow,
+      updatedAt: timeNow,
+    };
+    await this.exchangeService.createSpotOrder(order);
 
-      const balance = BigNumber(
-        await this.snapshotService.getAssetBalance('asset_id_tbd'),
-      );
-      const amountBN = BigNumber(event.snapshot.amount);
-      if (balance.isLessThan(amountBN)) {
-        return;
-      }
-    }
-
-    // 4. Generate and write order to db
-
-    // 5. Emit event to 'exchange place order' event handler
+    this.eventEmitter.emit('exchange.spot.place', { order });
   }
 }
