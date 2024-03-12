@@ -9,5 +9,8 @@
     "install:server": "npm install --prefix server"
   },
   "keywords": [],
-  "author": ""
+  "author": "",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
