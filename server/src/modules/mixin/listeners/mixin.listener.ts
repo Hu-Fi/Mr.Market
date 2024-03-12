@@ -54,6 +54,6 @@ export class MixinListener {
       amountReduced,
     );
 
-    this.exchangeService.addMixinReleaseHistory();
+    this.exchangeService.addMixinReleaseHistory(requests);
   }
 }

@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
-  let configService: ConfigService;
+  // let configService: ConfigService;
   const mockJwtSecret = 'mock_jwt_secret';
 
   beforeEach(async () => {
@@ -34,7 +34,7 @@ describe('JwtStrategy', () => {
     }).compile();
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
-    configService = module.get<ConfigService>(ConfigService);
+    // configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
