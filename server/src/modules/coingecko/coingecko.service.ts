@@ -29,7 +29,6 @@ export class CoingeckoProxyService {
   async coinsId(id: string): Promise<CoinFullInfo> {
     try {
       const cachedData = await this.cacheService.get(id);
-      console.debug('cached:', cachedData);
       if (!cachedData) {
         const data = await this.coingecko.coinId({ id });
         await this.cacheService.set(id, data, this.cachingTTL);
@@ -49,7 +48,6 @@ export class CoingeckoProxyService {
     try {
       const key = `markets/${vs_currency}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
-      console.debug('cached:', cachedData);
       if (!cachedData) {
         const data = await this.coingecko.coinMarket({
           vs_currency: vs_currency,
