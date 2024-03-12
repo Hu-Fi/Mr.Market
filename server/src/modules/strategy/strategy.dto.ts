@@ -101,16 +101,14 @@ export class PureMarketMakingStrategyDto {
   amountChangeType: 'fixed' | 'percentage';
 
   @ApiProperty({
-    description:
-      'How the amountChangePerLayer should be interpreted (fixed, percentage)',
-    example: 'percentage',
+    description: 'Ceiling Price, No orders above this price',
+    example: '0',
   })
   ceilingPrice?: number;
 
   @ApiProperty({
-    description:
-      'How the amountChangePerLayer should be interpreted (fixed, percentage)',
-    example: 'percentage',
+    description: 'Floor price, No orders below this price.',
+    example: '0',
   })
   floorPrice?: number;
 }
