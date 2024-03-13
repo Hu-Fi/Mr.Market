@@ -122,19 +122,53 @@ export class ExchangeService {
     };
   }
 
-  // async estimateSpotAmount(
-  //   exchange: string,
-  //   symbol: string,
-  //   buy: boolean,
-  //   amount: string,
-  //   limit_price?: string,
-  // ): Promise<string> {
-  //   const exchangeInstance = this.exchangeInstances[exchange];
+  async estimateSpotAmount(
+    exchange: string,
+    symbol: string,
+    buy: boolean,
+    amount: string,
+    limit_price?: string,
+  ): Promise<string> {
+    const exchangeInstance = this.exchangeInstances[exchange];
 
-  //   if (!exchangeInstance) {
-  //     throw new Error(`Exchange instance for ${exchange} not found`);
-  //   }
-  // }
+    if (!exchangeInstance) {
+      throw new Error(`Exchange instance for ${exchange} not found`);
+    }
+
+    // For limit orders, calculate based on the provided limit_price
+    if (limit_price) {
+      if (buy) {
+        // Assuming amount is in target asset for buying, finalAmount is in base asset
+        const finalAmount = new BigNumber(amount).div(limit_price).toString();
+        return finalAmount;
+      } else {
+        // Assuming amount is in base asset for selling, finalAmount is in target asset
+        const finalAmount = new BigNumber(amount)
+          .multipliedBy(limit_price)
+          .toString();
+        return finalAmount;
+      }
+    } else {
+      // For market orders, fetch the latest price as a basis for our calculation
+      // This is a simplified estimation; it doesn't account for slippage or the depth of the order book.
+      const ticker = await exchangeInstance.fetchTicker(symbol);
+      const latestPrice = new BigNumber(ticker.last);
+
+      if (buy) {
+        // For market buy, assuming amount is in target asset, estimate how much base asset we can buy
+        const estimatedBaseAmount = new BigNumber(amount)
+          .div(latestPrice)
+          .toString();
+        return estimatedBaseAmount;
+      } else {
+        // For market sell, assuming amount is in base asset, estimate how much target asset we'll receive
+        const estimatedTargetAmount = latestPrice
+          .multipliedBy(amount)
+          .toString();
+        return estimatedTargetAmount;
+      }
+    }
+  }
 
   // DB related
   async createSpotOrder(order: ExchangePlaceSpotEventDto) {
@@ -210,14 +244,19 @@ export class ExchangeService {
       return await e.createMarketSellOrder(symbol, amount);
     }
 
-    await this.updateSpotOrderState(orderId, STATE_TEXT_MAP['PLACED']);
+    await this.updateSpotOrderState(
+      orderId,
+      STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
+    );
     await this.updateSpotOrderApiKeyId(orderId, apiKeyId);
   }
 
   // Every 3 seconds
   @Cron('*/20 * * * * *')
   async placedOrderUpdater() {
-    const orders = await this.getOrderByState(STATE_TEXT_MAP['PLACED']);
+    const orders = await this.getOrderByState(
+      STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
+    );
 
     orders.forEach(async (o) => {
       const instance = this.exchangeInstances[o.exchangeIndex];
@@ -230,6 +269,7 @@ export class ExchangeService {
 
       const order = await instance.fetchOrder(o.orderId);
 
+      // TODO: All these states needs to be tested
       // Determine order state and update
       if (order.status === 'open') {
         if (order.filled === 0) {
@@ -238,17 +278,23 @@ export class ExchangeService {
         if (order.filled != order.amount) {
           await this.updateSpotOrderState(
             o.orderId,
-            STATE_TEXT_MAP['PARTIAL_FILLED'],
+            STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
           );
           return;
         }
       }
       if (order.status === 'canceled') {
-        await this.updateSpotOrderState(o.orderId, STATE_TEXT_MAP['CANCELED']);
+        await this.updateSpotOrderState(
+          o.orderId,
+          STATE_TEXT_MAP['EXCHANGE_ORDER_CANCELED'],
+        );
         return;
       }
       if (order.status === 'closed') {
-        await this.updateSpotOrderState(o.orderId, STATE_TEXT_MAP['FILLED']);
+        await this.updateSpotOrderState(
+          o.orderId,
+          STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
+        );
       }
 
       // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)

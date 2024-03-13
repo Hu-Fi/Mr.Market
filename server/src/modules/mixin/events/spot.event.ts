@@ -13,7 +13,7 @@ export class SpotOrderCreateEvent {
   exchangeIndex: ExchangeIndex;
   destId: PairsMapKey;
   limitPrice?: string;
-  refId: string;
+  refId?: string;
   snapshot: SafeSnapshot;
 }
 
@@ -29,6 +29,8 @@ export class ExchangePlaceSpotEvent {
   amount: string;
   createdAt: string;
   updatedAt: string;
+  limitPrice?: string;
+  refId?: string;
 }
 
 export class MixinReleaseTokenEvent {

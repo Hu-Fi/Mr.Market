@@ -1,12 +1,13 @@
-import { PAIRS_MAP, SYMBOL_ASSET_ID_MAP } from 'src/common/constants/pairs';
 import {
   PairsMapKey,
   PairsMapValue,
   SymbolAssetIdMapKey,
   SymbolAssetIdMapValue,
 } from 'src/common/types/pairs/pairs';
+import BigNumber from 'bignumber.js';
 import { ExchangeIndex } from 'src/common/types/memo/memo';
-import { SPOT_EXCHANGE_MAP } from '../constants/memo';
+import { SPOT_EXCHANGE_MAP } from 'src/common/constants/memo';
+import { PAIRS_MAP, SYMBOL_ASSET_ID_MAP } from 'src/common/constants/pairs';
 
 // used for generating 4 positions key mapped to trading symbol
 export const generateRandomSequence = () => {
@@ -64,4 +65,20 @@ export const getRFC3339Timestamp = () => {
   const msFromEpochWithOffset = now.getTime() - offsetMs;
   const isoString = new Date(msFromEpochWithOffset).toISOString();
   return isoString.slice(0, -1) + 'Z';
+};
+
+export const subtractFee = (
+  amount: string,
+  feePercentage: string,
+): { amount: string; fee: string } => {
+  const amountBN = new BigNumber(amount);
+  const feePercentageBN = new BigNumber(feePercentage);
+
+  const feeAmount = amountBN.multipliedBy(feePercentageBN);
+  const finalAmount = amountBN.minus(feeAmount);
+
+  return {
+    amount: finalAmount.toString(),
+    fee: feeAmount.toString(),
+  };
 };

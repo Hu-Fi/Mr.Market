@@ -21,7 +21,7 @@ export class CustomConfigRepository {
     return config.spot_fee;
   }
 
-  async modifySpotFee(configId: number = 0, newSpotFee: string) {
+  async modifySpotFee(newSpotFee: string, configId: number = 0) {
     const config = await this.customRepository.findOne({
       where: { config_id: configId },
     });
@@ -34,8 +34,8 @@ export class CustomConfigRepository {
   }
 
   async modifyMaxBalanceInMixinBot(
-    configId: number = 0,
     newMaxBalance: string,
+    configId: number = 0,
   ) {
     const config = await this.customRepository.findOne({
       where: { config_id: configId },
@@ -48,7 +48,7 @@ export class CustomConfigRepository {
     await this.customRepository.save(config);
   }
 
-  async modifyMaxBalanceInAPIKey(configId: number = 0, newMaxBalance: string) {
+  async modifyMaxBalanceInAPIKey(newMaxBalance: string, configId: number = 0) {
     const config = await this.customRepository.findOne({
       where: { config_id: configId },
     });

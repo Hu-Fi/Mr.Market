@@ -16,5 +16,5 @@ export interface MemoDetails {
   exchangeIndex: ExchangeIndex;
   destId: PairsMapKey;
   limitPrice?: string;
-  refId: string;
+  refId?: string;
 }

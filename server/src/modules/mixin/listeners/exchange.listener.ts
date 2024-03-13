@@ -47,9 +47,15 @@ export class ExchangeListener {
       );
       return;
     }
-
+    const orderTypeLimit = event.type.endsWith('L');
     const checkAssetId = orderTypeBuy ? event.baseAssetId : event.targetAssetId;
-    const estimateReceiveAmount = '!!! TODO !!! FETCH FROM EXCHANGE !!! ';
+    const estimateReceiveAmount = await this.exchangeService.estimateSpotAmount(
+      exchangeName,
+      event.symbol,
+      orderTypeBuy,
+      event.amount,
+      orderTypeLimit ? event.limitPrice : undefined,
+    );
     if (
       !(await this.snapshotService.checkMixinBalanceEnough(
         checkAssetId,
@@ -63,7 +69,6 @@ export class ExchangeListener {
       return;
     }
 
-    const orderTypeLimit = event.type.endsWith('L');
     // Place order
     await this.exchangeService.placeOrder(
       event.orderId,

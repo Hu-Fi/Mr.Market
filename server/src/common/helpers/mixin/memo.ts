@@ -12,6 +12,9 @@ import {
 import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
 export const decodeSpotMemo = (memo: string): MemoDetails => {
+  // Decode base64
+  memo = Buffer.from(memo, 'base64').toString('utf-8');
+
   // Split memo string into parts
   const parts = memo.split(':');
   const [
@@ -29,7 +32,7 @@ export const decodeSpotMemo = (memo: string): MemoDetails => {
     exchangeIndex: SPOT_EXCHANGE_MAP[exchange] as ExchangeIndex,
     destId: destId as PairsMapKey,
     limitPrice: parts.length === 6 ? limitPriceOrRefId : undefined,
-    refId: parts.length === 6 ? refId : limitPriceOrRefId,
+    refId: parts.length === 6 ? refId : undefined,
   };
 };
 

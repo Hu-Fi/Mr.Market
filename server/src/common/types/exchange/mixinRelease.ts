@@ -14,4 +14,5 @@ export type MixinReleaseHistory = {
   orderId: string; // UUID
   snapshot: SafeSnapshot; // Mixin snapshot
   createdAt: string; // timestamp
+  fee: string; // Fee made
 };
