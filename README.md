@@ -32,31 +32,57 @@ The frontend user interface for Mr.market on Mixin.
 
 ### Prerequisites
 
-Install dependencies with yarn
+Install dependencies for interface and server
 
 ```
-npm install
+npm run install:all
+```
+
+Install dependencies for interface
+
+```
+npm run install:interface
+```
+
+Install dependencies for server
+
+```
+npm run install:server
+```
+
+### Modify environment variables
+
+For backend:
+```
+Move /server/.env.example to /server/.env, and modify it
+```
+For interface:
+```
+Move /interface/.env.example to /interface/.env, and modify it
 ```
 
 ### Run development server
 
+Run development server for interface and backend
 ```
-npm run dev
-```
-
-If you're using bun:
-
-```
-bun dev
+npm run start
 ```
 
+Run development server for interface
+```
+npm run start:interface
+```
+
+Run development server for backend 
+```
+npm run start:server
+```
 ## Tests
 
-### Install dependencies
+### Install dependencies for interface
 
 ```
-npx playwright install-deps
-npx playwright install msedge
+npm run test:install-deps
 ```
 
 ### Running tests
@@ -74,37 +100,8 @@ npm run test:e2e
 
 ## Built With
 
-* [Svelte](https://svelte.dev/) - Web framework
+* [SvelteKit](https://kit.svelte.dev/) - Web framework
 * [Daisy UI](https://daisyui.com/) - UI framework
-
----
-
-The backend server for Mr.market.
-
-## Getting Started
-
-### Prerequisites
-
-Install dependencies with yarn
-
-```
-yarn
-```
-
-### Run development server
-
-```
-yarn start
-```
-
-## Tests
-
-```
-yarn test
-```
-
-## Built With
-
 * [Nest.js](https://nestjs.com/) - Backend API framework
 
 ## Contributing
@@ -114,8 +111,3 @@ Please read [CONTRIBUTING.md]() for details on our code of conduct, and the proc
 ## License
 
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details
-
-
-# License
-
-This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](LICENSE) file for details
