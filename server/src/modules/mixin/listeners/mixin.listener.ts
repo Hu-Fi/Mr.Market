@@ -74,7 +74,7 @@ export class MixinListener {
 
     await this.exchangeService.addMixinReleaseHistory({
       orderId: e.orderId,
-      snapshot: requests[0],
+      transaction: requests[0],
       createdAt: getRFC3339Timestamp(),
       fee,
     });

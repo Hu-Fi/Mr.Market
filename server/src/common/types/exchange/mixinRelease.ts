@@ -1,4 +1,4 @@
-import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
+import { type SequencerTransactionRequest } from '@mixin.dev/mixin-node-sdk';
 
 export type MixinReleaseToken = {
   orderId: string; // UUID
@@ -12,7 +12,7 @@ export type MixinReleaseToken = {
 
 export type MixinReleaseHistory = {
   orderId: string; // UUID
-  snapshot: SafeSnapshot; // Mixin snapshot
+  transaction: SequencerTransactionRequest; // Mixin snapshot ID
   createdAt: string; // timestamp
   fee: string; // Fee made
 };

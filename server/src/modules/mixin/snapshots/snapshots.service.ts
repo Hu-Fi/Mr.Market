@@ -108,6 +108,7 @@ export class SnapshotsService {
       })),
     );
     const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
+    // @ts-expect-error type
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -119,6 +120,7 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
+      // @ts-expect-error type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -159,7 +161,7 @@ export class SnapshotsService {
     amount: string,
   ): Promise<boolean> {
     try {
-      const balance = this.getAssetBalance(asset_id);
+      const balance = await this.getAssetBalance(asset_id);
       if (BigNumber(balance).isLessThan(amount)) {
         return false;
       }
