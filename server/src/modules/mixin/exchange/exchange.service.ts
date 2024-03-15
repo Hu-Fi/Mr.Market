@@ -3,9 +3,8 @@ import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  getExchangeNameByIndex,
   getRFC3339Timestamp,
   getSymbolByAssetID,
 } from 'src/common/helpers/utils';

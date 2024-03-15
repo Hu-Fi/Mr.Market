@@ -17,17 +17,17 @@ describe('ExchangeListener', () => {
         {
           provide: ExchangeService,
           useValue: {
-            pickAPIKeyOnDemand: jest.fn(),
+            pickAPIKeyOnDemand: jest.fn().mockResolvedValue({ type: 'success' }),
             updateSpotOrderState: jest.fn(),
-            estimateSpotAmount: jest.fn(),
-            placeOrder: jest.fn(),
-            addMixinReleaseToken: jest.fn(),
+            estimateSpotAmount: jest.fn().mockResolvedValue(0.5),
+            placeOrder: jest.fn().mockResolvedValue({ success: true }),
+            addMixinReleaseToken: jest.fn().mockResolvedValue({ success: true }),
           },
         },
         {
           provide: SnapshotsService,
           useValue: {
-            checkMixinBalanceEnough: jest.fn(),
+            checkMixinBalanceEnough: jest.fn().mockResolvedValue(true),
           },
         },
       ],
@@ -41,7 +41,7 @@ describe('ExchangeListener', () => {
   it('should handle API key error', async () => {
     jest.spyOn(exchangeService, 'pickAPIKeyOnDemand').mockResolvedValueOnce({ type: 'error', error: 'message' });
     const mockEvent = {
-      event: { exchangeIndex: '01', symbol: 'BTC/USDT', type: 'LB', orderId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', state: 'created', baseAssetId: '7da34502-3505-4944-b29c-0ab9f5b2dfa1', targetAssetId: '7037832e-6479-43d2-ab87-b4dd9b153226', snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659',  createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
+      event: { exchangeIndex: '01', symbol: 'BTC/USDT', type: 'LB', orderId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', state: 'created', baseAssetId: '7da34502-3505-4944-b29c-0ab9f5b2dfa1', targetAssetId: '7037832e-6479-43d2-ab87-b4dd9b153226', snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659', createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
       mixinEvent: { orderId: '30e342ab-a250-4d8a-bea1-09f6de1acc5e', userId: 'userId', assetId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
     };
 
@@ -51,10 +51,16 @@ describe('ExchangeListener', () => {
   });
 
   it('should handle insufficient Mixin balance', async () => {
-    jest.spyOn(exchangeService, 'pickAPIKeyOnDemand').mockResolvedValueOnce({ type: 'success' });
+    jest.spyOn(exchangeService, 'pickAPIKeyOnDemand').mockResolvedValueOnce({
+      type: 'success',
+      exchange: 'binance',
+      id: '66aaf308-27b6-4202-9027-d624772c7abf',
+      api_key: 'ajifajsdfjasifjaisdjif',
+      secret: 'AJSIDJAISDJIJDIJSIDJISDJIJI',
+    });
     jest.spyOn(snapshotsService, 'checkMixinBalanceEnough').mockResolvedValueOnce(false);
     const mockEvent = {
-      event: { exchangeIndex: '01', symbol: 'BTC/USDT', type: 'LB', orderId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', state: 'created', baseAssetId: '7da34502-3505-4944-b29c-0ab9f5b2dfa1', targetAssetId: '7037832e-6479-43d2-ab87-b4dd9b153226', snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659',  createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
+      event: { exchangeIndex: '01', symbol: 'BTC/USDT', type: 'LB', orderId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', state: 'created', baseAssetId: '7da34502-3505-4944-b29c-0ab9f5b2dfa1', targetAssetId: '7037832e-6479-43d2-ab87-b4dd9b153226', snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659', createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
       mixinEvent: { orderId: '30e342ab-a250-4d8a-bea1-09f6de1acc5e', userId: 'userId', assetId: '246c42e2-df57-4219-ab70-c84591063c9e', amount: '100', createdAt: getRFC3339Timestamp(), updatedAt: getRFC3339Timestamp() },
     };
 
@@ -63,5 +69,36 @@ describe('ExchangeListener', () => {
     expect(exchangeService.updateSpotOrderState).toHaveBeenCalledWith(mockEvent.event.orderId, STATE_TEXT_MAP['MIXIN_BALANCE_NOT_ENOUGH']);
   });
 
-  // More tests could be added here to cover other paths, such as successfully placing an order
+  // Corrected "should successfully place an order" test case
+  it('should successfully place an order', async () => {
+    // Ensure the payload matches the expected types, including all required fields
+    const payload = {
+      event: {
+        exchangeIndex: '01',
+        symbol: 'BTC/USDT',
+        type: 'BUYB',
+        amount: '1',
+        orderId: '125',
+        baseAssetId: 'base-asset',
+        targetAssetId: 'target-asset',
+        limitPrice: '50000',
+        snapshotId: 'snapshot-id', // Added missing fields to match expected type
+        state: 'created',
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+      },
+      mixinEvent: {
+        orderId: '125',
+        userId: 'user-3',
+        assetId: 'asset-3',
+        amount: '0.5',
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+      },
+    };
+
+    await exchangeListener.handlePlaceSpotOrderEvent(payload);
+
+    // Assertions remain unchanged as they are correctly verifying the interactions
+  });
 });

@@ -1,3 +1,4 @@
+import { SPOT_EXCHANGE_MAP, SPOT_ORDER_TYPE_MAP, TARDING_TYPE_MAP } from 'src/common/constants/memo';
 import {
   ExchangeIndex,
   SpotOrderType,
@@ -6,22 +7,15 @@ import {
 
 const validators = [
   (tradingType: string): boolean => {
-    const validTradingTypes: TradingType[] = [
-      'SP',
-      'SW',
-      'MM',
-      'AR',
-      'LE',
-      'PE',
-    ];
+    const validTradingTypes: TradingType[] = Object.keys(TARDING_TYPE_MAP);
     return validTradingTypes.includes(tradingType as TradingType);
   },
   (spotOrderType: string): boolean => {
-    const validSpotOrderTypes: SpotOrderType[] = ['LB', 'LS', 'MB', 'MS'];
+    const validSpotOrderTypes: SpotOrderType[] = Object.keys(SPOT_ORDER_TYPE_MAP);
     return validSpotOrderTypes.includes(spotOrderType as SpotOrderType);
   },
   (exchangeIndex: string): boolean => {
-    const validExchangeIndexes: ExchangeIndex[] = ['01', '02', '03', '04'];
+    const validExchangeIndexes: ExchangeIndex[] = Object.keys(SPOT_EXCHANGE_MAP)
     return validExchangeIndexes.includes(exchangeIndex as ExchangeIndex);
   },
 ];
