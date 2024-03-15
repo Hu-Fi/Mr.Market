@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   MixinApi,
@@ -18,6 +18,7 @@ import {
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
 import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
@@ -27,7 +28,7 @@ export class SnapshotsService {
   private events: EventEmitter2;
   private keystore: Keystore;
   private client: KeystoreClientReturnType;
-  private readonly logger = new Logger(SnapshotsService.name);
+  private readonly logger = new CustomLogger(SnapshotsService.name);
 
   constructor(
     private configService: ConfigService,
@@ -54,10 +55,11 @@ export class SnapshotsService {
     try {
       const snapshots = await this.client.safe.fetchSafeSnapshots({});
       if (!snapshots) {
+        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`)
         return;
       }
-      snapshots.forEach((snapshot: SafeSnapshot) => {
-        this.handleSnapshot(snapshot);
+      snapshots.forEach(async (snapshot: SafeSnapshot) => {
+        await this.handleSnapshot(snapshot);
       });
       return snapshots;
     } catch (error) {
@@ -200,11 +202,10 @@ export class SnapshotsService {
         await this.refund(snapshot);
         break;
     }
-    this.snapshotsRepository.createSnapshot(snapshot);
+    await this.snapshotsRepository.createSnapshot(snapshot);
   }
 
-  // Every 5 seconds
-  @Cron('*/12 * * * * *')
+  @Cron('*/5 * * * * *') // Every 5 seconds
   async handleSnapshots(): Promise<void> {
     await this.fetchAndProcessSnapshots();
   }

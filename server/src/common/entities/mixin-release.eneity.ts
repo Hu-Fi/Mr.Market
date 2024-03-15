@@ -31,8 +31,11 @@ export class MixinReleaseHistory {
   orderId: string; // UUID
 
   @Column()
-  snapshot: SafeSnapshot; // Mixin snapshot
+  snapshotId: string; // Mixin snapshot ID
 
   @Column()
   createdAt: string; // timestamp
+  
+  @Column()
+  fee: string;
 }

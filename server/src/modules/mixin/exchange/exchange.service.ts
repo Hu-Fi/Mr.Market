@@ -3,9 +3,9 @@ import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import {
+  getExchangeNameByIndex,
   getRFC3339Timestamp,
   getSymbolByAssetID,
 } from 'src/common/helpers/utils';
@@ -23,24 +23,26 @@ import {
   MixinReleaseHistory,
   MixinReleaseToken,
 } from 'src/common/types/exchange/mixinRelease';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class ExchangeService {
   private exchangeInstances: { [key: string]: ccxt.Exchange } = {};
+  private readonly logger = new CustomLogger(ExchangeService.name);
 
   constructor(
-    @InjectRepository(ExchangeRepository)
     private exchangeRepository: ExchangeRepository,
     private eventEmitter: EventEmitter2,
-  ) {}
-
-  async onModuleInit() {
-    await this.loadAPIKeys();
+  ) {
+    this.loadAPIKeys();
   }
 
   private async loadAPIKeys() {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
-
+    if (apiKeys.length === 0) {
+      this.logger.error('No API Keys loaded');
+      return;
+    }
     for (const key of apiKeys) {
       const keyId = key.key_id;
       const exchangeName = key.exchange;
@@ -56,7 +58,7 @@ export class ExchangeService {
     }
   }
 
-  private async getBalance(
+  async getBalance(
     exchange: string,
     apiKey: string,
     apiSecret: string,
@@ -251,12 +253,15 @@ export class ExchangeService {
     await this.updateSpotOrderApiKeyId(orderId, apiKeyId);
   }
 
-  // Every 3 seconds
-  @Cron('*/20 * * * * *')
+  @Cron('*/3 * * * * *') // Every 3 seconds
   async placedOrderUpdater() {
     const orders = await this.getOrderByState(
       STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
     );
+
+    if (orders.length === 0) {
+      return;
+    }
 
     orders.forEach(async (o) => {
       const instance = this.exchangeInstances[o.exchangeIndex];
@@ -296,6 +301,8 @@ export class ExchangeService {
           STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
         );
       }
+
+      // TODO: add a final amount field to order and store in db. Use this value when release token
 
       // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
       const releaseOrder = await this.readMixinReleaseToken(o.orderId);

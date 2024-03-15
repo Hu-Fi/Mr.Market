@@ -1,5 +1,3 @@
-import { type SequencerTransactionRequest } from '@mixin.dev/mixin-node-sdk';
-
 export type MixinReleaseToken = {
   orderId: string; // UUID
   userId: string; // User UUID
@@ -12,7 +10,7 @@ export type MixinReleaseToken = {
 
 export type MixinReleaseHistory = {
   orderId: string; // UUID
-  transaction: SequencerTransactionRequest; // Mixin snapshot ID
+  snapshotId: string; // Mixin snapshot ID
   createdAt: string; // timestamp
   fee: string; // Fee made
 };

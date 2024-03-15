@@ -1,12 +1,15 @@
 // exchange.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExchangeService } from './exchange.service';
-import { ExchangeRepository } from './exchange.repository';
+import { SpotOrder } from 'src/common/entities/spot-order.entity';
+import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
+import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
+import { MixinReleaseHistory, MixinReleaseToken } from 'src/common/entities/mixin-release.eneity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ExchangeRepository])],
-  providers: [ExchangeService],
-  exports: [ExchangeService],
+  imports: [TypeOrmModule.forFeature([APIKeysConfig, SpotOrder, MixinReleaseToken, MixinReleaseHistory])],
+  providers: [ExchangeService, ExchangeRepository],
+  exports: [ExchangeService, ExchangeRepository],
 })
 export class ExchangeModule {}

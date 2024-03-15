@@ -1,13 +1,13 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomConfig } from 'src/common/entities/custom-config.entity';
+import { CustomConfigEntity } from 'src/common/entities/custom-config.entity';
 
 @Injectable()
 export class CustomConfigRepository {
   constructor(
-    @InjectRepository(CustomConfig)
-    private readonly customRepository: Repository<CustomConfig>,
+    @InjectRepository(CustomConfigEntity)
+    private readonly customRepository: Repository<CustomConfigEntity>,
   ) {}
 
   async readSpotFee(configId: number = 0) {

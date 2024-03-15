@@ -9,22 +9,29 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { TradeModule } from './modules/trade/trade.module';
-import { Transaction } from './common/entities/transaction.entity';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
-
-import { Trade } from './common/entities/trade.entity';
 import { PerformanceModule } from './modules/performance/performance.module';
+
 // import { TransactionsModule } from './modules/transactions/transactions.module';
-import { UserBalance } from './common/entities/user-balance.entity';
-import { Performance } from './common/entities/performance.entity';
+import configuration from './config/configuration';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
-import configuration from './config/configuration';
 import { LoggerModule } from './modules/logger/logger.module';
 import { CustomLogger } from './modules/logger/logger.service';
 import { MixinModule } from './modules/mixin/mixin.module';
 import { AdminController } from './modules/admin/admin.controller';
+import { EventListenersModule } from './modules/mixin/listeners/events.module';
+
+import { Trade } from './common/entities/trade.entity';
+import { Transaction } from './common/entities/transaction.entity';
+import { UserBalance } from './common/entities/user-balance.entity';
+import { Performance } from './common/entities/performance.entity';
+import { Snapshot } from './common/entities/snapshots.entity';
+import { SpotOrder } from './common/entities/spot-order.entity';
+import { APIKeysConfig } from './common/entities/api-keys.entity';
+import { CustomConfigEntity } from './common/entities/custom-config.entity';
+import { MixinReleaseToken, MixinReleaseHistory } from './common/entities/mixin-release.eneity';
 dotenv.config();
 
 @Module({
@@ -47,19 +54,20 @@ dotenv.config();
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [Trade, Performance, Transaction, UserBalance],
+      entities: [Trade, Performance, Transaction, UserBalance, Snapshot, SpotOrder, APIKeysConfig, CustomConfigEntity, MixinReleaseToken, MixinReleaseHistory],
       synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),
     TradeModule,
     StrategyModule,
-    MarketdataModule,
     PerformanceModule,
-    // TransactionsModule
+    MarketdataModule,
+    // TransactionsModule,
     CoingeckoModule,
     HealthModule,
     MixinModule,
+    EventListenersModule,
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger, AppService],

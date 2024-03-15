@@ -32,57 +32,31 @@ The frontend user interface for Mr.market on Mixin.
 
 ### Prerequisites
 
-Install dependencies for interface and server
+Install dependencies with yarn
 
 ```
-npm run install:all
-```
-
-Install dependencies for interface
-
-```
-npm run install:interface
-```
-
-Install dependencies for server
-
-```
-npm run install:server
-```
-
-### Modify environment variables
-
-For backend:
-```
-Move /server/.env.example to /server/.env, and modify it
-```
-For interface:
-```
-Move /interface/.env.example to /interface/.env, and modify it
+npm install
 ```
 
 ### Run development server
 
-Run development server for interface and backend
 ```
-npm run start
-```
-
-Run development server for interface
-```
-npm run start:interface
+npm run dev
 ```
 
-Run development server for backend 
+If you're using bun:
+
 ```
-npm run start:server
+bun dev
 ```
+
 ## Tests
 
-### Install dependencies for interface
+### Install dependencies
 
 ```
-npm run test:install-deps
+npx playwright install-deps
+npx playwright install msedge
 ```
 
 ### Running tests
@@ -100,8 +74,37 @@ npm run test:e2e
 
 ## Built With
 
-* [SvelteKit](https://kit.svelte.dev/) - Web framework
+* [Svelte](https://svelte.dev/) - Web framework
 * [Daisy UI](https://daisyui.com/) - UI framework
+
+---
+
+The backend server for Mr.market.
+
+## Getting Started
+
+### Prerequisites
+
+Install dependencies with yarn
+
+```
+yarn
+```
+
+### Run development server
+
+```
+yarn start
+```
+
+## Tests
+
+```
+yarn test
+```
+
+## Built With
+
 * [Nest.js](https://nestjs.com/) - Backend API framework
 
 ## Contributing

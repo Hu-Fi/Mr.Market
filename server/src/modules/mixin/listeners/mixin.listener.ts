@@ -6,14 +6,14 @@ import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+// import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
 
 @Injectable()
 export class MixinListener {
   constructor(
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
-    private configService: CustomConfigService,
+    // private configService: CustomConfigService,
   ) {}
 
   @OnEvent('mixin.release')
@@ -45,7 +45,9 @@ export class MixinListener {
     }
 
     // Sub the trading fees
-    const feePercentage = await this.configService.readSpotFee();
+    // const feePercentage = await this.configService.readSpotFee();
+    // TODO: FIX CUSTOMCONFIG MODULE BUG
+    const feePercentage = '0.02';
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
     // If released, return
@@ -74,7 +76,7 @@ export class MixinListener {
 
     await this.exchangeService.addMixinReleaseHistory({
       orderId: e.orderId,
-      transaction: requests[0],
+      snapshotId: requests[0].snapshot_id,
       createdAt: getRFC3339Timestamp(),
       fee,
     });

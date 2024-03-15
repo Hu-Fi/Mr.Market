@@ -11,7 +11,7 @@ export class Snapshot {
   @Column()
   asset_id: string;
 
-  @Column('decimal', { precision: 8, scale: 18 })
+  @Column()
   amount: string;
 
   @Column()
@@ -29,15 +29,15 @@ export class Snapshot {
   @Column()
   created_at: string;
 
-  @Column({ nullable: true })
+  @Column()
   trace_id: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column()
   confirmations: number;
 
-  @Column('decimal', { precision: 8, scale: 18, nullable: true })
+  @Column()
   opening_balance: string;
 
-  @Column('decimal', { precision: 8, scale: 18, nullable: true })
+  @Column()
   closing_balance: string;
 }

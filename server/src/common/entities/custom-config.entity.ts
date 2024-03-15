@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class CustomConfig {
+export class CustomConfigEntity {
   @PrimaryGeneratedColumn()
   config_id: number; // The index config, 0 by default
 
