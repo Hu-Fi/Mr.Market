@@ -1,4 +1,4 @@
-This is highly alpha code. Do not use it or you will lose all your money
+This is highly alpha code. Do not use it or you will lose all your money. We'd like to thank little creatures as being the first company testing Mr. Market and helping with QA.
 
 ![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg) 
 ![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
