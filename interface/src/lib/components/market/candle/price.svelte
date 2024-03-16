@@ -11,8 +11,8 @@
   } from "$lib/helpers/utils";
 
   $: ss = [
-    { title: $_("24h_high"), value: $CandlePair.info?.high},
-    { title: $_("24h_low"), value: $CandlePair.info?.low},
+    { title: $_("24h_high"), value: $CandlePair.info?.high },
+    { title: $_("24h_low"), value: $CandlePair.info?.low },
     {
       title: $_("24h_vol", {
         values: { coin: $CandlePair.symbol.split("/")[0] },
