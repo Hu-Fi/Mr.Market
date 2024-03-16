@@ -200,8 +200,8 @@ export class ExchangeService {
     return await this.exchangeRepository.readOrderByID(orderId);
   }
 
-  async readOrderByState(state: SpotOrderStatus): Promise<SpotOrder> {
-    return await this.exchangeRepository.readOrderByState(state);
+  async readOrdersByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
+    return await this.exchangeRepository.readOrdersByState(state);
   }
 
   async addMixinReleaseToken(data: MixinReleaseToken) {
@@ -259,7 +259,7 @@ export class ExchangeService {
 
   @Cron('*/3 * * * * *') // Every 3 seconds
   async placedOrderUpdater() {
-    const orders = await this.readOrderByState(
+    const orders = await this.readOrdersByState(
       STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
     );
 

@@ -50,8 +50,8 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.findOne({ where: { orderId } });
   }
 
-  async readOrderByState(state: SpotOrderStatus): Promise<SpotOrder> {
-    return await this.spotOrderRepository.findOne({ where: { state } });
+  async readOrdersByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
+    return await this.spotOrderRepository.find({ where: { state } });
   }
 
   async createSpotOrder(
