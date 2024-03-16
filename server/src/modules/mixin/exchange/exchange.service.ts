@@ -23,6 +23,7 @@ import {
   MixinReleaseToken,
 } from 'src/common/types/exchange/mixinRelease';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { SpotOrder } from 'src/common/entities/spot-order.entity';
 
 @Injectable()
 export class ExchangeService {
@@ -195,8 +196,12 @@ export class ExchangeService {
     );
   }
 
-  async getOrderByState(state: SpotOrderStatus) {
-    return await this.exchangeRepository.getOrderByState(state);
+  async readOrderById(orderId: string): Promise<SpotOrder> {
+    return await this.exchangeRepository.readOrderByID(orderId);
+  }
+
+  async readOrderByState(state: SpotOrderStatus): Promise<SpotOrder> {
+    return await this.exchangeRepository.readOrderByState(state);
   }
 
   async addMixinReleaseToken(data: MixinReleaseToken) {
@@ -254,7 +259,7 @@ export class ExchangeService {
 
   @Cron('*/3 * * * * *') // Every 3 seconds
   async placedOrderUpdater() {
-    const orders = await this.getOrderByState(
+    const orders = await this.readOrderByState(
       STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
     );
 
