@@ -9,10 +9,6 @@
       goto('/grow/market_making/new/easy/one')
       return;
     }
-    if ($page.url.pathname.includes('/grow/market_making/new/easy/one')) {
-      goto('/grow/market_making/new')
-      return;
-    }
     goto('/grow/market_making/')
   }
 </script>
