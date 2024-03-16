@@ -55,7 +55,7 @@ export class SnapshotsService {
     try {
       const snapshots = await this.client.safe.fetchSafeSnapshots({});
       if (!snapshots) {
-        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`)
+        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
         return;
       }
       snapshots.forEach(async (snapshot: SafeSnapshot) => {

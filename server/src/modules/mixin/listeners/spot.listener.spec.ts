@@ -1,11 +1,19 @@
 import { Test } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { getAssetIDBySymbol, getPairSymbolByKey, getRFC3339Timestamp } from 'src/common/helpers/utils';
+import {
+  getAssetIDBySymbol,
+  getPairSymbolByKey,
+  getRFC3339Timestamp,
+} from 'src/common/helpers/utils';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SpotOrderListener } from 'src/modules/mixin/listeners/spot.listener';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { PAIRS_MAP } from 'src/common/constants/pairs';
-import { isExchangeIndexValid, isSpotOrderTypeValid, isTradingTypeValid } from 'src/common/helpers/checks/spotChecks';
+import {
+  isExchangeIndexValid,
+  isSpotOrderTypeValid,
+  isTradingTypeValid,
+} from 'src/common/helpers/checks/spotChecks';
 
 jest.mock('src/modules/mixin/exchange/exchange.service', () => ({
   ExchangeService: jest.fn().mockImplementation(() => ({
@@ -16,7 +24,10 @@ jest.mock('src/modules/mixin/exchange/exchange.service', () => ({
 jest.mock('src/common/helpers/utils', () => ({
   ...jest.requireActual('src/common/helpers/utils'),
   getPairSymbolByKey: jest.fn().mockReturnValue('BTC/USDT-ERC20'),
-  getAssetIDBySymbol: jest.fn().mockReturnValue({ baseAssetID: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa', targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5' }),
+  getAssetIDBySymbol: jest.fn().mockReturnValue({
+    baseAssetID: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+    targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+  }),
 }));
 
 describe('SpotOrderListener', () => {
@@ -26,11 +37,7 @@ describe('SpotOrderListener', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        SpotOrderListener,
-        ExchangeService,
-        EventEmitter2,
-      ],
+      providers: [SpotOrderListener, ExchangeService, EventEmitter2],
     }).compile();
 
     listener = moduleRef.get<SpotOrderListener>(SpotOrderListener);
@@ -68,10 +75,14 @@ describe('SpotOrderListener', () => {
       limitPrice: '50000',
       refId: 'm.23123',
     };
-  
-    jest.spyOn(exchangeService, 'createSpotOrder').mockResolvedValueOnce(undefined);
-    jest.spyOn(eventEmitter, 'emit').mockImplementationOnce(() => {return true});
-  
+
+    jest
+      .spyOn(exchangeService, 'createSpotOrder')
+      .mockResolvedValueOnce(undefined);
+    jest.spyOn(eventEmitter, 'emit').mockImplementationOnce(() => {
+      return true;
+    });
+
     await listener.handleSpotOrderCreateEvent(mockEvent);
 
     expect(isTradingTypeValid(mockEvent.tradingType)).toBe(true);
@@ -82,7 +93,11 @@ describe('SpotOrderListener', () => {
     const { baseAssetID, targetAssetID } = getAssetIDBySymbol(symbol);
     expect(baseAssetID).toBeDefined();
     expect(targetAssetID).toBeDefined();
-    const buy = mockEvent.spotOrderType.endsWith('B') ? true : mockEvent.spotOrderType.endsWith('S') ? false : undefined;
+    const buy = mockEvent.spotOrderType.endsWith('B')
+      ? true
+      : mockEvent.spotOrderType.endsWith('S')
+      ? false
+      : undefined;
     expect(buy).toBeDefined();
     expect(buy && targetAssetID === mockEvent.snapshot.asset_id).toBeTruthy();
     expect(buy && baseAssetID != mockEvent.snapshot.asset_id).toBeTruthy();

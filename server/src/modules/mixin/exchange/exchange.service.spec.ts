@@ -2,13 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExchangeService } from './exchange.service';
 import { ExchangeRepository } from './exchange.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import * as ccxt from 'ccxt';
 
 jest.mock('ccxt');
 
 const mockExchangeRepository = () => ({
   readAllAPIKeys: jest.fn(),
-  // Implement other mock repository methods as needed
 });
 
 const mockEventEmitter2 = () => ({
@@ -49,11 +47,10 @@ describe('ExchangeService', () => {
           api_key: 'api_key_1',
           api_secret: 'api_secret_1',
         },
-        // Add more keys as needed for your tests
       ];
       exchangeRepository.readAllAPIKeys.mockResolvedValue(mockApiKeys);
 
-      await service.onModuleInit(); // Assuming loadAPIKeys is called here
+      await service.onModuleInit();
 
       expect(exchangeRepository.readAllAPIKeys).toHaveBeenCalled();
       // Add more assertions to validate the initialization of exchange instances if necessary

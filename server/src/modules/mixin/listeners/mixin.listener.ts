@@ -45,9 +45,7 @@ export class MixinListener {
     }
 
     // Sub the trading fees
-    // const feePercentage = await this.configService.readSpotFee();
-    // TODO: FIX CUSTOMCONFIG MODULE BUG
-    const feePercentage = '0.02';
+    const feePercentage = await this.configService.readSpotFee();
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
     // If released, return
@@ -60,6 +58,14 @@ export class MixinListener {
       e.assetId,
       amountReduced,
     );
+
+    if (!requests) {
+      await this.exchangeService.updateSpotOrderState(
+        e.orderId,
+        STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
+      );
+      return;
+    }
 
     if (requests.length === 0) {
       await this.exchangeService.updateSpotOrderState(

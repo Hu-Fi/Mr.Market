@@ -63,7 +63,9 @@ describe('CustomConfigService', () => {
 
       await service.modifyMaxBalanceInMixinBot(newMaxBalance);
 
-      expect(mockRepository.modifyMaxBalanceInMixinBot).toHaveBeenCalledWith(newMaxBalance);
+      expect(mockRepository.modifyMaxBalanceInMixinBot).toHaveBeenCalledWith(
+        newMaxBalance,
+      );
     });
   });
 
@@ -74,7 +76,9 @@ describe('CustomConfigService', () => {
 
       await service.modifyMaxBalanceInAPIKey(newMaxBalance);
 
-      expect(mockRepository.modifyMaxBalanceInAPIKey).toHaveBeenCalledWith(newMaxBalance);
+      expect(mockRepository.modifyMaxBalanceInAPIKey).toHaveBeenCalledWith(
+        newMaxBalance,
+      );
     });
   });
 

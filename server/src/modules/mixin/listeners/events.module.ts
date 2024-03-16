@@ -8,7 +8,7 @@ import { SnapshotsModule } from '../snapshots/snapshots.module';
 import { CustomConfigModule } from 'src/modules/customConfig/customConfig.module';
 
 @Module({
-  imports: [ ExchangeModule, SnapshotsModule, CustomConfigModule ],
+  imports: [ExchangeModule, SnapshotsModule, CustomConfigModule],
   providers: [
     ExchangeListener,
     MixinListener,

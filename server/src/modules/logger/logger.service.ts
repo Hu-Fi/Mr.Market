@@ -41,7 +41,7 @@ export class CustomLogger extends Logger {
       this.logger.info(message, { context }); // winston log into file
       return;
     }
-    super.log(message); 
+    super.log(message);
     this.logger.info(message);
   }
 
@@ -51,12 +51,12 @@ export class CustomLogger extends Logger {
   }
 
   // Implement warn, debug, verbose similarly...
-  debug(message:any, context?: string) {
+  debug(message: any, context?: string) {
     if (context) {
       super.debug(message, context); // NestJS's internal logging
       return;
     }
-    super.debug(message);  
+    super.debug(message);
   }
 
   onModuleInit() {

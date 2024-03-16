@@ -1,5 +1,4 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
-import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 
 @Entity()
 export class MixinReleaseToken {
@@ -35,7 +34,7 @@ export class MixinReleaseHistory {
 
   @Column()
   createdAt: string; // timestamp
-  
+
   @Column()
   fee: string;
 }

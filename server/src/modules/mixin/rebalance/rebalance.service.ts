@@ -10,7 +10,6 @@ export class RebalanceService {
   @Cron('* * * * *')
   async CheckRebalance() {
     // Check balance in mixin
-
     // Check balance in api keys
   }
 }

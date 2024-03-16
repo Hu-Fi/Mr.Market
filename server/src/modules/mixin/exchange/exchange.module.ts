@@ -5,10 +5,20 @@ import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
-import { MixinReleaseHistory, MixinReleaseToken } from 'src/common/entities/mixin-release.eneity';
+import {
+  MixinReleaseHistory,
+  MixinReleaseToken,
+} from 'src/common/entities/mixin-release.eneity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([APIKeysConfig, SpotOrder, MixinReleaseToken, MixinReleaseHistory])],
+  imports: [
+    TypeOrmModule.forFeature([
+      APIKeysConfig,
+      SpotOrder,
+      MixinReleaseToken,
+      MixinReleaseHistory,
+    ]),
+  ],
   providers: [ExchangeService, ExchangeRepository],
   exports: [ExchangeService, ExchangeRepository],
 })

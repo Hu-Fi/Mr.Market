@@ -31,7 +31,10 @@ import { Snapshot } from './common/entities/snapshots.entity';
 import { SpotOrder } from './common/entities/spot-order.entity';
 import { APIKeysConfig } from './common/entities/api-keys.entity';
 import { CustomConfigEntity } from './common/entities/custom-config.entity';
-import { MixinReleaseToken, MixinReleaseHistory } from './common/entities/mixin-release.eneity';
+import {
+  MixinReleaseToken,
+  MixinReleaseHistory,
+} from './common/entities/mixin-release.eneity';
 dotenv.config();
 
 @Module({
@@ -54,7 +57,18 @@ dotenv.config();
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
-      entities: [Trade, Performance, Transaction, UserBalance, Snapshot, SpotOrder, APIKeysConfig, CustomConfigEntity, MixinReleaseToken, MixinReleaseHistory],
+      entities: [
+        Trade,
+        Performance,
+        Transaction,
+        UserBalance,
+        Snapshot,
+        SpotOrder,
+        APIKeysConfig,
+        CustomConfigEntity,
+        MixinReleaseToken,
+        MixinReleaseHistory,
+      ],
       synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
