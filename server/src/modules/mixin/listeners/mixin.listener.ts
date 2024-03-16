@@ -6,14 +6,14 @@ import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-// import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
 
 @Injectable()
 export class MixinListener {
   constructor(
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
-    // private configService: CustomConfigService,
+    private configService: CustomConfigService,
   ) {}
 
   @OnEvent('mixin.release')

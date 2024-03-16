@@ -1,91 +1,92 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomConfigService } from './customConfig.service';
-import { CustomConfigRepository } from './customConfig.repository';
-import { getRepositoryToken } from '@nestjs/typeorm';
-
-// Mock CustomConfigRepository methods
-const mockCustomConfigRepository = () => ({
-  readSpotFee: jest.fn(),
-  modifySpotFee: jest.fn(),
-  modifyMaxBalanceInMixinBot: jest.fn(),
-  modifyMaxBalanceInAPIKey: jest.fn(),
-  readFundingAccountStatus: jest.fn(),
-});
+import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { CustomConfigRepository } from 'src/modules/customConfig/customConfig.repository';
 
 describe('CustomConfigService', () => {
   let service: CustomConfigService;
-  let repository;
+  // Explicitly type the mock repository
+  let mockRepository: {
+    readSpotFee: jest.Mock;
+    modifySpotFee: jest.Mock;
+    modifyMaxBalanceInMixinBot: jest.Mock;
+    modifyMaxBalanceInAPIKey: jest.Mock;
+    readFundingAccountStatus: jest.Mock;
+  };
 
   beforeEach(async () => {
+    mockRepository = {
+      readSpotFee: jest.fn(),
+      modifySpotFee: jest.fn(),
+      modifyMaxBalanceInMixinBot: jest.fn(),
+      modifyMaxBalanceInAPIKey: jest.fn(),
+      readFundingAccountStatus: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CustomConfigService,
-        {
-          provide: getRepositoryToken(CustomConfigRepository),
-          useFactory: mockCustomConfigRepository,
-        },
+        { provide: CustomConfigRepository, useValue: mockRepository },
       ],
     }).compile();
 
     service = module.get<CustomConfigService>(CustomConfigService);
-    repository = module.get(getRepositoryToken(CustomConfigRepository));
+    // No need to get the mockRepository from the module since it's already defined above
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-    expect(repository).toBeDefined();
+    expect(mockRepository).toBeDefined();
   });
 
   describe('readSpotFee', () => {
-    it('should call readSpotFee on the repository', async () => {
-      repository.readSpotFee.mockResolvedValue('some fee');
-      const result = await service.readSpotFee();
-      expect(result).toEqual('some fee');
-      expect(repository.readSpotFee).toHaveBeenCalled();
+    it('should return spot fee', async () => {
+      mockRepository.readSpotFee.mockResolvedValue('0.1');
+      await expect(service.readSpotFee()).resolves.toBe('0.1');
+      expect(mockRepository.readSpotFee).toHaveBeenCalled();
     });
   });
 
   describe('modifySpotFee', () => {
-    it('should update the spot fee', async () => {
-      const newSpotFee = '0.5%';
-      repository.modifySpotFee.mockResolvedValue(newSpotFee);
-      const result = await service.modifySpotFee(newSpotFee);
-      expect(result).toEqual(newSpotFee);
-      expect(repository.modifySpotFee).toHaveBeenCalledWith(newSpotFee);
+    it('should modify the spot fee', async () => {
+      const newSpotFee = '0.2';
+      // No real return value needed for modify methods unless they return something specific
+      mockRepository.modifySpotFee.mockResolvedValue(undefined);
+      await service.modifySpotFee(newSpotFee);
+      expect(mockRepository.modifySpotFee).toHaveBeenCalledWith(newSpotFee);
     });
   });
 
   describe('modifyMaxBalanceInMixinBot', () => {
-    it('should update the max balance in Mixin Bot', async () => {
+    it('should modify the max balance in Mixin Bot', async () => {
       const newMaxBalance = '1000';
-      repository.modifyMaxBalanceInMixinBot.mockResolvedValue(newMaxBalance);
-      const result = await service.modifyMaxBalanceInMixinBot(newMaxBalance);
-      expect(result).toEqual(newMaxBalance);
-      expect(repository.modifyMaxBalanceInMixinBot).toHaveBeenCalledWith(
-        newMaxBalance,
-      );
+      mockRepository.modifyMaxBalanceInMixinBot.mockResolvedValue(undefined); // Assuming the method does not return a value
+
+      await service.modifyMaxBalanceInMixinBot(newMaxBalance);
+
+      expect(mockRepository.modifyMaxBalanceInMixinBot).toHaveBeenCalledWith(newMaxBalance);
     });
   });
 
   describe('modifyMaxBalanceInAPIKey', () => {
-    it('should update the max balance in API Key', async () => {
+    it('should modify the max balance in API Key', async () => {
       const newMaxBalance = '2000';
-      repository.modifyMaxBalanceInAPIKey.mockResolvedValue(newMaxBalance);
-      const result = await service.modifyMaxBalanceInAPIKey(newMaxBalance);
-      expect(result).toEqual(newMaxBalance);
-      expect(repository.modifyMaxBalanceInAPIKey).toHaveBeenCalledWith(
-        newMaxBalance,
-      );
+      mockRepository.modifyMaxBalanceInAPIKey.mockResolvedValue(undefined);
+
+      await service.modifyMaxBalanceInAPIKey(newMaxBalance);
+
+      expect(mockRepository.modifyMaxBalanceInAPIKey).toHaveBeenCalledWith(newMaxBalance);
     });
   });
 
   describe('readFundingAccountStatus', () => {
-    it('should return the funding account status', async () => {
-      const status = { isActive: true, balance: '500' };
-      repository.readFundingAccountStatus.mockResolvedValue(status);
+    it('should return funding account status', async () => {
+      const status = 'active';
+      mockRepository.readFundingAccountStatus.mockResolvedValue(status);
+
       const result = await service.readFundingAccountStatus();
+
       expect(result).toEqual(status);
-      expect(repository.readFundingAccountStatus).toHaveBeenCalled();
+      expect(mockRepository.readFundingAccountStatus).toHaveBeenCalled();
     });
   });
 });

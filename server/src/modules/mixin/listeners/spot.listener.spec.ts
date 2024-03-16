@@ -84,7 +84,6 @@ describe('SpotOrderListener', () => {
     expect(targetAssetID).toBeDefined();
     const buy = mockEvent.spotOrderType.endsWith('B') ? true : mockEvent.spotOrderType.endsWith('S') ? false : undefined;
     expect(buy).toBeDefined();
-    console.log(baseAssetID, targetAssetID, mockEvent.snapshot.asset_id)
     expect(buy && targetAssetID === mockEvent.snapshot.asset_id).toBeTruthy();
     expect(buy && baseAssetID != mockEvent.snapshot.asset_id).toBeTruthy();
 

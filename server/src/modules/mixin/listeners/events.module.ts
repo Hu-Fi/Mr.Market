@@ -5,10 +5,10 @@ import { MixinListener } from './mixin.listener';
 import { SpotOrderListener } from './spot.listener';
 import { ExchangeModule } from '../exchange/exchange.module';
 import { SnapshotsModule } from '../snapshots/snapshots.module';
-// CustomConfig
+import { CustomConfigModule } from 'src/modules/customConfig/customConfig.module';
 
 @Module({
-  imports: [ ExchangeModule, SnapshotsModule ],
+  imports: [ ExchangeModule, SnapshotsModule, CustomConfigModule ],
   providers: [
     ExchangeListener,
     MixinListener,
