@@ -7,7 +7,7 @@
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
-    import FilterLoader from "$lib/components/skeleton/market/filterLoader.svelte";
+  import TokenFilterLoader from "$lib/components/skeleton/market/tokenFilterLoader.svelte";
 
   let defaults: CoingeckoToken[] = [];
 
@@ -56,7 +56,7 @@
   <div class="w-full mb-24">
     <table class="table w-full">
       {#if !resolved}
-        <FilterLoader />
+        <TokenFilterLoader />
         {#each Array(12) as _}
           <SingleTokenLoader />
         {/each}
