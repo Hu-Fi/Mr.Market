@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
 
-  import gate from "$lib/images/exchanges/gate.png";
-  import binance from "$lib/images/exchanges/binance.png";
+  import gate from "$lib/images/exchanges/gate.jpg";
+  import binance from "$lib/images/exchanges/binance.jpg";
 
   import Exchanges from "$lib/components/grow/arbitrage/details/exchanges.svelte";
   import Pairs from "$lib/components/grow/arbitrage/details/pairs.svelte";
