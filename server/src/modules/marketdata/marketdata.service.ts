@@ -5,6 +5,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
+import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -239,7 +240,7 @@ export class MarketdataService {
     while (this.activeSubscriptions.get(subscriptionKey)) {
       try {
         const ticker = await exchange.watchTicker(symbol);
-        onData(ticker);
+        onData(decodeTicker(exchangeName, ticker));
       } catch (error) {
         this.logger.error(
           `Error watching ticker for ${symbol} on ${exchangeName}: ${error.message}`,

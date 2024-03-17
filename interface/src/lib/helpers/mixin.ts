@@ -36,7 +36,11 @@ export const mixinShare = (url: string, title: string, description: string, icon
     icon_url,
     title,
   };
-  window.open("mixin://send?category=app_card&data=" + encodeURIComponent(btoa(JSON.stringify(data))) )
+  window.open(`mixin://send?category=app_card&data=${encodeURIComponent(btoa(JSON.stringify(data)))}`)
+}
+
+export const mixinPay = (p:{asset_id: string, amount:string, memo: string, trace_id: string}) => {
+  window.open(`mixin://pay?recipient=${BOT_ID}&asset=${p.asset_id}&amount=${p.amount}&memo=${p.memo}&trace=${p.trace_id}`)
 }
 
 export const mixinUserMe = async (token: string) => {

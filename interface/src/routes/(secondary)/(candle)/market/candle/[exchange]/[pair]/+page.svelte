@@ -2,7 +2,6 @@
   import { page } from "$app/stores";
   import { socket } from "$lib/stores/spot";
   import { onDestroy, onMount } from "svelte";
-  import { CandleChart, CandleChartLoaded, CandleDetailTab, CandleOrderBookLoaded, CandlePriceLoaded } from "$lib/stores/market";
   import { fetchCandleChartData } from "$lib/helpers/candle/candle";
   import Price from "$lib/components/market/candle/price.svelte";
 	import TimeRange from '$lib/components/dialogs/candle/timeRange.svelte';
@@ -13,9 +12,9 @@
   import { connectCandleStick, switchCandleStickPair } from "$lib/helpers/hufi/socket";
 	import IndicatorSettings from '$lib/components/dialogs/candle/indicatorSettings.svelte';
   import CandleStickPriceLoader from "$lib/components/skeleton/market/candleStickPriceLoader.svelte";
-  import CandleStickChartLoader from "$lib/components/skeleton/market/candleStickChartLoader.svelte";
   import CandleStickDetailsTabLoader from "$lib/components/skeleton/market/candleStickDetailsTabLoader.svelte";
-    import CandleStickOrderbookLoader from "$lib/components/skeleton/market/candleStickOrderbookLoader.svelte";
+  import CandleStickOrderbookLoader from "$lib/components/skeleton/market/candleStickOrderbookLoader.svelte";
+  import { CandleChart, CandleChartLoaded, CandleDetailTab, CandleOrderBookLoaded, CandlePriceLoaded } from "$lib/stores/market";
 
   const getRoutingParams = async () => {
     socket.set(connectCandleStick());
@@ -31,7 +30,11 @@
       CandleChartLoaded.set(false);
       return;
     }
-    $CandleChart.applyNewData();
+    if (!$CandleChart) {
+      console.error('CandleChart undefined')
+      return;
+    }
+    $CandleChart.applyNewData(candleStickChartData);
   }
   onDestroy(() => {
     $socket.disconnect();
@@ -45,11 +48,7 @@
   {:else}
     <CandleStickPriceLoader />
   {/if}
-  {#if $CandleChartLoaded}
-    <KlineChart />
-  {:else}
-    <CandleStickChartLoader />
-  {/if}
+  <KlineChart />
 </div>
 
 <div class="mt-4 mb-24 border-t-8 border-base-200">

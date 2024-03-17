@@ -41,7 +41,7 @@
   onMount(()=>{price.set($current)})
 </script>
 
-<div class="">
+<div>
   <!-- Price input -->
   <div class={clsx("flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400", $orderType.index === 1 ? $darkTheme ? "bg-slate-800":"bg-slate-50" : "bg-base-100")}>
     {#if $orderType.index === 0}

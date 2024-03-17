@@ -5,10 +5,10 @@
 
     <div class="flex space-x-2 text-sm">
       <!-- USD Price -->
-      <div class="h-4 w-10 opacity-80 skeleton" />
+      <div class="h-4 w-12 opacity-80 skeleton" />
 
       <!-- Change -->
-      <div class="h-4 w-10 opacity-80 skeleton" />
+      <div class="h-4 w-8 opacity-80 skeleton" />
     </div>
   </div>
 

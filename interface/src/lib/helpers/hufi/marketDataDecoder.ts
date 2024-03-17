@@ -1,10 +1,10 @@
 import { get } from "svelte/store";
+import { LIMIT_ORDERBOOK_LENGTH } from "$lib/helpers/constants";
 import { asks, bids, buy, current, usdValue } from "$lib/stores/spot";
+import type { OHLCVData, OrderBookData, TickerData } from "$lib/types/hufi/exchanges";
 import { CandleAsks, CandleBids, CandleChartLoaded, CandleNewData, CandleOrderBookLoaded, CandlePair, CandlePriceLoaded } from "$lib/stores/market";
-import type { OHLCVData, OrderBookData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
-import { LIMIT_ORDERBOOK_LENGTH } from "../constants";
 
-export const decodeOrderBook = ( exchangeName: SupportedExchanges, data: {data: OrderBookData } ) => {
+export const decodeOrderBook = ( data: {data: OrderBookData } ) => {
   const Asks = data.data.asks
   const Bids = data.data.bids
   // Set asks and bids
@@ -20,17 +20,17 @@ export const decodeOrderBook = ( exchangeName: SupportedExchanges, data: {data: 
   }
 }
 
-export const decodeCandleStick = ( exchangeName: SupportedExchanges, data: {data: OHLCVData} ) => {
+export const decodeCandleStick = ( data: {data: OHLCVData} ) => {
   CandleChartLoaded.set(true)
   CandleNewData.set(data.data);
 }
 
-export const decodeCandleTicker = ( exchangeName: SupportedExchanges, data: { data: TickerData } ) => {
+export const decodeCandleTicker = ( data: { data: TickerData } ) => {
   CandlePriceLoaded.set(true);
   CandlePair.set(data.data);
 }
 
-export const decodeCandleOrderbook = ( exchangeName: SupportedExchanges, data: {data: OrderBookData } ) => {
+export const decodeCandleOrderbook = ( data: {data: OrderBookData } ) => {
   CandleOrderBookLoaded.set(true);
   if (!data.data.bids || !data.data.asks) {
     return
