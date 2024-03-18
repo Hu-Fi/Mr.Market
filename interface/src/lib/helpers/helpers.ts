@@ -62,7 +62,7 @@ export const findExchangeIconByIdentifier = (identifier: string) => {
     case "BIGONE": return bigone;
     case "TAPBIT": return tapbit;
     default: 
-      console.log(identifier);
+      // console.log(identifier);
       return emptyToken;
   }
 }
