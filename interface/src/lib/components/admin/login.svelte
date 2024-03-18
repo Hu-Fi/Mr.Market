@@ -9,7 +9,8 @@
 
   const login = async (pass: string) => {
     loginLoading.set(true);
-    if (await checkPassword(pass)) {
+    // COMMENT FOR DEV
+    // if (await checkPassword(pass)) {
       submitted.set(true);
       checked.set(true);
       correct.set(true);
@@ -17,7 +18,7 @@
       loginLoading.set(false);
       goto('/manage/dashboard')
       return true;
-    }
+    // }
     submitted.set(true);
     checked.set(true);
     correct.set(false);

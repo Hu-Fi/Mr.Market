@@ -55,6 +55,18 @@ export class MessageService implements OnModuleInit {
     }
   }
 
+  async removeMessages(message_ids: string[]) {
+    message_ids.forEach(async id => {
+      try {
+        await this.messageRepository.removeMessageById(id);
+      } catch (error) {
+        this.logger.error(`Failed to remove message with ID ${id}`, error);
+        throw error;
+      }
+    }
+    )
+  }
+
   async checkMessageExist(message_id: string) {
     try {
       return await this.messageRepository.checkMessageExist(message_id);
@@ -102,7 +114,7 @@ export class MessageService implements OnModuleInit {
 
       // Check message existence !!FIX!!
       this.addMessageIfNotExist({ ...msg }, msg.message_id);
-      
+
       // Update last updated
       const user = await this.client.user.fetch(msg.user_id);
       console.log(`${user.full_name} send you a ${msg.category} message: ${msg.data}`);

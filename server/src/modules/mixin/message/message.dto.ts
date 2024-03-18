@@ -12,3 +12,8 @@ export class PrivateMessageDto {
   @ApiProperty({ description: 'The user id of message receiver' })
   user_id: string;
 }
+
+export class RemoveMessagesDto {
+  @ApiProperty({ description: 'The message id array to remove' })
+  message_ids: string[];
+}

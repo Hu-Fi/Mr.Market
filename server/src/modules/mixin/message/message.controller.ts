@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Post, UseGuards } from "@nestjs/
 import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/modules/auth/jwt-auth.guard";
 import { CustomLogger } from "src/modules/logger/logger.service";
-import { BroadcastMessageDto, PrivateMessageDto } from "./message.dto";
+import { BroadcastMessageDto, PrivateMessageDto, RemoveMessagesDto } from "./message.dto";
 import { MessageService } from "./message.service";
 
 @ApiTags('message')
@@ -41,6 +41,22 @@ export class MessageController {
       await this.messageService.sendTextMessage(privateMessageDto.user_id, privateMessageDto.message);
     } catch (e) {
       this.logger.error(`Error sending priavet message: ${e.message}`);
+      throw e;
+    }
+  }
+
+  @Post('/remove_messages')
+  @ApiOperation({ summary: 'Remove messages' })
+  @ApiResponse({ status: 200, description: 'Messages remove successfully.' })
+  @ApiBadRequestResponse({ description: 'remove messages failed.' })
+  async removeMessages(@Body() removeMessagesDto: RemoveMessagesDto) {
+    if (!removeMessagesDto.message_ids) {
+      throw new BadRequestException('Invalid remove messages parameters.');
+    }
+    try {
+      await this.messageService.removeMessages(removeMessagesDto.message_ids);
+    } catch (e) {
+      this.logger.error(`Error removing messages: ${e.message}`);
       throw e;
     }
   }
