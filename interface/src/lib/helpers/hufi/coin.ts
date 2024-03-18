@@ -36,13 +36,12 @@ export const pairsFn = async () => {
 }
 
 export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): OHLCVData[] => {
-  try {
-    const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
-    const re = await r.json()
-    return re
-  } catch (e) {
-    throw error('fetchOHLCV:', e)
+  const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
+  if (r.status != 200) {
+    throw error('fetchOHLCV:', r.status)  
   }
+  const re = await r.json()  
+  return re
 }
 
 export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame, vs_currency: string = 'usd') => {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { socket } from "$lib/stores/spot";
   import { onDestroy, onMount } from "svelte";
@@ -14,7 +15,7 @@
   import CandleStickPriceLoader from "$lib/components/skeleton/market/candleStickPriceLoader.svelte";
   import CandleStickDetailsTabLoader from "$lib/components/skeleton/market/candleStickDetailsTabLoader.svelte";
   import CandleStickOrderbookLoader from "$lib/components/skeleton/market/candleStickOrderbookLoader.svelte";
-  import { CandleChart, CandleChartLoaded, CandleDetailTab, CandleOrderBookLoaded, CandlePriceLoaded } from "$lib/stores/market";
+  import { CandleChart, CandleChartLoaded, CandleDetailTab, CandleLoadingFailed, CandleOrderBookLoaded, CandlePairSelectorDialog, CandlePriceLoaded } from "$lib/stores/market";
 
   const getRoutingParams = async () => {
     socket.set(connectCandleStick());
@@ -25,8 +26,14 @@
       exchange: $page.data.exchange,
     })
     // Load chart
-    const candleStickChartData = await fetchCandleChartData();
+    let candleStickChartData;
+    try {
+      candleStickChartData = await fetchCandleChartData();
+    } catch (e) {
+      CandleLoadingFailed.set(true);
+    }
     if (!candleStickChartData) {
+      CandleLoadingFailed.set(true);
       CandleChartLoaded.set(false);
       return;
     }
@@ -42,6 +49,15 @@
   onMount(getRoutingParams)
 </script>
 
+
+{#if $CandleLoadingFailed}
+  <div class="flex flex-col items-center justify-center my-72 mx-8 space-y-4">
+    <span class="text-lg"> {$_('failed_to_load_candle_stick')} </span>
+    <button class="btn btn-sm no-animation" on:click={()=>{ CandlePairSelectorDialog.set(true); }}>
+      <span> {$_('switch_pair')} </span>
+    </button>
+  </div>
+{:else}
 <div>
   {#if $CandlePriceLoaded}
     <Price />
@@ -68,6 +84,7 @@
     </div>
   {/if}
 </div>
+{/if}
 
 <TimeRange />
 <IndicatorSettings />

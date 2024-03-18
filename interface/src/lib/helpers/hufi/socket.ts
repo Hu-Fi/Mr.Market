@@ -6,7 +6,7 @@ import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
 import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/spot";
 import type { CandleTab, MarketDataType, PairsData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
-import { CandleChartLoaded, CandleOrderBookLoaded, CandlePriceLoaded, CandlePair, CandlePairSelectorDialog, CandleTimeRange } from "$lib/stores/market";
+import { CandleChartLoaded, CandleOrderBookLoaded, CandlePriceLoaded, CandlePair, CandlePairSelectorDialog, CandleTimeRange, CandleLoadingFailed } from "$lib/stores/market";
 import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/hufi/marketDataDecoder";
 
 // /spot
@@ -96,6 +96,7 @@ export const switchCandleStickPair = (socket: Socket, pair: TickerData) => {
   CandlePriceLoaded.set(false)
   CandleChartLoaded.set(false)
   CandleOrderBookLoaded.set(false)
+  CandleLoadingFailed.set(false)
   CandlePair.set(pair);
   goto(`/market/candle/${pair.exchange}/${pair.symbol.replace('/', '-')}`)
   CandlePairSelectorDialog.set(false);
@@ -113,7 +114,13 @@ export const switchCandleStickTimeFrame = async (socket: Socket, timeFrame: Cand
   // Subscribe WatchOHLCV
   subscribeCandleStick(socket);
   // Return fetchOHLCV data
-  return await fetchCandleChartData();
+  try {
+    return await fetchCandleChartData();
+  } catch (e) {
+    CandleLoadingFailed.set(true);
+    console.log('CandleLoadingFailed.set(true)')
+    console.error(e)
+  }
 }
 
 export const subscribeCandleStick = (socket: Socket) => {

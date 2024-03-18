@@ -181,6 +181,8 @@
   "edit": "Edit",
   "buy_more": "Buy more",
   "candle_stick": "Candle stick",
+  "failed_to_load_candle_stick":"Failed to load canldestick",
+  "switch_pair": "Switch pair",
   "help_center": "Help center",
   "tools": "Tools",
   "ready_to_grow_your_wealth": "Ready to grow your wealth?",

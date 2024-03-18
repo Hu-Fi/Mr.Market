@@ -39,6 +39,7 @@ export const CandleDetailTab = writable(0)
 export const CandlePriceLoaded = writable(false)
 export const CandleChartLoaded = writable(false)
 export const CandleOrderBookLoaded = writable(false)
+export const CandleLoadingFailed = writable(false)
 
 export const CandleChart = writable<Chart>()
 export const CandleTimeRange = writable({k: '4h', v: '4h' as SupportedTimeFrame})
