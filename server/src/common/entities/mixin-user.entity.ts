@@ -17,26 +17,14 @@ export class MixinUser {
   @Column()
   full_name: string;
 
-  @Column()
-  biography: string;
-
   @Column({
     nullable: true,
   })
   avatar_url: string;
 
   @Column()
-  relationship: string;
-
-  @Column()
-  mute_until: string;
-
-  @Column()
   created_at: string;
 
   @Column()
-  is_verified: boolean;
-
-  @Column()
-  is_scam: boolean;
+  last_updated: string;
 }

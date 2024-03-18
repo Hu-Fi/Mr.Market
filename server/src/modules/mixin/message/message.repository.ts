@@ -25,6 +25,12 @@ export class MessageRepository {
     await this.messageRepository.remove(message);
   }
 
+  async checkMessageExist(message_id: string) {
+    return await this.messageRepository.exists({
+      where: {message_id}
+    })
+  }
+
   async getAllMessages(): Promise<MixinMessage[]> {
     return await this.messageRepository.find();
   }

@@ -25,6 +25,12 @@ export class UserRepository {
     await this.userRepository.remove(user);
   }
 
+  async checkUserExist(user_id: string) {
+    return await this.userRepository.exists({
+      where: {user_id}
+    })
+  }
+
   async getAllUsers(): Promise<MixinUser[]> {
     return await this.userRepository.find();
   }

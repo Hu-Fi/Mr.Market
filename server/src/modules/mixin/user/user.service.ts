@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
-import { CustomLogger } from "src/modules/logger/logger.service";
 import { UserRepository } from "./user.repository";
+import { CustomLogger } from "src/modules/logger/logger.service";
 import { MixinUser } from "src/common/entities/mixin-user.entity";
-import { Cron } from "@nestjs/schedule";
+import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
 
 @Injectable()
 export class UserService {
@@ -54,6 +53,22 @@ export class UserService {
     }
   }
 
+  async checkUserExist(user_id: string) {
+    try {
+      return await this.userRepository.checkUserExist(user_id);
+    } catch (error) {
+      this.logger.error(`Failed to check user existence ${user_id}`, error);
+      return false;
+    }
+  }
+
+  async addUserIfNotExist(user: MixinUser, user_id: string) {
+    const exist = await this.checkUserExist(user_id);
+    if (!exist) {
+      await this.addUser(user);
+    }
+  }
+
   async getAllUsers(): Promise<MixinUser[]> {
     try {
       return await this.userRepository.getAllUsers();
@@ -61,43 +76,5 @@ export class UserService {
       this.logger.error('Failed to get all users', error);
       throw error;
     }
-  }
-
-  // Add a controller endpoint for this
-  async sendTextMessage(user_id: string, message: string) {
-    return await this.client.message.sendText(user_id, message)
-  }
-
-  // Add a controller endpoint for this
-  async broadcastTextMessage(message: string) {
-    const users = await this.getAllUsers()
-    users.forEach(async u => {
-      await this.sendTextMessage(u.user_id, message)
-    })
-  }
-
-  messageHandler = {
-    // callback when bot receive message
-    onMessage: async msg => {
-      // Check user existence
-      // Add user if user doesn't exist in db
-      // Update last updated
-      const user = await this.client.user.fetch(msg.user_id);
-      console.log(`${user.full_name} send you a ${msg.category} message: ${msg.data}`);
-
-      // make your bot automatically reply
-      const res = await this.client.message.sendText(msg.user_id, 'received');
-      console.log(`message ${res.message_id} is sent`);
-    },
-    // callback when group information update, which your bot is in
-    onConversation: async msg => {
-      const group = await this.client.conversation.fetch(msg.conversation_id);
-      console.log(`group ${group.name} information updated`);
-    },
-  };
-
-  @Cron('')
-  async HandleMessage() {
-    this.client.blaze.loop(this.messageHandler);
   }
 }

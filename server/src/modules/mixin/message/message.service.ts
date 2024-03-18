@@ -1,18 +1,20 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
-import { CustomLogger } from "src/modules/logger/logger.service";
 import { MessageRepository } from "./message.repository";
+import { CustomLogger } from "src/modules/logger/logger.service";
+import { UserService } from "src/modules/mixin/user/user.service";
 import { MixinMessage } from 'src/common/entities/mixin-message.eneity';
+import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
 
 @Injectable()
-export class MessageService {
+export class MessageService implements OnModuleInit {
   private keystore: Keystore;
   private client: KeystoreClientReturnType;
   private readonly logger = new CustomLogger(MessageService.name);
 
   constructor(
     private configService: ConfigService,
+    private userService: UserService,
     private messageRepository: MessageRepository,
   ) {
     this.keystore = {
@@ -28,6 +30,10 @@ export class MessageService {
     this.client = MixinApi({
       keystore: this.keystore,
     });
+  }
+
+  async onModuleInit() {
+    this.client.blaze.loop(this.messageHandler);
   }
 
   async addMessageHistory(message: MixinMessage) {
@@ -49,6 +55,22 @@ export class MessageService {
     }
   }
 
+  async checkMessageExist(message_id: string) {
+    try {
+      return await this.messageRepository.checkMessageExist(message_id);
+    } catch (error) {
+      this.logger.error(`Failed to check message existence ${message_id}`, error);
+      return false;
+    }
+  }
+
+  async addMessageIfNotExist(msg: MixinMessage, message_id: string) {
+    const exist = await this.checkMessageExist(message_id);
+    if (!exist) {
+      await this.addMessageHistory(msg);
+    }
+  }
+
   async getAllMessages(): Promise<MixinMessage[]> {
     try {
       return await this.messageRepository.getAllMessages();
@@ -57,4 +79,42 @@ export class MessageService {
       throw error;
     }
   }
+
+
+  // Add a controller endpoint for this
+  async sendTextMessage(user_id: string, message: string) {
+    return await this.client.message.sendText(user_id, message)
+  }
+
+  // Add a controller endpoint for this
+  async broadcastTextMessage(message: string) {
+    const users = await this.userService.getAllUsers()
+    users.forEach(async u => {
+      await this.sendTextMessage(u.user_id, message)
+    })
+  }
+
+  messageHandler = {
+    // callback when bot receive message
+    onMessage: async msg => {
+      // Check user existence !!FIX!!
+      this.userService.addUserIfNotExist(msg, msg.user_id)
+
+      // Check message existence !!FIX!!
+      this.addMessageIfNotExist({ ...msg }, msg.message_id);
+      
+      // Update last updated
+      const user = await this.client.user.fetch(msg.user_id);
+      console.log(`${user.full_name} send you a ${msg.category} message: ${msg.data}`);
+
+      // make your bot automatically reply
+      const res = await this.client.message.sendText(msg.user_id, 'received');
+      console.log(`message ${res.message_id} is sent`);
+    },
+    // callback when group information update, which your bot is in
+    onConversation: async msg => {
+      const group = await this.client.conversation.fetch(msg.conversation_id);
+      console.log(`group ${group.name} information updated`);
+    },
+  };
 }
