@@ -7,10 +7,10 @@ export const decodeTicker = (exchangeName: string, data: any) => {
         open: data.ask,
         close: data.ask,
         volume: undefined,
-      }
+      };
     case 'bitfinex':
     case 'binance':
     default:
       return data;
   }
-}
+};

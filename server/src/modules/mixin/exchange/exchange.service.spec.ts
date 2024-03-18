@@ -58,56 +58,62 @@ describe('ExchangeService', () => {
   });
 
   describe('checkExchangeBalanceEnough', () => {
-    it.failing('should check if exchange balance is enough for a given amount', async () => {
-      // TODO: adapt CCXT fetch balance
-      const mockBalance = { total: { BTC: 2 } };
-      service.getBalance = jest.fn().mockResolvedValue(mockBalance);
+    it.failing(
+      'should check if exchange balance is enough for a given amount',
+      async () => {
+        // TODO: adapt CCXT fetch balance
+        const mockBalance = { total: { BTC: 2 } };
+        service.getBalance = jest.fn().mockResolvedValue(mockBalance);
 
-      const result = await service.checkExchangeBalanceEnough(
-        'binance',
-        'apiKey',
-        'apiSecret',
-        'BTC',
-        '1',
-      );
+        const result = await service.checkExchangeBalanceEnough(
+          'binance',
+          'apiKey',
+          'apiSecret',
+          'BTC',
+          '1',
+        );
 
-      expect(service.getBalance).toHaveBeenCalledWith(
-        'binance',
-        'apiKey',
-        'apiSecret',
-        'BTC',
-      );
-      expect(result).toBeTruthy();
-    });
+        expect(service.getBalance).toHaveBeenCalledWith(
+          'binance',
+          'apiKey',
+          'apiSecret',
+          'BTC',
+        );
+        expect(result).toBeTruthy();
+      },
+    );
   });
 
   describe('pickAPIKeyOnDemand', () => {
     // TODO: Fix
-    it.failing('should pick an API key based on balance and demand', async () => {
-      const mockApiKeys = [
-        {
-          key_id: '1',
-          exchange: 'binance',
-          api_key: 'apiKey1',
-          api_secret: 'apiSecret1',
-        },
-      ];
-      exchangeRepository.readAllAPIKeysByExchange.mockResolvedValue(
-        mockApiKeys,
-      );
-      service.checkExchangeBalanceEnough = jest.fn().mockResolvedValue(true);
+    it.failing(
+      'should pick an API key based on balance and demand',
+      async () => {
+        const mockApiKeys = [
+          {
+            key_id: '1',
+            exchange: 'binance',
+            api_key: 'apiKey1',
+            api_secret: 'apiSecret1',
+          },
+        ];
+        exchangeRepository.readAllAPIKeysByExchange.mockResolvedValue(
+          mockApiKeys,
+        );
+        service.checkExchangeBalanceEnough = jest.fn().mockResolvedValue(true);
 
-      const result = await service.pickAPIKeyOnDemand(
-        'binance',
-        'asset_id',
-        '1',
-      );
+        const result = await service.pickAPIKeyOnDemand(
+          'binance',
+          'asset_id',
+          '1',
+        );
 
-      expect(exchangeRepository.readAllAPIKeysByExchange).toHaveBeenCalledWith(
-        'binance',
-      );
-      expect(service.checkExchangeBalanceEnough).toHaveBeenCalled();
-      expect(result.type).toEqual('success');
-    });
+        expect(
+          exchangeRepository.readAllAPIKeysByExchange,
+        ).toHaveBeenCalledWith('binance');
+        expect(service.checkExchangeBalanceEnough).toHaveBeenCalled();
+        expect(result.type).toEqual('success');
+      },
+    );
   });
 });
