@@ -288,5 +288,7 @@
   "please_login_info": "Click here to login",
   "message_count": "Message count",
   "broadcast_message": "Boardcast message",
-  "private_message": "Private message"
+  "private_message": "Private message",
+  "add_api_key": "Add api key",
+  "remove_api_key": "Remove api key"
 }

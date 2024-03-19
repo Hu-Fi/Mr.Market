@@ -3,19 +3,19 @@
 
   const items = [
     {
-      key: "bm",
-      name: $_("broadcast_message"),
-      keey: "boardcast message",
+      key: "add",
+      name: $_("add_api_key"),
+      keey: "add api key",
       fn: () => {
-        console.log("boardcast message");
+        console.log("add api key");
       },
     },
     {
-      key: "pm",
-      name: $_("private_message"),
-      keey: "private message",
+      key: "rm",
+      name: $_("remove_api_key"),
+      keey: "remove api key",
       fn: () => {
-        console.log("boardcast message");
+        console.log("remove api key");
       },
     },
   ];
