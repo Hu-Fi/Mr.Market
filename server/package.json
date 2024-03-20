@@ -37,7 +37,6 @@
     "@nestjs/throttler": "^5.1.2",
     "@nestjs/typeorm": "^10.0.1",
     "@nestjs/websockets": "^10.2.10",
-    "@sendgrid/mail": "^7.7.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/express-session": "^1.17.7",
     "@types/passport-jwt": "^3.0.10",
