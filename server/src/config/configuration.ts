@@ -39,4 +39,11 @@ export default () => ({
     server_public_key: process.env.MIXIN_SERVER_PUBLIC_KEY,
     session_private_key: process.env.MIXIN_SESSION_PRIVATE_KEY,
   },
+  coingecko: {
+    api_key: process.env.COINGECKO_API_KEY,
+  },
+  rebalance: {
+    bigone_api_key: process.env.WITHDRAWAL_BIGONE_API_KEY,
+    bigone_api_secret: process.env.WITHDRAWAL_BIGONE_API_SECRET,
+  },
 });

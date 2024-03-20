@@ -74,6 +74,7 @@ jobs:
           POSTGRES_DATABASE: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          JWT_SECRET: JWT_SECRET
 
       - name: Upload Playwright test artifacts
         if: always()
