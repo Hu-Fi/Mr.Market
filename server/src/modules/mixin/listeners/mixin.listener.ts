@@ -14,20 +14,12 @@ export class MixinListener {
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
     private configService: CustomConfigService,
-  ) {}
+  ) { }
 
   @OnEvent('mixin.release')
   async handleReleaseTokenEvent(e: MixinReleaseTokenEvent) {
-    if (!validate(e.assetId)) {
-      // Asset Id must be uuid;
-      await this.exchangeService.updateSpotOrderState(
-        e.orderId,
-        STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
-      );
-      return;
-    }
-    if (!validate(e.userId)) {
-      // User Id must be uuid;
+    // Validate assetId and userId
+    if (!validate(e.assetId) || !validate(e.userId)) {
       await this.exchangeService.updateSpotOrderState(
         e.orderId,
         STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
@@ -35,31 +27,21 @@ export class MixinListener {
       return;
     }
 
-    // Check if orderId exist in release history
-    if (!this.exchangeService.readMixinReleaseHistory(e.orderId)) {
-      await this.exchangeService.updateSpotOrderState(
-        e.orderId,
-        STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
-      );
+    // Ensure orderId does not exist in release history to proceed
+    if (await this.exchangeService.readMixinReleaseHistory(e.orderId)) {
+      // If it exists, it's either an error or a retry of a previously processed request. Handle accordingly.
       return;
     }
 
-    // Sub the trading fees
+    // Subtract the trading fees
     const feePercentage = await this.configService.readSpotFee();
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
-    // If released, return
-    if (await this.exchangeService.readMixinReleaseHistory(e.orderId)) {
-      return;
-    }
+    // Attempt to send the transaction
+    const requests = await this.service.sendMixinTx(e.userId, e.assetId, amountReduced);
 
-    const requests = await this.service.sendMixinTx(
-      e.userId,
-      e.assetId,
-      amountReduced,
-    );
-
-    if (!requests) {
+    // Check if the transaction was unsuccessful
+    if (!requests || requests.length === 0) {
       await this.exchangeService.updateSpotOrderState(
         e.orderId,
         STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
@@ -67,19 +49,13 @@ export class MixinListener {
       return;
     }
 
-    if (requests.length === 0) {
-      await this.exchangeService.updateSpotOrderState(
-        e.orderId,
-        STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
-      );
-      return;
-    }
-
+    // Update the order state to released
     await this.exchangeService.updateSpotOrderState(
       e.orderId,
       STATE_TEXT_MAP['MIXIN_RELEASED'],
     );
 
+    // Record the release history
     await this.exchangeService.addMixinReleaseHistory({
       orderId: e.orderId,
       snapshotId: requests[0].snapshot_id,

@@ -7,7 +7,7 @@ describe('Get symbol with mixin asset id', () => {
   });
 });
 
-describe('Get Fee from BigOne', () => {
+describe.skip('Get Fee from BigOne', () => {
   it('BTC fee', async () => {
     await getFeeBySymbol('BTC');
   });

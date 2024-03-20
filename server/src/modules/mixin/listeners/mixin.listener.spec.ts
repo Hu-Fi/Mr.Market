@@ -33,7 +33,6 @@ describe('MixinListener', () => {
     exchangeService = module.get(ExchangeService);
     customConfigService = module.get(CustomConfigService);
 
-    // Reset mocks before each test
     jest.clearAllMocks();
   });
 
@@ -88,7 +87,7 @@ describe('MixinListener', () => {
 
   it('should successfully release token and record history', async () => {
     const mockEvent: MixinReleaseTokenEvent = {
-      assetId: uuid.v4(),
+      assetId: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
       userId: uuid.v4(),
       orderId: uuid.v4(),
       amount: '100',
@@ -103,7 +102,7 @@ describe('MixinListener', () => {
         request_id: '6fadbffd-46d0-4fe9-b699-cbd81e3ec592',
         transaction_hash:
           'e4fe30aa3f222f7de1518c8446dbd030d11a506faabcfe8592f9743d15bedb16',
-        asset: 'USD',
+        asset: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
         amount: '13422',
         extra: 'In itself beautiful.',
         user_id: 'bd151efc-dce5-44f1-b4bb-1534075d2b93',
@@ -149,6 +148,4 @@ describe('MixinListener', () => {
       STATE_TEXT_MAP['MIXIN_RELEASE_FAILED'],
     );
   });
-
-  // More tests could include mocking exceptions to ensure the listener handles unexpected errors gracefully.
 });
