@@ -25,7 +25,7 @@ export const selectedField = writable(keys[0]);
 export const CandlePair = writable<TickerData>({
   symbol: 'BTC/USDT',
   price: 0,
-  exchange: 'binance',
+  exchange: 'okx',
 })
 export const CandlePairSearch = writable("")
 export const CandlePairSelectorDialog = writable(false)

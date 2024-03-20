@@ -290,5 +290,7 @@
   "broadcast_message": "Boardcast message",
   "private_message": "Private message",
   "add_api_key": "Add api key",
-  "remove_api_key": "Remove api key"
+  "remove_api_key": "Remove api key",
+  "failed_to_load_market_data": "Failed to load market data",
+  "retry": "Retry"
 }
