@@ -46,6 +46,20 @@ export class MarketdataService {
         secret: process.env.BINANCE_SECRET,
       }),
     );
+    this.exchanges.set(
+      'okx',
+      new ccxt.pro.okx({
+        apiKey: process.env.OKX_API_KEY,
+        secret: process.env.OKX_SECRET,
+      }),
+    );
+    this.exchanges.set(
+      'gate',
+      new ccxt.pro.gateio({
+        apiKey: process.env.GATE_API_KEY,
+        secret: process.env.GATE_SECRET,
+      }),
+    );
   }
 
   async getTickers(exchange: string, symbols: string[]) {

@@ -8,7 +8,10 @@ import { ConfigService } from '@nestjs/config';
 export class AuthService {
   secret: string;
   adminPassword: string;
-  constructor(private jwtService: JwtService, private configService: ConfigService) {
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {
     this.secret = this.configService.get<string>('admin.jwt_secret');
     this.adminPassword = this.configService.get<string>('admin.pass');
 
@@ -21,7 +24,6 @@ export class AuthService {
   }
 
   async validateUser(password: string): Promise<string> {
-
     if (!this.adminPassword || !password) {
       throw new UnauthorizedException('Password is required');
     }

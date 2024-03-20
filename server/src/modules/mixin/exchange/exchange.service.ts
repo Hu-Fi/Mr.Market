@@ -179,7 +179,7 @@ export class ExchangeService {
 
   // DB related
   async addApiKey(key: APIKeysConfig) {
-    return this.exchangeRepository.addAPIKey(key)
+    return this.exchangeRepository.addAPIKey(key);
   }
 
   async removeAPIKey(keyId: string) {
@@ -251,16 +251,13 @@ export class ExchangeService {
     });
 
     if (limit && buy) {
-      return await e.createLimitBuyOrder(symbol, amount, limit_price);
-    }
-    if (limit && !buy) {
-      return await e.createLimitSellOrder(symbol, amount, limit_price);
-    }
-    if (!limit && buy) {
-      return await e.createMarketBuyOrder(symbol, amount);
-    }
-    if (!limit && !buy) {
-      return await e.createMarketSellOrder(symbol, amount);
+      await e.createLimitBuyOrder(symbol, amount, limit_price);
+    } else if (limit && !buy) {
+      await e.createLimitSellOrder(symbol, amount, limit_price);
+    } else if (!limit && buy) {
+      await e.createMarketBuyOrder(symbol, amount);
+    } else if (!limit && !buy) {
+      await e.createMarketSellOrder(symbol, amount);
     }
 
     await this.updateSpotOrderState(

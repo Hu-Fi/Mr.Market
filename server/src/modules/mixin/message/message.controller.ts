@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -75,7 +74,9 @@ export class MessageController {
       throw new BadRequestException('Invalid remove messages parameters.');
     }
     try {
-      return await this.messageService.removeMessages(removeMessagesDto.message_ids);
+      return await this.messageService.removeMessages(
+        removeMessagesDto.message_ids,
+      );
     } catch (e) {
       this.logger.error(`Error removing messages: ${e.message}`);
       throw e;

@@ -40,7 +40,7 @@ export class MessageService implements OnModuleInit {
 
   async onModuleInit() {
     this.client.blaze.loop(this.messageHandler);
-    this.logger.log('Start handling mixin messages')
+    this.logger.log('Start handling mixin messages');
   }
 
   async addMessageHistory(message: MixinMessage) {
@@ -95,7 +95,7 @@ export class MessageService implements OnModuleInit {
     if (!exist) {
       await this.addMessageHistory(msg);
     }
-    return exist
+    return exist;
   }
 
   async getAllMessages(): Promise<MixinMessage[]> {
@@ -126,8 +126,10 @@ export class MessageService implements OnModuleInit {
       if (msg.source != 'CREATE_MESSAGE') {
         return;
       }
-      
-      this.logger.log(`Mixin Message: ${Buffer.from(msg.data, 'base64').toString('utf-8')}`)
+
+      this.logger.log(
+        `Mixin Message: ${Buffer.from(msg.data, 'base64').toString('utf-8')}`,
+      );
 
       if (!msg.user_id) {
         return;
@@ -138,13 +140,16 @@ export class MessageService implements OnModuleInit {
       const exist = this.userService.checkUserExist(msg.user_id);
       if (!exist) {
         user = await this.client.user.fetch(msg.user_id);
-        this.userService.addUserIfNotExist({...user, last_updated:getRFC3339Timestamp()}, msg.user_id);
+        this.userService.addUserIfNotExist(
+          { ...user, last_updated: getRFC3339Timestamp() },
+          msg.user_id,
+        );
       }
 
       // Add message record if not exist in db
       const processed = this.addMessageIfNotExist({ ...msg }, msg.message_id);
       if (!processed) {
-        this.logger.log(`message ${msg.message_id} was not processed`);  
+        this.logger.log(`message ${msg.message_id} was not processed`);
         return;
       }
 
