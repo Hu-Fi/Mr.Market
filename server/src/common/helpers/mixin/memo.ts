@@ -13,10 +13,10 @@ import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
 export const decodeSpotMemo = (memo: string): MemoDetails => {
   // Decode base64
-  memo = Buffer.from(memo, 'base64').toString('utf-8');
+  const decodedMemo = Buffer.from(memo, 'base64').toString('utf-8');
 
   // Split memo string into parts
-  const parts = memo.split(':');
+  const parts = decodedMemo.split(':');
   const [
     tradingType,
     spotOrderType,

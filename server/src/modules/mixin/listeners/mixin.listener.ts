@@ -14,7 +14,7 @@ export class MixinListener {
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
     private configService: CustomConfigService,
-  ) { }
+  ) {}
 
   @OnEvent('mixin.release')
   async handleReleaseTokenEvent(e: MixinReleaseTokenEvent) {
@@ -38,7 +38,11 @@ export class MixinListener {
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
     // Attempt to send the transaction
-    const requests = await this.service.sendMixinTx(e.userId, e.assetId, amountReduced);
+    const requests = await this.service.sendMixinTx(
+      e.userId,
+      e.assetId,
+      amountReduced,
+    );
 
     // Check if the transaction was unsuccessful
     if (!requests || requests.length === 0) {

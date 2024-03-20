@@ -22,7 +22,11 @@ export const decodeOrderBook = ( data: {data: OrderBookData } ) => {
 
 export const decodeCandleStick = ( data: {data: OHLCVData} ) => {
   CandleChartLoaded.set(true)
-  CandleNewData.set(data.data);
+  if (data && data.data) {
+    CandleNewData.set(data.data);
+  } else {
+    console.error('Invalid data received for CandleNewData');
+  }
 }
 
 export const decodeCandleTicker = ( data: { data: TickerData } ) => {

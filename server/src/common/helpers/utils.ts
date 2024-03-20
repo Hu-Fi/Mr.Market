@@ -23,14 +23,12 @@ export const generateRandomSequence = () => {
   }
 
   // Generate a 4-character sequence
-  let sequence = '';
-  for (let i = 0; i < 4; i++) {
-    // Randomly choose to add a letter or a digit
-    const isLetter = i === 0 ? true : Math.random() > 0.5; // Randomly choose between letter and digit
-    sequence += isLetter ? getRandomLetter() : getRandomDigit();
-  }
-
-  return sequence;
+  return (
+    getRandomLetter() +
+    Array.from({ length: 3 }, () =>
+      Math.random() > 0.5 ? getRandomLetter() : getRandomDigit(),
+    ).join('')
+  );
 };
 
 export const getPairSymbolByKey = (key: PairsMapKey): PairsMapValue => {

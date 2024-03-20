@@ -74,7 +74,7 @@ dotenv.config();
         MixinMessage,
         MixinUser,
       ],
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),

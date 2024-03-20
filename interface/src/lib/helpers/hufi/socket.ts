@@ -151,12 +151,6 @@ export const unSubscribeCandleStick = (socket: Socket) => {
     symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
     timeFrame: `${get(CandleTimeRange).v}`,
   })
-  // console.log('Unsub OHLCV:',{
-  //   type: 'OHLCV' as MarketDataType,
-  //   exchange: get(CandlePair).exchange as SupportedExchanges,
-  //   symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
-  //   timeFrame: `${get(CandleTimeRange).v}`,
-  // })
 
   socket.emit("unsubscribeData", {
     type: 'ticker' as MarketDataType,

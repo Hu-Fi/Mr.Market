@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 describe('AuthService', () => {
   let service: AuthService;
   let jwtService: JwtService;
-  // let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,6 +24,14 @@ describe('AuthService', () => {
             get: jest.fn((key: string) => {
               if (key === 'admin.jwt_secret') return 'mock-jwt-secret';
               if (key === 'admin.pass') return 'correctpassword';
+              switch (key) {
+                case 'admin.jwt_secret':
+                  return 'mock-jwt-secret';
+                case 'admin.pass':
+                  return 'correctpassword';
+                default:
+                  throw new Error(`Unhandled key: ${key}`);
+              }
             }),
           },
         },
@@ -33,7 +40,6 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
-    // configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {

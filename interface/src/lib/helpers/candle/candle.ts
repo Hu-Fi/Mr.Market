@@ -6,6 +6,5 @@ import type { OHLCVData } from "$lib/types/hufi/exchanges";
 export const fetchCandleChartData = async (): Promise<OHLCVData[]> => {
   const pair = get(CandlePair)
   const timeFrame = get(CandleTimeRange).v
-  console.log(`fetchCandleChartData: ${pair.exchange}, ${pair.symbol}, ${timeFrame}`)
   return fetchOHLCV(pair.exchange, pair.symbol, timeFrame)
 }
