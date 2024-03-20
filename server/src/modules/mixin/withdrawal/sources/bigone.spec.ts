@@ -9,9 +9,9 @@ describe('Get symbol with mixin asset id', () => {
 
 describe('Get Fee from BigOne', () => {
   it('BTC fee', async () => {
-    await getFeeBySymbol('BTC')
+    await getFeeBySymbol('BTC');
   });
   it('ETH fee', async () => {
-    await getFeeBySymbol('ETH')
+    await getFeeBySymbol('ETH');
   });
 });

@@ -5,7 +5,6 @@ import { MessageService } from './message.service';
 import { UserService } from 'src/modules/mixin/user/user.service';
 import { MessageRepository } from './message.repository';
 import { CustomLogger } from 'src/modules/logger/logger.service';
-import { MixinApi } from '@mixin.dev/mixin-node-sdk';
 import { MixinMessage } from 'src/common/entities/mixin-message.eneity';
 
 jest.mock('src/modules/mixin/user/user.service');
@@ -14,16 +13,22 @@ jest.mock('@mixin.dev/mixin-node-sdk');
 
 describe('MessageService', () => {
   let service: MessageService;
-  let userService: UserService;
+  // let userService: UserService;
   let messageRepository: MessageRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MessageService, UserService, MessageRepository, CustomLogger, ConfigService],
+      providers: [
+        MessageService,
+        UserService,
+        MessageRepository,
+        CustomLogger,
+        ConfigService,
+      ],
     }).compile();
 
     service = module.get<MessageService>(MessageService);
-    userService = module.get<UserService>(UserService);
+    // userService = module.get<UserService>(UserService);
     messageRepository = module.get<MessageRepository>(MessageRepository);
   });
 
@@ -51,20 +56,28 @@ describe('MessageService', () => {
       };
       const savedMessage = { ...mockMessage };
 
-      jest.spyOn(messageRepository, 'addMessageHistory').mockResolvedValue(savedMessage);
+      jest
+        .spyOn(messageRepository, 'addMessageHistory')
+        .mockResolvedValue(savedMessage);
 
-      await expect(service.addMessageHistory(mockMessage)).resolves.toEqual(savedMessage);
+      await expect(service.addMessageHistory(mockMessage)).resolves.toEqual(
+        savedMessage,
+      );
     });
   });
 
   describe('removeMessageById', () => {
     it('should call the repository method to remove a message by id', async () => {
       const messageId = 'test-message-id';
-      jest.spyOn(messageRepository, 'removeMessageById').mockResolvedValue(undefined);
+      jest
+        .spyOn(messageRepository, 'removeMessageById')
+        .mockResolvedValue(undefined);
 
       await service.removeMessageById(messageId);
 
-      expect(messageRepository.removeMessageById).toHaveBeenCalledWith(messageId);
+      expect(messageRepository.removeMessageById).toHaveBeenCalledWith(
+        messageId,
+      );
     });
   });
 });
