@@ -24,6 +24,7 @@ import {
 } from 'src/common/types/exchange/mixinRelease';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
+import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 
 @Injectable()
 export class ExchangeService {
@@ -177,6 +178,14 @@ export class ExchangeService {
   }
 
   // DB related
+  async addApiKey(key: APIKeysConfig) {
+    return this.exchangeRepository.addAPIKey(key)
+  }
+
+  async removeAPIKey(keyId: string) {
+    return this.exchangeRepository.removeAPIKey(keyId);
+  }
+
   async createSpotOrder(order: ExchangePlaceSpotEventDto) {
     return await this.exchangeRepository.createSpotOrder(order);
   }

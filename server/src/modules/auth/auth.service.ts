@@ -1,21 +1,33 @@
 // auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash } from 'crypto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  secret: string;
+  adminPassword: string;
+  constructor(private jwtService: JwtService, private configService: ConfigService) {
+    this.secret = this.configService.get<string>('admin.jwt_secret');
+    this.adminPassword = this.configService.get<string>('admin.pass');
+
+    if (!this.secret) {
+      throw `AuthService initalization failed: Invalid jwt secret in .env`;
+    }
+    if (!this.adminPassword) {
+      throw `AuthService initalization failed: Invalid admin password in .env`;
+    }
+  }
 
   async validateUser(password: string): Promise<string> {
-    const adminPassword = process.env.ADMIN_PASSWORD;
 
-    if (!adminPassword || !password) {
+    if (!this.adminPassword || !password) {
       throw new UnauthorizedException('Password is required');
     }
 
     const hashedAdminPassword = createHash('sha3-256')
-      .update(adminPassword)
+      .update(this.adminPassword)
       .digest('hex');
     const hashedSuppliedPassword = createHash('sha3-256')
       .update(password)

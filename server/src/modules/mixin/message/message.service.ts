@@ -1,10 +1,16 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { MessageRepository } from "./message.repository";
-import { CustomLogger } from "src/modules/logger/logger.service";
-import { UserService } from "src/modules/mixin/user/user.service";
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { MessageRepository } from './message.repository';
+import { CustomLogger } from 'src/modules/logger/logger.service';
+import { UserService } from 'src/modules/mixin/user/user.service';
 import { MixinMessage } from 'src/common/entities/mixin-message.eneity';
-import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
+import {
+  MixinApi,
+  Keystore,
+  KeystoreClientReturnType,
+  UserResponse,
+} from '@mixin.dev/mixin-node-sdk';
+import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 
 @Injectable()
 export class MessageService implements OnModuleInit {
@@ -34,11 +40,14 @@ export class MessageService implements OnModuleInit {
 
   async onModuleInit() {
     this.client.blaze.loop(this.messageHandler);
+    this.logger.log('Start handling mixin messages')
   }
 
   async addMessageHistory(message: MixinMessage) {
     try {
-      const newMessage = await this.messageRepository.addMessageHistory(message);
+      const newMessage = await this.messageRepository.addMessageHistory(
+        message,
+      );
       return newMessage;
     } catch (error) {
       this.logger.error('Failed to add message history', error);
@@ -50,28 +59,33 @@ export class MessageService implements OnModuleInit {
     try {
       await this.messageRepository.removeMessageById(message_id);
     } catch (error) {
-      this.logger.error(`Failed to remove message with ID ${message_id}`, error);
+      this.logger.error(
+        `Failed to remove message with ID ${message_id}`,
+        error,
+      );
       throw error;
     }
   }
 
   async removeMessages(message_ids: string[]) {
-    message_ids.forEach(async id => {
+    message_ids.forEach(async (id) => {
       try {
         await this.messageRepository.removeMessageById(id);
       } catch (error) {
         this.logger.error(`Failed to remove message with ID ${id}`, error);
         throw error;
       }
-    }
-    )
+    });
   }
 
   async checkMessageExist(message_id: string) {
     try {
       return await this.messageRepository.checkMessageExist(message_id);
     } catch (error) {
-      this.logger.error(`Failed to check message existence ${message_id}`, error);
+      this.logger.error(
+        `Failed to check message existence ${message_id}`,
+        error,
+      );
       return false;
     }
   }
@@ -81,6 +95,7 @@ export class MessageService implements OnModuleInit {
     if (!exist) {
       await this.addMessageHistory(msg);
     }
+    return exist
   }
 
   async getAllMessages(): Promise<MixinMessage[]> {
@@ -92,39 +107,51 @@ export class MessageService implements OnModuleInit {
     }
   }
 
-
   // Add a controller endpoint for this
   async sendTextMessage(user_id: string, message: string) {
-    return await this.client.message.sendText(user_id, message)
+    return await this.client.message.sendText(user_id, message);
   }
 
   // Add a controller endpoint for this
   async broadcastTextMessage(message: string) {
-    const users = await this.userService.getAllUsers()
-    users.forEach(async u => {
-      await this.sendTextMessage(u.user_id, message)
-    })
+    const users = await this.userService.getAllUsers();
+    users.forEach(async (u) => {
+      await this.sendTextMessage(u.user_id, message);
+    });
   }
 
   messageHandler = {
-    // callback when bot receive message
-    onMessage: async msg => {
-      // Check user existence !!FIX!!
-      this.userService.addUserIfNotExist(msg, msg.user_id)
+    onMessage: async (msg) => {
+      // Filter only user message
+      if (msg.source != 'CREATE_MESSAGE') {
+        return;
+      }
+      
+      this.logger.log(`Mixin Message: ${Buffer.from(msg.data, 'base64').toString('utf-8')}`)
 
-      // Check message existence !!FIX!!
-      this.addMessageIfNotExist({ ...msg }, msg.message_id);
+      if (!msg.user_id) {
+        return;
+      }
 
-      // Update last updated
-      const user = await this.client.user.fetch(msg.user_id);
-      console.log(`${user.full_name} send you a ${msg.category} message: ${msg.data}`);
+      // Add user record if not exist in db
+      let user: UserResponse;
+      const exist = this.userService.checkUserExist(msg.user_id);
+      if (!exist) {
+        user = await this.client.user.fetch(msg.user_id);
+        this.userService.addUserIfNotExist({...user, last_updated:getRFC3339Timestamp()}, msg.user_id);
+      }
 
-      // make your bot automatically reply
-      const res = await this.client.message.sendText(msg.user_id, 'received');
-      console.log(`message ${res.message_id} is sent`);
+      // Add message record if not exist in db
+      const processed = this.addMessageIfNotExist({ ...msg }, msg.message_id);
+      if (!processed) {
+        this.logger.log(`message ${msg.message_id} was not processed`);  
+        return;
+      }
+
+      // Handle custom messages
     },
     // callback when group information update, which your bot is in
-    onConversation: async msg => {
+    onConversation: async (msg) => {
       const group = await this.client.conversation.fetch(msg.conversation_id);
       console.log(`group ${group.name} information updated`);
     },

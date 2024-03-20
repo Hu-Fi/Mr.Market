@@ -11,7 +11,9 @@ export class MixinUser {
   @Column()
   identity_number: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phone: string;
 
   @Column()

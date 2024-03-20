@@ -1,9 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { UserRepository } from "./user.repository";
-import { CustomLogger } from "src/modules/logger/logger.service";
-import { MixinUser } from "src/common/entities/mixin-user.entity";
-import { MixinApi, Keystore, KeystoreClientReturnType } from "@mixin.dev/mixin-node-sdk";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { UserRepository } from './user.repository';
+import { CustomLogger } from 'src/modules/logger/logger.service';
+import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import {
+  MixinApi,
+  Keystore,
+  KeystoreClientReturnType,
+} from '@mixin.dev/mixin-node-sdk';
 
 @Injectable()
 export class UserService {
@@ -30,7 +34,7 @@ export class UserService {
       blazeOptions: {
         parse: true,
         syncAck: true,
-      }
+      },
     });
   }
 
@@ -67,6 +71,7 @@ export class UserService {
     if (!exist) {
       await this.addUser(user);
     }
+    return exist;
   }
 
   async getAllUsers(): Promise<MixinUser[]> {

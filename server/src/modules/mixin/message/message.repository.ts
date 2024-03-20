@@ -8,7 +8,7 @@ export class MessageRepository {
   constructor(
     @InjectRepository(MixinMessage)
     private readonly messageRepository: Repository<MixinMessage>,
-  ){}
+  ) {}
 
   async addMessageHistory(message: MixinMessage) {
     return this.messageRepository.save(message);
@@ -27,8 +27,8 @@ export class MessageRepository {
 
   async checkMessageExist(message_id: string) {
     return await this.messageRepository.exists({
-      where: {message_id}
-    })
+      where: { message_id },
+    });
   }
 
   async getAllMessages(): Promise<MixinMessage[]> {

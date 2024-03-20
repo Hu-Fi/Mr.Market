@@ -1,9 +1,25 @@
-import { BadRequestException, Body, Controller, Post, UseGuards } from "@nestjs/common";
-import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/modules/auth/jwt-auth.guard";
-import { CustomLogger } from "src/modules/logger/logger.service";
-import { BroadcastMessageDto, PrivateMessageDto, RemoveMessagesDto } from "./message.dto";
-import { MessageService } from "./message.service";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { CustomLogger } from 'src/modules/logger/logger.service';
+import {
+  BroadcastMessageDto,
+  PrivateMessageDto,
+  RemoveMessagesDto,
+} from './message.dto';
+import { MessageService } from './message.service';
 
 @ApiTags('message')
 @Controller('message')
@@ -22,7 +38,9 @@ export class MessageController {
       throw new BadRequestException('Invalid broadcast message parameters.');
     }
     try {
-      await this.messageService.broadcastTextMessage(broadcastMessageDto.message);
+      return await this.messageService.broadcastTextMessage(
+        broadcastMessageDto.message,
+      );
     } catch (e) {
       this.logger.error(`Error broadcasting message: ${e.message}`);
       throw e;
@@ -33,12 +51,15 @@ export class MessageController {
   @ApiOperation({ summary: 'Private message to specific user' })
   @ApiResponse({ status: 200, description: 'Message sent successfully.' })
   @ApiBadRequestResponse({ description: 'Send message failed.' })
-  async privateMessage(@Body() privateMessageDto: PrivateMessageDto) {  
+  async privateMessage(@Body() privateMessageDto: PrivateMessageDto) {
     if (!privateMessageDto.message || !privateMessageDto.user_id) {
       throw new BadRequestException('Invalid private message parameters.');
     }
     try {
-      await this.messageService.sendTextMessage(privateMessageDto.user_id, privateMessageDto.message);
+      return await this.messageService.sendTextMessage(
+        privateMessageDto.user_id,
+        privateMessageDto.message,
+      );
     } catch (e) {
       this.logger.error(`Error sending priavet message: ${e.message}`);
       throw e;
@@ -54,9 +75,22 @@ export class MessageController {
       throw new BadRequestException('Invalid remove messages parameters.');
     }
     try {
-      await this.messageService.removeMessages(removeMessagesDto.message_ids);
+      return await this.messageService.removeMessages(removeMessagesDto.message_ids);
     } catch (e) {
       this.logger.error(`Error removing messages: ${e.message}`);
+      throw e;
+    }
+  }
+
+  @Post('/get_all_message')
+  @ApiOperation({ summary: 'Get all messages' })
+  @ApiResponse({ status: 200, description: 'Get messages successfully.' })
+  @ApiBadRequestResponse({ description: 'Get messages failed.' })
+  async getAllMessages() {
+    try {
+      return await this.messageService.getAllMessages();
+    } catch (e) {
+      this.logger.error(`Error getting all messages: ${e.message}`);
       throw e;
     }
   }

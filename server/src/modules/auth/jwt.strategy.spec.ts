@@ -46,10 +46,4 @@ describe('JwtStrategy', () => {
     const result = await strategy.validate(payload);
     expect(result).toEqual({ userId: 'user-id', username: 'admin' });
   });
-
-  // it('should use the mocked JWT secret', () => {
-  //   const jwtSecret = configService.get<string>('admin.jwt_secret');
-  //   expect(jwtSecret).toBe(mockJwtSecret);
-  //   expect(strategy['secretOrKey']).toBe(mockJwtSecret);
-  // });
 });

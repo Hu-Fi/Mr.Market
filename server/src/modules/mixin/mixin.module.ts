@@ -6,6 +6,12 @@ import { ExchangeModule } from './exchange/exchange.module';
 import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [SnapshotsModule, MessageModule, WithdrawalModule, ExchangeModule, UserModule],
+  imports: [
+    SnapshotsModule,
+    MessageModule,
+    WithdrawalModule,
+    ExchangeModule,
+    UserModule,
+  ],
 })
 export class MixinModule {}

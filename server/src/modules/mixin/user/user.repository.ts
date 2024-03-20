@@ -8,7 +8,7 @@ export class UserRepository {
   constructor(
     @InjectRepository(MixinUser)
     private readonly userRepository: Repository<MixinUser>,
-  ){}
+  ) {}
 
   async addUser(user: MixinUser) {
     return this.userRepository.save(user);
@@ -27,8 +27,8 @@ export class UserRepository {
 
   async checkUserExist(user_id: string) {
     return await this.userRepository.exists({
-      where: {user_id}
-    })
+      where: { user_id },
+    });
   }
 
   async getAllUsers(): Promise<MixinUser[]> {

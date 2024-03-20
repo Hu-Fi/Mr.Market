@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+ import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -35,6 +35,9 @@ import {
   MixinReleaseToken,
   MixinReleaseHistory,
 } from './common/entities/mixin-release.eneity';
+import { MixinMessage } from 'src/common/entities/mixin-message.eneity';
+import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import { AuthModule } from './modules/auth/auth.module';
 dotenv.config();
 
 @Module({
@@ -68,6 +71,8 @@ dotenv.config();
         CustomConfigEntity,
         MixinReleaseToken,
         MixinReleaseHistory,
+        MixinMessage,
+        MixinUser,
       ],
       synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
@@ -82,6 +87,7 @@ dotenv.config();
     HealthModule,
     MixinModule,
     EventListenersModule,
+    AuthModule,
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger, AppService],
