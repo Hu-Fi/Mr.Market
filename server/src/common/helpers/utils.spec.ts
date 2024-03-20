@@ -9,7 +9,7 @@ describe('generateRandomSequence', () => {
   it('random 4 positions word', () => {
     for (let i = 0; i < 10; i++) {
       const v = generateRandomSequence();
-      console.log(v);
+      // console.log(v);
       expect(v.length).toBe(4);
     }
   });
@@ -20,7 +20,7 @@ describe('getPairSymbolByKey', () => {
     const keys = Object.keys(PAIRS_MAP);
     keys.forEach((k: PairsMapKey) => {
       const symbol = getPairSymbolByKey(k);
-      console.log(symbol);
+      // console.log(symbol);
       expect(symbol).toBe(PAIRS_MAP[k]);
     });
   });

@@ -11,6 +11,6 @@ export const getMixinSafeFeeByID = async (
     throw Error('MixinSafe getMixinSafeFeeByID() failed');
   }
   const data = resp.data.data as NetworkAssetResponse;
-  console.log(data);
+  // console.log(data);
   return data.fee;
 };

@@ -23,7 +23,7 @@ describe('getBestFeeByAssetID', () => {
     const result = await service.getBestFeeByAssetID(
       '43d61dcd-e413-450d-80b8-101d5e903357',
     );
-    console.log(result);
+    // console.log(result);
     expect(result.source).toBe('BigOne');
   });
 
@@ -31,7 +31,7 @@ describe('getBestFeeByAssetID', () => {
     const result = await service.getBestFeeByAssetID(
       '43d61dcd-e413-450d-80b8-101d5e903357',
     );
-    console.log(result);
+    // console.log(result);
     expect(result.source).toBe('BigOne');
   });
 });

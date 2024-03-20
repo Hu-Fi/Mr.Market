@@ -5,8 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
-  // let configService: ConfigService;
-  const mockJwtSecret = 'mock_jwt_secret';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -16,25 +14,16 @@ describe('JwtStrategy', () => {
           load: [
             () => ({
               admin: {
-                jwt_secret: mockJwtSecret,
+                jwt_secret: 'mock_jwt_secret',
               },
             }),
           ],
         }),
       ],
-      providers: [
-        {
-          provide: JwtStrategy,
-          useFactory: (configService: ConfigService) => {
-            return new JwtStrategy(configService);
-          },
-          inject: [ConfigService],
-        },
-      ],
+      providers: [JwtStrategy, ConfigService], // Simplified provider registration
     }).compile();
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
-    // configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {

@@ -27,6 +27,10 @@ jest.mock('ccxt', () => ({
     bitfinex: jest.fn(() => ({
       // ...
     })),
+    okx: jest.fn(() => ({
+    })),
+    gateio: jest.fn(() => ({
+    })),
   },
 }));
 
