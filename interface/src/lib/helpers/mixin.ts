@@ -40,7 +40,14 @@ export const mixinShare = (url: string, title: string, description: string, icon
 }
 
 export const mixinPay = (p:{asset_id: string, amount:string, memo: string, trace_id: string}) => {
-  window.open(`mixin://pay?recipient=${BOT_ID}&asset=${p.asset_id}&amount=${p.amount}&memo=${p.memo}&trace=${p.trace_id}`)
+  const params = new URLSearchParams({
+    recipient: BOT_ID,
+    asset: p.asset_id,
+    amount: p.amount,
+    memo: p.memo,
+    trace: p.trace_id
+  }).toString();
+  window.open(`mixin://pay?${params}`)
 }
 
 export const mixinUserMe = async (token: string) => {

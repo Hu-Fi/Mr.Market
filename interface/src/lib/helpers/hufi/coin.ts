@@ -37,8 +37,9 @@ export const pairsFn = async () => {
 
 export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): OHLCVData[] => {
   const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
-  if (r.status != 200) {
-    throw new Error(`fetchOHLCV failed with status: ${r.status}`)
+  if (!r.ok) {
+    console.error(`fetchOHLCV failed with status: ${r.status}`)
+    return [];
   }
   const re = await r.json()  
   return re

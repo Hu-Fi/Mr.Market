@@ -9,23 +9,17 @@ import {
   TradingType,
 } from 'src/common/types/memo/memo';
 
-const validators = [
-  (tradingType: string): boolean => {
-    const validTradingTypes: TradingType[] = Object.keys(TARDING_TYPE_MAP);
-    return validTradingTypes.includes(tradingType as TradingType);
-  },
-  (spotOrderType: string): boolean => {
-    const validSpotOrderTypes: SpotOrderType[] =
-      Object.keys(SPOT_ORDER_TYPE_MAP);
-    return validSpotOrderTypes.includes(spotOrderType as SpotOrderType);
-  },
-  (exchangeIndex: string): boolean => {
-    const validExchangeIndexes: ExchangeIndex[] =
-      Object.keys(SPOT_EXCHANGE_MAP);
-    return validExchangeIndexes.includes(exchangeIndex as ExchangeIndex);
-  },
-];
-
-export const isTradingTypeValid = validators[0];
-export const isSpotOrderTypeValid = validators[1];
-export const isExchangeIndexValid = validators[2];
+export const isTradingTypeValid = (tradingType: string): boolean => {
+  const validTradingTypes: TradingType[] = Object.keys(TARDING_TYPE_MAP);
+  return validTradingTypes.includes(tradingType as TradingType);
+};
+export const isSpotOrderTypeValid = (spotOrderType: string): boolean => {
+  const validSpotOrderTypes: SpotOrderType[] =
+    Object.keys(SPOT_ORDER_TYPE_MAP);
+  return validSpotOrderTypes.includes(spotOrderType as SpotOrderType);
+};
+export const isExchangeIndexValid = (exchangeIndex: string): boolean => {
+  const validExchangeIndexes: ExchangeIndex[] =
+    Object.keys(SPOT_EXCHANGE_MAP);
+  return validExchangeIndexes.includes(exchangeIndex as ExchangeIndex);
+};

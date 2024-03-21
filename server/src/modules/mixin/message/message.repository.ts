@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MixinMessage } from 'src/common/entities/mixin-message.eneity';
+import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 
 @Injectable()
 export class MessageRepository {

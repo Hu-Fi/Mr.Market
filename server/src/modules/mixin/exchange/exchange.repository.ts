@@ -7,7 +7,7 @@ import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import {
   MixinReleaseHistory,
   MixinReleaseToken,
-} from 'src/common/entities/mixin-release.eneity';
+} from 'src/common/entities/mixin-release.entity';
 
 @Injectable()
 export class ExchangeRepository {
