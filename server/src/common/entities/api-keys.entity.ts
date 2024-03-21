@@ -9,7 +9,7 @@ export class APIKeysConfig {
   exchange: string; // The identifier of exchange
 
   @Column()
-  exchangeIndex: string; // The index used in the exchange map
+  exchange_index: string; // The index used in the exchange map
 
   @Column()
   name: string; // The name(alias) of API key
