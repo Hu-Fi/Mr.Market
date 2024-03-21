@@ -73,7 +73,6 @@ export class CoingeckoProxyService {
       const cachedData = await this.cacheService.get<CoinMarketChartResponse>(
         key,
       );
-      console.debug('cached', cachedData);
       if (!cachedData) {
         const data = await this.coingecko.coinIdMarketChart({
           id,

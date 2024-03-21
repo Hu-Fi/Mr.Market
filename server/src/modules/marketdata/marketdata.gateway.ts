@@ -15,9 +15,9 @@ import {
   createCompositeKey,
   decodeCompositeKey,
 } from 'src/common/helpers/subscriptionKey';
-import { CustomLogger } from '../logger/logger.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
-const webSocketPort = process.env.WS_PORT || '3012';
+const webSocketPort = process.env.WS_PORT || '0';
 @WebSocketGateway(parseInt(webSocketPort, 10), {
   namespace: '/marketdata',
   cors: {

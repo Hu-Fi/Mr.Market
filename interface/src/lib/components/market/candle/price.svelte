@@ -11,8 +11,8 @@
   } from "$lib/helpers/utils";
 
   $: ss = [
-    { title: $_("24h_high"), value: $CandlePair.info?.high},
-    { title: $_("24h_low"), value: $CandlePair.info?.low},
+    { title: $_("24h_high"), value: $CandlePair.info?.high },
+    { title: $_("24h_low"), value: $CandlePair.info?.low },
     {
       title: $_("24h_vol", {
         values: { coin: $CandlePair.symbol.split("/")[0] },
@@ -36,21 +36,25 @@
       </span>
 
       <!-- Change -->
-      <span class={clsx(UpColorText)}>
-        {formatDecimals($CandlePair.change, 2)}%
-      </span>
+      {#if $CandlePair.change}
+        <span class={clsx(UpColorText)}>
+          {formatDecimals($CandlePair.change, 2)}%
+        </span>
+      {/if}
     </div>
   </div>
 
   <!-- Volume -->
   <div class="flex flex-col items-center justify-center space-y-1">
     {#each ss as s, i}
-      <div class="flex justify-between text-xs w-full space-x-2">
-        <span class="opacity-60"> {s.title} </span>
-        <span>
-          {i <= 1 ? formatDecimals(s.value, 1) : formatUsUnit(s.value)}
-        </span>
-      </div>
+      {#if s.value}
+        <div class="flex justify-between text-xs w-full space-x-2">
+          <span class="opacity-60"> {s.title} </span>
+          <span>
+            {i <= 1 ? formatDecimals(s.value, 1) : formatUsUnit(s.value)}
+          </span>
+        </div>
+      {/if}
     {/each}
   </div>
 </div>

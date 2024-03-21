@@ -14,7 +14,7 @@
       </span>
     </div>
     <div>
-      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/market_making/new')}>
+      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/market_making/new/easy/one')}>
         <span class="text-base-100">
           {$_('start_market_making')}
         </span>
@@ -28,5 +28,3 @@
     </div>  
   </div>
 {/if}
-
-

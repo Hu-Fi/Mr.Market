@@ -16,12 +16,12 @@ export async function load({params}) {
 	
 	if (!SUPPORTED_EXCHANGES.includes(exchange)) {
 		console.log('Unsupported exchange')
-		goto('/market/candle/binance/BTC-USDT')
+		goto('/market/candle/okx/BTC-USDT')
 		return
 	}
 	if (!SUPPORTED_UNIQUE_PAIRS.includes(pair)) {
 		console.log('Unsupported pair')
-		goto('/market/candle/binance/BTC-USDT')
+		goto('/market/candle/okx/BTC-USDT')
 		return
 	}
 	return {exchange, pair}

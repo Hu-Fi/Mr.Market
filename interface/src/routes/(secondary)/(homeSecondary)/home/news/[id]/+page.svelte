@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { _, locale } from "svelte-i18n"
+  import { locale } from "svelte-i18n"
   import newsEN from "../../../../../../assets/news/news-EN.json";
   import newsZH from "../../../../../../assets/news/news-ZH.json";
   import NewsDetail from '$lib/components/home/news/newsDetail.svelte';

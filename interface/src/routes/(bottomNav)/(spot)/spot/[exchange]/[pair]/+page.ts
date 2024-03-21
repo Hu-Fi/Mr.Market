@@ -16,12 +16,12 @@ export async function load({params}) {
 	
 	if (!SUPPORTED_EXCHANGES.includes(exchange.toLowerCase())) {
 		console.log('Unsupported exchange')
-		goto('/spot/binance/BTC-USDT')
+		goto('/spot/okx/BTC-USDT')
 		return
 	}
 	if (!SUPPORTED_UNIQUE_PAIRS.includes(pair.toUpperCase())) {
 		console.log('Unsupported pair')
-		goto('/spot/binance/BTC-USDT')
+		goto('/spot/okx/BTC-USDT')
 		return
 	}
 	return {exchange, pair}

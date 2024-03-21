@@ -4,7 +4,7 @@
   import { init, dispose } from "klinecharts";
 	import KlineTabs from '$lib/components/market/candle/klineTabs.svelte';
 	import { CandleChart, CandleChartLoaded, CandleNewData } from '$lib/stores/market';
-	import CoinChartLoader from '$lib/components/skeleton/market/coinChartLoader.svelte';
+  import CandleStickChartLoader from "$lib/components/skeleton/market/candleStickChartLoader.svelte";
 
   const klineStyle = {
     candle: {
@@ -27,7 +27,11 @@
     yAxis: { axisLine: { show: false }, tickText: { family: 'Inter', size:10, marginStart: 1, marginEnd: 1 } },
   }
   onMount(async () => {
-    CandleChart.set(init('chart'))
+    const chart = init('chart')
+    if (chart === null || !chart){
+      return;
+    }
+    CandleChart.set(chart)
     $CandleChart.setStyles(klineStyle)
     $CandleChart.createIndicator({name:'MA', calcParams: [5, 10, 30]} , true, { id: 'candle_pane' })
     $CandleChart.setMaxOffsetLeftDistance(100)
@@ -55,7 +59,7 @@
     } else {
       newData.timestamp = last1.timestamp + gap
     }
-    $CandleChart.updateData(newData, ()=>{console.log()});
+    $CandleChart.updateData(newData);
   }
   $: if ($CandleChartLoaded && $CandleNewData != undefined){
     updateData()
@@ -63,7 +67,7 @@
 </script>
 
 {#await $page.data.chart}
-  <CoinChartLoader />
+  <CandleStickChartLoader />
 {:then _}
   <div class="flex flex-col space-y-4">
     <KlineTabs />

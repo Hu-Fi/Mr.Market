@@ -8,6 +8,6 @@ import { CacheModule } from '@nestjs/cache-manager';
   imports: [CacheModule.register()],
   controllers: [MarketDataController],
   providers: [MarketDataGateway, MarketdataService],
-  exports: [MarketdataService, MarketDataGateway, CacheModule],
+  exports: [MarketDataGateway, MarketdataService, CacheModule],
 })
 export class MarketdataModule {}

@@ -5,6 +5,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
+import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -43,6 +44,20 @@ export class MarketdataService {
       new ccxt.pro.binance({
         apiKey: process.env.BINANCE_API_KEY,
         secret: process.env.BINANCE_SECRET,
+      }),
+    );
+    this.exchanges.set(
+      'okx',
+      new ccxt.pro.okx({
+        apiKey: process.env.OKX_API_KEY,
+        secret: process.env.OKX_SECRET,
+      }),
+    );
+    this.exchanges.set(
+      'gate',
+      new ccxt.pro.gateio({
+        apiKey: process.env.GATE_API_KEY,
+        secret: process.env.GATE_SECRET,
       }),
     );
   }
@@ -239,7 +254,7 @@ export class MarketdataService {
     while (this.activeSubscriptions.get(subscriptionKey)) {
       try {
         const ticker = await exchange.watchTicker(symbol);
-        onData(ticker);
+        onData(decodeTicker(exchangeName, ticker));
       } catch (error) {
         this.logger.error(
           `Error watching ticker for ${symbol} on ${exchangeName}: ${error.message}`,

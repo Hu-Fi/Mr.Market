@@ -6,13 +6,13 @@
   let items = [
     { name: $_("arbitrage"),     fn: () => goto('/grow/arbitrage') },
     { name: $_("market_making"), fn: () => goto('/grow/market_making') },
-    { name: $_("auto_invest"),   fn: () => goto('/grow/auto_invest') },
+    // { name: $_("auto_invest"),   fn: () => goto('/grow/auto_invest') },
   ];
 </script>
 
 <!-- Tabs -->
 <div class="mx-4 mt-2">
-  <div class="w-full grid grid-cols-3 gap-2 rounded-2xl">
+  <div class={clsx("w-full grid gap-2 rounded-2xl", `grid-cols-${items.length}`)}>
     {#each items as item, i}
       <button
         class={clsx(

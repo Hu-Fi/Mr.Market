@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import OrderDetail from "$lib/components/spot/history/orderDetail.svelte";
 </script>
 

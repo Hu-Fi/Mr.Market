@@ -115,8 +115,3 @@ Please read [CONTRIBUTING.md]() for details on our code of conduct, and the proc
 ## License
 
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details
-
-
-# License
-
-This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](LICENSE) file for details

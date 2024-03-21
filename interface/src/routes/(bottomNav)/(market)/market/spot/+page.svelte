@@ -27,14 +27,11 @@
               ? defaultsPairs.filter((item) => {
                   return item.exchange === "bitfinex";
                 })
-              : $activeSecondTab === 5
-                ? defaultsPairs.filter((item) => {
-                    // return item.exchange === "gate.io";
-                  })
-                : defaultsPairs;
+              : defaultsPairs;
 
   $: sortedPairs = sortSpot($selectedField, pairs, $asc);
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let resolved = false;
   $page.data.pairs
     .then((x) => {

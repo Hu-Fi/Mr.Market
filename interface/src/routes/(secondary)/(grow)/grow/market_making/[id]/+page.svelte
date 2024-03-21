@@ -1,7 +1,6 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import binance from "$lib/images/exchanges/binance.png";
+  import binance from "$lib/images/exchanges/binance.jpg";
   import Exchange from "$lib/components/grow/marketMaking/details/exchange.svelte";
   import Pair from "$lib/components/grow/marketMaking/details/pair.svelte";
   import Infos from "$lib/components/grow/marketMaking/details/infos.svelte";

@@ -27,6 +27,8 @@ jest.mock('ccxt', () => ({
     bitfinex: jest.fn(() => ({
       // ...
     })),
+    okx: jest.fn(() => ({})),
+    gateio: jest.fn(() => ({})),
   },
 }));
 
@@ -93,8 +95,6 @@ describe('MarketdataService', () => {
         30,
       );
     });
-
-    // Add more tests , unsupported exchanges, different timeframes, etc.
   });
   describe('getSupportedPairs', () => {
     it('returns supported pairs from cache if available', async () => {
@@ -105,7 +105,5 @@ describe('MarketdataService', () => {
       expect(pairs).toEqual(cachedPairs);
       expect(cacheManager.get).toHaveBeenCalledWith('supported-pairs');
     });
-
-    // Add tests for error handling, etc.
   });
 });

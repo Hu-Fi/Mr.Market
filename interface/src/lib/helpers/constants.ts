@@ -1,5 +1,5 @@
-import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
 import { env } from '$env/dynamic/public';
+import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
 
 export const AppName = "Mr.market"
 export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
@@ -17,7 +17,7 @@ export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || '
 export const SUPPORTED_PAIRS: {
   [k in SupportedExchanges]: SupportedPairs[]
 } = {
-  'binance': [
+  'okx': [
     'BTC/USDT',
     'ETH/USDT',
     'BNB/USDT',
@@ -38,7 +38,6 @@ export const SUPPORTED_PAIRS: {
   ],
   'gate': [],
   'lbank': [],
-  'okx': [],
 }
 export const SUPPORTED_UNIQUE_PAIRS: string[] = Array.from(new Set(Object.values(SUPPORTED_PAIRS).flatMap(pairs => pairs)));
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);

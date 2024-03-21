@@ -24,7 +24,6 @@ export class CustomLogger extends Logger {
         ),
       ),
       transports: [
-        new winston.transports.Console(), // Log to console
         new winston.transports.File({
           filename: path.join(logsDir, 'error.log'),
           level: 'error',
@@ -37,16 +36,28 @@ export class CustomLogger extends Logger {
   }
 
   log(message: any, context?: string) {
-    super.log(message, context); // NestJS's internal logging
-    this.logger.info(message, { context });
+    if (context) {
+      super.log(message, context); // NestJS's internal logging
+      this.logger.info(message, { context }); // winston log into file
+      return;
+    }
+    super.log(message);
+    this.logger.info(message);
   }
 
   error(message: any, trace?: string, context?: string) {
     super.error(message, trace, context); // NestJS's internal error logging
-    this.logger.error(`${message}, Trace: ${trace}`, { context });
+    this.logger.error(`${message}, Trace: ${trace}`, { context }); // winston log into file
   }
 
   // Implement warn, debug, verbose similarly...
+  debug(message: any, context?: string) {
+    if (context) {
+      super.debug(message, context); // NestJS's internal logging
+      return;
+    }
+    super.debug(message);
+  }
 
   onModuleInit() {
     this.log('Logger module initialized', 'Logger');

@@ -6,7 +6,7 @@
   let items = [
     { name: $_("arbitrage"), intro: $_('arbitrage_intro'),  icon:'arbitrage', fn: () => goto('/grow/arbitrage') },
     { name: $_("market_making"), intro: $_('market_making_intro'),icon: 'market_making', fn: () => goto('/grow/market_making') },
-    { name: $_("auto_invest"), intro: $_('auto_invest_intro'),  icon: 'auto_invest', fn: () => goto('/grow/auto_invest') },
+    // { name: $_("auto_invest"), intro: $_('auto_invest_intro'),  icon: 'auto_invest', fn: () => goto('/grow/auto_invest') },
   ];
 </script>
 

@@ -181,6 +181,8 @@
   "edit": "Edit",
   "buy_more": "Buy more",
   "candle_stick": "Candle stick",
+  "failed_to_load_candle_stick":"Failed to load canldestick",
+  "switch_pair": "Switch pair",
   "help_center": "Help center",
   "tools": "Tools",
   "ready_to_grow_your_wealth": "Ready to grow your wealth?",
@@ -271,6 +273,7 @@
   "actions": "Actions",
   "type": "Type",
   "user_id": "User ID",
+  "message_id": "Message ID",
   "symbol": "Symbol",
   "state": "State",
   "view_all": "View all",
@@ -280,5 +283,14 @@
   "max_amount_to_keep_in_bot": "Max amount to keep in bot",
   "spot_fee": "Spot fee",
   "settings":"Settings",
-  "save": "Save"
+  "save": "Save",
+  "please_login": "Please login",
+  "please_login_info": "Click here to login",
+  "message_count": "Message count",
+  "broadcast_message": "Boardcast message",
+  "private_message": "Private message",
+  "add_api_key": "Add api key",
+  "remove_api_key": "Remove api key",
+  "failed_to_load_market_data": "Failed to load market data",
+  "retry": "Retry"
 }

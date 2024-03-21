@@ -1,12 +1,10 @@
 <script lang="ts">
-  import clsx from "clsx"
-  import { _ } from "svelte-i18n"
   import { locale } from "svelte-i18n";
   import { langs } from "../../../../../../i18n/i18n";
 </script>
 
 <div class="px-6 mt-2">
-  {#each Object.values(langs) as k, i}
+  {#each Object.values(langs) as k}
     <button class="w-full flex justify-between py-4" on:click={()=>{locale.set(k.key)}}>
       <span class="font-medium">
         {k.name}

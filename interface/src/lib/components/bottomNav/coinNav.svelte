@@ -4,7 +4,7 @@
   // import { currentCoin } from "$lib/stores/market";
 
   const gotoCandleStick = () => {
-    goto(`/market/candle/binance/BTC-USDT`)
+    goto(`/market/candle/okx/BTC-USDT`)
     // goto(`/market/candle/${currentCoin.exchange}/${$currentCoin.symbol}-USDT`)
   }
 </script>
