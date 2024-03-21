@@ -8,7 +8,7 @@ import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.reposito
 import {
   MixinReleaseHistory,
   MixinReleaseToken,
-} from 'src/common/entities/mixin-release.eneity';
+} from 'src/common/entities/mixin-release.entity';
 
 @Module({
   imports: [
