@@ -22,11 +22,6 @@
         {/if}
       </button>
     </div>
-
-    <!-- Positions -->
-    <button class={clsx("flex items-center", $manageMode!=1 && "opacity-60")} on:click={()=>manageMode.set(1)} data-testid="manage_positions">
-      <span class="text-sm">{$_("positions")}({$openPositions})</span>
-    </button>
   </div>
   
   <!-- History button -->
