@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { cancelAllOrderDialog, currentPairOnly } from "$lib/stores/spot";
+  import { currentPairOnly } from "$lib/stores/spot";
 </script>
 
 <div class="flex px-4 py-3 border-b border-base-200 items-center justify-between">
@@ -14,18 +14,4 @@
       {$_("current_pair_only")}
     </span>
   </div>
-
-  <button
-    class="btn btn-xs rounded-2xl no-animation"
-    on:click={() => {
-      cancelAllOrderDialog.set(true);
-    }}
-  >
-    <span class="text-xs opacity-80">
-      {$_("cancel_all")}
-    </span>
-  </button>
 </div>
-
-<style>
-</style>

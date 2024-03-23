@@ -77,8 +77,138 @@ export class ExchangeService {
     try {
       return await e.fetchBalance({ currency: symbol });
     } catch (error) {
-      console.error(`Error fetching balance for ${exchange}: ${error.message}`);
+      this.logger.error(
+        `Error fetching balance for ${exchange}: ${error.message}`,
+      );
       throw error;
+    }
+  }
+
+  async getDepositAddress(
+    exchange: string,
+    apiKey: string,
+    apiSecret: string,
+    symbol: string,
+    network: string,
+  ) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+    if (!e.has['fetchDepositAddress']) {
+      this.logger.error(`${exchange} doesn't support fetchDepositAddress()`);
+      return;
+    }
+    try {
+      // The network parameter needs a map. It's case sensitive
+      const depositAddress = await e.fetchDepositAddress(symbol, { network });
+      return {
+        address: depositAddress['address'],
+        memo: depositAddress['tag'] || '',
+      };
+    } catch (error) {
+      if (error instanceof ccxt.InvalidAddress) {
+        this.logger.log(`The address for ${symbol} does not exist yet`);
+        if (e.has['createDepositAddress']) {
+          this.logger.log(
+            `Attempting to create a deposit address for ${symbol}...`,
+          );
+
+          try {
+            const createResult = await e.createDepositAddress(symbol);
+
+            if (createResult) {
+              this.logger.log(
+                `Successfully created a deposit address for ${symbol} fetching the deposit address now...`,
+              );
+            }
+
+            try {
+              const fetchResult = await e.fetchDepositAddress(symbol);
+
+              this.logger.log(
+                `Successfully fetched deposit address for ${symbol}`,
+              );
+              this.logger.log(fetchResult);
+            } catch (e) {
+              this.logger.log(
+                `Failed to fetch deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+              );
+            }
+          } catch (e) {
+            this.logger.log(
+              `Failed to create deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+            );
+          }
+        } else {
+          this.logger.log(
+            'The exchange does not support createDepositAddress()',
+          );
+        }
+      } else {
+        this.logger.log(
+          `There was an error while fetching deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+        );
+      }
+    }
+  }
+
+  async createWithdrawal(
+    exchange: string,
+    apiKey: string,
+    apiSecret: string,
+    symbol: string,
+    network: string,
+    address: string,
+    tag: string = undefined,
+    amount: string,
+  ) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+
+    if (!e.has['withdraw']) {
+      this.logger.error(`${exchange} does not support withdrawals.`);
+      throw new Error(`${exchange} does not support withdrawals.`);
+    }
+
+    try {
+      const withdrawal = await e.withdraw(symbol, amount, address, tag, {
+        network,
+      });
+      return withdrawal; // This will return the response from the exchange, which usually includes a transaction ID.
+    } catch (error) {
+      if (error instanceof ccxt.NetworkError) {
+        this.logger.error(
+          `Network error while attempting withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Network error during withdrawal operation. Please try again later.',
+        );
+      } else if (error instanceof ccxt.ExchangeError) {
+        this.logger.error(
+          `Exchange error while attempting withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Exchange error during withdrawal operation. Please check the provided parameters.',
+        );
+      } else if (error instanceof ccxt.InvalidAddress) {
+        this.logger.error(
+          `Invalid address provided for withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Invalid address provided for withdrawal. Please check the address and try again.',
+        );
+      } else {
+        // Generic error handling
+        this.logger.error(
+          `An unexpected error occurred during withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'An unexpected error occurred during the withdrawal operation. Please try again later.',
+        );
+      }
     }
   }
 

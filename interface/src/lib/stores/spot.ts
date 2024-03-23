@@ -10,7 +10,7 @@ export const socket = writable<Socket>()
 export const pair = writable<PairsData>({
   symbol: 'BTC/USDT',
   price: 0,
-  exchange: 'binance',
+  exchange: 'okx',
 })
 export const pairSearch = writable("")
 export const pairSelectorDialog = writable(false)
@@ -43,7 +43,6 @@ export const orderFilterMode = writable(0)
 // order filter
 export const orderFilterDialog = writable(false)
 export const cancelOrderDialog = writable(false)
-export const cancelAllOrderDialog = writable(false)
 export const cancelingOrder = writable()
 export const currentPairOnly = writable(false)
 export const openedOrders = writable(0)
