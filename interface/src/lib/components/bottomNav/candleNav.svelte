@@ -6,8 +6,8 @@
 
   $: utils = [
     // {icon: 'futures', route: '/home', title: $_('futures')},
-    {icon: 'alert', route: '/market', title: $_('alert')},
-    {icon: 'more', route: '/market', title: $_('more')},
+    // {icon: 'alert', route: '/market', title: $_('alert')},
+    {icon: 'more', route: '/market', title: $_('more'), fn: ()=>{goto('/home/more')}},
   ]
 </script>
 
@@ -20,7 +20,7 @@
 
     <div class="flex flex-row items-center space-x-6">
       {#each utils as u}
-        <button class="flex flex-col justify-center items-center">
+        <button class="flex flex-col justify-center items-center" on:click={()=>{u.fn()}} >
           <!-- Icon -->
           <div>
             {#if u.icon === 'futures'}
