@@ -1,8 +1,8 @@
 import * as ccxt from 'ccxt';
-import { Injectable, HttpException } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
-import * as jwt from 'jsonwebtoken';
+import { Injectable, HttpException } from '@nestjs/common';
 import { FeeResponse } from 'src/common/types/rebalance/bigone';
 import symbolsMap from 'src/modules/mixin/rebalance/bigone/symbols.json';
 

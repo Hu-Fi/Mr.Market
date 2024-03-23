@@ -63,7 +63,7 @@ describe('ExchangeService', () => {
       async () => {
         // TODO: adapt CCXT fetch balance
         const mockBalance = { total: { BTC: 2 } };
-        service.getBalance = jest.fn().mockResolvedValue(mockBalance);
+        service.getBalanceBySymbol = jest.fn().mockResolvedValue(mockBalance);
 
         const result = await service.checkExchangeBalanceEnough(
           'binance',
@@ -73,7 +73,7 @@ describe('ExchangeService', () => {
           '1',
         );
 
-        expect(service.getBalance).toHaveBeenCalledWith(
+        expect(service.getBalanceBySymbol).toHaveBeenCalledWith(
           'binance',
           'apiKey',
           'apiSecret',

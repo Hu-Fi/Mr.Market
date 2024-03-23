@@ -67,6 +67,36 @@ export class ExchangeService {
     exchange: string,
     apiKey: string,
     apiSecret: string,
+  ): Promise<any> {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+
+    try {
+      const b = await e.fetchBalance();
+      function filterZeroBalances(balances) {
+        return Object.fromEntries(
+          Object.entries(balances).filter(([, value]) => value !== 0),
+        );
+      }
+      return {
+        free: filterZeroBalances(b['free']),
+        used: filterZeroBalances(b['used']),
+        total: filterZeroBalances(b['total']),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error fetching balance for ${exchange}: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  async getBalanceBySymbol(
+    exchange: string,
+    apiKey: string,
+    apiSecret: string,
     symbol: string,
   ): Promise<any> {
     const e = new ccxt[exchange]({
@@ -75,7 +105,8 @@ export class ExchangeService {
     });
 
     try {
-      return await e.fetchBalance({ currency: symbol });
+      const b = await e.fetchBalance({ currency: symbol });
+      return b['free'];
     } catch (error) {
       this.logger.error(
         `Error fetching balance for ${exchange}: ${error.message}`,
@@ -219,7 +250,12 @@ export class ExchangeService {
     symbol: string,
     amount: string,
   ) {
-    const balance = await this.getBalance(exchange, apiKey, apiSecret, symbol);
+    const balance = await this.getBalanceBySymbol(
+      exchange,
+      apiKey,
+      apiSecret,
+      symbol,
+    );
     return BigNumber(amount).isLessThan(balance);
   }
 

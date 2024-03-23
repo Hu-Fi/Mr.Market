@@ -136,6 +136,7 @@ export class SnapshotsService {
           .filter((r) => 'members' in r)
           .map((r, i) => ({
             hint: randomUUID(),
+            // @ts-expect-error type
             receivers: r.members,
             index: i + 1,
           })),
@@ -147,6 +148,7 @@ export class SnapshotsService {
         'withdrawal-memo',
       );
       this.logger.log(tx);
+      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
 
@@ -169,6 +171,7 @@ export class SnapshotsService {
       const feeGhosts = await this.client.utxo.ghostKey(
         feeRecipients.map((r, i) => ({
           hint: randomUUID(),
+          // @ts-expect-error type
           receivers: r.members,
           index: i,
         })),
@@ -181,6 +184,7 @@ export class SnapshotsService {
         [ref],
       );
       this.logger.log(feeTx);
+      // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
       this.logger.log(feeRaw);
 
@@ -198,8 +202,10 @@ export class SnapshotsService {
         },
       ]);
 
+      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const signedFeeRaw = signSafeTransaction(
+        // @ts-expect-error type
         feeTx,
         txs[1].views,
         this.spendKey,
@@ -254,6 +260,7 @@ export class SnapshotsService {
           .filter((r) => 'members' in r)
           .map((r, i) => ({
             hint: randomUUID(),
+            // @ts-expect-error type
             receivers: r.members,
             index: i + 1,
           })),
@@ -266,6 +273,7 @@ export class SnapshotsService {
         'withdrawal-memo',
       );
       this.logger.log(tx);
+      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
@@ -277,6 +285,7 @@ export class SnapshotsService {
         },
       ]);
 
+      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const res = await this.client.utxo.sendTransactions([
         {
