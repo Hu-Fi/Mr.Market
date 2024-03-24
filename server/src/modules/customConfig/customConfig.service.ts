@@ -7,6 +7,9 @@ export class CustomConfigService {
   async readSpotFee() {
     return await this.configRepository.readSpotFee();
   }
+  async readRebalanceGap() {
+    return await this.configRepository.readRebalanceGap();
+  }
   async modifySpotFee(newSpotFee: string) {
     return await this.configRepository.modifySpotFee(newSpotFee);
   }
@@ -17,6 +20,11 @@ export class CustomConfigService {
   }
   async modifyMaxBalanceInAPIKey(newMaxBalance: string) {
     return await this.configRepository.modifyMaxBalanceInAPIKey(newMaxBalance);
+  }
+  async modifyRebalanceGapPercentage(newPercenage: string) {
+    return await this.configRepository.modifyRebalanceGapPercentage(
+      newPercenage,
+    );
   }
   async readFundingAccountStatus() {
     return await this.configRepository.readFundingAccountStatus();

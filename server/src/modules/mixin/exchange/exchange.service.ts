@@ -12,7 +12,6 @@ import {
   STATE_TEXT_MAP,
   SpotOrderStatus,
 } from 'src/common/types/orders/states';
-import { ExchangePlaceSpotEventDto } from 'src/modules/mixin/exchange/exchange.dto';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
 import {
   ErrorResponse,
@@ -25,6 +24,8 @@ import {
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
+import { AggregatedBalances } from 'src/common/types/rebalance/map';
 
 @Injectable()
 export class ExchangeService {
@@ -61,6 +62,72 @@ export class ExchangeService {
         });
       }
     }
+  }
+
+  async readAllAPIKeys() {
+    return await this.exchangeRepository.readAllAPIKeys();
+  }
+
+  async getAllAPIKeysBalance() {
+    try {
+      const apiKeys: APIKeysConfig[] = await this.readAllAPIKeys();
+      const balancePromises = apiKeys.map((apiKeyConfig) =>
+        this.getBalance(
+          apiKeyConfig.exchange,
+          apiKeyConfig.api_key,
+          apiKeyConfig.api_secret,
+        )
+          .then((balance) => ({
+            key_id: apiKeyConfig.key_id,
+            exchange: apiKeyConfig.exchange,
+            name: apiKeyConfig.name,
+            balance,
+          }))
+          .catch((error) => {
+            this.logger.error(
+              `Failed to get balance for ${apiKeyConfig.name} on ${apiKeyConfig.exchange}: ${error.message}`,
+            );
+            return null;
+          }),
+      );
+
+      const balances = await Promise.allSettled(balancePromises);
+      const successfulBalances = balances
+        .filter(
+          (result) => result.status === 'fulfilled' && result.value !== null,
+        )
+        .map((result) => (result as PromiseFulfilledResult<any>).value);
+
+      return successfulBalances;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching all API keys balances: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  aggregateBalancesByExchange(successfulBalances: any[]): AggregatedBalances {
+    return successfulBalances.reduce((acc, curr) => {
+      const { exchange, balance } = curr;
+
+      if (!acc[exchange]) {
+        acc[exchange] = { free: {}, used: {}, total: {} };
+      }
+
+      Object.keys(balance).forEach((balanceType) => {
+        const balanceDetails = balance[balanceType];
+
+        Object.entries(balanceDetails).forEach(([currency, amount]) => {
+          if (!acc[exchange][balanceType][currency]) {
+            acc[exchange][balanceType][currency] = 0;
+          }
+          acc[exchange][balanceType][currency] += amount;
+        });
+      });
+
+      return acc;
+    }, {});
   }
 
   async getBalance(
@@ -115,13 +182,31 @@ export class ExchangeService {
     }
   }
 
-  async getDepositAddress(
-    exchange: string,
-    apiKey: string,
-    apiSecret: string,
-    symbol: string,
-    network: string,
-  ) {
+  async getDepositAddress(data: ExchangeDepositDto) {
+    const key = await this.readAPIKey(data.apiKeyId);
+    if (!key) {
+      return;
+    }
+    return await this._getDepositAddress({
+      ...data,
+      apiKey: key.api_key,
+      apiSecret: key.api_secret,
+    });
+  }
+
+  async _getDepositAddress({
+    exchange,
+    apiKey,
+    apiSecret,
+    symbol,
+    network,
+  }: {
+    exchange: string;
+    apiKey: string;
+    apiSecret: string;
+    symbol: string;
+    network: string;
+  }) {
     const e = new ccxt[exchange]({
       apiKey,
       secret: apiSecret,
@@ -184,16 +269,37 @@ export class ExchangeService {
     }
   }
 
-  async createWithdrawal(
-    exchange: string,
-    apiKey: string,
-    apiSecret: string,
-    symbol: string,
-    network: string,
-    address: string,
-    tag: string = undefined,
-    amount: string,
-  ) {
+  async createWithdrawal(data: ExchangeWithdrawalDto) {
+    const key = await this.readAPIKey(data.apiKeyId);
+    if (!key) {
+      return;
+    }
+    await this._createWithdrawal({
+      ...data,
+      apiKey: key.api_key,
+      apiSecret: key.api_secret,
+    });
+  }
+
+  async _createWithdrawal({
+    exchange,
+    apiKey,
+    apiSecret,
+    symbol,
+    network,
+    address,
+    tag,
+    amount,
+  }: {
+    exchange: string;
+    apiKey: string;
+    apiSecret: string;
+    symbol: string;
+    network: string;
+    address: string;
+    tag: string;
+    amount: string;
+  }) {
     const e = new ccxt[exchange]({
       apiKey,
       secret: apiSecret,
@@ -295,6 +401,11 @@ export class ExchangeService {
     };
   }
 
+  // async pickAPIKeyForRebalance(symbol: string, mixinAmount: string) {
+  // Get an api key with sufficient balance
+  // symbol, amount;
+  // }
+
   async estimateSpotAmount(
     exchange: string,
     symbol: string,
@@ -345,14 +456,28 @@ export class ExchangeService {
 
   // DB related
   async addApiKey(key: APIKeysConfig) {
-    return this.exchangeRepository.addAPIKey(key);
+    return await this.exchangeRepository.addAPIKey(key);
+  }
+
+  async readAPIKey(keyId: string) {
+    return await this.exchangeRepository.readAPIKey(keyId);
+  }
+
+  async findFirstAPIKeyByExchange(exchange: string) {
+    const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
+      exchange,
+    );
+    if (!apiKeys) {
+      return;
+    }
+    return apiKeys[0];
   }
 
   async removeAPIKey(keyId: string) {
-    return this.exchangeRepository.removeAPIKey(keyId);
+    return await this.exchangeRepository.removeAPIKey(keyId);
   }
 
-  async createSpotOrder(order: ExchangePlaceSpotEventDto) {
+  async createSpotOrder(order: SpotOrder) {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
@@ -373,6 +498,10 @@ export class ExchangeService {
       orderId,
       api_key_id,
     );
+  }
+
+  async readOrderByUser(userId: string) {
+    return await this.exchangeRepository.readOrderByUser(userId);
   }
 
   async readOrderById(orderId: string): Promise<SpotOrder> {

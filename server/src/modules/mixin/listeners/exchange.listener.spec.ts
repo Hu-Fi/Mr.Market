@@ -51,6 +51,7 @@ describe('ExchangeListener', () => {
         exchangeIndex: '01',
         symbol: 'BTC/USDT',
         type: 'LB',
+        userId: 'userid',
         orderId: '246c42e2-df57-4219-ab70-c84591063c9e',
         amount: '100',
         state: 'created',
@@ -93,6 +94,7 @@ describe('ExchangeListener', () => {
       event: {
         exchangeIndex: '01',
         symbol: 'BTC/USDT',
+        userId: 'userid',
         type: 'LB',
         orderId: '246c42e2-df57-4219-ab70-c84591063c9e',
         amount: '100',
@@ -129,6 +131,7 @@ describe('ExchangeListener', () => {
         exchangeIndex: '01',
         symbol: 'BTC/USDT',
         type: 'BUYB',
+        userId: 'userid',
         amount: '1',
         orderId: '125',
         baseAssetId: 'base-asset',
@@ -150,7 +153,5 @@ describe('ExchangeListener', () => {
     };
 
     await exchangeListener.handlePlaceSpotOrderEvent(payload);
-
-    // Assertions remain unchanged as they are correctly verifying the interactions
   });
 });

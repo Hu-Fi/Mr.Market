@@ -379,6 +379,40 @@ export class SnapshotsService {
     }
   }
 
+  async getAllAssetBalances() {
+    try {
+      // Fetch all outputs
+      const outputs = await this.client.utxo.safeOutputs({});
+
+      // Group outputs by asset ID
+      const groupedByAssetId = outputs.reduce((acc, output) => {
+        const assetId = output.asset; // Assuming each output has an 'assetId' field
+        if (!acc[assetId]) {
+          acc[assetId] = [];
+        }
+        acc[assetId].push(output);
+        return acc;
+      }, {});
+
+      // Calculate total balance for each asset
+      const assetBalances = Object.entries(groupedByAssetId).reduce(
+        (acc, [assetId, outputs]) => {
+          // @ts-expect-error types
+          const totalBalance = getTotalBalanceFromOutputs(outputs);
+          acc[assetId] = totalBalance.toString(); // Assuming you want the balance as a string
+          return acc;
+        },
+        {},
+      );
+
+      // map of AssetID: Balance
+      return assetBalances;
+    } catch (error) {
+      console.error(`Error fetching asset balances: ${error.message}`);
+      throw error;
+    }
+  }
+
   async getAssetBalance(asset_id: SymbolAssetIdMapValue): Promise<string> {
     try {
       return await this.client.utxo.safeAssetBalance({ asset: asset_id });

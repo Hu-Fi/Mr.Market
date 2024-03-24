@@ -12,6 +12,9 @@ export class SpotOrder {
   snapshotId: string; // Mixin snapshot UUID
 
   @Column()
+  userId: string;
+
+  @Column()
   exchangeIndex: string; // Index of exchange
 
   @Column()

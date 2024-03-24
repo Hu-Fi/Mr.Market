@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 import { Injectable, HttpException } from '@nestjs/common';
 import { FeeResponse } from 'src/common/types/rebalance/bigone';
-import symbolsMap from 'src/modules/mixin/rebalance/bigone/symbols.json';
+import { ASSET_ID_SYMBOL_MAP } from 'src/common/constants/pairs';
 
 @Injectable()
 export class BigoneService {
@@ -142,10 +142,6 @@ export class BigoneService {
     }
   }
 
-  assetIDtoSymbol(asset_id: string): string {
-    return symbolsMap[asset_id];
-  }
-
   async getFeeBySymbol(symbol: string): Promise<string> {
     const URL = `${this.feeBaseUrl}/api/uc/v2/assets/${symbol.toUpperCase()}`;
     try {
@@ -168,6 +164,6 @@ export class BigoneService {
   }
 
   async getBigOneFeeByID(asset_id: string): Promise<string> {
-    return this.getFeeBySymbol(this.assetIDtoSymbol(asset_id));
+    return this.getFeeBySymbol(ASSET_ID_SYMBOL_MAP[asset_id]);
   }
 }
