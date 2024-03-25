@@ -14,13 +14,20 @@ export class UserService {
     private campaignRepository: Repository<Campaign>,
   ) {}
 
-  async signUp(userId: string, apiKey: string, secret: string, campaignAddress: string): Promise<User> {
+  async signUp(
+    userId: string,
+    apiKey: string,
+    secret: string,
+    campaignAddress: string,
+  ): Promise<User> {
     // Encrypt API keys
     const encryptedApiKey = EncryptionService.encrypt(apiKey);
     const encryptedSecret = EncryptionService.encrypt(secret);
 
     // Check if the campaign exists, create if not
-    let campaign = await this.campaignRepository.findOneBy({ address: campaignAddress });
+    let campaign = await this.campaignRepository.findOneBy({
+      address: campaignAddress,
+    });
     if (!campaign) {
       campaign = this.campaignRepository.create({ address: campaignAddress });
       await this.campaignRepository.save(campaign);
@@ -37,7 +44,7 @@ export class UserService {
       user.apiKey = encryptedApiKey;
       user.secret = encryptedSecret;
       // Add campaign to user's campaigns if not already associated
-      if (!user.campaigns.some(c => c.address === campaignAddress)) {
+      if (!user.campaigns.some((c) => c.address === campaignAddress)) {
         user.campaigns.push(campaign);
       }
     } else {

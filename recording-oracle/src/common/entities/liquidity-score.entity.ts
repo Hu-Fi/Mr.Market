@@ -13,6 +13,6 @@ export class LiquidityScore {
   @Column('timestamp')
   calculatedAt: Date;
 
-  @ManyToOne(() => Campaign, campaign => campaign.liquidityScores)
+  @ManyToOne(() => Campaign, (campaign) => campaign.liquidityScores)
   campaign: Campaign;
 }

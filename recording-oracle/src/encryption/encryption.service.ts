@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as CryptoJS from 'crypto-js';
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY; 
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+@Injectable()
 export class EncryptionService {
   static encrypt(value: string): string {
     return CryptoJS.AES.encrypt(value, ENCRYPTION_KEY).toString();

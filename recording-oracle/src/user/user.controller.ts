@@ -9,7 +9,12 @@ export class UserController {
   @Post('signup')
   async signUp(@Body() signUpUserDto: SignUpUserDto) {
     const { userId, apiKey, secret, campaignAddress } = signUpUserDto;
-    const user = await this.userService.signUp(userId, apiKey, secret, campaignAddress);
+    const user = await this.userService.signUp(
+      userId,
+      apiKey,
+      secret,
+      campaignAddress,
+    );
     return { message: 'User signed up successfully', userId: user.userId };
   }
 }
