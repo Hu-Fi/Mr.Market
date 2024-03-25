@@ -105,3 +105,19 @@ export const convertAssetBalancesToSymbols = (
 
   return symbolBalances; // {"BTC": "0.1234", "ETH": "123"}
 };
+
+export const calculateRebalanceAmount = (
+  left: BigNumber,
+  right: BigNumber,
+): BigNumber => {
+  // Calculate total balance
+  const total = left.plus(right);
+
+  // Calculate balanced amount for each side
+  const balancedAmount = total.dividedBy(2);
+
+  // Calculate amount to transfer from right to left
+  const amountToTransfer = balancedAmount.minus(left);
+
+  return amountToTransfer;
+};

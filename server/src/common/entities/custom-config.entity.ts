@@ -12,9 +12,6 @@ export class CustomConfigEntity {
   max_balance_single_api_key: string; // Max amount of money to keep in single exchange API Key
 
   @Column()
-  rebalance_gap_percentage: string; // The percentage of the gap between exchanges and mixin, once hit triggers rebalance.
-
-  @Column()
   funding_account: string; // The address or info about a safe place for storing profit
 
   @Column()

@@ -15,5 +15,6 @@ describe.skip('getBestFeeByAssetID', () => {
 
   it('hello', () => {
     console.log('hello');
+    service.rebalance();
   });
 });

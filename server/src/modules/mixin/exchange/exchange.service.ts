@@ -463,7 +463,7 @@ export class ExchangeService {
     return await this.exchangeRepository.readAPIKey(keyId);
   }
 
-  async findFirstAPIKeyByExchange(exchange: string) {
+  async findFirstAPIKeyByExchange(exchange: string): Promise<APIKeysConfig> {
     const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
       exchange,
     );

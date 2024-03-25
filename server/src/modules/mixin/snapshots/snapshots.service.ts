@@ -89,7 +89,12 @@ export class SnapshotsService {
     }
   }
 
-  async withdrawal(asset_id: string, destination: string, amount: string) {
+  async withdrawal(
+    asset_id: string,
+    destination: string,
+    memo: string,
+    amount: string,
+  ) {
     const asset = await this.client.network.fetchAsset(asset_id);
     const chain =
       asset.chain_id === asset.asset_id
@@ -145,7 +150,7 @@ export class SnapshotsService {
         utxos,
         recipients,
         [undefined, ...ghosts],
-        'withdrawal-memo',
+        memo,
       );
       this.logger.log(tx);
       // @ts-expect-error type
@@ -221,6 +226,7 @@ export class SnapshotsService {
         },
       ]);
       this.logger.log(res);
+      return res;
     }
     // withdrawal with asset as fee
     else {
@@ -294,6 +300,7 @@ export class SnapshotsService {
         },
       ]);
       this.logger.log(res);
+      return res;
     }
   }
 

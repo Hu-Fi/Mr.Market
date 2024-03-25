@@ -21,17 +21,6 @@ export class CustomConfigRepository {
     return config.spot_fee;
   }
 
-  async readRebalanceGap(configId: number = 0) {
-    const config = await this.customRepository.findOne({
-      where: { config_id: configId },
-    });
-    if (!config) {
-      // Handle config not found error
-      return;
-    }
-    return config.rebalance_gap_percentage;
-  }
-
   async modifySpotFee(newSpotFee: string, configId: number = 0) {
     const config = await this.customRepository.findOne({
       where: { config_id: configId },
@@ -68,18 +57,6 @@ export class CustomConfigRepository {
       return;
     }
     config.max_balance_single_api_key = newMaxBalance;
-    await this.customRepository.save(config);
-  }
-
-  async modifyRebalanceGapPercentage(newGap: string, configId: number = 0) {
-    const config = await this.customRepository.findOne({
-      where: { config_id: configId },
-    });
-    if (!config) {
-      // Handle config not found error
-      return;
-    }
-    config.rebalance_gap_percentage = newGap;
     await this.customRepository.save(config);
   }
 

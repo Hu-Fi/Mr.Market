@@ -40,3 +40,8 @@ export class CurrencyMinAmount {
   @Column()
   minium_balance: string;
 }
+
+@Entity()
+export class RebalanceHistory {
+  // @PrimaryGeneratedColumn()
+}

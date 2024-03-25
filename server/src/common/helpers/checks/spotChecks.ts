@@ -14,12 +14,10 @@ export const isTradingTypeValid = (tradingType: string): boolean => {
   return validTradingTypes.includes(tradingType as TradingType);
 };
 export const isSpotOrderTypeValid = (spotOrderType: string): boolean => {
-  const validSpotOrderTypes: SpotOrderType[] =
-    Object.keys(SPOT_ORDER_TYPE_MAP);
+  const validSpotOrderTypes: SpotOrderType[] = Object.keys(SPOT_ORDER_TYPE_MAP);
   return validSpotOrderTypes.includes(spotOrderType as SpotOrderType);
 };
 export const isExchangeIndexValid = (exchangeIndex: string): boolean => {
-  const validExchangeIndexes: ExchangeIndex[] =
-    Object.keys(SPOT_EXCHANGE_MAP);
+  const validExchangeIndexes: ExchangeIndex[] = Object.keys(SPOT_EXCHANGE_MAP);
   return validExchangeIndexes.includes(exchangeIndex as ExchangeIndex);
 };

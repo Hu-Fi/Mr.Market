@@ -1,24 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 // import BigNumber from 'bignumber.js';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
-import { convertAssetBalancesToSymbols } from 'src/common/helpers/utils';
+import {
+  calculateRebalanceAmount,
+  convertAssetBalancesToSymbols,
+} from 'src/common/helpers/utils';
 import BigNumber from 'bignumber.js';
-import { AggregatedBalances } from 'src/common/types/rebalance/map';
-import { SYMBOL_ASSET_ID_MAP } from 'src/common/constants/pairs';
+import {
+  ASSET_ID_NETWORK_MAP,
+  SYMBOL_ASSET_ID_MAP,
+} from 'src/common/constants/pairs';
 
 @Injectable()
 export class RebalanceService {
   private readonly logger = new Logger(RebalanceService.name);
-  private rebalancePairs;
 
   constructor(
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
-    private customConfigService: CustomConfigService,
     private rebalanceRepository: RebalanceRepository,
   ) {}
 
@@ -39,8 +41,10 @@ export class RebalanceService {
   // The rebalance from exchagne api keys to mixin is a bit complex.
   // When exchange api keys have more money than needed, we compare and calulate a balance amount (substract from exchange but still remain balanced)
   // We need to compare and check if the key with the most balance is enough for the withdrawal
-  // If not enough, we need to gather funds in different api keys into one, and triggers withdrawal
+  // If not enough, we need to gather funds in different api keys into one, or just withdraw from the one with most funds
   // If enough, choose the one with the most funds and withdraw
+  //
+  // For some assets we don't want them to rebalance, we set the minium balance to a huge number so it would never get triggered
 
   // Basically
   // If mixin balance is greater than minium amount, we don't rebalance.
@@ -75,21 +79,22 @@ export class RebalanceService {
           symbol,
         );
 
-      if (BigNumber(mixinBalance).lte(minAmount.minium_balance)) {
+      const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
+      const mixinAmount = BigNumber(mixinBalance);
+      if (mixinAmount.lte(minAmount.minium_balance)) {
+        this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
         // Rebalance from exchange to Mixin
         await this.rebalanceFromExchangeToMixin(
+          mixinAssetID,
           symbol,
-          minAmount.minium_balance,
+          mixinAmount,
+          BigNumber(minAmount.minium_balance),
           allBalanceByExchange,
-        );
-      } else {
-        this.logger.log(
-          `Mixin balance for ${symbol} is above the minimum threshold. No rebalance needed.`,
         );
       }
     }
 
-    // Check each exchange balance for potential rebalance to Mixin
+    // Check each exchange balance for potential rebalance to exchange
     for (const [exchange, data] of Object.entries(allBalanceByExchange)) {
       for (const [symbol, balance] of Object.entries(data.total)) {
         const minAmount =
@@ -105,18 +110,17 @@ export class RebalanceService {
           )
         ) {
           // Rebalance from Mixin to exchange
+          this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
           await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
-        } else {
-          this.logger.log(
-            `Exchange balance for ${symbol} in ${exchange} is above the minimum threshold. No rebalance needed.`,
-          );
         }
       }
     }
   }
 
   private async rebalanceFromExchangeToMixin(
+    assetId: string,
     symbol: string,
+    mixinAmount: BigNumber,
     minAmount: BigNumber,
     allBalanceByExchange: any,
   ) {
@@ -143,18 +147,25 @@ export class RebalanceService {
         SYMBOL_ASSET_ID_MAP[symbol],
       );
 
-      // TODO !!! Get network from asset id. use a map that maps asset id to network name
-      const network = 'TODO FIX !!! network';
+      const network = ASSET_ID_NETWORK_MAP[assetId];
 
-      // TODO !!! amountToTransfer need to be calculated with an algorithm
-      const amountToTransfer = new BigNumber('TODO FIX !!! amount');
+      const amountToTransfer = calculateRebalanceAmount(
+        totalExchangeBalance,
+        mixinAmount,
+      );
+
+      // If amountToTransfer is less than minAmount * 2, return;
+      if (amountToTransfer.lte(minAmount.multipliedBy(2))) {
+        continue;
+      }
 
       for (const apiKeyBalance of apiKeyBalances) {
         const balance = new BigNumber(apiKeyBalance.balances[symbol] || 0);
         if (balance.isEqualTo(0)) continue; // Skip if no balance
 
         if (balance.gte(amountToTransfer)) {
-          // This API key alone can fulfill the requirement
+          // TODO: Add rebalance history
+
           await this.exchangeService.createWithdrawal({
             exchange,
             apiKeyId: apiKeyBalance.api_key_id,
@@ -168,6 +179,7 @@ export class RebalanceService {
         } else {
           // Partially fulfill from this API key and continue accumulating
           // Gath funds into one api key
+          // Or we choose an API key with the most funds to withdraw
         }
       }
     }
@@ -178,30 +190,92 @@ export class RebalanceService {
     balance: BigNumber.Value,
     exchange: string,
   ) {
-    // TODO: Implement
-  }
+    // Convert balance to a BigNumber for precise arithmetic operations
+    const balanceBN = new BigNumber(balance);
 
-  hasSymbolWithSufficientTotalBalance(
-    aggregatedBalances: AggregatedBalances,
-    symbol: string,
-    minimumAmount: number,
-  ): boolean {
-    for (const exchange of Object.values(aggregatedBalances)) {
-      const totalBalances = exchange.total;
-      const balanceForSymbol = totalBalances[symbol];
-      if (balanceForSymbol !== undefined) {
-        const balanceAmount = parseFloat(balanceForSymbol);
-        if (!isNaN(balanceAmount) && balanceAmount >= minimumAmount) {
-          return true;
-        }
-      }
+    // Log the initiation of the rebalance process
+    this.logger.log(
+      `Starting rebalance from Mixin to ${exchange} for ${symbol} with balance ${balanceBN.toString()}`,
+    );
+
+    // Retrieve the minimum balance requirement for the asset on the exchange
+    const { minium_balance: minBalanceStr } =
+      await this.rebalanceRepository.getCurrencyMinAmountBySymbol(
+        exchange,
+        symbol,
+      );
+    const minBalance = new BigNumber(minBalanceStr);
+
+    // Determine if rebalance is necessary
+    if (balanceBN.isLessThanOrEqualTo(minBalance)) {
+      // Log that the balance is already above or at the threshold, no rebalance needed
+      this.logger.log(
+        `No rebalance needed for ${symbol} to ${exchange}. Current balance: ${balanceBN.toString()}, Minimum required: ${minBalance.toString()}`,
+      );
+      return;
     }
-    return false;
-  }
 
-  // Read rebalance gap from custom config
-  // const gap = await this.customConfigService.readRebalanceGap();
-  //
-  // Get white listed pairs
-  // Check if the differences between the balance of the api key and mixin reachs the gap
+    // Calculate the amount needed to rebalance
+    const amountToRebalance = balanceBN.minus(minBalance);
+    if (amountToRebalance.isLessThanOrEqualTo(0)) {
+      // If calculation goes wrong or not needed, log and return
+      this.logger.warn(
+        `Calculated amount to rebalance is not positive. Calculated: ${amountToRebalance.toString()}`,
+      );
+      return;
+    }
+
+    // Select an API key for the exchange
+    const apiKey = await this.exchangeService.findFirstAPIKeyByExchange(
+      exchange,
+    );
+
+    if (!Array.isArray(apiKey) || apiKey.length === 0) {
+      this.logger.error(
+        `exchangeService.findFirstAPIKeyByExchange(${exchange}) => no api key found`,
+      );
+      return;
+    }
+
+    const assetID = SYMBOL_ASSET_ID_MAP[symbol];
+    // Get network by asset id
+    const network = ASSET_ID_NETWORK_MAP[assetID];
+
+    // Get the deposit address from the exchange for the symbol
+    // Assuming there's a method to get a deposit address for a given symbol on the exchange
+    const depositAddress = await this.exchangeService.getDepositAddress({
+      exchange,
+      apiKeyId: apiKey.key_id,
+      symbol,
+      network,
+    });
+    if (!depositAddress) {
+      this.logger.error(
+        `Failed to get deposit address for ${symbol} on ${exchange}`,
+      );
+      return;
+    }
+
+    // TODO: Add rebalance history
+
+    // Initiate the transfer from Mixin to the exchange
+    // Assuming there's a method to initiate a withdrawal to a given address, with a specified amount and symbol
+    const transferResult = await this.snapshotService.withdrawal(
+      assetID,
+      depositAddress.address,
+      depositAddress.memo,
+      amountToRebalance.toString(),
+    );
+
+    // Log the result of the transfer initiation
+    if (Array.isArray(transferResult) && transferResult.length > 0) {
+      this.logger.log(
+        `Successfully initiated transfer of ${amountToRebalance.toString()} ${symbol} from Mixin to ${exchange}`,
+      );
+    } else {
+      this.logger.error(
+        `Failed to initiate transfer from mixin to ${exchange}.`,
+      );
+    }
+  }
 }
