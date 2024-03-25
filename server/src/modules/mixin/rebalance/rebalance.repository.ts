@@ -25,9 +25,9 @@ export class RebalanceRepository {
     await this.rebalanceExchangeRepository.delete(mixinAssetId);
   }
 
-  async findAllExchanges(): Promise<RebalanceExchange[]> {
-    return this.rebalanceExchangeRepository.find({
-      relations: ['currencyMinAmounts'],
+  async findAllMinAmounts(): Promise<CurrencyMinAmount[]> {
+    return await this.currencyMinAmountRepository.find({
+      relations: ['exchange'],
     });
   }
 

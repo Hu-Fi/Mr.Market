@@ -292,5 +292,8 @@
   "add_api_key": "Add api key",
   "remove_api_key": "Remove api key",
   "failed_to_load_market_data": "Failed to load market data",
-  "retry": "Retry"
+  "retry": "Retry",
+  "rebalance": "Rebalance",
+  "minium_balance_settings": "Minium balance settings",
+  "minium_balance_settings_intro": "the minium balance to keep in exchange or mixin"
 }

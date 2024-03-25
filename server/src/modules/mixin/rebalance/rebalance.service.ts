@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-// import BigNumber from 'bignumber.js';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
@@ -13,6 +12,7 @@ import {
   ASSET_ID_NETWORK_MAP,
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
+import { CurrencyMinAmount } from 'src/common/entities/rebalance-asset.entity';
 
 @Injectable()
 export class RebalanceService {
@@ -277,5 +277,39 @@ export class RebalanceService {
         `Failed to initiate transfer from mixin to ${exchange}.`,
       );
     }
+  }
+
+  private transformMinBalanceForTable(currencyMinAmounts: CurrencyMinAmount[]) {
+    const tokenSymbols = [
+      ...new Set(currencyMinAmounts.map((cma) => cma.symbol)),
+    ];
+    const exchangeNames = [
+      ...new Set(currencyMinAmounts.map((cma) => cma.exchange.name)),
+    ];
+    const tableData = [];
+
+    tokenSymbols.forEach((symbol) => {
+      const rowData = { symbol };
+      exchangeNames.forEach((exchangeName) => {
+        const found = currencyMinAmounts.find(
+          (cma) => cma.symbol === symbol && cma.exchange.name === exchangeName,
+        );
+        rowData[exchangeName] = found ? found.minium_balance : '-';
+      });
+      tableData.push(rowData);
+    });
+
+    return {
+      columns: ['Symbol', ...exchangeNames],
+      rows: tableData,
+    };
+  }
+
+  async getMinBalanceTable(): Promise<{
+    columns: string[];
+    rows: any[];
+  }> {
+    const minAmounts = await this.rebalanceRepository.findAllMinAmounts();
+    return this.transformMinBalanceForTable(minAmounts);
   }
 }
