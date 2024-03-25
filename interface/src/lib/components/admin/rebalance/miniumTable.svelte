@@ -1,6 +1,9 @@
 <script>
   import { _ } from "svelte-i18n";
-  const b = [];
+  const b = [
+    {name: 'okx'},
+    {name: 'gate'},
+  ];
 </script>
 
 <div class="overflow-x-auto flex flex-col space-y-4">
@@ -14,8 +17,11 @@
     <thead>
       <tr>
         <th></th>
-        <th>{$_("exchange")}</th>
-        <th>{$_("type")}</th>
+        {#each b as exchange}
+          <th>
+            {exchange.name}
+          </th>
+        {/each}
       </tr>
     </thead>
     <tbody>

@@ -9,7 +9,7 @@ import {
 
 @Entity()
 export class RebalanceExchange {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   mixin_asset_id: string;
 
   @Column({ unique: true })
@@ -24,7 +24,7 @@ export class RebalanceExchange {
 
 @Entity()
 export class CurrencyMinAmount {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   mixin_asset_id: string;
 
   @Column()

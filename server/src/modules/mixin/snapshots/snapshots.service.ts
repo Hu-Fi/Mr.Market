@@ -393,7 +393,8 @@ export class SnapshotsService {
 
       // Group outputs by asset ID
       const groupedByAssetId = outputs.reduce((acc, output) => {
-        const assetId = output.asset; // Assuming each output has an 'assetId' field
+        // @ts-expect-error SDK type is wrong
+        const assetId = output.asset_id;
         if (!acc[assetId]) {
           acc[assetId] = [];
         }
