@@ -294,6 +294,10 @@
   "failed_to_load_market_data": "Failed to load market data",
   "retry": "Retry",
   "rebalance": "Rebalance",
-  "minimum_balance_settings": "Minium balance settings",
-  "minimum_balance_settings_intro": "the minium balance to keep in exchange or mixin"
+  "asset_id": "Mixin asset id",
+  "exchange_name": "Exchange name",
+  "minimum_balance": "Minimum balance",
+  "minimum_balance_settings": "Minimum balance settings",
+  "minimum_balance_settings_intro": "the minimum balance to keep in exchange or mixin",
+  "create_new_minimum_balance_record": "Create new minimum balance record"
 }

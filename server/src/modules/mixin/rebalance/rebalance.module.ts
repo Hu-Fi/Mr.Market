@@ -6,14 +6,18 @@ import { RebalanceController } from 'src/modules/mixin/rebalance/rebalance.contr
 import { ExchangeModule } from '../exchange/exchange.module';
 import { SnapshotsModule } from '../snapshots/snapshots.module';
 import {
-  Token,
-  Exchange,
-  TokenExchange,
+  RebalanceToken,
+  RebalanceExchange,
+  RebalanceTokenExchange,
 } from 'src/common/entities/rebalance-asset.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Token, Exchange, TokenExchange]),
+    TypeOrmModule.forFeature([
+      RebalanceToken,
+      RebalanceExchange,
+      RebalanceTokenExchange,
+    ]),
     ExchangeModule,
     SnapshotsModule,
   ],

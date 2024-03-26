@@ -270,6 +270,10 @@ export class RebalanceService {
     return this.rebalanceRepository.findAllTokensWithExchangesAndBalances();
   }
 
+  async findAllExchagnes(): Promise<any[]> {
+    return this.rebalanceRepository.findAllExchagnes();
+  }
+
   async getCurrencyMinAmountBySymbol(
     exchangeName: string,
     symbol: string,
@@ -280,12 +284,26 @@ export class RebalanceService {
     );
   }
 
-  async addOrUpdateMinimumBalance(
+  async addMinimumBalance(
+    symbol: string,
     assetId: string,
     exchangeName: string,
     minimumBalance: string,
   ): Promise<void> {
-    return this.rebalanceRepository.addOrUpdateMinimumBalance(
+    return this.rebalanceRepository.addMinimumBalance(
+      symbol,
+      assetId,
+      exchangeName,
+      minimumBalance,
+    );
+  }
+
+  async updateMinimumBalance(
+    assetId: string,
+    exchangeName: string,
+    minimumBalance: string,
+  ): Promise<void> {
+    return this.rebalanceRepository.updateMinimumBalance(
       assetId,
       exchangeName,
       minimumBalance,

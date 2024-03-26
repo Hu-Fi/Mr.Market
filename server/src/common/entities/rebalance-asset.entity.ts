@@ -9,46 +9,46 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Token {
+export class RebalanceToken {
   @PrimaryColumn()
   asset_id: string;
 
   @Column()
   symbol: string;
 
-  @ManyToMany(() => Exchange, (exchange) => exchange.tokens)
+  @ManyToMany(() => RebalanceExchange, (exchange) => exchange.tokens)
   @JoinTable({
     name: 'token_exchange',
     joinColumn: { name: 'token_id', referencedColumnName: 'asset_id' },
     inverseJoinColumn: { name: 'exchange_id', referencedColumnName: 'name' },
   })
-  exchanges: Exchange[];
+  exchanges: RebalanceExchange[];
 }
 
 @Entity()
-export class Exchange {
+export class RebalanceExchange {
   @PrimaryColumn()
   name: string;
 
-  @ManyToMany(() => Token, (token) => token.exchanges)
-  tokens: Token[];
+  @ManyToMany(() => RebalanceToken, (token) => token.exchanges)
+  tokens: RebalanceToken[];
 }
 
-@Entity('token_exchange')
-export class TokenExchange {
+@Entity()
+export class RebalanceTokenExchange {
   @PrimaryColumn()
   token_id: string;
 
   @PrimaryColumn()
   exchange_id: string;
 
-  @ManyToOne(() => Token, (token) => token.exchanges)
-  @JoinColumn({ name: 'token_id', referencedColumnName: 'asset_id' }) // Correctly reference the join column
-  token: Token;
+  @ManyToOne(() => RebalanceToken, (token) => token.exchanges)
+  @JoinColumn({ name: 'token_id', referencedColumnName: 'asset_id' })
+  token: RebalanceToken;
 
-  @ManyToOne(() => Exchange, (exchange) => exchange.tokens)
-  @JoinColumn({ name: 'exchange_id', referencedColumnName: 'name' }) // Correctly reference the join column
-  exchange: Exchange;
+  @ManyToOne(() => RebalanceExchange, (exchange) => exchange.tokens)
+  @JoinColumn({ name: 'exchange_id', referencedColumnName: 'name' })
+  exchange: RebalanceExchange;
 
   @Column()
   minimumBalance: string;
