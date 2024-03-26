@@ -12,7 +12,6 @@ import {
   ASSET_ID_NETWORK_MAP,
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
-import { CurrencyMinAmount } from 'src/common/entities/rebalance-asset.entity';
 
 @Injectable()
 export class RebalanceService {
@@ -84,13 +83,13 @@ export class RebalanceService {
 
       const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
       const mixinAmount = BigNumber(mixinBalance);
-      if (mixinAmount.lte(minAmount.minium_balance)) {
+      if (mixinAmount.lte(minAmount)) {
         this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
         await this.rebalanceFromExchangeToMixin(
           mixinAssetID,
           symbol,
           mixinAmount,
-          BigNumber(minAmount.minium_balance),
+          BigNumber(minAmount),
           allBalanceByExchange,
         );
       }
@@ -106,10 +105,8 @@ export class RebalanceService {
           );
 
         if (
-          BigNumber(balance).lte(minAmount.minium_balance) &&
-          BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(
-            minAmount.minium_balance,
-          )
+          BigNumber(balance).lte(minAmount) &&
+          BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
         ) {
           this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
           await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
@@ -199,12 +196,12 @@ export class RebalanceService {
     );
 
     // Retrieve the minimum balance requirement for the asset on the exchange
-    const { minium_balance: minBalanceStr } =
+    const minimum_balance =
       await this.rebalanceRepository.getCurrencyMinAmountBySymbol(
         exchange,
         symbol,
       );
-    const minBalance = new BigNumber(minBalanceStr);
+    const minBalance = new BigNumber(minimum_balance);
 
     // Determine if rebalance is necessary
     if (balanceBN.isLessThanOrEqualTo(minBalance)) {
@@ -269,37 +266,29 @@ export class RebalanceService {
     }
   }
 
-  private transformMinBalanceForTable(currencyMinAmounts: CurrencyMinAmount[]) {
-    const tokenSymbols = [
-      ...new Set(currencyMinAmounts.map((cma) => cma.symbol)),
-    ];
-    const exchangeNames = [
-      ...new Set(currencyMinAmounts.map((cma) => cma.exchange.name)),
-    ];
-    const tableData = [];
-
-    tokenSymbols.forEach((symbol) => {
-      const rowData = { symbol };
-      exchangeNames.forEach((exchangeName) => {
-        const found = currencyMinAmounts.find(
-          (cma) => cma.symbol === symbol && cma.exchange.name === exchangeName,
-        );
-        rowData[exchangeName] = found ? found.minium_balance : '-';
-      });
-      tableData.push(rowData);
-    });
-
-    return {
-      columns: ['Symbol', ...exchangeNames],
-      rows: tableData,
-    };
+  async findAllTokensWithExchangesAndBalances(): Promise<any[]> {
+    return this.rebalanceRepository.findAllTokensWithExchangesAndBalances();
   }
 
-  async getMinBalanceTable(): Promise<{
-    columns: string[];
-    rows: any[];
-  }> {
-    const minAmounts = await this.rebalanceRepository.findAllMinAmounts();
-    return this.transformMinBalanceForTable(minAmounts);
+  async getCurrencyMinAmountBySymbol(
+    exchangeName: string,
+    symbol: string,
+  ): Promise<string | null> {
+    return this.rebalanceRepository.getCurrencyMinAmountBySymbol(
+      exchangeName,
+      symbol,
+    );
+  }
+
+  async addOrUpdateMinimumBalance(
+    assetId: string,
+    exchangeName: string,
+    minimumBalance: string,
+  ): Promise<void> {
+    return this.rebalanceRepository.addOrUpdateMinimumBalance(
+      assetId,
+      exchangeName,
+      minimumBalance,
+    );
   }
 }

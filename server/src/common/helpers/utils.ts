@@ -99,7 +99,7 @@ export const convertAssetBalancesToSymbols = (
       symbolBalances[symbol] = balance;
     } else {
       // Optionally handle the case where there's no symbol for an asset ID
-      console.warn(`Symbol not found for asset ID: ${assetId}`);
+      // console.warn(`Symbol not found for asset ID: ${assetId}`);
     }
   });
 

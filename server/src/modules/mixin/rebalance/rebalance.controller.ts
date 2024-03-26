@@ -13,13 +13,13 @@ export class RebalanceController {
 
   constructor(private readonly rebalanceService: RebalanceService) {}
 
-  @Get('/minium_balances')
+  @Get('/minimum_balances')
   @ApiOperation({ summary: 'Get all minium balance settings' })
   @ApiResponse({ status: 200, description: 'Minium balances' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getAllMiniumBalanceSettings() {
     try {
-      return await this.rebalanceService.getMinBalanceTable();
+      return await this.rebalanceService.findAllTokensWithExchangesAndBalances();
     } catch (error) {
       this.logger.error(`Failed to get minium balance settings ${error.stack}`);
       throw error;

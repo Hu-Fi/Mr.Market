@@ -1,7 +1,7 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 
 export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<any> => {
-  const url = `${HUFI_BACKEND_URL}/rebalance/minium_balances`;
+  const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balances`;
 
   try {
     const response = await fetch(url, {

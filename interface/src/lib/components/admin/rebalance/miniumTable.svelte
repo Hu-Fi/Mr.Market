@@ -21,7 +21,7 @@
 <div class="overflow-x-auto flex flex-col space-y-4">
   <div class="flex items-center">
     <button class="btn btn-xs btn-ghost hover:bg-base-100 no-animation">
-      <span class="font-semibold text-base"> {$_("minium_balance_settings")} </span>
+      <span class="font-semibold text-base"> {$_("minimum_balance_settings")} </span>
     </button>
   </div>
   <table class="table mt-4">

@@ -294,6 +294,6 @@
   "failed_to_load_market_data": "Failed to load market data",
   "retry": "Retry",
   "rebalance": "Rebalance",
-  "minium_balance_settings": "Minium balance settings",
-  "minium_balance_settings_intro": "the minium balance to keep in exchange or mixin"
+  "minimum_balance_settings": "Minium balance settings",
+  "minimum_balance_settings_intro": "the minium balance to keep in exchange or mixin"
 }
