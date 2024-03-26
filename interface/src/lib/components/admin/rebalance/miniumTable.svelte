@@ -1,9 +1,21 @@
 <script>
+    import { fetchMiniumBalanceSettings } from "$lib/helpers/hufi/admin/minBalances";
   import { _ } from "svelte-i18n";
   const b = [
     {name: 'okx'},
     {name: 'gate'},
   ];
+
+  const fetchTable = async () => {
+    const token = localStorage.getItem('admin-access-token')
+    if (!token) {
+      console.error('Unable to fetch admin endpoint without jwt token')
+      return;
+    }
+    const table = await fetchMiniumBalanceSettings(token);
+    console.log(table)
+  }
+  fetchTable();
 </script>
 
 <div class="overflow-x-auto flex flex-col space-y-4">

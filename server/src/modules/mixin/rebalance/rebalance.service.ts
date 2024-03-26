@@ -72,7 +72,7 @@ export class RebalanceService {
     const allBalanceByExchange =
       this.exchangeService.aggregateBalancesByExchange(allBalanceByKey);
 
-    // Process each asset for potential rebalance
+    // Process each asset for potential rebalance from exchange to mixin
     for (const [symbol, mixinBalance] of Object.entries(
       mixinSymbolBalanceMap,
     )) {
@@ -86,7 +86,6 @@ export class RebalanceService {
       const mixinAmount = BigNumber(mixinBalance);
       if (mixinAmount.lte(minAmount.minium_balance)) {
         this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
-        // Rebalance from exchange to Mixin
         await this.rebalanceFromExchangeToMixin(
           mixinAssetID,
           symbol,
@@ -97,7 +96,7 @@ export class RebalanceService {
       }
     }
 
-    // Check each exchange balance for potential rebalance to exchange
+    // Check each exchange balance for potential rebalance from mixin to exchange
     for (const [exchange, data] of Object.entries(allBalanceByExchange)) {
       for (const [symbol, balance] of Object.entries(data.total)) {
         const minAmount =
@@ -112,8 +111,7 @@ export class RebalanceService {
             minAmount.minium_balance,
           )
         ) {
-          // Rebalance from Mixin to exchange
-          this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
+          this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
           await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
         }
       }
@@ -157,7 +155,7 @@ export class RebalanceService {
         mixinAmount,
       );
 
-      // If amountToTransfer is less than minAmount * 2, return;
+      // If amountToTransfer is less than minAmount * 2, skip rebalance;
       if (amountToTransfer.lte(minAmount.multipliedBy(2))) {
         continue;
       }
@@ -193,7 +191,6 @@ export class RebalanceService {
     balance: BigNumber.Value,
     exchange: string,
   ) {
-    // Convert balance to a BigNumber for precise arithmetic operations
     const balanceBN = new BigNumber(balance);
 
     // Log the initiation of the rebalance process
@@ -211,17 +208,12 @@ export class RebalanceService {
 
     // Determine if rebalance is necessary
     if (balanceBN.isLessThanOrEqualTo(minBalance)) {
-      // Log that the balance is already above or at the threshold, no rebalance needed
-      this.logger.log(
-        `No rebalance needed for ${symbol} to ${exchange}. Current balance: ${balanceBN.toString()}, Minimum required: ${minBalance.toString()}`,
-      );
       return;
     }
 
     // Calculate the amount needed to rebalance
     const amountToRebalance = balanceBN.minus(minBalance);
     if (amountToRebalance.isLessThanOrEqualTo(0)) {
-      // If calculation goes wrong or not needed, log and return
       this.logger.warn(
         `Calculated amount to rebalance is not positive. Calculated: ${amountToRebalance.toString()}`,
       );
@@ -244,8 +236,6 @@ export class RebalanceService {
     // Get network by asset id
     const network = ASSET_ID_NETWORK_MAP[assetID];
 
-    // Get the deposit address from the exchange for the symbol
-    // Assuming there's a method to get a deposit address for a given symbol on the exchange
     const depositAddress = await this.exchangeService.getDepositAddress({
       exchange,
       apiKeyId: apiKey.key_id,
@@ -259,18 +249,15 @@ export class RebalanceService {
       return;
     }
 
-    // TODO: Add rebalance history
-
     // Initiate the transfer from Mixin to the exchange
-    // Assuming there's a method to initiate a withdrawal to a given address, with a specified amount and symbol
     const transferResult = await this.snapshotService.withdrawal(
       assetID,
       depositAddress.address,
       depositAddress.memo,
       amountToRebalance.toString(),
     );
+    // TODO: Add rebalance history
 
-    // Log the result of the transfer initiation
     if (Array.isArray(transferResult) && transferResult.length > 0) {
       this.logger.log(
         `Successfully initiated transfer of ${amountToRebalance.toString()} ${symbol} from Mixin to ${exchange}`,

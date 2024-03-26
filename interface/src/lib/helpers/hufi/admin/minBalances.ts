@@ -1,13 +1,14 @@
-export const fetchMiniumBalanceSettings = async (): Promise<any> => {
-  const url = 'http://yourserver.com/rebalance/minium_balances';
-  const token = 'YOUR_JWT_TOKEN';
+import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+
+export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<any> => {
+  const url = `${HUFI_BACKEND_URL}/rebalance/minium_balances`;
 
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${jwtToken}`,
       },
     });
 
