@@ -256,7 +256,6 @@
   "delete_info":"Delete this {grow_type}, all tokens will be refunded.",
   "asks": "Asks",
   "bids": "Bids",
-
   "password_incorrect": "Password incorrect",
   "enter_password": "Enter password",
   "dashboard": "Dashboard",
