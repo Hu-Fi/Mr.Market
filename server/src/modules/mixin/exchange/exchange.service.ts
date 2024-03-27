@@ -177,6 +177,10 @@ export class ExchangeService {
     }
   }
 
+  async getAllSpotOrders(): Promise<SpotOrder[]> {
+    return this.exchangeRepository.readAllSpotOrders();
+  }
+
   // DB related
   async addApiKey(key: APIKeysConfig) {
     return this.exchangeRepository.addAPIKey(key);
