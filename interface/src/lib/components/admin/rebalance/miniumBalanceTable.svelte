@@ -2,8 +2,10 @@
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { fetchMiniumBalanceSettings, fetchRebalanceExchanges } from "$lib/helpers/hufi/admin/minBalances";
+  
+  const TEMPORARY_SKIP = true;
 
-  let exchanges: string[] = [];
+  $: exchanges = [];
   let table: unknown[] = [];
 
   const fetchData = async () => {
@@ -17,10 +19,10 @@
   };
   (async () => {
     table = await fetchData();
-    console.log(table)
   })();
 </script>
 
+{#if !TEMPORARY_SKIP}
 <div class="overflow-x-auto flex flex-col space-y-4">
   <div class="flex items-center">
     <span class="font-semibold text-base">
@@ -68,12 +70,18 @@
             <td>
               {t.symbol}
             </td>
-            <!-- <td>
-              {t.asset_id}
-            </td> -->
-            <td>
-              
-            </td>
+            {#each t.exchange as e}
+              <td>
+                <div class="input input-xs">
+                  {e.name === exchanges[0].name ? e.minimumBalance: '-'}
+                </div>
+              </td>
+              <td>
+                <div class="input input-xs">
+                  {e.name === exchanges[1].name ? e.minimumBalance: '-'}
+                </div>
+              </td>
+            {/each}
           </tr>
         {/each}
       </tbody>
@@ -84,3 +92,8 @@
     </div>
   {/if}
 </div>
+{:else}
+  <div class="flex items-center justify-center">
+    <span> We skip this for now as we can modifiy them through db. We don't have enough time for this (27 Mar) </span>
+  </div>
+{/if}

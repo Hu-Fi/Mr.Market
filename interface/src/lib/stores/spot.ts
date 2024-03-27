@@ -46,7 +46,6 @@ export const cancelOrderDialog = writable(false)
 export const cancelingOrder = writable()
 export const currentPairOnly = writable(false)
 export const openedOrders = writable(0)
-export const openPositions = writable(0)
 // history filter
 export const historyFilterDialog = writable(false)
 // 0 default, 1 limit/market, 2 TP/SP, ...

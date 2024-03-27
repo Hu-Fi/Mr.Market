@@ -16,10 +16,10 @@ export const SUPPORTED_PAIRS = {
     'SOL/USDT',
     'SUI/USDT',
   ],
-  bitfinex: ['BTC/USDT', 'ETH/USDT'],
-  mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT'],
-  gate: [],
-  lbank: [],
+  bitfinex: ['BTC/USDT', 'ETH/USDT', 'HMT/USDT'],
+  mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT', 'HMT/USDT'],
+  gate: ['HMT/USDT'],
+  lbank: ['HMT/USDT'],
 };
 
 // Used for Mixin memo
@@ -54,6 +54,7 @@ export const PAIRS_MAP = {
   MQQZ: 'CRO/USDT-ERC20',
   WOX4: 'ATOM/USDT-ERC20',
   BVSE: 'COMP/USDT-ERC20',
+  FNZB: 'HMT/USDT-ERC20',
 };
 
 export const PAIRS_MAP_REVERSED: { [key: string]: string } = Object.entries(

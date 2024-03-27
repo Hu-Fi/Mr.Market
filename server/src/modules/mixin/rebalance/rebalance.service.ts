@@ -53,65 +53,70 @@ export class RebalanceService {
 
   @Cron('*/15 * * * * *')
   async rebalance() {
-    const mixinBalances = await this.snapshotService.getAllAssetBalances();
-    if (!mixinBalances) {
-      this.logger.error('Failed to fetch Mixin balances.');
-      return;
-    }
-
-    const mixinSymbolBalanceMap = convertAssetBalancesToSymbols(mixinBalances);
-    this.logger.log(
-      `mixinSymbolBalanceMap: ${JSON.stringify(mixinSymbolBalanceMap)}`,
-    );
-    const allBalanceByKey = await this.exchangeService.getAllAPIKeysBalance();
-    if (!allBalanceByKey) {
-      this.logger.error('Failed to fetch exchange balances.');
-      return;
-    }
-    const allBalanceByExchange =
-      this.exchangeService.aggregateBalancesByExchange(allBalanceByKey);
-
-    // Process each asset for potential rebalance from exchange to mixin
-    for (const [symbol, mixinBalance] of Object.entries(
-      mixinSymbolBalanceMap,
-    )) {
-      const minAmount =
-        await this.rebalanceRepository.getCurrencyMinAmountBySymbol(
-          'mixin',
-          symbol,
-        );
-
-      const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
-      const mixinAmount = BigNumber(mixinBalance);
-      if (mixinAmount.lte(minAmount)) {
-        this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
-        await this.rebalanceFromExchangeToMixin(
-          mixinAssetID,
-          symbol,
-          mixinAmount,
-          BigNumber(minAmount),
-          allBalanceByExchange,
-        );
+    try {
+      const mixinBalances = await this.snapshotService.getAllAssetBalances();
+      if (!mixinBalances) {
+        this.logger.error('Failed to fetch Mixin balances.');
+        return;
       }
-    }
 
-    // Check each exchange balance for potential rebalance from mixin to exchange
-    for (const [exchange, data] of Object.entries(allBalanceByExchange)) {
-      for (const [symbol, balance] of Object.entries(data.total)) {
+      const mixinSymbolBalanceMap =
+        convertAssetBalancesToSymbols(mixinBalances);
+      this.logger.log(
+        `mixinSymbolBalanceMap: ${JSON.stringify(mixinSymbolBalanceMap)}`,
+      );
+      const allBalanceByKey = await this.exchangeService.getAllAPIKeysBalance();
+      if (!allBalanceByKey) {
+        this.logger.error('Failed to fetch exchange balances.');
+        return;
+      }
+      const allBalanceByExchange =
+        this.exchangeService.aggregateBalancesByExchange(allBalanceByKey);
+
+      // Process each asset for potential rebalance from exchange to mixin
+      for (const [symbol, mixinBalance] of Object.entries(
+        mixinSymbolBalanceMap,
+      )) {
         const minAmount =
           await this.rebalanceRepository.getCurrencyMinAmountBySymbol(
-            exchange,
+            'mixin',
             symbol,
           );
 
-        if (
-          BigNumber(balance).lte(minAmount) &&
-          BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
-        ) {
-          this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
-          await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
+        const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
+        const mixinAmount = BigNumber(mixinBalance);
+        if (mixinAmount.lte(minAmount)) {
+          this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
+          await this.rebalanceFromExchangeToMixin(
+            mixinAssetID,
+            symbol,
+            mixinAmount,
+            BigNumber(minAmount),
+            allBalanceByExchange,
+          );
         }
       }
+
+      // Check each exchange balance for potential rebalance from mixin to exchange
+      for (const [exchange, data] of Object.entries(allBalanceByExchange)) {
+        for (const [symbol, balance] of Object.entries(data.total)) {
+          const minAmount =
+            await this.rebalanceRepository.getCurrencyMinAmountBySymbol(
+              exchange,
+              symbol,
+            );
+
+          if (
+            BigNumber(balance).lte(minAmount) &&
+            BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
+          ) {
+            this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
+            await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
+          }
+        }
+      }
+    } catch (e) {
+      this.logger.error(`${e}`);
     }
   }
 

@@ -4,18 +4,16 @@
   import { onDestroy } from "svelte";
   import { darkTheme } from "$lib/stores/theme";
   import {
-    keys,
     asc,
-    selectedField,
-    spotSelectedField,
     spotKeys,
+    spotSelectedField,
   } from "$lib/stores/market";
+  import { page } from "$app/stores";
 
   let tableHeaders = [$_("name"), $_("price"), $_("24chg")];
 
   onDestroy(() => {
     spotSelectedField.set(spotKeys[0]);
-    selectedField.set(keys[0]);
     asc.set(true);
   });
 </script>
@@ -25,10 +23,17 @@
     <th
       class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
       on:click={() => {
-        if ($selectedField == keys[0]) {
-          return;
+        if ($page.url.pathname.includes("market/token")){
+          if ($spotSelectedField == spotKeys[0]) {
+            return;
+          }
+          spotSelectedField.set(spotKeys[0]);
+        } else if ($page.url.pathname.includes("market/spot")) {
+          if ($spotSelectedField == spotKeys[0]) {
+            return;
+          }
+          spotSelectedField.set(spotKeys[0]);
         }
-        selectedField.set(keys[0]);
         asc.set(true);
       }}
     >
@@ -37,7 +42,7 @@
         <button
           class={clsx(
             "flex flex-col space-y-[-8px]",
-            $selectedField != keys[0] && "opacity-50",
+            $spotSelectedField != spotKeys[0] && "opacity-50",
           )}
         >
           <!-- Caret Up Icon -->
@@ -48,7 +53,7 @@
             ><path
               xmlns="http://www.w3.org/2000/svg"
               d="M7 14L12 8L17 14L7 14Z"
-              fill={$selectedField === keys[0]
+              fill={$spotSelectedField === spotKeys[0]
                 ? $asc
                   ? "currentColor"
                   : $darkTheme
@@ -65,7 +70,7 @@
             ><path
               xmlns="http://www.w3.org/2000/svg"
               d="M17 10L12 16L7 10H17Z"
-              fill={$selectedField === keys[0]
+              fill={$spotSelectedField === spotKeys[0]
                 ? !$asc
                   ? "currentColor"
                   : $darkTheme
@@ -82,10 +87,17 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
-          if ($selectedField == keys[1]) {
-            return;
+          if ($page.url.pathname.includes("market/token")){
+            if ($spotSelectedField == spotKeys[1]) {
+              return;
+            }
+            spotSelectedField.set(spotKeys[1]);
+          } else if ($page.url.pathname.includes("market/spot")) {
+            if ($spotSelectedField == spotKeys[1]) {
+              return;
+            }
+            spotSelectedField.set(spotKeys[1]);
           }
-          selectedField.set(keys[1]);
           asc.set(false);
         }}
       >
@@ -94,7 +106,7 @@
           <button
             class={clsx(
               "flex flex-col space-y-[-8px]",
-              $selectedField != keys[1] && "opacity-50",
+              $spotSelectedField != spotKeys[1] && "opacity-50",
             )}
           >
             <!-- Caret Up Icon -->
@@ -105,7 +117,7 @@
               ><path
                 xmlns="http://www.w3.org/2000/svg"
                 d="M7 14L12 8L17 14L7 14Z"
-                fill={$selectedField === keys[1]
+                fill={$spotSelectedField === spotKeys[1]
                   ? !$asc
                     ? "currentColor"
                     : $darkTheme
@@ -122,7 +134,7 @@
               ><path
                 xmlns="http://www.w3.org/2000/svg"
                 d="M17 10L12 16L7 10H17Z"
-                fill={$selectedField === keys[1]
+                fill={$spotSelectedField === spotKeys[1]
                   ? $asc
                     ? "currentColor"
                     : $darkTheme
@@ -138,10 +150,17 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
-          if ($selectedField == keys[2]) {
-            return;
+          if ($page.url.pathname.includes("market/token")){
+            if ($spotSelectedField == spotKeys[2]) {
+              return;
+            }
+            spotSelectedField.set(spotKeys[2]);
+          } else if ($page.url.pathname.includes("market/spot")) {
+            if ($spotSelectedField == spotKeys[2]) {
+              return;
+            }
+            spotSelectedField.set(spotKeys[2]);
           }
-          selectedField.set(keys[2]);
           asc.set(false);
         }}
       >
@@ -150,7 +169,7 @@
           <button
             class={clsx(
               "flex flex-col space-y-[-8px]",
-              $selectedField != keys[2] && "opacity-50",
+              $spotSelectedField != spotKeys[2] && "opacity-50",
             )}
           >
             <!-- Caret Up Icon -->
@@ -161,7 +180,7 @@
               ><path
                 xmlns="http://www.w3.org/2000/svg"
                 d="M7 14L12 8L17 14L7 14Z"
-                fill={$selectedField === keys[2]
+                fill={$spotSelectedField === spotKeys[2]
                   ? !$asc
                     ? "currentColor"
                     : $darkTheme
@@ -178,7 +197,7 @@
               ><path
                 xmlns="http://www.w3.org/2000/svg"
                 d="M17 10L12 16L7 10H17Z"
-                fill={$selectedField === keys[2]
+                fill={$spotSelectedField === spotKeys[2]
                   ? $asc
                     ? "currentColor"
                     : $darkTheme

@@ -2,7 +2,7 @@
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
-  import { manageMode, openPositions, openedOrders, orderFilterDialog } from "$lib/stores/spot";
+  import { manageMode, openedOrders, orderFilterDialog } from "$lib/stores/spot";
 </script>
 
 <div class="flex px-4 py-3 border-b border-base-200 justify-between">

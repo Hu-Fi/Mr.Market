@@ -1,6 +1,6 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 
-export const fetchRebalanceExchanges = async (jwtToken: string): Promise<any> => {
+export const fetchRebalanceExchanges = async (jwtToken: string): Promise<unknown> => {
   const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/exchanges`;
 
   try {
@@ -23,7 +23,7 @@ export const fetchRebalanceExchanges = async (jwtToken: string): Promise<any> =>
     throw error;
   }
 }
-export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<any> => {
+export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<unknown> => {
   const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/all`;
 
   try {
@@ -47,7 +47,7 @@ export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<any>
   }
 }
 
-export const addMinimumBalanceSetting = async (jwtToken: string, settings: { symbol: string; assetId: string; exchangeName: string; minimumBalance: string; }): Promise<any> => {
+export const addMinimumBalanceSetting = async (jwtToken: string, settings: { symbol: string; assetId: string; exchangeName: string; minimumBalance: string; }): Promise<unknown> => {
   const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/add`;
 
   try {
@@ -72,7 +72,7 @@ export const addMinimumBalanceSetting = async (jwtToken: string, settings: { sym
   }
 }
 
-export const updateMinimumBalanceSetting = async (jwtToken: string, settings: { assetId: string; exchangeName: string; minimumBalance: string; }): Promise<any> => {
+export const updateMinimumBalanceSetting = async (jwtToken: string, settings: { assetId: string; exchangeName: string; minimumBalance: string; }): Promise<unknown> => {
   const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/update`;
 
   try {

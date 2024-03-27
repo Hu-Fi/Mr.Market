@@ -6,6 +6,7 @@ import {
   RebalanceExchange,
   RebalanceTokenExchange,
 } from 'src/common/entities/rebalance-asset.entity';
+import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/rebalance';
 
 @Injectable()
 export class RebalanceRepository {
@@ -116,31 +117,19 @@ export class RebalanceRepository {
   }
 
   async findAllTokensWithExchangesAndBalances(): Promise<any[]> {
-    const tokens = await this.tokenRepository.find({
-      relations: ['exchanges'],
-    });
-    const tokenExchangeMap = await this.getTokenExchangeMap();
+    const tokens = await this.tokenRepository.find();
+    const tokenExchange = await this.tokenExchangeRepository.find();
 
     return tokens.map((token) => ({
       asset_id: token.asset_id,
       symbol: token.symbol,
-      exchanges: token.exchanges.map((exchange) => ({
-        name: exchange.name,
-        minimumBalance:
-          tokenExchangeMap[`${token.asset_id}_${exchange.name}`] || 'N/A',
-      })),
+      exchange: tokenExchange
+        .filter((te) => te.token_id === token.asset_id)
+        .map((te) => ({
+          name: te.exchange_id,
+          minimumBalance: te.minimumBalance,
+        })),
     }));
-  }
-
-  private async getTokenExchangeMap(): Promise<{ [key: string]: string }> {
-    const tokenExchanges = await this.tokenExchangeRepository.find();
-    const map = {};
-
-    for (const te of tokenExchanges) {
-      map[`${te.token_id}_${te.exchange_id}`] = te.minimumBalance;
-    }
-
-    return map;
   }
 
   async getCurrencyMinAmountBySymbol(
@@ -171,6 +160,8 @@ export class RebalanceRepository {
       },
     });
 
-    return tokenExchange ? tokenExchange.minimumBalance : null;
+    return tokenExchange
+      ? tokenExchange.minimumBalance
+      : DEFAULT_MINIMUM_BALANCE;
   }
 }

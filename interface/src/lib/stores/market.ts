@@ -18,8 +18,9 @@ export const searchValue = writable('')
 // For list sorting (change keys and 'sortCoins()' when data change)
 export const asc = writable(true);
 export const keys = ["market_cap_rank", "current_price", "price_change_percentage_24h"];
-export const spotKeys = ["symbol", "current_price", "price_change_percentage_24h"];
+export const spotKeys = ["symbol", "price", "change"];
 export const selectedField = writable(keys[0]);
+export const spotSelectedField = writable(spotKeys[0]);
 
 // Candle
 export const CandlePair = writable<TickerData>({
