@@ -54,6 +54,10 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.find({ where: { state } });
   }
 
+  async readAllSpotOrders(): Promise<SpotOrder[]> {
+    return this.spotOrderRepository.find();
+  }
+
   async createSpotOrder(
     transactionData: Partial<SpotOrder>,
   ): Promise<SpotOrder> {
@@ -83,7 +87,7 @@ export class ExchangeRepository {
   }
 
   async readMixinReleaseHistory(orderId: string) {
-    return await this.mixinReleaseHistoryRepository.exists({
+    return await this.mixinReleaseHistoryRepository.exist({
       where: { orderId },
     });
   }
