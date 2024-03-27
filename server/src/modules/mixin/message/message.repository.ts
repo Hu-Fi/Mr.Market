@@ -26,7 +26,7 @@ export class MessageRepository {
   }
 
   async checkMessageExist(message_id: string) {
-    return await this.messageRepository.exists({
+    return await this.messageRepository.exist({
       where: { message_id },
     });
   }

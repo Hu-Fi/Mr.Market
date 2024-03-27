@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 import { CustomLogger } from '../logger/logger.service';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 
 type HEALTH_STATE = 'alive' | 'dead';
 
@@ -13,7 +15,7 @@ export class HealthService {
   private exchanges = new Map<string, ccxt.Exchange>();
   private readonly logger = new CustomLogger(HealthService.name);
 
-  constructor() {
+  constructor(@InjectEntityManager() private entityManager: EntityManager) {
     // Enable this with api keys in .env
     // this.checkApiKeys()
     this.initializeExchange();
@@ -64,6 +66,37 @@ export class HealthService {
 
   async ping(): Promise<string> {
     return 'pong';
+  }
+
+  async checkDbHealth(): Promise<any> {
+    const tables = [
+      'Trade',
+      'Performance',
+      'Transaction',
+      'UserBalance',
+      'Snapshot',
+      'SpotOrder',
+      'APIKeysConfig',
+      'CustomConfigEntity',
+      'MixinReleaseToken',
+      'MixinReleaseHistory',
+      'MixinMessage',
+      'MixinUser',
+    ];
+    const healthStatus = {};
+
+    for (const table of tables) {
+      try {
+        const count = await this.entityManager.query(
+          `SELECT COUNT(*) FROM "${table}"`,
+        );
+        healthStatus[table] = { status: 'OK', count: count[0].count };
+      } catch (error) {
+        healthStatus[table] = { status: 'ERROR', error: error.message };
+      }
+    }
+
+    return healthStatus;
   }
 
   async getAllHealth(): Promise<any> {
