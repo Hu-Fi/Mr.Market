@@ -1,7 +1,7 @@
-import { writable } from "svelte/store";
+import { derived, writable, type Writable } from "svelte/store";
 import type { Socket } from "socket.io-client";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
-import { asks as a, bids as b, current as c, usdValue as u} from "$lib/helpers/temporary";
+import { asks as a, bids as b} from "$lib/helpers/temporary";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
@@ -18,18 +18,23 @@ export const pairSelectorLoaded = writable(false)
 export const pairExchangeFilter = writable("all")
 // 0 limit, 1 market, ...
 export const orderType = writable({index: 0, name: "Limit order", fn: ()=>{}})
+export const orderTypeLimit = derived(orderType, ($orderType)=>{return $orderType.index===0})
+export const orderTypeMarket = derived(orderType, ($orderType)=>{return $orderType.index===1})
 export const orderTypeDialog = writable(false)
 export const orderConfirmDialog = writable(false)
 
 export const buy = writable(true)
-export const price = writable()
-export const amount = writable()
-export const total = writable()
+export const limitPrice: Writable<number | ''> = writable()
+export const limitAmount: Writable<number | ''> = writable()
+export const limitTotal: Writable<number | ''> = writable()
+export const marketPrice: Writable<number | ''> = writable()
+export const marketAmount: Writable<number | ''> = writable()
+export const marketTotal: Writable<number | ''> = writable()
 
 export const asks = writable<OrderBookPriceFormat[]>(a)
 export const bids = writable<OrderBookPriceFormat[]>(b)
-export const current = writable(c)
-export const usdValue = writable(u)
+export const current: Writable<number | ''> = writable()
+export const usdValue: Writable<string | ''> = writable()
 
 // 0 default, 1 ask, 2 bid
 export const orderBookMode = writable(0)

@@ -1,12 +1,13 @@
 import BigNumber from "bignumber.js";
 import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
+import { PAIRS_MAP_REVERSED, SYMBOL_ASSET_ID_MAP } from "$lib/helpers/constants";
 
 export const BN = BigNumber.clone({ DECIMAL_PLACES: 8 })
 export const BN2 = BigNumber.clone({ DECIMAL_PLACES: 2 })
 
 export const formatTimestampToTime = (t: string | number, showMinutes: boolean = false, showSeconds: boolean = false) => {
-  return moment(t).format(showMinutes? showSeconds ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD HH:mm": "YYYY-MM-DD");
+  return moment(t).format(showMinutes ? showSeconds ? "YYYY-MM-DD HH:mm:ss" : "YYYY-MM-DD HH:mm" : "YYYY-MM-DD");
 }
 
 export const formatUsUnit = (x: string | number) => {
@@ -22,7 +23,7 @@ export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
 }
 export const formatDecimals = (s: string | number, n: number) => {
-  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0 
+  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0
 
   const strValue = Number(s).toString();
   if (strValue.includes('.')) {
@@ -53,10 +54,10 @@ export const formatChartPrice = (s: string | number) => {
 
   // s >= 100, 2 decimals
   if (integerPart.length > 2) finalDecimalLength = 2;
-  
+
   // 10 <= s < 100, 3 decimals
   else if (integerPart.length == 2) finalDecimalLength = 3;
-  
+
   // 1 <= s < 10, 8 decimals
   else if (integerPart.length == 1) finalDecimalLength = 8;
 
@@ -120,7 +121,7 @@ export const formatOrderBookPrice = (s: string | number) => {
 
   // s >= 10, 2 decimals
   if (integerPart.length > 1) finalDecimalLength = 2;
-  
+
   // 1 <= s < 10, 3 decimals
   else if (integerPart.length == 1) finalDecimalLength = 3;
 
@@ -144,20 +145,20 @@ export const getAssetPercentage = (balance: string | number, total: string | num
   return formatDecimals(BN(balance).dividedBy(total).multipliedBy(100).toNumber(), 1)
 }
 
-export const roundToDigits = (number:number, precision: number) => {
-  function customRound(number:number, precision: number) {
+export const roundToDigits = (number: number, precision: number) => {
+  function customRound(number: number, precision: number) {
     const multiplier = 10 ** precision;
     const rounded = Math.round(number * multiplier) / multiplier;
     return rounded.toFixed(precision).replace(/\.?0+$/, ''); // Remove trailing zeros
   }
 
   if (precision === 0) {
-      return Math.round(number);
+    return Math.round(number);
   } else if (precision > 0) {
-      return customRound(number, precision);
+    return customRound(number, precision);
   } else {
-      const divisor = 10 ** Math.abs(precision);
-      return Math.round(number / divisor) * divisor;
+    const divisor = 10 ** Math.abs(precision);
+    return Math.round(number / divisor) * divisor;
   }
 }
 
@@ -200,7 +201,7 @@ export const itemInArray = (array: Array<object>, field: string, item: object) =
 }
 
 export const numberInArray = (array: Array<number>, item: number) => {
-  return  array.includes(item)
+  return array.includes(item)
 }
 export const toggleNumberInArray = (array: Array<number>, item: number) => {
   const index = array.indexOf(item);
@@ -212,4 +213,35 @@ export const toggleNumberInArray = (array: Array<number>, item: number) => {
     // If the number is found, remove it from the array
     array.splice(index, 1);
   }
+}
+
+// Used for handling symbol -> 4 digit memo
+export const encodeSymbolToMemo = (symbol: string) => {
+  let finalSymbol = symbol
+  if (symbol.endsWith('USDT')) {
+    finalSymbol = `${symbol}-ERC20`
+  }
+  const memoCode = PAIRS_MAP_REVERSED[finalSymbol];
+  if (!memoCode) {
+    return;
+  }
+  return memoCode;
+}
+
+// Used for handling the symbol -> both asset id conversion
+export const decodeSymbolToAssetID = (symbol: string) => {
+  let finalSymbol = symbol
+  if (symbol.endsWith('USDT')) {
+    finalSymbol = `${symbol}-ERC20`
+  }
+  const [firstAssetSymbol, secondAssetSymbol] = finalSymbol.split('/')
+  const firstAssetID = SYMBOL_ASSET_ID_MAP[firstAssetSymbol];
+  const secondAssetID = SYMBOL_ASSET_ID_MAP[secondAssetSymbol];
+  if (!firstAssetID) {
+    return;
+  }
+  if (!secondAssetID) {
+    return;
+  }
+  return { firstAssetID, secondAssetID }
 }

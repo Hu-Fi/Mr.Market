@@ -23,9 +23,8 @@ import whitebit from "$lib/images/exchanges/whitebit.jpg";
 import cryptocom from "$lib/images/exchanges/cryptocom.png";
 import bigone from "$lib/images/exchanges/bigone.png";
 import tapbit from "$lib/images/exchanges/tapbit.png";
-
-import mixinIcons from "$lib/constants/mixinIcons.json"
 import emptyToken from "$lib/images/empty-token.svg"
+import mixinIcons from "$lib/constants/mixinIcons.json"
 
 // Input identifier from coingecko /coin/:id
 export const findExchangeIconByIdentifier = (identifier: string) => {

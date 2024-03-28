@@ -5,6 +5,7 @@
 // 3. Add both base and target mixin asset id in SYMBOL_ASSET_ID_MAP by 'ASSET_SYMBOL':'ASSET_ID'. This is used for mapping mixin asset to pair symbol of exchanges.
 // 4. Update src/common/helpers/marketdata/decoder.ts for adapting data format if new exchange added
 // 5. Update src/modules/marketdata/marketdata.service.ts for data source if new exchange added
+// 6. Update SUPPORTED_PAIRS and PAIRS_MAP in interface/src/lib/helpers/constants.ts
 
 export const SUPPORTED_PAIRS = {
   okx: [
