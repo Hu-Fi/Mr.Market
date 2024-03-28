@@ -12,7 +12,8 @@
     "test": "bun run test:e2e & bun run test:unit",
     "test:install-deps": "npx playwright install-deps",
     "test:unit": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "pr:check":"bun run lint:fix && bun run test"
   },
   "devDependencies": {
     "@fontsource/bebas-neue": "^5.0.18",

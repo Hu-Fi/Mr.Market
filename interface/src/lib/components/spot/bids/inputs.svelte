@@ -13,7 +13,6 @@
     pair,
     buy,
     current,
-    orderType,
     orderTypeLimit,
     orderTypeMarket,
     limitPrice,
