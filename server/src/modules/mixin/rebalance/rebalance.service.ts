@@ -1,4 +1,5 @@
 import { Cron } from '@nestjs/schedule';
+import { getUuid } from '@mixin.dev/mixin-node-sdk';
 import { Injectable, Logger } from '@nestjs/common';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
@@ -14,7 +15,6 @@ import {
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
 import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
-import { getUuid } from '@mixin.dev/mixin-node-sdk';
 
 @Injectable()
 export class RebalanceService {
