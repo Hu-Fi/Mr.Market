@@ -1,17 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { Injectable, Logger } from '@nestjs/common';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
 import {
   calculateRebalanceAmount,
   convertAssetBalancesToSymbols,
+  getRFC3339Timestamp,
 } from 'src/common/helpers/utils';
 import BigNumber from 'bignumber.js';
 import {
   ASSET_ID_NETWORK_MAP,
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
+import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
+import { getUuid } from '@mixin.dev/mixin-node-sdk';
 
 @Injectable()
 export class RebalanceService {
@@ -164,11 +167,9 @@ export class RebalanceService {
 
       for (const apiKeyBalance of apiKeyBalances) {
         const balance = new BigNumber(apiKeyBalance.balances[symbol] || 0);
-        if (balance.isEqualTo(0)) continue; // Skip if no balance
+        if (balance.isEqualTo(0)) continue;
 
         if (balance.gte(amountToTransfer)) {
-          // TODO: Add rebalance history
-
           await this.exchangeService.createWithdrawal({
             exchange,
             apiKeyId: apiKeyBalance.api_key_id,
@@ -178,11 +179,22 @@ export class RebalanceService {
             tag: mixinDeposit.memo,
             amount: amountToTransfer.toString(),
           });
-          break;
+          await this.addRebalanceHistory({
+            trace_id: getUuid(),
+            from: exchange,
+            to: 'mixin',
+            api_key_id: apiKeyBalance.api_key_id,
+            symbol: symbol,
+            asset_id: assetId,
+            amount: amountToTransfer.toString(),
+            dest_address: mixinDeposit.address,
+            memo: mixinDeposit.memo,
+            timestamp: getRFC3339Timestamp(),
+          });
         } else {
-          // Partially fulfill from this API key and continue accumulating
-          // Gather funds into one api key
-          // Or we choose an API key with the most funds to withdraw
+          // In this case the api key doesn't have enough fund for amount to rebalance
+          // we can gather funds into one api key
+          // or we choose an API key with the most funds to withdraw
         }
       }
     }
@@ -258,7 +270,19 @@ export class RebalanceService {
       depositAddress.memo,
       amountToRebalance.toString(),
     );
-    // TODO: Add rebalance history
+
+    await this.addRebalanceHistory({
+      trace_id: getUuid(),
+      from: exchange,
+      to: 'mixin',
+      api_key_id: apiKey.key_id,
+      symbol: symbol,
+      asset_id: assetID,
+      amount: amountToRebalance.toString(),
+      dest_address: depositAddress.address,
+      memo: depositAddress.memo,
+      timestamp: getRFC3339Timestamp(),
+    });
 
     if (Array.isArray(transferResult) && transferResult.length > 0) {
       this.logger.log(
@@ -279,8 +303,8 @@ export class RebalanceService {
     return this.rebalanceRepository.findAllExchagnes();
   }
 
-  async addRebalanceHistory() {
-    return this.rebalanceRepository.addRebalanceHistory();
+  async addRebalanceHistory(history: RebalanceHistory) {
+    return this.rebalanceRepository.addRebalanceHistory(history);
   }
 
   async getCurrencyMinAmountBySymbol(

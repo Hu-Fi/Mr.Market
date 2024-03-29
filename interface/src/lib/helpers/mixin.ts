@@ -169,7 +169,7 @@ async function calculateTotalBTCBalance(totalUSDBalance) {
 
 const getUserBalances = async (user_id: string, token: string) => {
   if (isMixin) {
-    // TODO: implement get asset list from mixin context
+    // TODO: implement get asset list from mixin webview context
   }
   const topAssetsCache = await fetchTopAssetsCache();
   const outputs = await mixinSafeOutputs([user_id], token)

@@ -116,7 +116,12 @@ export class RebalanceRepository {
     }
   }
 
-  async addRebalanceHistory() {}
+  async addRebalanceHistory(
+    history: Partial<RebalanceHistory>,
+  ): Promise<RebalanceHistory> {
+    const his = this.rebalanceRepository.create(history);
+    return await this.rebalanceRepository.save(his);
+  }
 
   async findAllExchagnes(): Promise<any[]> {
     return await this.exchangeRepository.find();

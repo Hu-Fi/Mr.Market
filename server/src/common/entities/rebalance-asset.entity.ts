@@ -53,6 +53,7 @@ export class RebalanceTokenExchange {
   @Column()
   minimumBalance: string;
 }
+
 @Entity()
 export class RebalanceHistory {
   @PrimaryColumn()
@@ -68,13 +69,22 @@ export class RebalanceHistory {
   api_key_id: string;
 
   @Column()
-  exchange_id: string;
+  symbol: string;
+
+  @Column()
+  asset_id: string;
 
   @Column()
   amount: string;
 
   @Column()
-  fee: string;
+  dest_address: string;
+
+  @Column()
+  memo: string;
+
+  @Column()
+  fee?: string;
 
   @Column()
   timestamp: string;
