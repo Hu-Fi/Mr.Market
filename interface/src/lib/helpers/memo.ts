@@ -54,7 +54,7 @@ export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limi
     console.error(`GenerateSpotMemo failed to get pairId for symbol:${symbol}`)
     return;
   }
-  const limitPriceOrRefId = price;
+  const limitPriceOrRefId = price || '0';
   const refId = '';
   
   const memo = `${tradingType}:${spotOrderType}:${exchangeId}:${pairId}:${limitPriceOrRefId}:${refId}`

@@ -2,7 +2,7 @@
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
-import { hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { topAssetsCache, user, userAssets } from "$lib/stores/wallet";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
@@ -42,15 +42,13 @@ export const mixinShare = (url: string, title: string, description: string, icon
 }
 
 export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
-  // TODO: New network method
-  const params = new URLSearchParams({
-    recipient: BOT_ID,
+  window.open(buildMixinOneSafePaymentUri({
+    uuid: BOT_ID,
     asset: asset_id,
     amount: amount,
     memo: memo,
-    trace: trace_id
-  }).toString();
-  window.open(`mixin://pay?${params}`)
+    trace: trace_id,
+  }))
 }
 
 export const mixinUserMe = async (token: string) => {

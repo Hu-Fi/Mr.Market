@@ -9,6 +9,7 @@ import {
   RebalanceToken,
   RebalanceExchange,
   RebalanceTokenExchange,
+  RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
 
 @Module({
@@ -17,6 +18,7 @@ import {
       RebalanceToken,
       RebalanceExchange,
       RebalanceTokenExchange,
+      RebalanceHistory,
     ]),
     ExchangeModule,
     SnapshotsModule,
