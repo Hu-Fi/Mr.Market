@@ -22,7 +22,6 @@
     marketTotal,
     marketPrice,
   } from "$lib/stores/spot";
-    import toast from "svelte-french-toast";
 
   let usdValue = 1;
   let slider = 0;
