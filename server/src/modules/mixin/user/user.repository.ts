@@ -26,7 +26,7 @@ export class UserRepository {
   }
 
   async checkUserExist(user_id: string) {
-    return await this.userRepository.exist({
+    return await this.userRepository.exists({
       where: { user_id },
     });
   }

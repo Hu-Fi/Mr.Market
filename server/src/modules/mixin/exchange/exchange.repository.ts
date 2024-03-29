@@ -87,7 +87,7 @@ export class ExchangeRepository {
   }
 
   async readMixinReleaseHistory(orderId: string) {
-    return await this.mixinReleaseHistoryRepository.exist({
+    return await this.mixinReleaseHistoryRepository.exists({
       where: { orderId },
     });
   }
