@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -36,5 +36,10 @@ export class ExchangeController {
     } catch (e) {
       this.logger.error(`Get deposit address error: ${e.message}`);
     }
+  }
+
+  @Get('/spot-orders')
+  async getAllSpotOrders() {
+    return await this.exchagneService.getAllSpotOrders();
   }
 }
