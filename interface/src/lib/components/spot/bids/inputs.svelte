@@ -22,6 +22,7 @@
     marketTotal,
     marketPrice,
   } from "$lib/stores/spot";
+    import toast from "svelte-french-toast";
 
   let usdValue = 1;
   let slider = 0;
@@ -240,6 +241,7 @@
       bind:value={slider}
       on:input={handleInput}
       on:change={handleChange}
+      disabled={!$mixinConnected}
       class={clsx($buy ? "range-green" : "range-red", "range range-xs")}
     />
     <div class="w-full flex justify-between text-xs text-[8.75px] opacity-40">
