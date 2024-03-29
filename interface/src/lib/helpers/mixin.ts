@@ -2,7 +2,7 @@
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
-import { hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { WebViewApi, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { topAssetsCache, user, userAssets } from "$lib/stores/wallet";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
@@ -170,6 +170,9 @@ async function calculateTotalBTCBalance(totalUSDBalance) {
 }
 
 const getUserBalances = async (user_id: string, token: string) => {
+  if (isMixin) {
+    // TODO: implement get asset list from mixin context
+  }
   const topAssetsCache = await fetchTopAssetsCache();
   const outputs = await mixinSafeOutputs([user_id], token)
   // console.log(outputs)
