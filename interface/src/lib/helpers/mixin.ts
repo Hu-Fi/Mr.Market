@@ -42,6 +42,7 @@ export const mixinShare = (url: string, title: string, description: string, icon
 }
 
 export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
+  // TODO: New network method
   const params = new URLSearchParams({
     recipient: BOT_ID,
     asset: asset_id,
@@ -49,7 +50,6 @@ export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: strin
     memo: memo,
     trace: trace_id
   }).toString();
-  console.log(`mixinPay: ${params}`)
   window.open(`mixin://pay?${params}`)
 }
 

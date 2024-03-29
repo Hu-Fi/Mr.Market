@@ -5,6 +5,7 @@ import {
   RebalanceToken,
   RebalanceExchange,
   RebalanceTokenExchange,
+  RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
 import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/rebalance';
 
@@ -19,6 +20,9 @@ export class RebalanceRepository {
 
     @InjectRepository(RebalanceTokenExchange)
     private tokenExchangeRepository: Repository<RebalanceTokenExchange>,
+
+    @InjectRepository(RebalanceHistory)
+    private rebalanceRepository: Repository<RebalanceHistory>,
   ) {}
 
   async updateMinimumBalance(
@@ -111,6 +115,8 @@ export class RebalanceRepository {
       await this.tokenExchangeRepository.save(tokenExchange);
     }
   }
+
+  async addRebalanceHistory() {}
 
   async findAllExchagnes(): Promise<any[]> {
     return await this.exchangeRepository.find();

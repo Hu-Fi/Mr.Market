@@ -181,7 +181,7 @@ export class RebalanceService {
           break;
         } else {
           // Partially fulfill from this API key and continue accumulating
-          // Gath funds into one api key
+          // Gather funds into one api key
           // Or we choose an API key with the most funds to withdraw
         }
       }
@@ -277,6 +277,10 @@ export class RebalanceService {
 
   async findAllExchagnes(): Promise<any[]> {
     return this.rebalanceRepository.findAllExchagnes();
+  }
+
+  async addRebalanceHistory() {
+    return this.rebalanceRepository.addRebalanceHistory();
   }
 
   async getCurrencyMinAmountBySymbol(

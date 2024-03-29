@@ -55,5 +55,27 @@ export class RebalanceTokenExchange {
 }
 @Entity()
 export class RebalanceHistory {
-  // @PrimaryGeneratedColumn()
+  @PrimaryColumn()
+  trace_id: string;
+
+  @Column()
+  from: string;
+
+  @Column()
+  to: string;
+
+  @Column()
+  api_key_id: string;
+
+  @Column()
+  exchange_id: string;
+
+  @Column()
+  amount: string;
+
+  @Column()
+  fee: string;
+
+  @Column()
+  timestamp: string;
 }

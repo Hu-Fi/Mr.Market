@@ -91,7 +91,22 @@
     }
   };
   const setBalance = () => {
-    limitTotal.set(baseBalance);
+    if ($orderTypeLimit) {
+      if ($buy) {
+        limitTotal.set(baseBalance);
+      } else {
+        limitTotal.set(targetBalance);
+      }
+      return;
+    }
+    if ($orderTypeMarket) {
+      if ($buy) {
+        marketAmount.set(baseBalance);
+      } else {
+        marketAmount.set(targetBalance);
+      }
+      return;
+    }
     getAmount();
   };
   const setSlider = () => {
