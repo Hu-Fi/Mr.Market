@@ -243,8 +243,9 @@ export const ASSET_ID_SYMBOL_MAP: { [key: string]: string } = Object.entries(
   SYMBOL_ASSET_ID_MAP,
 ).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
-// Map mixin asset id to networks (Used for withdrawal on exchange)
-// TODO: We still need modify this as we test it
+// Map mixin asset id to networks (Used for withdrawal on exchanges)
+// TODO: We still need modify this as we test it,
+// and it's possible that different exchange use different network name for same network
 export const ASSET_ID_NETWORK_MAP = {
   'f5ef6b5d-cc5a-3d90-b2c0-a2fd386e7a3c': 'Ethereum',
   'c6d0c728-2624-429b-8e0d-d9d19b6592fa': 'Bitcoin',

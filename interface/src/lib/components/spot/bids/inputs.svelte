@@ -46,6 +46,7 @@
       return;
     }
     if ($orderTypeMarket) {
+      console.log('getAmount()=>Market')
       marketAmount.set(
         formatDecimals(
           BN($marketTotal).dividedBy($marketPrice).toNumber(),
@@ -266,7 +267,7 @@
     {:else if $orderTypeMarket}
       <input
         type="tel"
-        on:keyup={getAmount}
+        on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$marketAmount}
         placeholder={$_("total")}
