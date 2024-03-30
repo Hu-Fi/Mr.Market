@@ -6,11 +6,7 @@ import { CustomLogger } from './modules/logger/logger.service';
 async function bootstrap() {
   const logger = new CustomLogger(AppModule.name);
   const app = await NestFactory.create(AppModule);
-  // For testing
-  app.enableCors({
-    origin: '*',
-    credentials: true,
-  });
+  app.enableCors();
 
   // Global request logging
   app.use((req, _, next) => {
