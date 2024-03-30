@@ -2,31 +2,42 @@
   import clsx from "clsx"
   import moment from "moment"
   import { _ } from "svelte-i18n"
+  import { goto } from "$app/navigation";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
-    import { goto } from "$app/navigation";
+    import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
   export let o = {
-    first: "BTC", 
-    second: "USDT", 
+    orderId: 'a22170a7-ec32-4718-80f7-c304959c3e42',
+    snapshotId: 'd6db8dd2-089c-49df-9df7-01f810d00c27',
+    userId: '5da31e04-9a35-43d1-b46f-a6960bcd8e2d',
+    exchangeName: 'okx',
+    type: 'Limit Buy',
+    state: 'ORDER_CREATED',
+    symbol: 'BTC/USDT',
+    baseAssetId: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+    targetAssetId: '43d61dcd-e413-450d-80b8-101d5e903357',
+    createdAt: '2019-10-12T07:20:50.52Z',
+    updatedAt: '2019-10-12T07:20:50.52Z',
+
+    // symbol: "",
     price: 43576,
-    exchange: "Binance",
-    icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-    time: "2019-10-12T07:20:50.52Z", 
-    type: "limit",
-    buy: true,
-    amount: "1521412.4",
-    state: 'Canceled',
-    id: 'db3a8788-2303-405a-a734-683c85d797c2',
+    // exchange: "okx",
+    // time: "2019-10-12T07:20:50.52Z", 
+    // type: "limit",
+    // buy: true,
   };
+
+  const redirect = (orderId: string) => { goto(`/spot/history/${orderId}`); }
+  $: buy = o.type.toUpperCase().includes('BUY')
 </script>
 
-<button class="flex w-full flex-col space-y-3 border-b-slate-50 border-b py-4" on:click={()=>{ goto(`/spot/history/${o.id}`) }}>
+<button class="flex w-full flex-col space-y-3 border-b-slate-50 border-b py-4" on:click={()=>{ redirect(o.orderId) }}>
   <!-- Title -->
   <div class="flex w-full justify-between">
     <div class="flex items-center space-x-1">
-      <img src={o.icon} alt="icon" loading="lazy" class="w-4 h-4" />
+      <img src={findExchangeIconByIdentifier(o.exchangeName)} alt="icon" loading="lazy" class="w-4 h-4" />
       <span class="font-semibold"> 
-        {o.first}/{o.second}
+        {o.symbol}
       </span>
     </div>
     <div class="flex items-center">
@@ -42,20 +53,20 @@
         <div class={clsx("bg-red-100 px-2 rounded-md")}>
           <span class={clsx("text-red-500 text-sm capitalize")}>{o.type}</span>
         </div>
-        <div class={clsx(o.buy ? "bg-green-100": "bg-red-100" ,"px-2 rounded-md")}>
-          <span class={clsx(o.buy ? "text-green-500": "text-red-500" ,"text-sm capitalize")}>{o.buy ? $_('buy'): $_('sell')}</span>
+        <div class={clsx(buy ? "bg-green-100": "bg-red-100" ,"px-2 rounded-md")}>
+          <span class={clsx(buy ? "text-green-500": "text-red-500" ,"text-sm capitalize")}>{buy ? $_('buy'): $_('sell')}</span>
         </div>
       </div>
 
       <div>
-        <span class="text-xs opacity-60"> {moment(o.time).format('YYYY-MM-DD hh:mm:ss')} </span>
+        <span class="text-xs opacity-60"> {moment(o.createdAt).format('YYYY-MM-DD hh:mm:ss')} </span>
       </div>
     </div>
 
     <!-- Amount and price -->
     <div class="flex space-x-4 justify-between w-full">
       <!-- Circle progress -->
-      <div class={clsx("radial-progress border border-base-300", o.buy ? UpColorText : DownColorText)} style={`--value:${100}; --size: 44px; --thickness: 2px;`} role="progressbar">
+      <div class={clsx("radial-progress border border-base-300", buy ? UpColorText : DownColorText)} style={`--value:${100}; --size: 44px; --thickness: 2px;`} role="progressbar">
         <span class="text-sm text-base-content">100%</span> 
       </div>
       
@@ -66,7 +77,7 @@
             {$_('amount')}
           </span>
           <span class="">
-            {o.amount}
+            {0}
           </span>
         </div>
         <div class="flex items-center text-xs space-x-2 justify-between">

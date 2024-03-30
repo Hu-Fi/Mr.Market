@@ -29,9 +29,7 @@
     // type: "limit",
     // buy: true,
   };
-  const redirect = (orderId: string) => {
-    goto(`/spot/history/${orderId}`);
-  }
+  const redirect = (orderId: string) => { goto(`/spot/history/${orderId}`); }
   $: buy = o.type.toUpperCase().includes('BUY')
 </script>
 
