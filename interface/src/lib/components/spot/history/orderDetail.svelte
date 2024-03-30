@@ -1,6 +1,9 @@
 <script lang="ts">
-  // import clsx from "clsx"
-  // import { _ } from "svelte-i18n"
+  import clsx from "clsx"
+  import { _ } from "svelte-i18n"
+  import { page } from "$app/stores";
+
+  $page.data.order
 </script>
 
 <div class="mx-4">

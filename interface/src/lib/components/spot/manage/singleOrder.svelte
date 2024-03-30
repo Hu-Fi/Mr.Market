@@ -2,32 +2,45 @@
   import clsx from "clsx"
   import moment from "moment"
   import { _ } from "svelte-i18n"
+  import { goto } from "$app/navigation";
   import { cancelOrder } from "$lib/stores/spot";
   import { formatDecimals } from "$lib/helpers/utils";
+  import type { SpotOrder } from "$lib/types/hufi/spot";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
-  export let o = {
-    first: "BTC", 
-    second: "USDT", 
+  export let o: SpotOrder = {
+    orderId: 'a22170a7-ec32-4718-80f7-c304959c3e42',
+    // snapshotId: '',
+    // userId: '',
+    // exchangeName: '',
+    // type: '',
+    // state: '',
+    // symbol: '',
+    // baseAssetId: '',
+    // targetAssetId: '',
+    // apiKeyId?: '',
+    // createdAt: '',
+    // updatedAt: '',
+
+    symbol: "",
     price: 43576,
-    exchange: "Binance",
-    icon: "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
+    exchange: "okx",
     time: "2019-10-12T07:20:50.52Z", 
     type: "limit",
     buy: true,
     amount: "1",
     traded: "0.5",
   };
-  const go = () => {
-    console.log('goto open order')
+  const redirect = (orderId: string) => {
+    goto(`/spot/history/${orderId}`);
   }
 </script>
 
 <div class="flex flex-col space-y-3">
   <!-- Title -->
   <div class="flex justify-between">
-    <button class="flex items-center space-x-1" on:click={()=>{go()}}>
+    <button class="flex items-center space-x-1" on:click={()=>{redirect(o.order_id)}}>
       <div class="avatar">
         <div class="w-4 h-4 rounded-full">
           <img src={findExchangeIconByIdentifier(o.exchange)} alt="icon" loading="lazy" class="w-4 h-4" />

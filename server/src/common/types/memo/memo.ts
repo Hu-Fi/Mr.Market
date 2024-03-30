@@ -10,10 +10,17 @@ export type TradingType = keyof typeof TARDING_TYPE_MAP;
 export type SpotOrderType = keyof typeof SPOT_ORDER_TYPE_MAP;
 export type ExchangeIndex = keyof typeof SPOT_EXCHANGE_MAP;
 
+export type TradingTypeValue =
+  (typeof TARDING_TYPE_MAP)[keyof typeof TARDING_TYPE_MAP];
+export type SpotOrderTypeValue =
+  (typeof SPOT_ORDER_TYPE_MAP)[keyof typeof SPOT_ORDER_TYPE_MAP];
+export type ExchangeIndexValue =
+  (typeof SPOT_EXCHANGE_MAP)[keyof typeof SPOT_EXCHANGE_MAP];
+
 export interface MemoDetails {
   tradingType: TradingType;
   spotOrderType: SpotOrderType;
-  exchangeIndex: ExchangeIndex;
+  exchangeName: ExchangeIndex;
   destId: PairsMapKey;
   limitPrice?: string;
   refId?: string;

@@ -2,9 +2,9 @@ import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  isExchangeIndexValid,
-  isSpotOrderTypeValid,
-  isTradingTypeValid,
+  isExchangeIndexValueValid,
+  isSpotOrderTypeValueValid,
+  isTradingTypeValueValid,
 } from 'src/common/helpers/checks/spotChecks';
 import {
   getAssetIDBySymbol,
@@ -30,15 +30,16 @@ export class SpotOrderListener {
   @OnEvent('spot.create')
   async handleSpotOrderCreateEvent(event: SpotOrderCreateEvent) {
     // Check event parameters
-    if (!isTradingTypeValid(event.tradingType)) {
+    if (!isTradingTypeValueValid(event.tradingType)) {
       return;
     }
-    if (!isSpotOrderTypeValid(event.spotOrderType)) {
+    if (!isSpotOrderTypeValueValid(event.spotOrderType)) {
       return;
     }
-    if (!isExchangeIndexValid(event.exchangeIndex)) {
+    if (!isExchangeIndexValueValid(event.exchangeName)) {
       return;
     }
+    console.log(`spot.create:${JSON.stringify(event)}`);
 
     // Get Asset ID of buy and sell asset
     const symbol = getPairSymbolByKey(event.destId as PairsMapKey);
@@ -51,9 +52,9 @@ export class SpotOrderListener {
 
     // Determine direction by spot order type
     let buy: boolean;
-    if (event.spotOrderType.endsWith('B')) {
+    if (event.spotOrderType.toUpperCase().includes('BUY')) {
       buy = true;
-    } else if (event.spotOrderType.endsWith('S')) {
+    } else if (event.spotOrderType.toUpperCase().endsWith('SELL')) {
       buy = false;
     } else {
       return;
@@ -75,7 +76,7 @@ export class SpotOrderListener {
     const orderId = randomUUID();
     const order: ExchangePlaceSpotEvent = {
       orderId,
-      exchangeIndex: event.exchangeIndex,
+      exchangeName: event.exchangeName,
       snapshotId: event.snapshot.snapshot_id,
       userId: event.snapshot.opponent_id,
       type: event.spotOrderType,

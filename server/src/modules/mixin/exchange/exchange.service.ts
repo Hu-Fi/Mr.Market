@@ -577,7 +577,7 @@ export class ExchangeService {
     }
 
     orders.forEach(async (o) => {
-      const instance = this.exchangeInstances[o.exchangeIndex];
+      const instance = this.exchangeInstances[o.exchangeName];
       if (!instance.has['fetchOrder']) {
         return await this.updateSpotOrderState(
           o.orderId,

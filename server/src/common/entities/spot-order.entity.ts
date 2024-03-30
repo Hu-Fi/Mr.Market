@@ -15,7 +15,7 @@ export class SpotOrder {
   userId: string;
 
   @Column()
-  exchangeIndex: string; // Index of exchange
+  exchangeName: string; // Name of exchange
 
   @Column()
   type: SpotOrderType;
