@@ -1,10 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import {
-    currentPairOnly,
     openedOrders,
     orderFilterMode,
-    pair,
   } from "$lib/stores/spot";
   import SingleOrder from "$lib/components/spot/manage/singleOrder.svelte";
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";

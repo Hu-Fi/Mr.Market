@@ -231,6 +231,7 @@
   "apy":"APY",
   "details": "Details",
   "created_at": "Created at",
+  "updated_at": "Updated at",
   "deposit_amount_made": "Deposit {amount} {symbol}",
   "withdraw_amount_made": "Withdraw {amount} {symbol}",
   "buy_token_for_amount": "Buy {amount0} {symbol0} for {amount1} {symbol1}",
@@ -300,5 +301,6 @@
   "minimum_balance_settings_intro": "the minimum balance to keep in exchange or mixin",
   "create_new_minimum_balance_record": "Create new minimum balance record",
   "no_balance_in_wallet": "No balance in wallet",
-  "no_open_orders": "No open orders"
+  "no_open_orders": "No open orders",
+  "paid": "Paid"
 }

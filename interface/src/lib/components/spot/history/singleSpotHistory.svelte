@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
-    import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
   export let o = {
     orderId: 'a22170a7-ec32-4718-80f7-c304959c3e42',
@@ -50,11 +50,11 @@
     <!-- Info and time -->
     <div class="flex items-center justify-between w-full">
       <div class="flex space-x-2">
-        <div class={clsx("bg-red-100 px-2 rounded-md")}>
-          <span class={clsx("text-red-500 text-sm capitalize")}>{o.type}</span>
-        </div>
+        <!-- <div class={clsx("bg-red-100 px-2 rounded-md")}>
+          <span class={clsx("text-red-500 text-sm capitalize")}></span>
+        </div> -->
         <div class={clsx(buy ? "bg-green-100": "bg-red-100" ,"px-2 rounded-md")}>
-          <span class={clsx(buy ? "text-green-500": "text-red-500" ,"text-sm capitalize")}>{buy ? $_('buy'): $_('sell')}</span>
+          <span class={clsx(buy ? "text-green-500": "text-red-500" ,"text-sm capitalize")}>{o.type}</span>
         </div>
       </div>
 
