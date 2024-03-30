@@ -4,9 +4,9 @@
   import { page } from "$app/stores";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
-  $page.data.order;
+  $page.data.order
 
-  const o = {
+  $: o = {
     orderId: "a22170a7-ec32-4718-80f7-c304959c3e42",
     snapshotId: "d6db8dd2-089c-49df-9df7-01f810d00c27",
     userId: "5da31e04-9a35-43d1-b46f-a6960bcd8e2d",
@@ -24,9 +24,11 @@
     // symbol: "",
     // buy: true,
   };
+
+  $: state = o.state;
 </script>
 
-<div class="mx-4 flex flex-col space-y-3">
+<div class="mx-4 flex flex-col space-y-4">
   <!-- Symbol -->
   <div class="flex items-center justify-center space-x-1">
     <img src={findExchangeIconByIdentifier(o.exchangeName)} alt="icon" class="w-5 h-5">
@@ -35,21 +37,26 @@
 
   <!-- State -->
   <div class="flex items-center justify-center">
-    <span class="text-xs">
-      {o.state}
+    <span class="text-sm">
+      {#if state == 'ORDER_CREATED'}
+        {$_('order_created')}
+      {:else if state == 'EXCHANGE_ORDER_PLACED'}
+        {$_('order_placed')}
+      {:else if state == 'EXCHANGE_ORDER_PARTIAL_FILLED'}
+        {$_('order_partially_filled')}
+      {:else if state == 'EXCHANGE_ORDER_FILLED'}
+        {$_('order_filled')}
+      {:else if state == 'ORDER_SUCCESS'}
+        {$_('order_success')}
+      {/if}
     </span>
   </div>
 
   <!-- More -->
-  <div class="flex flex-col space-y-6 text-xs pt-3">
+  <div class="flex flex-col space-y-4 text-xs pt-3">
     <div class="flex justify-between">
       <span class="opacity-60"> {$_('type')} </span>
       <span class="font-bold"> {o.type} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('amount')} </span>
-      <span class="font-bold"> {o.amount} </span>
     </div>
 
     <div class="flex justify-between">
@@ -65,6 +72,11 @@
     <div class="flex justify-between">
       <span class="opacity-60"> {$_('paid')} </span>
       <span class="font-bold"> {o.amount} </span>
+    </div>
+
+    <div class="flex justify-between">
+      <span class="opacity-60"> {$_('recipient')} </span>
+      <span class="font-bold"> {$_('mixin_wallet')} </span>
     </div>
 
     <div class="flex justify-between">

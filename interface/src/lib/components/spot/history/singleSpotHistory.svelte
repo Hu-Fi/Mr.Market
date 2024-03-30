@@ -19,8 +19,8 @@
     createdAt: '2019-10-12T07:20:50.52Z',
     updatedAt: '2019-10-12T07:20:50.52Z',
 
-    // symbol: "",
     price: 43576,
+    // symbol: "",
     // exchange: "okx",
     // time: "2019-10-12T07:20:50.52Z", 
     // type: "limit",

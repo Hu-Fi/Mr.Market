@@ -302,5 +302,10 @@
   "create_new_minimum_balance_record": "Create new minimum balance record",
   "no_balance_in_wallet": "No balance in wallet",
   "no_open_orders": "No open orders",
-  "paid": "Paid"
+  "paid": "Paid",
+  "order_created": "Order created",
+  "order_placed": "Order placed",
+  "order_partially_filled": "Order partially filled",
+  "order_filled": "Order filled",
+  "order_success": "Order success"
 }
