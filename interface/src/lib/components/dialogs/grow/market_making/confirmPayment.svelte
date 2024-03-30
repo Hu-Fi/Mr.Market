@@ -1,5 +1,4 @@
 <script>
-  import clsx from "clsx";
   import { _ } from "svelte-i18n"
   import { createMMConfirmDialog } from "$lib/stores/grow"
 </script>
