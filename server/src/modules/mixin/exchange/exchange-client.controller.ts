@@ -1,3 +1,43 @@
-// These endpoint are used for getting spot related data for user
-// readOrderByUser
-// readOrderById
+// These endpoints are used for getting spot related data for user
+
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CustomLogger } from 'src/modules/logger/logger.service';
+import { ExchangeService } from './exchange.service';
+
+@ApiTags('exchange')
+@Controller('exchange')
+export class ExchangeUserController {
+  private readonly logger = new CustomLogger(ExchangeUserController.name);
+
+  constructor(private readonly exchagneService: ExchangeService) {}
+
+  @Get('orders/:user_id')
+  @ApiOperation({ summary: 'Get all orders by user id' })
+  @ApiResponse({ status: 200, description: 'Get all orders of an user' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getOrdersByUser(@Param('user_id') userId: string) {
+    try {
+      return this.exchagneService.readOrderByUser(userId);
+    } catch (e) {
+      this.logger.error(`Get orders by user error: ${e.message}`);
+    }
+  }
+
+  @Get('orders/:order_id')
+  @ApiOperation({ summary: 'Get order details by id' })
+  @ApiResponse({ status: 200, description: 'Get order details by id' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getDepositAddress(@Param('order_id') orderId: string) {
+    try {
+      return this.exchagneService.readOrderById(orderId);
+    } catch (e) {
+      this.logger.error(`Get order by id error: ${e.message}`);
+    }
+  }
+
+  @Get('/spot-orders')
+  async getAllSpotOrders() {
+    return await this.exchagneService.getAllSpotOrders();
+  }
+}
