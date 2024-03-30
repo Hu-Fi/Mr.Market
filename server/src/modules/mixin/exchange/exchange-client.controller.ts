@@ -35,9 +35,4 @@ export class ExchangeUserController {
       this.logger.error(`Get order by id error: ${e.message}`);
     }
   }
-
-  @Get('/spot-orders')
-  async getAllSpotOrders() {
-    return await this.exchagneService.getAllSpotOrders();
-  }
 }
