@@ -54,7 +54,7 @@ export class RebalanceService {
   // if exchange is greater than minium amount, we don't rebalance.
   // if exchange is smaller or equal to minium amount, we rebalance from mixin to exchange api key.(this is easy because we just pick any api key in that exchange)
 
-  @Cron('*/15 * * * * *')
+  @Cron('*/60 * * * * *')
   async rebalance() {
     try {
       const mixinBalances = await this.snapshotService.getAllAssetBalances();

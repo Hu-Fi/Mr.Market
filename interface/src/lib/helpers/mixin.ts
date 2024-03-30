@@ -207,6 +207,13 @@ export const MixinDisconnect = () => {
 }
 
 export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: { exchange: string, symbol: string, limit: boolean, price: string, buy: boolean, amount: string, trace: string }) => {
+  if (!exchange || !symbol || !amount || !trace) {
+    console.error('Invalid input parameters');
+    return;
+  }
+  if (!price) {
+    price = '0'
+  }
   const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol)
   if (!firstAssetID || !secondAssetID) {
     console.error('Failed to get asset id because invaild symbol submmited')

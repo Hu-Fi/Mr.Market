@@ -14,7 +14,7 @@ import { PairsMapKey } from 'src/common/types/pairs/pairs';
 export const decodeSpotMemo = (memo: string): MemoDetails => {
   // Decode base64
   const decodedMemo = Buffer.from(memo, 'base64').toString('utf-8');
-  if (!decodeSpotMemo) {
+  if (!decodedMemo) {
     return null;
   }
   // Split memo string into parts

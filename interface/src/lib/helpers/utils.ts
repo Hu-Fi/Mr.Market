@@ -23,7 +23,7 @@ export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
 }
 export const formatDecimals = (s: string | number, n: number) => {
-  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0
+  if (isNaN(Number(s)) || Number(s) == null || Number(s) == 0) return 0
 
   const strValue = Number(s).toString();
   if (strValue.includes('.')) {
@@ -215,12 +215,14 @@ export const toggleNumberInArray = (array: Array<number>, item: number) => {
   }
 }
 
+export const processSymbol = (symbol: string) => {
+  return symbol.endsWith('USDT') ? `${symbol}-ERC20` : symbol;
+}
+
 // Used for handling symbol -> 4 digit memo
 export const encodeSymbolToMemo = (symbol: string) => {
   let finalSymbol = symbol
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
+  finalSymbol = processSymbol(symbol)
   const memoCode = PAIRS_MAP_REVERSED[finalSymbol];
   if (!memoCode) {
     return;
@@ -231,9 +233,7 @@ export const encodeSymbolToMemo = (symbol: string) => {
 // Used for handling the symbol -> both asset id conversion
 export const decodeSymbolToAssetID = (symbol: string) => {
   let finalSymbol = symbol
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
+  finalSymbol = processSymbol(symbol)
   const [firstAssetSymbol, secondAssetSymbol] = finalSymbol.split('/')
   const firstAssetID = SYMBOL_ASSET_ID_MAP[firstAssetSymbol];
   const secondAssetID = SYMBOL_ASSET_ID_MAP[secondAssetSymbol];
