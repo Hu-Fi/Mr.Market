@@ -76,6 +76,7 @@ dotenv.config();
       ],
       synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
+      autoLoadEntities: true,
     }),
     ScheduleModule.forRoot(),
     TradeModule,

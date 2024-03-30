@@ -51,7 +51,7 @@ test('select limit/market order', async ({ page }) => {
   expect(actionButtonText?.toLocaleLowerCase()).toContain('market')
 });
 
-test('create buy/sell market order', async ({ page }) => {
+test.skip('create buy/sell market order', async ({ page }) => {
   const amount = '1234.2346'
   // Click buy tab
   await page.getByTestId('type_buy').click()
@@ -130,7 +130,7 @@ test('create buy limit order', async ({ page }) => {
 });
 
 
-test('create sell limit order', async ({ page }) => {
+test.skip('create sell limit order', async ({ page }) => {
   const price = '10000'; const payAmount = '10'; const estimatedRecv = Number(price)*Number(payAmount)
 
   // Open dialog

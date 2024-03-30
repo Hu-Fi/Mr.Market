@@ -27,5 +27,3 @@ export const bids = [
   { price: 43913.134, amount: 12.2314 },
   { price: 43912.3, amount: 50.772 },
 ];
-export const current = 43918.11;
-export const usdValue = 43918.11;

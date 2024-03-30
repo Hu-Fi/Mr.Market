@@ -5,7 +5,7 @@ import { submitted, checked, correct } from "$lib/stores/admin";
 
 export const AdminPassword = async (password: string): Promise<AdminPasswordResp> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/password`, {
+    const response = await fetch(`${HUFI_BACKEND_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -24,13 +24,12 @@ export const AdminPassword = async (password: string): Promise<AdminPasswordResp
   }
 };
 
-
-export const checkPassword = async (pass: string): Promise<boolean> => {
+export const checkPassword = async (pass: string): Promise<string> => {
   if (!pass) {
-    return false;
+    return '';
   }
-  const r = await AdminPassword(pass)
-  return r.result;
+  const r: { access_token: string } = await AdminPassword(pass)
+  return r.access_token;
 }
 
 export const autoCheckPassword = async (): Promise<boolean> => {
@@ -38,11 +37,12 @@ export const autoCheckPassword = async (): Promise<boolean> => {
   if (!pass) {
     return false
   }
-  if (await checkPassword(pass)) {
+  const accessToken = await checkPassword(pass);
+  if (accessToken) {
     submitted.set(true);
     checked.set(true);
     correct.set(true);
-    localStorage.setItem('admin-password', pass);
+    localStorage.setItem("admin-access-token", accessToken);
     goto('/manage/dashboard')
     return true;
   }
@@ -57,5 +57,6 @@ export const exit = () => {
   checked.set(false);
   correct.set(false);
   localStorage.removeItem('admin-password')
+  localStorage.removeItem('admin-access-token')
   goto('/manage/login')
 }

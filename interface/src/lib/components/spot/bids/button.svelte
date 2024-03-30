@@ -2,10 +2,19 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
   import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
-  import { amount, buy, orderConfirmDialog, pair } from "$lib/stores/spot";
+  import { buy, orderConfirmDialog, pair, orderTypeLimit, orderTypeMarket, limitTotal, marketAmount } from "$lib/stores/spot";
 
   const confirm = () => {
-    if (!$amount) { console.log('enter amount'); return}
+    if ($orderTypeLimit) {
+      if (!$limitTotal) {
+        console.log('enter limit amount'); return
+      }
+    }
+    if ($orderTypeMarket) {
+      if (!$marketAmount) {
+        console.log('enter market amount'); return
+      }
+    }
     orderConfirmDialog.set(true)
   }
 </script>

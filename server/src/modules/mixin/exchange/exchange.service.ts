@@ -12,7 +12,6 @@ import {
   STATE_TEXT_MAP,
   SpotOrderStatus,
 } from 'src/common/types/orders/states';
-import { ExchangePlaceSpotEventDto } from 'src/modules/mixin/exchange/exchange.dto';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
 import {
   ErrorResponse,
@@ -25,6 +24,8 @@ import {
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
+import { AggregatedBalances } from 'src/common/types/rebalance/map';
 
 @Injectable()
 export class ExchangeService {
@@ -63,7 +64,103 @@ export class ExchangeService {
     }
   }
 
+  async readAllAPIKeys() {
+    return await this.exchangeRepository.readAllAPIKeys();
+  }
+
+  async getAllAPIKeysBalance() {
+    try {
+      const apiKeys: APIKeysConfig[] = await this.readAllAPIKeys();
+      const balancePromises = apiKeys.map((apiKeyConfig) =>
+        this.getBalance(
+          apiKeyConfig.exchange,
+          apiKeyConfig.api_key,
+          apiKeyConfig.api_secret,
+        )
+          .then((balance) => ({
+            key_id: apiKeyConfig.key_id,
+            exchange: apiKeyConfig.exchange,
+            name: apiKeyConfig.name,
+            balance,
+          }))
+          .catch((error) => {
+            this.logger.error(
+              `Failed to get balance for ${apiKeyConfig.name} on ${apiKeyConfig.exchange}: ${error.message}`,
+            );
+            return null;
+          }),
+      );
+
+      const balances = await Promise.allSettled(balancePromises);
+      const successfulBalances = balances
+        .filter(
+          (result) => result.status === 'fulfilled' && result.value !== null,
+        )
+        .map((result) => (result as PromiseFulfilledResult<any>).value);
+
+      return successfulBalances;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching all API keys balances: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  aggregateBalancesByExchange(successfulBalances: any[]): AggregatedBalances {
+    return successfulBalances.reduce((acc, curr) => {
+      const { exchange, balance } = curr;
+
+      if (!acc[exchange]) {
+        acc[exchange] = { free: {}, used: {}, total: {} };
+      }
+
+      Object.keys(balance).forEach((balanceType) => {
+        const balanceDetails = balance[balanceType];
+
+        Object.entries(balanceDetails).forEach(([currency, amount]) => {
+          if (!acc[exchange][balanceType][currency]) {
+            acc[exchange][balanceType][currency] = 0;
+          }
+          acc[exchange][balanceType][currency] += amount;
+        });
+      });
+
+      return acc;
+    }, {});
+  }
+
   async getBalance(
+    exchange: string,
+    apiKey: string,
+    apiSecret: string,
+  ): Promise<any> {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+
+    try {
+      const b = await e.fetchBalance();
+      function filterZeroBalances(balances) {
+        return Object.fromEntries(
+          Object.entries(balances).filter(([, value]) => value !== 0),
+        );
+      }
+      return {
+        free: filterZeroBalances(b['free']),
+        used: filterZeroBalances(b['used']),
+        total: filterZeroBalances(b['total']),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error fetching balance for ${exchange}: ${error.message}`,
+      );
+      throw error;
+    }
+  }
+
+  async getBalanceBySymbol(
     exchange: string,
     apiKey: string,
     apiSecret: string,
@@ -75,10 +172,180 @@ export class ExchangeService {
     });
 
     try {
-      return await e.fetchBalance({ currency: symbol });
+      const b = await e.fetchBalance({ currency: symbol });
+      return b['free'];
     } catch (error) {
-      console.error(`Error fetching balance for ${exchange}: ${error.message}`);
+      this.logger.error(
+        `Error fetching balance for ${exchange}: ${error.message}`,
+      );
       throw error;
+    }
+  }
+
+  async getDepositAddress(data: ExchangeDepositDto) {
+    const key = await this.readAPIKey(data.apiKeyId);
+    if (!key) {
+      return;
+    }
+    return await this._getDepositAddress({
+      ...data,
+      apiKey: key.api_key,
+      apiSecret: key.api_secret,
+    });
+  }
+
+  async _getDepositAddress({
+    exchange,
+    apiKey,
+    apiSecret,
+    symbol,
+    network,
+  }: {
+    exchange: string;
+    apiKey: string;
+    apiSecret: string;
+    symbol: string;
+    network: string;
+  }) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+    if (!e.has['fetchDepositAddress']) {
+      this.logger.error(`${exchange} doesn't support fetchDepositAddress()`);
+      return;
+    }
+    try {
+      // The network parameter needs a map. It's case sensitive
+      const depositAddress = await e.fetchDepositAddress(symbol, { network });
+      return {
+        address: depositAddress['address'],
+        memo: depositAddress['tag'] || '',
+      };
+    } catch (error) {
+      if (error instanceof ccxt.InvalidAddress) {
+        this.logger.log(`The address for ${symbol} does not exist yet`);
+        if (e.has['createDepositAddress']) {
+          this.logger.log(
+            `Attempting to create a deposit address for ${symbol}...`,
+          );
+
+          try {
+            const createResult = await e.createDepositAddress(symbol);
+
+            if (createResult) {
+              this.logger.log(
+                `Successfully created a deposit address for ${symbol} fetching the deposit address now...`,
+              );
+            }
+
+            try {
+              const fetchResult = await e.fetchDepositAddress(symbol);
+
+              this.logger.log(
+                `Successfully fetched deposit address for ${symbol}`,
+              );
+              this.logger.log(fetchResult);
+            } catch (e) {
+              this.logger.log(
+                `Failed to fetch deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+              );
+            }
+          } catch (e) {
+            this.logger.log(
+              `Failed to create deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+            );
+          }
+        } else {
+          this.logger.log(
+            'The exchange does not support createDepositAddress()',
+          );
+        }
+      } else {
+        this.logger.log(
+          `There was an error while fetching deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
+        );
+      }
+    }
+  }
+
+  async createWithdrawal(data: ExchangeWithdrawalDto) {
+    const key = await this.readAPIKey(data.apiKeyId);
+    if (!key) {
+      return;
+    }
+    await this._createWithdrawal({
+      ...data,
+      apiKey: key.api_key,
+      apiSecret: key.api_secret,
+    });
+  }
+
+  async _createWithdrawal({
+    exchange,
+    apiKey,
+    apiSecret,
+    symbol,
+    network,
+    address,
+    tag,
+    amount,
+  }: {
+    exchange: string;
+    apiKey: string;
+    apiSecret: string;
+    symbol: string;
+    network: string;
+    address: string;
+    tag: string;
+    amount: string;
+  }) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+    });
+
+    if (!e.has['withdraw']) {
+      this.logger.error(`${exchange} does not support withdrawals.`);
+      throw new Error(`${exchange} does not support withdrawals.`);
+    }
+
+    try {
+      const withdrawal = await e.withdraw(symbol, amount, address, tag, {
+        network,
+      });
+      return withdrawal; // This will return the response from the exchange, which usually includes a transaction ID.
+    } catch (error) {
+      if (error instanceof ccxt.NetworkError) {
+        this.logger.error(
+          `Network error while attempting withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Network error during withdrawal operation. Please try again later.',
+        );
+      } else if (error instanceof ccxt.ExchangeError) {
+        this.logger.error(
+          `Exchange error while attempting withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Exchange error during withdrawal operation. Please check the provided parameters.',
+        );
+      } else if (error instanceof ccxt.InvalidAddress) {
+        this.logger.error(
+          `Invalid address provided for withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'Invalid address provided for withdrawal. Please check the address and try again.',
+        );
+      } else {
+        // Generic error handling
+        this.logger.error(
+          `An unexpected error occurred during withdrawal on ${exchange}: ${error.message}`,
+        );
+        throw new Error(
+          'An unexpected error occurred during the withdrawal operation. Please try again later.',
+        );
+      }
     }
   }
 
@@ -89,7 +356,12 @@ export class ExchangeService {
     symbol: string,
     amount: string,
   ) {
-    const balance = await this.getBalance(exchange, apiKey, apiSecret, symbol);
+    const balance = await this.getBalanceBySymbol(
+      exchange,
+      apiKey,
+      apiSecret,
+      symbol,
+    );
     return BigNumber(amount).isLessThan(balance);
   }
 
@@ -128,6 +400,11 @@ export class ExchangeService {
       }:${amount})`,
     };
   }
+
+  // async pickAPIKeyForRebalance(symbol: string, mixinAmount: string) {
+  // Get an api key with sufficient balance
+  // symbol, amount;
+  // }
 
   async estimateSpotAmount(
     exchange: string,
@@ -183,14 +460,28 @@ export class ExchangeService {
 
   // DB related
   async addApiKey(key: APIKeysConfig) {
-    return this.exchangeRepository.addAPIKey(key);
+    return await this.exchangeRepository.addAPIKey(key);
+  }
+
+  async readAPIKey(keyId: string) {
+    return await this.exchangeRepository.readAPIKey(keyId);
+  }
+
+  async findFirstAPIKeyByExchange(exchange: string): Promise<APIKeysConfig> {
+    const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
+      exchange,
+    );
+    if (!apiKeys) {
+      return;
+    }
+    return apiKeys[0];
   }
 
   async removeAPIKey(keyId: string) {
-    return this.exchangeRepository.removeAPIKey(keyId);
+    return await this.exchangeRepository.removeAPIKey(keyId);
   }
 
-  async createSpotOrder(order: ExchangePlaceSpotEventDto) {
+  async createSpotOrder(order: SpotOrder) {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
@@ -211,6 +502,10 @@ export class ExchangeService {
       orderId,
       api_key_id,
     );
+  }
+
+  async readOrderByUser(userId: string) {
+    return await this.exchangeRepository.readOrderByUser(userId);
   }
 
   async readOrderById(orderId: string): Promise<SpotOrder> {

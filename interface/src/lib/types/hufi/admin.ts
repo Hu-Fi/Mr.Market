@@ -1,6 +1,5 @@
 export interface AdminPasswordResp {
-  status: number,
-  result: boolean,
+  access_token: string
 }
 
 export interface AdminSpotOrder {

@@ -1,36 +1,38 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExchangeIndex, SpotOrderType } from 'src/common/types/memo/memo';
-import { SpotOrderStatus } from 'src/common/types/orders/states';
-import { PairsMapValue } from 'src/common/types/pairs/pairs';
 
-export class ExchangePlaceSpotEventDto {
-  @ApiProperty({ description: 'Order ID' })
-  orderId: string;
+export class ExchangeWithdrawalDto {
+  @ApiProperty({ description: 'The name of exchange' })
+  exchange: string;
 
-  @ApiProperty({ description: 'Exchange index' })
-  exchangeIndex: ExchangeIndex;
+  @ApiProperty({ description: 'The id of api key' })
+  apiKeyId: string;
 
-  @ApiProperty({ description: 'Snapshot ID' })
-  snapshotId: string;
+  @ApiProperty({ description: 'The asset symbol (like BTC)' })
+  symbol: string;
 
-  @ApiProperty({ description: 'Type of spot order' })
-  type: SpotOrderType;
+  @ApiProperty({ description: 'The chain of asset' })
+  network: string;
 
-  @ApiProperty({ description: 'Status of spot order' })
-  state: SpotOrderStatus;
+  @ApiProperty({ description: 'Recipient address' })
+  address: string;
 
-  @ApiProperty({ description: 'Trading symbol' })
-  symbol: PairsMapValue;
+  @ApiProperty({ description: 'Memo' })
+  tag: string;
 
-  @ApiProperty({ description: 'Base asset ID' })
-  baseAssetId: string;
+  @ApiProperty({ description: 'Withdrawal amount' })
+  amount: string;
+}
 
-  @ApiProperty({ description: 'Target asset ID' })
-  targetAssetId: string;
+export class ExchangeDepositDto {
+  @ApiProperty({ description: 'The name of exchange' })
+  exchange: string;
 
-  @ApiProperty({ description: 'Created timestamp' })
-  createdAt: string;
+  @ApiProperty({ description: 'The id of api key' })
+  apiKeyId: string;
 
-  @ApiProperty({ description: 'Updated timestamp' })
-  updatedAt: string;
+  @ApiProperty({ description: 'The asset symbol (like BTC)' })
+  symbol: string;
+
+  @ApiProperty({ description: 'The chain of asset' })
+  network: string;
 }

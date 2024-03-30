@@ -23,9 +23,9 @@ describe('ExchangeController', () => {
         },
       ],
     })
-    .overrideGuard(JwtAuthGuard)
-    .useValue({ canActivate: () => true }) // Mock JwtAuthGuard to always allow access
-    .compile();
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true }) // Mock JwtAuthGuard to always allow access
+      .compile();
 
     controller = module.get<ExchangeController>(ExchangeController);
     service = module.get<ExchangeService>(ExchangeService);

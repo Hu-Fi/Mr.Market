@@ -29,6 +29,7 @@ jest.mock('ccxt', () => ({
     })),
     okx: jest.fn(() => ({})),
     gateio: jest.fn(() => ({})),
+    lbank: jest.fn(() => ({})),
   },
 }));
 

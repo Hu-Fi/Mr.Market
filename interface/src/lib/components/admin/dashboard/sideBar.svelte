@@ -12,6 +12,7 @@
     "users",
     "database",
     "exchanges",
+    "rebalance",
     // "revenue",
     "health",
     "message",

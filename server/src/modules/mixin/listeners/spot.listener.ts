@@ -77,6 +77,7 @@ export class SpotOrderListener {
       orderId,
       exchangeIndex: event.exchangeIndex,
       snapshotId: event.snapshot.snapshot_id,
+      userId: event.snapshot.opponent_id,
       type: event.spotOrderType,
       state: STATE_TEXT_MAP['CREATED'],
       symbol: symbol,

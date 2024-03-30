@@ -60,6 +60,13 @@ export class MarketdataService {
         secret: process.env.GATE_SECRET,
       }),
     );
+    this.exchanges.set(
+      'lbank',
+      new ccxt.pro.lbank({
+        apiKey: process.env.LBANK_API_KEY,
+        secret: process.env.LBANK_SECRET,
+      }),
+    );
   }
 
   async getTickers(exchange: string, symbols: string[]) {

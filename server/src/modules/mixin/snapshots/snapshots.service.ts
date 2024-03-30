@@ -15,18 +15,21 @@ import {
   buildSafeTransaction,
   encodeSafeTransaction,
   signSafeTransaction,
+  blake3Hash,
+  MixinCashier,
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
 import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
-import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
+import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 
 @Injectable()
 export class SnapshotsService {
   private events: EventEmitter2;
   private keystore: Keystore;
+  private spendKey: string;
   private client: KeystoreClientReturnType;
   private readonly logger = new CustomLogger(SnapshotsService.name);
 
@@ -45,6 +48,7 @@ export class SnapshotsService {
         'mixin.session_private_key',
       ),
     };
+    this.spendKey = this.configService.get<string>('mixin.spend_private_key');
     this.client = MixinApi({
       keystore: this.keystore,
     });
@@ -64,6 +68,239 @@ export class SnapshotsService {
       return snapshots;
     } catch (error) {
       this.logger.error(`Failed to fetch snapshots: ${error}`);
+    }
+  }
+
+  async depositAddress(asset_id: string) {
+    try {
+      const chain_id = (await this.client.network.fetchAsset(asset_id))
+        .chain_id;
+      const entities = await this.client.safe.depositEntries({
+        members: [this.keystore.app_id],
+        threshold: 1,
+        chain_id,
+      });
+      return {
+        address: entities[0].destination,
+        memo: entities[0].tag,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to get deposit address: ${error}`);
+    }
+  }
+
+  async withdrawal(
+    asset_id: string,
+    destination: string,
+    memo: string,
+    amount: string,
+  ) {
+    const asset = await this.client.network.fetchAsset(asset_id);
+    const chain =
+      asset.chain_id === asset.asset_id
+        ? asset
+        : await this.client.network.fetchAsset(asset.chain_id);
+    const fee = chain;
+    this.logger.log(fee);
+
+    // withdrawal with chain asset as fee
+    if (fee.asset_id !== asset.asset_id) {
+      const outputs = await this.client.utxo.safeOutputs({
+        asset: asset_id,
+        state: 'unspent',
+      });
+      const feeOutputs = await this.client.utxo.safeOutputs({
+        asset: fee.asset_id,
+        state: 'unspent',
+      });
+
+      const recipients = [
+        {
+          amount: amount,
+          destination: destination,
+        },
+      ];
+      const { utxos, change } = getUnspentOutputsForRecipients(
+        outputs,
+        recipients,
+      );
+      if (!change.isZero() && !change.isNegative()) {
+        recipients.push(
+          // @ts-expect-error add change output if needed
+          buildSafeTransactionRecipient(
+            outputs[0].receivers,
+            outputs[0].receivers_threshold,
+            change.toString(),
+          ),
+        );
+      }
+      // the index of ghost keys must be the same with the index of outputs
+      // but withdrawal output doesnt need ghost key, so index + 1
+      const ghosts = await this.client.utxo.ghostKey(
+        recipients
+          .filter((r) => 'members' in r)
+          .map((r, i) => ({
+            hint: randomUUID(),
+            // @ts-expect-error type
+            receivers: r.members,
+            index: i + 1,
+          })),
+      );
+      const tx = buildSafeTransaction(
+        utxos,
+        recipients,
+        [undefined, ...ghosts],
+        memo,
+      );
+      this.logger.log(tx);
+      // @ts-expect-error type
+      const raw = encodeSafeTransaction(tx);
+      const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
+
+      const feeRecipients = [
+        // fee output
+        buildSafeTransactionRecipient([MixinCashier], 1, fee.amount),
+      ];
+      const { utxos: feeUtxos, change: feeChange } =
+        getUnspentOutputsForRecipients(feeOutputs, feeRecipients);
+      if (!feeChange.isZero() && !feeChange.isNegative()) {
+        // add fee change output if needed
+        feeRecipients.push(
+          buildSafeTransactionRecipient(
+            feeOutputs[0].receivers,
+            feeOutputs[0].receivers_threshold,
+            feeChange.toString(),
+          ),
+        );
+      }
+      const feeGhosts = await this.client.utxo.ghostKey(
+        feeRecipients.map((r, i) => ({
+          hint: randomUUID(),
+          // @ts-expect-error type
+          receivers: r.members,
+          index: i,
+        })),
+      );
+      const feeTx = buildSafeTransaction(
+        feeUtxos,
+        feeRecipients,
+        feeGhosts,
+        'withdrawal-fee-memo',
+        [ref],
+      );
+      this.logger.log(feeTx);
+      // @ts-expect-error type
+      const feeRaw = encodeSafeTransaction(feeTx);
+      this.logger.log(feeRaw);
+
+      const txId = randomUUID();
+      const feeId = randomUUID();
+      this.logger.log(txId, feeId);
+      const txs = await this.client.utxo.verifyTransaction([
+        {
+          raw,
+          request_id: txId,
+        },
+        {
+          raw: feeRaw,
+          request_id: feeId,
+        },
+      ]);
+
+      // @ts-expect-error type
+      const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
+      const signedFeeRaw = signSafeTransaction(
+        // @ts-expect-error type
+        feeTx,
+        txs[1].views,
+        this.spendKey,
+      );
+      const res = await this.client.utxo.sendTransactions([
+        {
+          raw: signedRaw,
+          request_id: txId,
+        },
+        {
+          raw: signedFeeRaw,
+          request_id: feeId,
+        },
+      ]);
+      this.logger.log(res);
+      return res;
+    }
+    // withdrawal with asset as fee
+    else {
+      const outputs = await this.client.utxo.safeOutputs({
+        asset: asset_id,
+        state: 'unspent',
+      });
+      this.logger.log(outputs);
+
+      const recipients = [
+        // withdrawal output, must be put first
+        {
+          amount: amount,
+          destination: destination,
+        },
+        // fee output
+        buildSafeTransactionRecipient([MixinCashier], 1, fee.amount),
+      ];
+      const { utxos, change } = getUnspentOutputsForRecipients(
+        outputs,
+        recipients,
+      );
+      if (!change.isZero() && !change.isNegative()) {
+        // add change output if needed
+        recipients.push(
+          buildSafeTransactionRecipient(
+            outputs[0].receivers,
+            outputs[0].receivers_threshold,
+            change.toString(),
+          ),
+        );
+      }
+      // the index of ghost keys must be the same with the index of outputs
+      // but withdrawal output doesnt need ghost key, so index + 1
+      const ghosts = await this.client.utxo.ghostKey(
+        recipients
+          .filter((r) => 'members' in r)
+          .map((r, i) => ({
+            hint: randomUUID(),
+            // @ts-expect-error type
+            receivers: r.members,
+            index: i + 1,
+          })),
+      );
+      // spare the 0 inedx for withdrawal output, withdrawal output doesnt need ghost key
+      const tx = buildSafeTransaction(
+        utxos,
+        recipients,
+        [undefined, ...ghosts],
+        'withdrawal-memo',
+      );
+      this.logger.log(tx);
+      // @ts-expect-error type
+      const raw = encodeSafeTransaction(tx);
+
+      const request_id = randomUUID();
+      this.logger.log(request_id);
+      const txs = await this.client.utxo.verifyTransaction([
+        {
+          raw,
+          request_id,
+        },
+      ]);
+
+      // @ts-expect-error type
+      const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
+      const res = await this.client.utxo.sendTransactions([
+        {
+          raw: signedRaw,
+          request_id,
+        },
+      ]);
+      this.logger.log(res);
+      return res;
     }
   }
 
@@ -146,6 +383,41 @@ export class SnapshotsService {
       );
     } catch (error) {
       this.logger.error(`Failed to refund snapshot: ${error}`);
+    }
+  }
+
+  async getAllAssetBalances() {
+    try {
+      // Fetch all outputs
+      const outputs = await this.client.utxo.safeOutputs({});
+
+      // Group outputs by asset ID
+      const groupedByAssetId = outputs.reduce((acc, output) => {
+        // @ts-expect-error SDK type is wrong
+        const assetId = output.asset_id;
+        if (!acc[assetId]) {
+          acc[assetId] = [];
+        }
+        acc[assetId].push(output);
+        return acc;
+      }, {});
+
+      // Calculate total balance for each asset
+      const assetBalances = Object.entries(groupedByAssetId).reduce(
+        (acc, [assetId, outputs]) => {
+          // @ts-expect-error types
+          const totalBalance = getTotalBalanceFromOutputs(outputs);
+          acc[assetId] = totalBalance.toString(); // Assuming you want the balance as a string
+          return acc;
+        },
+        {},
+      );
+
+      // map of AssetID: Balance
+      return assetBalances;
+    } catch (error) {
+      console.error(`Error fetching asset balances: ${error.message}`);
+      throw error;
     }
   }
 
