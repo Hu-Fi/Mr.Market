@@ -299,5 +299,6 @@
   "minimum_balance_settings": "Minimum balance settings",
   "minimum_balance_settings_intro": "the minimum balance to keep in exchange or mixin",
   "create_new_minimum_balance_record": "Create new minimum balance record",
-  "no_balance_in_wallet": "No balance in wallet"
+  "no_balance_in_wallet": "No balance in wallet",
+  "no_open_orders": "No open orders"
 }

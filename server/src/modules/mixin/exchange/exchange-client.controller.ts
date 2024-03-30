@@ -19,7 +19,7 @@ export class ExchangeUserController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getOrdersByUser(@Param('user_id') userId: string) {
     try {
-      return this.exchagneService.readOrderByUser(userId);
+      return this.exchagneService.readOrdersByUser(userId);
     } catch (e) {
       this.logger.error(`Get orders by user error: ${e.message}`);
     }

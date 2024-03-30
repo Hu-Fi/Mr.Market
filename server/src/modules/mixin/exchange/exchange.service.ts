@@ -504,7 +504,7 @@ export class ExchangeService {
     );
   }
 
-  async readOrderByUser(userId: string) {
+  async readOrdersByUser(userId: string) {
     return await this.exchangeRepository.readOrderByUser(userId);
   }
 

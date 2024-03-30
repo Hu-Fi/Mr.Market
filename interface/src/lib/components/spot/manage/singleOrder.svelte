@@ -4,6 +4,7 @@
   import { _ } from "svelte-i18n"
   import { cancelOrder } from "$lib/stores/spot";
   import { formatDecimals } from "$lib/helpers/utils";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
   export let o = {
@@ -27,7 +28,11 @@
   <!-- Title -->
   <div class="flex justify-between">
     <button class="flex items-center space-x-1" on:click={()=>{go()}}>
-      <img src={o.icon} alt="icon" loading="lazy" class="w-4 h-4" />
+      <div class="avatar">
+        <div class="w-4 h-4 rounded-full">
+          <img src={findExchangeIconByIdentifier(o.exchange)} alt="icon" loading="lazy" class="w-4 h-4" />
+        </div>
+      </div>
       <span class="font-semibold"> 
         {o.first}/{o.second}
       </span>
@@ -87,9 +92,4 @@
       </div>
     </div>
   </button>
-  
 </div>
-
-<style>
-
-</style>
