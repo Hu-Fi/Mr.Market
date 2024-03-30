@@ -13,7 +13,7 @@
     createMMSelectPairEasyFilter,
     createMMSelectPairEasySearch,
   } from "$lib/stores/grow";
-  import { SUPPORTED_EXCHANGES } from "$lib/helpers/constants";
+  import { SUPPORTED_EXCHANGES, SUPPORTED_MARKET_MAKING_PAIRS } from "$lib/helpers/constants";
 
   const exchangeFilter = SUPPORTED_EXCHANGES.map((exchange) => ({
     name: $_(exchange),
@@ -21,62 +21,20 @@
     icon: findExchangeIconByIdentifier(exchange),
   }));
 
-  const placeholder = [
-    {
-      base: "BTC",
-      target: "USDT",
-      exchange: "binance",
-      exchangeIcon:
-        "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-      baseIcon: findCoinIconBySymbol("BTC"),
-      targetIcon: findCoinIconBySymbol("USDT"),
-    },
-    {
-      base: "ETH",
-      target: "USDT",
-      exchange: "binance",
-      exchangeIcon:
-        "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-      baseIcon: findCoinIconBySymbol("ETH"),
-      targetIcon: findCoinIconBySymbol("USDT"),
-    },
-    {
-      base: "SOL",
-      target: "USDT",
-      exchange: "binance",
-      exchangeIcon:
-        "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-      baseIcon: findCoinIconBySymbol("SOL"),
-      targetIcon: findCoinIconBySymbol("USDT"),
-    },
-    {
-      base: "ADA",
-      target: "USDT",
-      exchange: "binance",
-      exchangeIcon:
-        "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-      baseIcon: findCoinIconBySymbol("ADA"),
-      targetIcon: findCoinIconBySymbol("USDT"),
-    },
-    {
-      base: "XRP",
-      target: "USDT",
-      exchange: "binance",
-      exchangeIcon:
-        "https://static-00.iconduck.com/assets.00/binance-coin-cryptocurrency-icon-512x512-aacfkhah.png",
-      baseIcon: findCoinIconBySymbol("XRP"),
-      targetIcon: findCoinIconBySymbol("USDT"),
-    },
-  ];
-  let assets = placeholder.map((item) => ({ ...item, selected: false }));
-  $: placeholders = $createMMSelectPairEasySearch
-    ? assets.filter((item) => {
+  let assets = SUPPORTED_MARKET_MAKING_PAIRS.map((item) => ({ ...item, selected: false }));
+  $: marketMakingPairs = assets
+      .filter((item) => {
+        // Filter by exchange
+        if ($createMMSelectPairEasyFilter.toUpperCase() === 'ALL') return item;
+        return item.exchange.toUpperCase().match($createMMSelectPairEasyFilter.toUpperCase())
+      })
+      .filter((item) => {
         // Filter search
-        return item.base
+        return item.symbol
           .toUpperCase()
           .match($createMMSelectPairEasySearch.toUpperCase());
       })
-    : assets;
+    // : assets;
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -151,7 +109,7 @@
   <!-- Pairs -->
   <div class="px-2 w-full !mt-6">
     <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
-      {#each placeholders as item}
+      {#each marketMakingPairs as item}
         <button
           class={clsx(
             "flex items-center justify-center shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
@@ -165,12 +123,12 @@
           <PairIcon
             clazz="w-5 h-5"
             claxx="w-2 h-2"
-            asset0Icon={item.baseIcon}
-            asset1Icon={item.targetIcon}
+            asset0Icon={findCoinIconBySymbol(item.symbol.split("/")[0])}
+            asset1Icon={findCoinIconBySymbol(item.symbol.split("/")[1])}
           />
           <div class="flex flex-col">
             <span class="text-sm font-semibold">
-              {item.base}/{item.target}
+              {item.symbol}
             </span>
             <span class="text-xs !text-[10px] opacity-60 capitalize">
               {item.exchange}

@@ -253,6 +253,19 @@ export const SUPPORTED_UNIQUE_PAIRS: string[] = Array.from(new Set(Object.values
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);
 export const SUPPORTED_TIMERANGES: SupportedTimeFrame[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M']
 
+export const SUPPORTED_MARKET_MAKING_PAIRS = [
+  {symbol: "BTC/USDT", exchange: "okx",},
+  {symbol: "ETH/USDT", exchange: "okx",},
+  {symbol: "SOL/USDT", exchange: "okx",},
+  {symbol: "ADA/USDT", exchange: "okx",},
+  {symbol: "XRP/USDT", exchange: "okx",},
+  {symbol: "HMT/USDT", exchange: "gate",},
+  {symbol: "ETH/USDT", exchange: "gate",},
+  {symbol: "HMT/USDT", exchange: "mexc",},
+  {symbol: "HMT/USDT", exchange: "bitfinex",},
+  {symbol: "HMT/USDT", exchange: "lbank",}
+];
+
 // Limit needs 12, Market needs 10, use 14 to avoid data loss
 export const ORDERBOOK_STREAM_LENGTH = 14
 export const LIMIT_ORDERBOOK_LENGTH = 12

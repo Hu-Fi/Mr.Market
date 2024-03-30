@@ -7,7 +7,3 @@
     <span> {$_('')} </span>
   </div>
 </div>
-
-<style>
-
-</style>
