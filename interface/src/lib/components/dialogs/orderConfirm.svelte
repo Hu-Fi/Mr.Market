@@ -66,7 +66,7 @@
     
     SpotPay({ $orderTypeLimit, buy: $buy, symbol: $pair.symbol, exchange: $pair.exchange, price: String($limitPrice), amount: payAmount, trace})
 
-    // Check order state by traceID
+    // TODO: Check order state by traceID
 
     setTimeout(() => {
       loading = false;

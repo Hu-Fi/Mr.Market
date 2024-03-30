@@ -1,6 +1,7 @@
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
+  import { onDestroy } from "svelte";
 	import { cleave } from 'svelte-cleavejs';
   import { maskOption } from "$lib/helpers/constants";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
@@ -9,6 +10,10 @@
 
   $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
   $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+
+  onDestroy(() => {
+    createMMEasyAmounts.set([]);
+  })
 </script>
 
 <div class="flex flex-col space-y-2">

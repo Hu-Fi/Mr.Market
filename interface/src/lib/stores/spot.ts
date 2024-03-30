@@ -1,7 +1,6 @@
-import { derived, writable, type Writable } from "svelte/store";
 import type { Socket } from "socket.io-client";
+import { derived, writable, type Writable } from "svelte/store";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
-import { asks as a, bids as b} from "$lib/helpers/temporary";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
@@ -31,8 +30,8 @@ export const marketPrice: Writable<number | ''> = writable()
 export const marketAmount: Writable<number | ''> = writable()
 export const marketTotal: Writable<number | ''> = writable()
 
-export const asks = writable<OrderBookPriceFormat[]>(a)
-export const bids = writable<OrderBookPriceFormat[]>(b)
+export const asks = writable<OrderBookPriceFormat[]>()
+export const bids = writable<OrderBookPriceFormat[]>()
 export const current: Writable<number | ''> = writable()
 export const usdValue: Writable<string | ''> = writable()
 
