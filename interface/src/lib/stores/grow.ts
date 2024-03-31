@@ -18,7 +18,7 @@ export const addMoreDialog = writable(false)
 
 // Create new market making
 export const createMMConfirmDialog = writable(false)
-export const createMMEasyPair = writable()
+export const createMMEasyPair = writable({symbol:'BTC/USDT',exchange:'okx'})
 export const createMMEasyAmounts = writable([])
 export const createMMSelectPairEasyFilter = writable('')
 export const createMMSelectPairEasySearch = writable('')

@@ -225,3 +225,7 @@ export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: 
   }
   return mixinPay({asset_id:firstAssetID, amount, memo, trace_id:trace});
 }
+
+export const MarketMakingPay = ({exchange, symbol, amount}: { exchange: string, symbol: string, amount: string }) => {
+  console.log(exchange, symbol, amount)
+}

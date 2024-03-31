@@ -117,7 +117,7 @@
           )}
           on:click={() => {
             createMMEasyPair.set(item);
-            goto("/grow/market_making/new/easy/two");
+            goto(`/grow/market_making/new/easy/two/`);
           }}
         >
           <PairIcon

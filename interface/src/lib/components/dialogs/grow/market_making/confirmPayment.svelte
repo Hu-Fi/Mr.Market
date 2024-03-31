@@ -1,6 +1,19 @@
-<script>
+<script lang="ts">
+  import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { createMMConfirmDialog } from "$lib/stores/grow"
+  import { findCoinIconBySymbol } from "$lib/helpers/helpers";
+  import { createMMConfirmDialog, createMMEasyPair } from "$lib/stores/grow"
+
+  $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
+  $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+
+  let btn1Loading = false;
+  let btn2Loading = false;
+
+  const payment = (type: string) => {
+    if (type === '1') btn1Loading = true;
+    if (type === '2') btn2Loading = true;
+  }
 </script>
 
 <dialog
@@ -32,18 +45,40 @@
       </div>
 
       <!-- Estimate receive -->
-      <div class="h-40 flex flex-col justify-center text-center space-y-2">
-        <span class="text-xs opacity-60">
-          {$_("")}
-        </span>
-        <span class="text-3xl font-bold">
-        </span>
-      </div>
+      <div class="flex flex-col text-center space-y-4">
+        <!-- Infos -->
+        <div class="flex flex-col space-y-6 my-8 mb-4">
+          <div class="flex justify-between">
+            <div class="flex items-center space-x-3">
+              <img src={findCoinIconBySymbol(baseAssetSymbol)} class="w-6 h-6" alt="" />
+              <span class="font-bold"> {baseAssetSymbol} </span>
+            </div>
+            <div class="flex">
+              <button class={
+                clsx("btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]"
+              )} on:click={()=>{ payment('1') }}>
+                <span class={clsx("mx-2", btn1Loading && "loading loading-sm")}>
+                  {$_('pay')}
+                </span>
+              </button>
+            </div>
+          </div>
 
-      <!-- Infos -->
-      <div class="flex flex-col space-y-4 my-2 mb-4">
-        <div>
-          
+          <div class="flex justify-between"> 
+            <div class="flex items-center space-x-3">
+              <img src={findCoinIconBySymbol(targetAssetSymbol)} class="w-6 h-6" alt="" />
+              <span class="font-bold"> {targetAssetSymbol} </span>
+            </div>
+            <div class="flex">
+              <button class="btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]"
+                on:click={()=>{ payment('2') }}
+              >
+                <span class={clsx("mx-2", btn2Loading && "loading loading-sm")}>
+                  {$_('pay')}
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

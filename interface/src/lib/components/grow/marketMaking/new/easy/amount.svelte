@@ -23,7 +23,6 @@
     </span>
   </div>
   
-  <!-- findCoinIconBySymbol(item.symbol.split("/")[1]) -->
   <div class="flex items-center justify-between space-x-2 mx-2">
     <div class="flex space-x-2">
       <AssetIcon assetIcon={findCoinIconBySymbol(baseAssetSymbol)} clazz="w-6 h-6" claxx="w-2 h-2" />
