@@ -2,6 +2,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CoingeckoProxyService } from './coingecko.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CoinMarketCategory } from "src/common/enum/coinmarketcategorytype";
 
 @ApiTags('marketdata')
 @Controller('coingecko')
@@ -18,6 +19,14 @@ export class CoingeckoController {
     @Param('vs_currency') vs_currency = 'usd',
   ): Promise<any> {
     return this.coingeckoProxy.coinsMarkets(vs_currency);
+  }
+
+  @Get('/coins/markets/:vs_currency/category/:category')
+  async getCoinMarketsByCategory(
+    @Param('vs_currency') vs_currency = 'usd',
+    @Param('category') category = CoinMarketCategory.DEFI,
+  ): Promise<any> {
+    return this.coingeckoProxy.coinsMarkets(vs_currency, category);
   }
 
   @Get('/coins/:id/market_chart')
