@@ -55,7 +55,7 @@
             </div>
             <div class="flex">
               <button class={
-                clsx("btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]"
+                clsx("btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]", "hover:bg-base-content no-animation"
               )} on:click={()=>{ payment('1') }}>
                 <span class={clsx("mx-2", btn1Loading && "loading loading-sm")}>
                   {$_('pay')}
@@ -70,7 +70,7 @@
               <span class="font-bold"> {targetAssetSymbol} </span>
             </div>
             <div class="flex">
-              <button class="btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]"
+              <button class="btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem] hover:bg-base-content no-animation"
                 on:click={()=>{ payment('2') }}
               >
                 <span class={clsx("mx-2", btn2Loading && "loading loading-sm")}>
@@ -81,25 +81,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Button -->
-      <!-- <div class="w-full py-4 flex justify-center">
-        <button
-          class={clsx(
-            "btn btn-md rounded-full bg-base-content hover:bg-base-content focus:bg-base-content no-animation",
-            !valid && 'btn-disabled'
-          )}
-          on:click={()=>{}}
-        >
-          <span
-            class={clsx(
-              "text-base-100 font-semibold",
-            )}
-          >
-            {$_("next_step")}</span
-          >
-        </button>
-      </div> -->
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">

@@ -56,7 +56,22 @@ export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limi
   }
   const limitPriceOrRefId = price || '0';
   const refId = '';
-  
+
   const memo = `${tradingType}:${spotOrderType}:${exchangeId}:${pairId}:${limitPriceOrRefId}:${refId}`
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+}
+
+export const GeneratArbitrageMemo = () => {
+  // 1. AB (Memo Type)
+  // 2. CR/DE/WI (Transfer Type) (Create/Deposit/Withdraw)
+  // 3. 01 (Exchange0 index) (binance)
+  // 4. 02 (Exchange1 index) (mexc)
+  // 5. Z7GC (Key of the arbitrage pair) (BTC/USDT)
+}
+
+export const GenerateMarketMakingMemo = () => {
+  // 1. MM (Memo Type)
+  // 2. CR/DE/WI (Transfer Type) (Create/Deposit/Withdraw)
+  // 3. 01 (Exchange index) (okx)
+  // 4. Z7GC (Key of the market making pair)
 }

@@ -221,11 +221,15 @@ export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: 
   }
   const memo = GenerateSpotMemo({ limit, buy, symbol, price, exchange });
   if (buy) {
-    return mixinPay({asset_id:secondAssetID, amount, memo, trace_id:trace});
+    return mixinPay({ asset_id: secondAssetID, amount, memo, trace_id: trace });
   }
-  return mixinPay({asset_id:firstAssetID, amount, memo, trace_id:trace});
+  return mixinPay({ asset_id: firstAssetID, amount, memo, trace_id: trace });
 }
 
-export const MarketMakingPay = ({exchange, symbol, amount}: { exchange: string, symbol: string, amount: string }) => {
+export const ArbitragePay = ({ exchange0, exchange1, symbol, amount }: { exchange0: string, exchange1: string, symbol: string, amount: string }) => {
+  console.log(exchange0, exchange1, symbol, amount)
+}
+
+export const MarketMakingPay = ({ exchange, symbol, amount }: { exchange: string, symbol: string, amount: string }) => {
   console.log(exchange, symbol, amount)
 }

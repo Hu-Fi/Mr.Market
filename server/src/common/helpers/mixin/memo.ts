@@ -4,16 +4,16 @@ import {
   SPOT_EXCHANGE_MAP,
 } from 'src/common/constants/memo';
 import {
-  MemoDetails,
+  SpotMemoDetails,
   TradingType,
   SpotOrderType,
   ExchangeIndex,
 } from 'src/common/types/memo/memo';
 import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
-export const decodeSpotMemo = (memo: string): MemoDetails => {
+export const decodeSpotMemo = (encodedMemo: string): SpotMemoDetails => {
   // Decode base64
-  const decodedMemo = Buffer.from(memo, 'base64').toString('utf-8');
+  const decodedMemo = Buffer.from(encodedMemo, 'base64').toString('utf-8');
   if (!decodedMemo) {
     return null;
   }
@@ -39,3 +39,23 @@ export const decodeSpotMemo = (memo: string): MemoDetails => {
 };
 
 export const decodeSwapMemo = () => {};
+
+// We need to determine we support 1 token creation or not
+
+export const decodeArbitrageMemo = (encodedMemo: string) => {
+  // Decode base64
+  const decodedMemo = Buffer.from(encodedMemo, 'base64').toString('utf-8');
+  if (!decodedMemo) {
+    return null;
+  }
+  const parts = decodedMemo.split(':');
+};
+
+export const decodeMarketMakingMemo = (encodedMemo: string) => {
+  // Decode base64
+  const decodedMemo = Buffer.from(encodedMemo, 'base64').toString('utf-8');
+  if (!decodedMemo) {
+    return null;
+  }
+  const parts = decodedMemo.split(':');
+};

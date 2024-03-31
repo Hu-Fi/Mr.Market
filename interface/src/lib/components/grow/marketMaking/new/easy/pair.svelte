@@ -34,7 +34,6 @@
           .toUpperCase()
           .match($createMMSelectPairEasySearch.toUpperCase());
       })
-    // : assets;
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">

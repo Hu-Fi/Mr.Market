@@ -19,7 +19,10 @@ import {
   MixinCashier,
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
-import { decodeSpotMemo } from 'src/common/helpers/mixin/memo';
+import {
+  decodeArbitrageMemo,
+  decodeSpotMemo,
+} from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
@@ -461,15 +464,30 @@ export class SnapshotsService {
       return;
     }
 
-    const tradingType = snapshot.memo.slice(0, 2);
+    const decodedMemo = Buffer.from(snapshot.memo, 'base64').toString('utf-8');
+    const tradingType = decodedMemo.slice(0, 2);
     switch (tradingType) {
       case 'SP':
-        const details = decodeSpotMemo(snapshot.memo);
+        const spotDetails = decodeSpotMemo(snapshot.memo);
         let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...details, snapshot };
+        spotOrderCreateEvent = { ...spotDetails, snapshot };
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
+      // Mixin snapshot handler for arb and mm
+      // 1. Once memo type detected, check if order exist
+      // 2. If exist, check if action valid (by payment asset index and db history)
+      // 3. If doesn't exist, create the arb or mm.
+      // 4. And if doesn't exist while the transfer type is not create, refund.
+      // We need to determine we support 1 token creation or not
+      case 'AR':
+        const arbDetails = decodeArbitrageMemo(snapshot.memo);
+        console.log(arbDetails);
+        break;
+      case 'MM':
+        const mmDetails = decodeArbitrageMemo(snapshot.memo);
+        console.log(mmDetails);
+        break;
       default:
         await this.refund(snapshot);
         break;
