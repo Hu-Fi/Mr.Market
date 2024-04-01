@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import MixinMenu from "../common/MixinMenu.svelte";
 </script>

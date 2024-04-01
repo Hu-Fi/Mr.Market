@@ -29,7 +29,7 @@
 </script>
 
 <div class="flex items-center justify-between p-4 rounded-2xl mt-1">
-  <div class="flex flex-col justify-center w-full">
+  <div class="flex flex-col justify-center">
     <!-- Title -->
     <div class="flex items-center space-x-1 opacity-60">
       <span class="text-sm font-normal">
@@ -38,9 +38,9 @@
     </div>
   
     <!-- Amount -->
-    <div class="flex items-end space-x-2 mt-2 pb-1 justify-between">
+    <div class="flex items-end space-x-2 mt-2 pb-1">
       <div class="flex items-end space-x-1">
-        <span class="text-2xl font-extrabold  break-words max-w-[calc(100vw-98px-30px-32px-16px)]">
+        <span class="text-2xl font-extrabold break-words">
           *****
         </span>
       </div>
