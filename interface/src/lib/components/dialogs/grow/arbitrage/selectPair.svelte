@@ -1,8 +1,8 @@
 <script>
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { createArbAmount, createArbPair, selectArbPairDialog } from "$lib/stores/grow";
   import { SUPPORTED_UNIQUE_ARBITRAGE_PAIRS } from "$lib/helpers/constants";
+  import { createArbAmount, createArbPair, selectArbPairDialog } from "$lib/stores/grow";
 </script>
 
 <dialog
