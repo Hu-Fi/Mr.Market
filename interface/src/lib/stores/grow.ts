@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -7,17 +7,25 @@ export const mmCoin0 = writable()
 export const mmCoin1 = writable()
 // 0 asset, 1 amount
 export const mmEasyStep = writable(0)
+export const addMoreDialog = writable(false)
 
-export const arbEasyStep = writable(0)
 export const currentArbitrageStatus = writable()
 export const currentMarketMakingStatus = writable()
-export const editArbitrageDialog = writable(false)
-export const editMarketMakingDialog = writable(false)
 
-export const addMoreDialog = writable(false)
+// Create new arbitrage
+export const createArbConfirmDialog = writable(false)
+export const editArbitrageDialog = writable(false)
+export const selectArbExchange1Dialog = writable(false)
+export const selectArbExchange2Dialog = writable(false)
+export const selectArbPairDialog = writable(false)
+export const createArbExchange1: Writable<string> = writable()
+export const createArbExchange2: Writable<string> = writable()
+export const createArbPair = writable()
+export const createArbAmount = writable([])
 
 // Create new market making
 export const createMMConfirmDialog = writable(false)
+export const editMarketMakingDialog = writable(false)
 export const createMMEasyPair = writable({symbol:'BTC/USDT',exchange:'okx'})
 export const createMMEasyAmounts = writable([])
 export const createMMSelectPairEasyFilter = writable('')

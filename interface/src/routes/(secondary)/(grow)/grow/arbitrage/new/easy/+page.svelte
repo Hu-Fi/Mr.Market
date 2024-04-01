@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
+  import Exchanges from "$lib/components/grow/arbitrage/new/easy/exchanges.svelte";
 </script>
 
-<div class="flex flex-col space-y-4">
-  <div class="flex items-center justify-center mt-4">
-    <span> {$_('')} </span>
-  </div>
+<div class="mx-4 mt-4 mb-24">
+  <Exchanges />
 </div>

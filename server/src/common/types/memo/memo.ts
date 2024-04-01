@@ -28,8 +28,8 @@ export interface SpotMemoDetails {
 export interface ArbitrageMemoDetails {
   tradingType: TradingType;
   action: ArbitrageMemoActionType;
-  exchange0Index: ExchangeIndex;
-  exchange1Index: ExchangeIndex;
+  exchangeAIndex: ExchangeIndex;
+  exchangeBIndex: ExchangeIndex;
   symbol: PairsMapKey;
 }
 
