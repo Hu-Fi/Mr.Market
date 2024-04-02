@@ -9,7 +9,6 @@
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
   import TokenFilterLoader from "$lib/components/skeleton/market/tokenFilterLoader.svelte";
   import { marketQueryFn } from "$lib/helpers/hufi/coin";
-  import SelectCategory from "$lib/components/market/elements/selectCategory.svelte";
   import { CoinsTypeTabs } from "$lib/helpers/constants.js";
 
   let tokens: CoingeckoToken[] = [];
@@ -43,7 +42,6 @@
 
 <div class="flex flex-col">
   <div class="w-full mb-24">
-    <SelectCategory />
     <table class="table w-full">
       {#if !resolved}
         <TokenFilterLoader />
