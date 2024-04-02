@@ -48,7 +48,7 @@ export const decodeArbitrageMemo = (encodedMemo: string) => {
   if (!decodedMemo) {
     return null;
   }
-  const parts = decodedMemo.split(':');
+  // const parts = decodedMemo.split(':');
 };
 
 export const decodeMarketMakingMemo = (encodedMemo: string) => {
@@ -57,5 +57,5 @@ export const decodeMarketMakingMemo = (encodedMemo: string) => {
   if (!decodedMemo) {
     return null;
   }
-  const parts = decodedMemo.split(':');
+  // const parts = decodedMemo.split(':');
 };
