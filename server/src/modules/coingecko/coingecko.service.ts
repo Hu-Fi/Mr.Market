@@ -8,7 +8,6 @@ import {
   CoinMarket,
   CoinMarketChartResponse,
 } from 'coingecko-api-v3';
-import { CoinMarketCategory } from "src/common/enum/coinmarketcategorytype";
 
 @Injectable()
 export class CoingeckoProxyService {
@@ -44,7 +43,7 @@ export class CoingeckoProxyService {
   // /coins/markets
   async coinsMarkets(
     vs_currency = 'usd',
-    category?: CoinMarketCategory,
+    category?: "decentralized_finance_defi" | "stablecoins",
     per_page = 500,
   ): Promise<CoinMarket[]> {
     try {
