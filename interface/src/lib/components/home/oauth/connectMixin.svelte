@@ -16,15 +16,16 @@
         },
         onError: (error: Error) => {
           console.error(error);
+          mixinConnectLoading.set(false);
           return;
         },
         onSuccess: async (token: string) => {
           await AfterMixinOauth(token)
+          mixinConnectLoading.set(false);
           return;
         },
       },
     );
-    mixinConnectLoading.set(false);
   };
 </script>
 
