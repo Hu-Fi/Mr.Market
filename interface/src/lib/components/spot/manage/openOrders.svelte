@@ -1,37 +1,12 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import authorize from "$lib/helpers/mixin-oauth";
-  import { AfterMixinOauth } from "$lib/helpers/mixin";
-  import { BOT_ID, OAUTH_SCOPE } from "$lib/helpers/constants";
+  import { mixinConnected } from "$lib/stores/home";
   import { openedOrders, orderFilterMode } from "$lib/stores/spot";
-  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
   import SingleOrder from "$lib/components/spot/manage/singleOrder.svelte";
+  import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
-
-  const auth = async () => {
-    mixinConnectLoading.set(true);
-    authorize(
-      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
-      {
-        onShowUrl: (url: string) => {
-          window.open(url)
-        },
-        onError: (error: Error) => {
-          console.error(error);
-          mixinConnectLoading.set(false);
-          return;
-        },
-        onSuccess: async (token: string) => {
-          await AfterMixinOauth(token)
-          mixinConnectLoading.set(false);
-          return;
-        },
-      },
-    );
-  };
-
+  
   $: os = [
     {
       orderId: "a22170a7-ec32-4718-80f7-c304959c3e42",
@@ -123,15 +98,11 @@
     {/if}
   </div>
 {:else}
-  <div class="flex flex-col items-center justify-center my-36 space-y-4">
-    <span>
+  <div class="flex flex-col items-center justify-center my-32 space-y-4">
+    <span class="text-sm opacity-60">
       {$_("connect_wallet_order_intro")}
     </span>
-    <button class="btn btn-lg rounded-full no-animation" on:click={async ()=>{ await auth()}}>
-      <span class={clsx("font-semibold", $mixinConnectLoading && "loading loading-xs mx-3")}>
-        {$_("connect_wallet")}
-      </span>
-    </button>
+    <ConnectWalletBtn clazz="btn-sm h-[2.5rem]" />
   </div>
 {/if}
 

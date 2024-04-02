@@ -54,8 +54,3 @@
     </button>
   </div>
 </div>
-
-
-<style>
-
-</style>

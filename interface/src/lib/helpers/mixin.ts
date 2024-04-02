@@ -2,11 +2,12 @@
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
-import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { GenerateSpotMemo } from "$lib/helpers/memo";
+import { getOrdersByUser } from "$lib/helpers/hufi/spot";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
-import { topAssetsCache, user, userAssets } from "$lib/stores/wallet";
+import { topAssetsCache, user, userAssets, userOrders } from "$lib/stores/wallet";
+import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
-import { GenerateSpotMemo } from "./memo";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -182,6 +183,14 @@ const getUserBalances = async (user_id: string, token: string) => {
   return { balances, totalUSDBalance, totalBTCBalance }
 }
 
+const getUserOrders = async (user_id: string) => {
+  const orders = await getOrdersByUser(user_id);
+  if (!orders) {
+    return;
+  }
+  userOrders.set(orders);
+}
+
 export const AfterMixinOauth = async (token: string) => {
   const data = await mixinUserMe(token)
   if (!data) {
@@ -198,6 +207,7 @@ export const AfterMixinOauth = async (token: string) => {
   mixinConnected.set(true)
   localStorage.setItem("mixin-oauth", JSON.stringify(token))
   getUserBalances(data.user_id, token)
+  getUserOrders(data.user_id)
 }
 
 export const MixinDisconnect = () => {

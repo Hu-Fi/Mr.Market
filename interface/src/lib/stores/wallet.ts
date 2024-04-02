@@ -5,6 +5,7 @@ import { mixinConnected } from "./home";
 
 export const user = writable()
 export const userAssets = writable()
+export const userOrders = writable()
 export const topAssetsCache = writable({})
 export const currencySymbol = writable("$")
 export const assetDetailAsset = writable()
