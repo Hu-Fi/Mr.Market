@@ -5,7 +5,7 @@ import { mixinConnected } from "$lib/stores/home";
 import { GenerateSpotMemo } from "$lib/helpers/memo";
 import { getOrdersByUser } from "$lib/helpers/hufi/spot";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
-import { topAssetsCache, user, userAssets, userOrders } from "$lib/stores/wallet";
+import { topAssetsCache, user, userAssets, userOrders, userOrdersLoaded } from "$lib/stores/wallet";
 import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
 
@@ -185,10 +185,13 @@ const getUserBalances = async (user_id: string, token: string) => {
 
 const getUserOrders = async (user_id: string) => {
   const orders = await getOrdersByUser(user_id);
+  console.log('getUserOrders()=>', orders)
   if (!orders) {
+    userOrdersLoaded.set(true);
     return;
   }
   userOrders.set(orders);
+  userOrdersLoaded.set(true);
 }
 
 export const AfterMixinOauth = async (token: string) => {

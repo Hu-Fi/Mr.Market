@@ -1,11 +1,13 @@
 import { browser } from "$app/environment";
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 import { AfterMixinOauth } from "$lib/helpers/mixin";
 import { mixinConnected } from "./home";
+import type { SpotOrder } from "$lib/types/hufi/spot";
 
 export const user = writable()
 export const userAssets = writable()
-export const userOrders = writable()
+export const userOrders:Writable<SpotOrder[]>  = writable([])
+export const userOrdersLoaded = writable()
 export const topAssetsCache = writable({})
 export const currencySymbol = writable("$")
 export const assetDetailAsset = writable()

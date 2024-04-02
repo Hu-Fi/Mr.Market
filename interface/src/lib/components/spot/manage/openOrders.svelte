@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { userOrders } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";
   import { openedOrders, orderFilterMode } from "$lib/stores/spot";
   import SingleOrder from "$lib/components/spot/manage/singleOrder.svelte";
@@ -7,23 +8,9 @@
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
   
-  $: os = [
-    {
-      orderId: "a22170a7-ec32-4718-80f7-c304959c3e42",
-      snapshotId: "d6db8dd2-089c-49df-9df7-01f810d00c27",
-      userId: "5da31e04-9a35-43d1-b46f-a6960bcd8e2d",
-      exchangeName: "okx",
-      type: "Limit Buy",
-      state: "ORDER_CREATED",
-      symbol: "BTC/USDT",
-      baseAssetId: "c6d0c728-2624-429b-8e0d-d9d19b6592fa",
-      targetAssetId: "43d61dcd-e413-450d-80b8-101d5e903357",
-      createdAt: "2019-10-12T07:20:50.52Z",
-      updatedAt: "2019-10-12T07:20:50.52Z",
-      amount: 1234,
-      price: 43576,
-    },
-  ].filter((item) => {
+  $: os = $userOrders.filter((item)=>{
+    return item.state.includes('EXCHANGE_ORDER_PARTIAL_FILLED') || item.state.includes('ORDER_CREATED')
+  }).filter((item) => {
     switch ($orderFilterMode) {
       case 0:
         return item.type.toUpperCase().includes("LIMIT");
