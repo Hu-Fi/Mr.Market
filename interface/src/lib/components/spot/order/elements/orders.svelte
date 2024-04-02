@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { asks, bids, current, usdValue, orderBookMode, orderType, price, buy, orderBookLoaded } from "$lib/stores/spot";
-  import { formatOrderBookAmount, formatOrderBookPrice, formatUSMoney, formatUSNumber } from "$lib/helpers/utils";
+  import { formatFixedOrderBookAmount, formatFixedOrderBookPrice, formatUSMoney, formatUSNumber } from "$lib/helpers/utils";
   import { LIMIT_ORDERBOOK_LENGTH, LIMIT_ORDERBOOK_HALF_LENGTH, MARKET_ORDERBOOK_LENGTH, MARKET_ORDERBOOK_HALF_LENGTH } from "$lib/helpers/constants";
 
   $: marketMode = $orderType.index === 1
@@ -15,12 +15,12 @@
       <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
         {#each $asks.slice(marketMode ? $asks.length-MARKET_ORDERBOOK_HALF_LENGTH : $asks.length-LIMIT_ORDERBOOK_HALF_LENGTH, $asks.length) as a}
           <button class="flex justify-between" on:click={()=>{price.set(a.price)}}>
-            <div class={clsx("text-xs text-start", "text-red-500")}>
-              <span> {formatOrderBookPrice(a.price)} </span>
+            <div class={clsx("text-xs min-w-12 text-right", "text-red-500")}>
+              <span> {formatFixedOrderBookPrice(a.price)} </span>
             </div>
 
             <div class="text-xs text-end">
-              <span> {formatOrderBookAmount(a.amount)} </span>
+              <span> {formatFixedOrderBookAmount(a.amount)} </span>
             </div>
           </button>
         {/each}
@@ -42,29 +42,29 @@
       <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
         {#each $bids.slice(0, marketMode ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as b}
           <button class="flex justify-between" on:click={()=>{price.set(b.price)}}>
-            <div class={clsx("text-xs text-start", "text-green-500")}>
-              <span> {formatOrderBookPrice(b.price)} </span>
+           <div class={clsx("text-xs min-w-12 text-right", "text-green-500")}>
+              <span> {formatFixedOrderBookPrice(b.price)} </span>
             </div>
 
             <div class="text-xs text-end">
-              <span> {formatOrderBookAmount(b.amount)} </span>
+              <span> {formatFixedOrderBookAmount(b.amount)} </span>
             </div>
           </button>
         {/each}
       </div>
-      
+
     {:else if $orderBookMode === 1}
       <!-- Show all Ask -->
       <!-- Ask -->
       <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5")}">
         {#each $asks.slice(marketMode ? $asks.length-MARKET_ORDERBOOK_LENGTH : $asks.length-LIMIT_ORDERBOOK_LENGTH, $asks.length) as a}
           <button class="flex justify-between" on:click={()=>{price.set(a.price)}}>
-            <div class={clsx("text-xs text-start", "text-red-500")}>
-              <span> {formatOrderBookPrice(a.price)} </span>
+            <div class={clsx("text-xs min-w-12 text-right", "text-red-500")}>
+              <span> {formatFixedOrderBookPrice(a.price)} </span>
             </div>
 
             <div class="text-xs text-end">
-              <span> {formatOrderBookAmount(a.amount)} </span>
+              <span> {formatFixedOrderBookAmount(a.amount)} </span>
             </div>
           </button>
         {/each}
@@ -97,12 +97,12 @@
       <div class="{clsx("flex flex-col", marketMode? "space-y-0.5":"space-y-1.5", $orderBookMode === 2 && "!mt-1.5")}">
         {#each $bids.slice(0, marketMode ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as b}
           <button class="flex justify-between" on:click={()=>{price.set(b.price)}}>
-            <div class={clsx("text-xs text-start", "text-green-500")}>
-              <span> {formatOrderBookPrice(b.price)} </span>
+            <div class={clsx("text-xs min-w-12 text-right", "text-green-500")}>
+              <span> {formatFixedOrderBookPrice(b.price)} </span>
             </div>
 
             <div class="text-xs text-end">
-              <span> {formatOrderBookAmount(b.amount)} </span>
+              <span> {formatFixedOrderBookAmount(b.amount)} </span>
             </div>
           </button>
         {/each}

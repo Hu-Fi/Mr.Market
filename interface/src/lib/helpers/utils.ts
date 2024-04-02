@@ -2,6 +2,14 @@ import BigNumber from "bignumber.js";
 import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
 
+const toFixed = (amount: string | number, decimalPlaces: number): string => {
+  const parts = `${amount}`.split('.')
+  const integerPart = parts[0];
+  const decimalPart = parts[1] || ''
+  const paddedDecimalPart = decimalPart.padEnd(decimalPlaces, '0').slice(0, decimalPlaces)
+  return `${integerPart}.${paddedDecimalPart}`
+}
+
 export const BN = BigNumber.clone({ DECIMAL_PLACES: 8 })
 export const BN2 = BigNumber.clone({ DECIMAL_PLACES: 2 })
 
@@ -22,7 +30,7 @@ export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
 }
 export const formatDecimals = (s: string | number, n: number) => {
-  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0 
+  if (Number(s) == undefined || Number(s) == null || Number(s) == 0) return 0
 
   const strValue = Number(s).toString();
   if (strValue.includes('.')) {
@@ -53,10 +61,10 @@ export const formatChartPrice = (s: string | number) => {
 
   // s >= 100, 2 decimals
   if (integerPart.length > 2) finalDecimalLength = 2;
-  
+
   // 10 <= s < 100, 3 decimals
   else if (integerPart.length == 2) finalDecimalLength = 3;
-  
+
   // 1 <= s < 10, 8 decimals
   else if (integerPart.length == 1) finalDecimalLength = 8;
 
@@ -120,7 +128,7 @@ export const formatOrderBookPrice = (s: string | number) => {
 
   // s >= 10, 2 decimals
   if (integerPart.length > 1) finalDecimalLength = 2;
-  
+
   // 1 <= s < 10, 3 decimals
   else if (integerPart.length == 1) finalDecimalLength = 3;
 
@@ -138,6 +146,14 @@ export const formatOrderBookPrice = (s: string | number) => {
 
 export const formatOrderBookAmount = (x: string | number) => {
   return formatDecimals(x, 4)
+}
+
+export const formatFixedOrderBookAmount = (x: string | number) => {
+  return toFixed(formatOrderBookAmount(x), 4);
+}
+
+export const formatFixedOrderBookPrice = (x: string | number) => {
+  return toFixed(formatOrderBookPrice(x), 1)
 }
 
 export const getAssetPercentage = (balance: string | number, total: string | number) => {
