@@ -34,7 +34,7 @@
       <div class="flex flex-col space-y-4 items-center justify-center my-20">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-24"
+          class="h-20"
           viewBox="0 0 647.63626 632.17383"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           ><path
