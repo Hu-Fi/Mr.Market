@@ -1,5 +1,4 @@
 // Hufi backend
-
 import { error } from "console";
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import type { OHLCVData, SupportedExchanges, SupportedPairs, SupportedTimeFrame, TokenChartTimeFrame } from "$lib/types/hufi/exchanges";

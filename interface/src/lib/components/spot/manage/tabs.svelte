@@ -2,6 +2,7 @@
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
+  import { mixinConnected } from "$lib/stores/home";
   import { manageMode, openedOrders, orderFilterDialog } from "$lib/stores/spot";
 </script>
 
@@ -10,7 +11,11 @@
     <div class="flex items-center">
       <!-- Orders -->
       <button class={clsx("flex items-center", $manageMode!=0 && "opacity-60")} on:click={()=>{manageMode.set(0);}} data-testid="manage_orders">
-        <span class="text-sm" >{$_("orders")}({$openedOrders})</span>
+        {#if $mixinConnected}
+          <span class="text-sm" >{$_("orders")}({$openedOrders})</span>
+        {:else}
+          <span class="text-sm" >{$_("orders")}</span>
+        {/if}
       </button>
       <button on:click={()=>orderFilterDialog.set(true)} data-testid="manage_orders_filter">
         {#if !$orderFilterDialog}

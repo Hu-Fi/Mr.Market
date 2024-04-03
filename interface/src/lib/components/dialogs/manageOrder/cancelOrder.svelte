@@ -34,7 +34,7 @@
     </div>
 
     <div class="flex items-center justify-center pb-4">
-      <button class="btn btn-md h-[2.5rem] min-h-[2.5rem] rounded-full bg-gradient-to-r from-sky-500 to-blue-500" on:click={cancel}>
+      <button class="btn btn-md h-[2.5rem] min-h-[2.5rem] rounded-full bg-base-content text-base-100" on:click={cancel}>
         <span class="text-base-100 text-sm font-semibold"> {$_("confirm")} </span> 
       </button>
     </div>

@@ -504,7 +504,7 @@ export class ExchangeService {
     );
   }
 
-  async readOrderByUser(userId: string) {
+  async readOrdersByUser(userId: string) {
     return await this.exchangeRepository.readOrderByUser(userId);
   }
 
@@ -576,55 +576,57 @@ export class ExchangeService {
       return;
     }
 
-    orders.forEach(async (o) => {
-      const instance = this.exchangeInstances[o.exchangeIndex];
-      if (!instance.has['fetchOrder']) {
-        return await this.updateSpotOrderState(
-          o.orderId,
-          STATE_TEXT_MAP['EXCHANGE_DOESNT_SUPPORT_FETCH_ORDER'],
-        );
-      }
-
-      const order = await instance.fetchOrder(o.orderId);
-
-      // TODO: All these states needs to be tested
-      // Determine order state and update
-      if (order.status === 'open') {
-        if (order.filled === 0) {
-          return;
+    await Promise.all(
+      orders.map(async (o) => {
+        const instance = this.exchangeInstances[o.exchangeName];
+        if (!instance.has['fetchOrder']) {
+          return await this.updateSpotOrderState(
+            o.orderId,
+            STATE_TEXT_MAP['EXCHANGE_DOESNT_SUPPORT_FETCH_ORDER'],
+          );
         }
-        if (order.filled != order.amount) {
+
+        const order = await instance.fetchOrder(o.orderId);
+
+        // TODO: All these states needs to be tested
+        // Determine order state and update
+        if (order.status === 'open') {
+          if (order.filled === 0) {
+            return;
+          }
+          if (order.filled != order.amount) {
+            await this.updateSpotOrderState(
+              o.orderId,
+              STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
+            );
+            return;
+          }
+        }
+        if (order.status === 'canceled') {
           await this.updateSpotOrderState(
             o.orderId,
-            STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
+            STATE_TEXT_MAP['EXCHANGE_ORDER_CANCELED'],
           );
           return;
         }
-      }
-      if (order.status === 'canceled') {
-        await this.updateSpotOrderState(
-          o.orderId,
-          STATE_TEXT_MAP['EXCHANGE_ORDER_CANCELED'],
-        );
-        return;
-      }
-      if (order.status === 'closed') {
-        await this.updateSpotOrderState(
-          o.orderId,
-          STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
-        );
-      }
+        if (order.status === 'closed') {
+          await this.updateSpotOrderState(
+            o.orderId,
+            STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
+          );
+        }
 
-      // TODO: add a final amount field to order and store in db. Use this value when release token
+        // TODO: add a final amount field to order and store in db. Use this value when release token
 
-      // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
-      const releaseOrder = await this.readMixinReleaseToken(o.orderId);
-      this.eventEmitter.emit('mixin.release', {
-        orderId: releaseOrder.orderId,
-        userId: releaseOrder.userId,
-        assetId: releaseOrder.assetId,
-        amount: releaseOrder.amount,
-      });
-    });
+        // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
+        const releaseOrder = await this.readMixinReleaseToken(o.orderId);
+        this.eventEmitter.emit('mixin.release', {
+          orderId: releaseOrder.orderId,
+          userId: releaseOrder.userId,
+          assetId: releaseOrder.assetId,
+          amount: releaseOrder.amount,
+        });
+      }),
+    );
   }
 }

@@ -34,7 +34,7 @@ export const marketTotal: Writable<number | ''> = writable()
 export const asks = writable<OrderBookPriceFormat[]>(a)
 export const bids = writable<OrderBookPriceFormat[]>(b)
 export const current: Writable<number | ''> = writable()
-export const usdValue: Writable<string | ''> = writable()
+export const usdValue: Writable<number | ''> = writable()
 
 // 0 default, 1 ask, 2 bid
 export const orderBookMode = writable(0)
