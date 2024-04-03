@@ -8,7 +8,7 @@
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
   
-  $: os = $userOrders.filter((item)=>{
+  $: os = $userOrders.length > 0? $userOrders.filter((item)=>{
     return item.state.includes('EXCHANGE_ORDER_PARTIAL_FILLED') || item.state.includes('ORDER_CREATED')
   }).filter((item) => {
     switch ($orderFilterMode) {
@@ -17,7 +17,7 @@
       case 1:
         return item.type.toUpperCase().includes("MARKET");
     }
-  });
+  }) : [];
 
   $: os, openedOrders.set(os.length);
 </script>
