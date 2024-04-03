@@ -61,7 +61,7 @@ export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limi
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 }
 
-export const GeneratArbitrageMemo = () => {
+export const GenerateArbitrageMemo = () => {
   // 1. AB (Memo Type)
   // 2. CR/DE/WI (Transfer Type) (Create/Deposit/Withdraw)
   // 3. 01 (Exchange0 index) (binance)
