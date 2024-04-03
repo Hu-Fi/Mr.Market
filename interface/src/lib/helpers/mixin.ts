@@ -184,14 +184,20 @@ const getUserBalances = async (user_id: string, token: string) => {
 }
 
 const getUserOrders = async (user_id: string) => {
-  const orders = await getOrdersByUser(user_id);
-  console.log('getUserOrders()=>', orders)
-  if (!orders) {
+  try {
+    const orders = await getOrdersByUser(user_id);
+    console.log('getUserOrders()=>', orders)
+    if (!orders) {
+      userOrdersLoaded.set(true);
+      return;
+    }
+    userOrders.set(orders);
     userOrdersLoaded.set(true);
-    return;
+  } catch (e) {
+    userOrders.set([]);
+    userOrdersLoaded.set(true);
+    console.error(e);
   }
-  userOrders.set(orders);
-  userOrdersLoaded.set(true);
 }
 
 export const AfterMixinOauth = async (token: string) => {
@@ -208,7 +214,7 @@ export const AfterMixinOauth = async (token: string) => {
   }
   user.set(data)
   mixinConnected.set(true)
-  localStorage.setItem("mixin-oauth", JSON.stringify(token))
+  localStorage.setItem("mixin-oauth", token)
   getUserBalances(data.user_id, token)
   getUserOrders(data.user_id)
 }

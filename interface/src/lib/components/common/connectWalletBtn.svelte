@@ -35,6 +35,7 @@
   on:click={async () => {
     await auth();
   }}
+  disabled={$mixinConnectLoading}
 >
   <span
     class={clsx(

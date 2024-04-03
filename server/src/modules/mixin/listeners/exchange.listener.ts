@@ -23,8 +23,7 @@ export class ExchangeListener {
     const { event, mixinEvent } = payload;
     const exchangeName = event.exchangeName;
 
-    let baseSymbol = event.symbol.split('/')[0];
-    let targetSymbol = event.symbol.split('/')[1];
+    let [baseSymbol, targetSymbol] = event.symbol.split('/');
     if (baseSymbol.includes('USDT')) {
       baseSymbol = 'USDT';
     }

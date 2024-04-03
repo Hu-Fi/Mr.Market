@@ -13,6 +13,6 @@ export async function load({params}) {
   }
 
 	return {
-    order: getOrderById(order_id)
+    order: await getOrderById(order_id)
   }
 }

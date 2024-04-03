@@ -9,8 +9,8 @@
 {#if $mixinConnected}
   {#if $userOrders && $userOrders.length != 0}
     <div class="mx-6 flex flex-col space-y-3">
-      {#each $userOrders as _}
-        <SingleSpotHistory />
+      {#each $userOrders as o}
+        <SingleSpotHistory {o} />
       {/each}
     </div>
   {:else}

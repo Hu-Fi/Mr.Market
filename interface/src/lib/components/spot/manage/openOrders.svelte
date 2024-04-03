@@ -8,7 +8,7 @@
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
   
-  $: os = $userOrders.length > 0? $userOrders.filter((item)=>{
+  $: filteredOrders = $userOrders.length > 0? $userOrders.filter((item)=>{
     return item.state.includes('EXCHANGE_ORDER_PARTIAL_FILLED') || item.state.includes('ORDER_CREATED')
   }).filter((item) => {
     switch ($orderFilterMode) {
@@ -16,16 +16,18 @@
         return item.type.toUpperCase().includes("LIMIT");
       case 1:
         return item.type.toUpperCase().includes("MARKET");
+      default:
+        return item;
     }
   }) : [];
 
-  $: os, openedOrders.set(os.length);
+  $: filteredOrders, openedOrders.set(filteredOrders.length);
 </script>
 
 {#if $mixinConnected}
   <div class="flex flex-col space-y-2 mb-24 min-h-[20vh]">
-    {#if os.length != 0}
-      {#each os as o}
+    {#if filteredOrders.length !== 0}
+      {#each filteredOrders as o}
         <div class="p-4 border-b border-base-200">
           <SingleOrder {o} />
         </div>

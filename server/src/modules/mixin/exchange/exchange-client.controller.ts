@@ -13,7 +13,7 @@ export class ExchangeUserController {
 
   constructor(private readonly exchagneService: ExchangeService) {}
 
-  @Get('orders/:user_id')
+  @Get('orders/user/:user_id')
   @ApiOperation({ summary: 'Get all orders by user id' })
   @ApiResponse({ status: 200, description: 'Get all orders of an user' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -25,7 +25,7 @@ export class ExchangeUserController {
     }
   }
 
-  @Get('orders/:order_id')
+  @Get('orders/order/:order_id')
   @ApiOperation({ summary: 'Get order details by id' })
   @ApiResponse({ status: 200, description: 'Get order details by id' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
