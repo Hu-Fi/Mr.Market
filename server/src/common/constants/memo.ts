@@ -19,4 +19,6 @@ export const SPOT_EXCHANGE_MAP: Record<string, string> = {
   '02': 'bitfinex',
   '03': 'mexc',
   '04': 'okx',
+  '05': 'gate',
+  '06': 'lbank',
 };

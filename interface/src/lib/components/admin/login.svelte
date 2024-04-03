@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import { autoCheckPassword } from "$lib/helpers/hufi/admin";
+  import { autoCheckPassword, checkPassword } from "$lib/helpers/hufi/admin";
   import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
 
   let password = "123123";
@@ -10,19 +10,20 @@
   const login = async (pass: string) => {
     loginLoading.set(true);
     // COMMENT FOR DEV
-    // if (await checkPassword(pass)) {
+    const accessToken = await checkPassword(pass);
+    if (accessToken) {
       submitted.set(true);
       checked.set(true);
       correct.set(true);
       localStorage.setItem("admin-password", pass);
+      localStorage.setItem("admin-access-token", accessToken);
       loginLoading.set(false);
       goto('/manage/dashboard')
       return true;
-    // }
+    }
     // submitted.set(true);
     // checked.set(true);
     // correct.set(false);
-    
     // return false;
   };
 

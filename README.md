@@ -115,3 +115,6 @@ Please read [CONTRIBUTING.md]() for details on our code of conduct, and the proc
 ## License
 
 This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details
+
+## Free Data provided by
+"Data provided by CoinGecko",

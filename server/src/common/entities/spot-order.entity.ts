@@ -12,6 +12,9 @@ export class SpotOrder {
   snapshotId: string; // Mixin snapshot UUID
 
   @Column()
+  userId: string;
+
+  @Column()
   exchangeIndex: string; // Index of exchange
 
   @Column()
@@ -30,7 +33,7 @@ export class SpotOrder {
   targetAssetId: string; // Mixin asset UUID
 
   @Column()
-  apiKeyId: string; // API key id used for place order
+  apiKeyId?: string; // API key id used for place order
 
   @Column()
   createdAt: string; // timestamp

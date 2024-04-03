@@ -21,6 +21,7 @@ export class ExchangePlaceSpotEvent {
   orderId: string;
   exchangeIndex: ExchangeIndex;
   snapshotId: string;
+  userId: string;
   type: SpotOrderType;
   state: SpotOrderStatus;
   symbol: PairsMapValue;

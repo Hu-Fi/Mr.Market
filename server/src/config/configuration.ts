@@ -38,6 +38,7 @@ export default () => ({
     session_id: process.env.MIXIN_SESSION_ID,
     server_public_key: process.env.MIXIN_SERVER_PUBLIC_KEY,
     session_private_key: process.env.MIXIN_SESSION_PRIVATE_KEY,
+    spend_private_key: process.env.MIXIN_SPEND_PRIVATE_KEY,
   },
   coingecko: {
     api_key: process.env.COINGECKO_API_KEY,
@@ -45,5 +46,9 @@ export default () => ({
   rebalance: {
     bigone_api_key: process.env.WITHDRAWAL_BIGONE_API_KEY,
     bigone_api_secret: process.env.WITHDRAWAL_BIGONE_API_SECRET,
+  },
+  constants: {
+    mixin_api_base_url:
+      process.env.MIXIN_API_BASE_URL || 'https://api.mixin.one',
   },
 });

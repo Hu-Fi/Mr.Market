@@ -9,7 +9,6 @@
   import OrderSelector from "$lib/components/spot/bids/orderSelector.svelte";
   import OpenOrders from "$lib/components/spot/manage/openOrders.svelte";
   import OpenPositions from "$lib/components/spot/manage/openPositions.svelte";
-  import Sub from "$lib/components/spot/manage/sub.svelte";
   import Tabs from "$lib/components/spot/manage/tabs.svelte";
   import OrderBook from "$lib/components/spot/order/orderBook.svelte";
 </script>
@@ -32,7 +31,6 @@
 <div class={clsx("mt-4 border-t-[12px]", $darkTheme ? "border-slate-900" : "border-slate-100")}>
   <div class="flex flex-col">
     <Tabs />
-    <Sub />
     {#if $manageMode === 0}
       <OpenOrders />
     {:else if $manageMode === 1}
