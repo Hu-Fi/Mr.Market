@@ -307,7 +307,7 @@
   "exchange2": "Exchange 2",
   "select_exchange_1": "Select first exchange",
   "select_exchange_2": "Select second exchange",
-  "trading_pair": "Trading pair"
+  "trading_pair": "Trading pair",
   "no_open_orders": "No open orders",
   "paid": "Paid",
   "order_created": "Order created",

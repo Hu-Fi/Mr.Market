@@ -5,13 +5,13 @@ import {
 } from 'src/common/constants/memo';
 import {
   ExchangeIndexValue,
-  MemoDetails,
+  SpotMemoDetails,
   SpotOrderTypeValue,
   TradingTypeValue,
 } from 'src/common/types/memo/memo';
 import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
-export const decodeSpotMemo = (decodedMemo: string): MemoDetails => {
+export const decodeSpotMemo = (decodedMemo: string): SpotMemoDetails => {
   // Decode decoded base64
   if (!decodedMemo) {
     return null;
@@ -40,7 +40,6 @@ export const decodeSpotMemo = (decodedMemo: string): MemoDetails => {
 export const decodeSwapMemo = () => {};
 
 // We need to determine we support 1 token creation or not
-
 export const decodeArbitrageMemo = (encodedMemo: string) => {
   // Decode base64
   const decodedMemo = Buffer.from(encodedMemo, 'base64').toString('utf-8');
