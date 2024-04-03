@@ -8,45 +8,29 @@
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
   import TokenFilterLoader from "$lib/components/skeleton/market/tokenFilterLoader.svelte";
+  import { marketQueryFn } from "$lib/helpers/hufi/coin";
+  import { CoinsTypeTabs } from "$lib/helpers/constants.js";
 
-  let defaults: CoingeckoToken[] = [];
-
-  $: tokens =
-    $activeSecondTab === 0
-      ? defaults
-      : $activeSecondTab === 1
-        ? defaults.slice(0, 10)
-        : $activeSecondTab === 2
-          ? defaults.slice(5, 10)
-          : $activeSecondTab === 3
-            ? defaults.slice(1, 6)
-            : $activeSecondTab === 4
-              ? defaults.slice(3, 7)
-              : $activeSecondTab === 5
-                ? defaults.slice(5, 9)
-                : $activeSecondTab === 6
-                  ? defaults.slice(1, 9)
-                  : $activeSecondTab === 7
-                    ? defaults.slice(3, 6)
-                    : $activeSecondTab === 8
-                      ? defaults.slice(2, 8)
-                      : $activeSecondTab === 9
-                        ? defaults.slice(3, 8)
-                        : $activeSecondTab === 10
-                          ? defaults.slice(1, 7)
-                          : defaults;
+  let tokens: CoingeckoToken[] = [];
 
   $: sortedTokens = tokens.length != 0 ? sortCoins($selectedField, tokens, $asc) : [];
 
   let resolved = false;
+
+  const handleSuccess = (x: CoingeckoToken[]) => {
+    (resolved = true), (tokens = x);
+  }
+  const handleFailure = (e: unknown) => {
+    console.log(e);
+    resolved = false;
+  }
+  activeSecondTab.subscribe((currentValue) => {
+    resolved = false;
+    marketQueryFn(CoinsTypeTabs[currentValue].id).then(handleSuccess).catch(handleFailure)
+  })
   $page.data.market
-    .then((x) => {
-      (resolved = true), (defaults = x);
-    })
-    .catch((e) => {
-      console.log(e);
-      resolved = false;
-    });
+    .then(handleSuccess)
+    .catch(handleFailure);
   onDestroy(()=> {
     activeSecondTab.set(0)
   })

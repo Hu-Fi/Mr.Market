@@ -4,7 +4,7 @@ export const ssr = false;
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load() {
   try {
-    const market = marketQueryFn()
+    const market = marketQueryFn('')
     const pairs = pairsFn()
     return {
       market,
