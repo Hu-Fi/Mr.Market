@@ -1,38 +1,20 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import { marketData } from "$lib/stores/market";
+  import { marketData, marketDataState } from "$lib/stores/market";
   import { sortCoins } from "$lib/helpers/sortTable";
-  import { activeCoinTab, asc, selectedField } from "$lib/stores/home";
+  import { asc, selectedField } from "$lib/stores/home";
 
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
   import TableColumns from "$lib/components/home/markets/tableColumns.svelte";
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
   import FilterLoader from "$lib/components/skeleton/market/filterLoader.svelte";
-  import { marketQueryFn } from "$lib/helpers/hufi/coin";
-  import { CoinsTypeTabs } from "$lib/helpers/constants.js";
   import type { CoingeckoToken } from "$lib/types/coingecko/token";
 
   let tokens: CoingeckoToken[] = [{"id":"bitcoin","symbol":"btc","name":"Bitcoin","image":"https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400","current_price":42632,"market_cap":835055181228,"market_cap_rank":1,"fully_diluted_valuation":895305808841,"total_volume":12859406774,"high_24h":42782,"low_24h":42095,"price_change_24h":52.9,"price_change_percentage_24h":0.12424,"market_cap_change_24h":2568819209,"market_cap_change_percentage_24h":0.30857,"circulating_supply":19586781,"total_supply":21000000,"max_supply":21000000,"ath":69045,"ath_change_percentage":-38.2734,"ath_date":"2021-11-10T14:24:11.849Z","atl":67.81,"atl_change_percentage":62751.51889,"atl_date":"2013-07-06T00:00:00.000Z","last_updated":"2024-01-01T15:12:29.021Z"}, ]
 
-  $: sortedTokens = sortCoins($selectedField, tokens, $asc)
-  let resolved = false;
-  let failed = false;
-  const handleFailure = () => {
-    resolved = true;
-    failed = false;
-  };
-  const handleSuccess = (x: CoingeckoToken[]) => { resolved = true, failed = false, tokens=x, marketData.set(x) };
-
-
-  let interval: NodeJS.Timeout
-  activeCoinTab.subscribe((currentValue) => {
-    resolved = false;
-    failed = false;
-    clearInterval(interval)
-    interval = setInterval(() => marketQueryFn(CoinsTypeTabs[currentValue].id).then(handleSuccess).catch(handleFailure), 10000)
-  })
-  interval = $page.data.market.then(handleSuccess).catch(handleFailure)
+  $: sortedTokens = sortCoins($selectedField, !$marketData || $marketDataState === 'loading' ? tokens : $marketData, $asc)
+  let resolved = $marketDataState !== 'loading'
+  let failed = $marketDataState === 'error'
 </script>
 
 <div class="w-full mb-24">

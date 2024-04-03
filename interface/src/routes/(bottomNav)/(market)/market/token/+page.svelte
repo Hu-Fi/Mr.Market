@@ -3,7 +3,7 @@
   import { page } from "$app/stores";
   import { sortCoins } from "$lib/helpers/sortTable";
   import type { CoingeckoToken } from "$lib/types/coingecko/token";
-  import { activeSecondTab, asc, selectedField } from "$lib/stores/market";
+  import {activeSecondTab, asc, marketData, marketDataState, selectedField} from "$lib/stores/market";
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
@@ -11,32 +11,11 @@
   import { marketQueryFn } from "$lib/helpers/hufi/coin";
   import { CoinsTypeTabs } from "$lib/helpers/constants.js";
 
-  let tokens: CoingeckoToken[] = [];
+  let tokens: CoingeckoToken[] = $marketData || [];
 
   $: sortedTokens = tokens.length != 0 ? sortCoins($selectedField, tokens, $asc) : [];
 
-  let resolved = false;
-
-  const handleSuccess = (x: CoingeckoToken[]) => {
-    (resolved = true), (tokens = x);
-  }
-  const handleFailure = (e: unknown) => {
-    console.log(e);
-    resolved = false;
-  }
-
-  let interval: NodeJS.Timeout
-  activeSecondTab.subscribe((currentValue) => {
-    resolved = false;
-    clearInterval(interval)
-    interval = setInterval(() => marketQueryFn(CoinsTypeTabs[currentValue].id).then(handleSuccess).catch(handleFailure))
-  })
-  interval = $page.data.market
-    .then(handleSuccess)
-    .catch(handleFailure);
-  onDestroy(()=> {
-    activeSecondTab.set(0)
-  })
+  let resolved = $marketDataState !== 'loading';
 </script>
 
 <div class="flex flex-col">
