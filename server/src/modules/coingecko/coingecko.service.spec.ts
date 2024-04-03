@@ -65,7 +65,7 @@ describe('CoingeckoProxyService', () => {
       const key = `markets/${mockVsCurrency}`;
       cacheManagerMock.get.mockResolvedValue(mockData);
 
-      const result = await service.coinsMarkets(mockVsCurrency, undefined, mockPerPage);
+      const result = await service.coinsMarkets(mockVsCurrency, mockPerPage);
       expect(result).toEqual(mockData);
       expect(cacheManagerMock.get).toHaveBeenCalledWith(key);
       expect(coinGeckoClientMock.coinMarket).not.toHaveBeenCalled();

@@ -10,14 +10,13 @@ import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
 // {/coingecko/coins/:id/market_chart/range, GET}
 
 export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> =>  {
-  const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/${name}`)
+  const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/${name}`)  
   return await r.json()
 }
 
-export const marketQueryFn = async (category: string) =>  {
+export const marketQueryFn = async () =>  {
   try {
-    const pathCategory = category ? `/category/${category}` : ''
-    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?limit`)
+    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}?limit`)
     const re = await r.json()
     return re
   } catch (e) {
@@ -41,17 +40,17 @@ export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: Supported
     console.error(`fetchOHLCV failed with status: ${r.status}`)
     return [];
   }
-  const re = await r.json()
+  const re = await r.json()  
   return re
 }
 
 export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame, vs_currency: string = 'usd') => {
   let url = ''; let days: number | string
-
+  
   const currentTs = Math.floor(new Date().setSeconds(0, 0) / 1000);
   const oneHourBefore = currentTs - 3600;
   switch (ranges) {
-    case '1h':
+    case '1h': 
       url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart/range?from=${oneHourBefore}&to=${currentTs}&vs_currency=${vs_currency}`
       break;
     case "24h": days=1; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
