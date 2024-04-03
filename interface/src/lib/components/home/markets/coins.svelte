@@ -25,7 +25,7 @@
   const handleSuccess = (x: CoingeckoToken[]) => { resolved = true, failed = false, tokens=x, marketData.set(x) };
 
 
-  let interval: any
+  let interval: NodeJS.Timeout
   activeCoinTab.subscribe((currentValue) => {
     resolved = false;
     failed = false;

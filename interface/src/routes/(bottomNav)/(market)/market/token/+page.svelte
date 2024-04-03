@@ -25,13 +25,12 @@
     resolved = false;
   }
 
-  let interval: any
+  let interval: NodeJS.Timeout
   activeSecondTab.subscribe((currentValue) => {
     resolved = false;
     clearInterval(interval)
     interval = setInterval(() => marketQueryFn(CoinsTypeTabs[currentValue].id).then(handleSuccess).catch(handleFailure))
   })
-  clearInterval(interval)
   interval = $page.data.market
     .then(handleSuccess)
     .catch(handleFailure);
