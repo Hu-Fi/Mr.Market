@@ -448,6 +448,12 @@ export class SnapshotsService {
     }
   }
 
+  // Spot execution process:
+  // 1. Loop snapshots on mixin, find incoming transfer
+  // 2. Send create spot order event to spot.listener.ts, event keyword: `spot.create`
+  // 3. If basic checks are passed, send place order event, write to db in exchange.listener.ts, event keyword: `exchange.spot.place`
+  // 4. Wait for state update scheduler to update order state, in exchange.service.ts
+  // 5. If the state updated to succeess, send release token event to mixin.listener.ts, event keyword: `mixin.release`
   private async handleSnapshot(snapshot: SafeSnapshot) {
     const s = await this.snapshotsRepository.findSnapshotByID(
       snapshot.snapshot_id,

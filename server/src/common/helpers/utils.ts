@@ -5,8 +5,6 @@ import {
   SymbolAssetIdMapValue,
 } from 'src/common/types/pairs/pairs';
 import BigNumber from 'bignumber.js';
-import { ExchangeIndex } from 'src/common/types/memo/memo';
-import { SPOT_EXCHANGE_MAP } from 'src/common/constants/memo';
 import {
   PAIRS_MAP,
   SYMBOL_ASSET_ID_MAP,
@@ -38,10 +36,6 @@ export const generateRandomSequence = () => {
 
 export const getPairSymbolByKey = (key: PairsMapKey): PairsMapValue => {
   return PAIRS_MAP[key] || '';
-};
-
-export const getExchangeNameByIndex = (index: ExchangeIndex) => {
-  return SPOT_EXCHANGE_MAP[index] || '';
 };
 
 export const getAssetIDBySymbol = (value: PairsMapValue) => {

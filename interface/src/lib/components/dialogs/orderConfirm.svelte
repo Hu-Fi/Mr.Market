@@ -16,6 +16,8 @@
     marketTotal,
   } from "$lib/stores/spot";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
+    import { getOrderById } from "$lib/helpers/hufi/spot";
+    import { goto } from "$app/navigation";
 
   $: infos = [
     {
@@ -66,7 +68,25 @@
     
     SpotPay({ $orderTypeLimit, buy: $buy, symbol: $pair.symbol, exchange: $pair.exchange, price: String($limitPrice), amount: payAmount, trace})
 
-    // TODO: Check order state by traceID
+    const FETCH_INTERVAL = 2000;
+    const TIMEOUT_DURATION = 60000;
+    let found = false;
+    let totalTime = 0;
+
+    var interval = setInterval(() => {
+      console.log(`${new Date()} called`);
+      // TODO: TEST IT;
+      found = getOrderById(trace);
+      totalTime += FETCH_INTERVAL;
+
+      if (found) {
+        clearInterval(interval);
+        goto(`/spot/history/${trace}`);
+      } else if (totalTime >= TIMEOUT_DURATION) {
+        clearInterval(interval);
+        console.log('Timeout reached, stopping execution.');
+      }
+    }, FETCH_INTERVAL);
 
     setTimeout(() => {
       loading = false;

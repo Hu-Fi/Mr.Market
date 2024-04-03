@@ -16,10 +16,17 @@ export type ArbitrageMemoActionType = keyof typeof ARBITRAGE_MEMO_ACTION_MAP;
 export type MarketMakingMemoActionType =
   keyof typeof MARKET_MAKING_MEMO_ACTION_MAP;
 
+export type TradingTypeValue =
+  (typeof TARDING_TYPE_MAP)[keyof typeof TARDING_TYPE_MAP];
+export type SpotOrderTypeValue =
+  (typeof SPOT_ORDER_TYPE_MAP)[keyof typeof SPOT_ORDER_TYPE_MAP];
+export type ExchangeIndexValue =
+  (typeof SPOT_EXCHANGE_MAP)[keyof typeof SPOT_EXCHANGE_MAP];
+
 export interface SpotMemoDetails {
   tradingType: TradingType;
   spotOrderType: SpotOrderType;
-  exchangeIndex: ExchangeIndex;
+  exchangeName: ExchangeIndex;
   destId: PairsMapKey;
   limitPrice?: string;
   refId?: string;

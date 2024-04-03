@@ -1,16 +1,17 @@
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import {
-  ExchangeIndex,
+  ExchangeIndexValue,
   SpotOrderType,
-  TradingType,
+  SpotOrderTypeValue,
+  TradingTypeValue,
 } from 'src/common/types/memo/memo';
 import { SpotOrderStatus } from 'src/common/types/orders/states';
 import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 
 export class SpotOrderCreateEvent {
-  tradingType: TradingType;
-  spotOrderType: SpotOrderType;
-  exchangeIndex: ExchangeIndex;
+  tradingType: TradingTypeValue;
+  spotOrderType: SpotOrderTypeValue;
+  exchangeName: ExchangeIndexValue;
   destId: PairsMapKey;
   limitPrice?: string;
   refId?: string;
@@ -19,7 +20,7 @@ export class SpotOrderCreateEvent {
 
 export class ExchangePlaceSpotEvent {
   orderId: string;
-  exchangeIndex: ExchangeIndex;
+  exchangeName: ExchangeIndexValue;
   snapshotId: string;
   userId: string;
   type: SpotOrderType;

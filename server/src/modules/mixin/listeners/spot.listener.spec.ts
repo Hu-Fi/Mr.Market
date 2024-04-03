@@ -10,9 +10,9 @@ import { SpotOrderListener } from 'src/modules/mixin/listeners/spot.listener';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { PAIRS_MAP } from 'src/common/constants/pairs';
 import {
-  isExchangeIndexValid,
-  isSpotOrderTypeValid,
-  isTradingTypeValid,
+  isExchangeIndexValueValid,
+  isSpotOrderTypeValueValid,
+  isTradingTypeValueValid,
 } from 'src/common/helpers/checks/spotChecks';
 
 jest.mock('src/modules/mixin/exchange/exchange.service', () => ({
@@ -51,9 +51,9 @@ describe('SpotOrderListener', () => {
 
   it('should create and emit a spot order for valid events', async () => {
     const mockEvent: SpotOrderCreateEvent = {
-      tradingType: 'SP',
-      spotOrderType: 'LB',
-      exchangeIndex: '01',
+      tradingType: 'Spot',
+      spotOrderType: 'Limit Buy',
+      exchangeName: 'binance',
       destId: 'Z7GC',
       snapshot: {
         snapshot_id: 'e120cc62-ca40-4319-8138-1279d4dca4e7',
@@ -85,17 +85,17 @@ describe('SpotOrderListener', () => {
 
     await listener.handleSpotOrderCreateEvent(mockEvent);
 
-    expect(isTradingTypeValid(mockEvent.tradingType)).toBe(true);
-    expect(isSpotOrderTypeValid(mockEvent.spotOrderType)).toBe(true);
-    expect(isExchangeIndexValid(mockEvent.exchangeIndex)).toBe(true);
+    expect(isTradingTypeValueValid(mockEvent.tradingType)).toBe(true);
+    expect(isSpotOrderTypeValueValid(mockEvent.spotOrderType)).toBe(true);
+    expect(isExchangeIndexValueValid(mockEvent.exchangeName)).toBe(true);
     const symbol = getPairSymbolByKey(mockEvent.destId);
     expect(symbol).toBe(PAIRS_MAP[mockEvent.destId]);
     const { baseAssetID, targetAssetID } = getAssetIDBySymbol(symbol);
     expect(baseAssetID).toBeDefined();
     expect(targetAssetID).toBeDefined();
-    const buy = mockEvent.spotOrderType.endsWith('B')
+    const buy = mockEvent.spotOrderType.toUpperCase().includes('BUY')
       ? true
-      : mockEvent.spotOrderType.endsWith('S')
+      : mockEvent.spotOrderType.toUpperCase().endsWith('SELL')
       ? false
       : undefined;
     expect(buy).toBeDefined();

@@ -14,7 +14,9 @@
   import { DownColorText, SUPPORTED_EXCHANGES, UpColorText } from "$lib/helpers/constants";
   import { CandlePairSelectorDialog as sd, CandlePairSearch, CandlePairExchangeFilter, CandlePairSelectorLoaded, CandleChart } from "$lib/stores/market";
 
-  let items = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
+  let items = [
+    { name: 'all' }, ...SUPPORTED_EXCHANGES.filter((e)=>{return e!='bitfinex'}).map(exchange => ({ name: exchange }))
+  ];
 
   let pairs: PairsData[];
   $: filteredPairs = pairs ?
@@ -29,6 +31,8 @@
         item.symbol.toUpperCase().match($CandlePairSearch.toUpperCase()) ||
         item.exchange.toUpperCase().match($CandlePairSearch.toUpperCase())
       );
+    }).filter((item) => {
+      return item.exchange.toUpperCase() != 'BITFINEX'
     })
   : []
 

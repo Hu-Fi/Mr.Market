@@ -160,14 +160,15 @@
         },
         onError: (error: Error) => {
           console.error(error);
+          mixinConnectLoading.set(false);
           return;
         },
         onSuccess: async (token: string) => {
           await AfterMixinOauth(token);
+          mixinConnectLoading.set(false);
         },
       },
     );
-    mixinConnectLoading.set(false);
   };
 
   // Set total as slider change

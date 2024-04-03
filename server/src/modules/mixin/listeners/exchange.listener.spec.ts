@@ -48,7 +48,7 @@ describe('ExchangeListener', () => {
       .mockResolvedValueOnce({ type: 'error', error: 'message' });
     const mockEvent = {
       event: {
-        exchangeIndex: '01',
+        exchangeName: '01',
         symbol: 'BTC/USDT',
         type: 'LB',
         userId: 'userid',
@@ -92,7 +92,7 @@ describe('ExchangeListener', () => {
       .mockResolvedValueOnce(false);
     const mockEvent = {
       event: {
-        exchangeIndex: '01',
+        exchangeName: '01',
         symbol: 'BTC/USDT',
         userId: 'userid',
         type: 'LB',
@@ -128,7 +128,7 @@ describe('ExchangeListener', () => {
     // Ensure the payload matches the expected types, including all required fields
     const payload = {
       event: {
-        exchangeIndex: '01',
+        exchangeName: '01',
         symbol: 'BTC/USDT',
         type: 'BUYB',
         userId: 'userid',

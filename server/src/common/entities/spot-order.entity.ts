@@ -15,7 +15,7 @@ export class SpotOrder {
   userId: string;
 
   @Column()
-  exchangeIndex: string; // Index of exchange
+  exchangeName: string; // Name of exchange
 
   @Column()
   type: SpotOrderType;
@@ -27,6 +27,9 @@ export class SpotOrder {
   symbol: PairsMapValue;
 
   @Column()
+  amount: string; // The amount of pay asset received
+
+  @Column()
   baseAssetId: string; // Mixin asset UUID
 
   @Column()
@@ -34,6 +37,9 @@ export class SpotOrder {
 
   @Column()
   apiKeyId?: string; // API key id used for place order
+
+  @Column()
+  limitPrice?: string; // Limit price for limit order
 
   @Column()
   createdAt: string; // timestamp
