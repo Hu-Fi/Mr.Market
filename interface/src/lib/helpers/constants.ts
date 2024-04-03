@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { env } from "$env/dynamic/public";
 import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
 
 export const AppName = "Mr.market"
@@ -59,7 +59,52 @@ export const DownColorText = "text-red-600"
 export const FocusUpColorBg = "focus:bg-green-500"
 export const FocusDownColorBg = "focus:bg-red-500"
 
-export const CoinsTypeTabs = ["favorites", "all", "mainstream", "layer1", "layer2", "inscription", "ai", "meme", "defi", "game_fi", "nft"]
+export const CoinsTypeTabs = [
+  {
+    name: "favorites",
+    id: "favorites",
+  },
+  {
+    name:  "all",
+    id: "all",
+  },
+  {
+    name: "mainstream",
+    id: "mainstream",
+  },
+  {
+    name:  "layer1",
+    id: "layer-1",
+  },
+  {
+    name:  "layer2",
+    id: "layer-2",
+  },
+  {
+    name: "inscription",
+    id: "inscription",
+  },
+  {
+    name: "ai",
+    id: "artificial-intelligence",
+  },
+  {
+    name: "meme",
+    id: "ai-meme-coins",
+  },
+  {
+    name: "defi",
+    id: "decentralized-finance-defi",
+  },
+  {
+    name: "game_fi",
+    id: "gaming",
+  },
+  {
+    name: "nft",
+    id: "non-fungible-tokens-nft",
+  }
+]
 
 export const maskOption = {
   numeral: true,

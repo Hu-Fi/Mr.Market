@@ -49,5 +49,3 @@ export const CandleBids = writable<OrderBookPriceFormat[]>([])
 export const CandleAsks = writable<OrderBookPriceFormat[]>([])
 export const CandleNewData = writable<OHLCVData>()
 export const CandleActiveIndicators = writable<string[]>(['MA'])
-// 'decentralized_finance_defi' | 'stablecoins' | ''
-export const CoinMarketCategory = writable('')
