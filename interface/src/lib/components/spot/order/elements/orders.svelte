@@ -95,7 +95,7 @@
       <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5", $orderBookMode === 2 && "!mt-1.5")}">
         {#each $bids.slice(0, $orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as b}
           <button class="flex justify-between" on:click={()=>{limitPrice.set(b.price)}}>
-            <div class={clsx("text-xs min-w-12 text-right", "text-green-500")}>
+            <div class={clsx("text-xs text-start", "text-green-500")}>
               <span> {formatFixedOrderBookPrice(b.price)} </span>
             </div>
 
