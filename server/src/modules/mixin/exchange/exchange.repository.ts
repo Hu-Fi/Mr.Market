@@ -27,9 +27,15 @@ export class ExchangeRepository {
     return this.apiKeysRepository.save(apiKey);
   }
 
-  async removeAPIKey(keyId: string) {
+  async readAPIKey(key_id: string) {
+    return await this.apiKeysRepository.findOne({
+      where: { key_id },
+    });
+  }
+
+  async removeAPIKey(key_id: string) {
     const apiKey = await this.apiKeysRepository.findOne({
-      where: { key_id: keyId },
+      where: { key_id },
     });
     if (!apiKey) {
       // Handle key not found error
@@ -46,12 +52,20 @@ export class ExchangeRepository {
     return await this.apiKeysRepository.find({ where: { exchange } });
   }
 
+  async readOrderByUser(userId: string): Promise<SpotOrder[]> {
+    return await this.spotOrderRepository.find({ where: { userId } });
+  }
+
   async readOrderByID(orderId: string): Promise<SpotOrder> {
     return await this.spotOrderRepository.findOne({ where: { orderId } });
   }
 
   async readOrdersByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
     return await this.spotOrderRepository.find({ where: { state } });
+  }
+
+  async readAllSpotOrders(): Promise<SpotOrder[]> {
+    return this.spotOrderRepository.find();
   }
 
   async createSpotOrder(

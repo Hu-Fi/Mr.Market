@@ -1,6 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthService } from './health.service';
 import { CustomLogger } from '../logger/logger.service';
+import { getEntityManagerToken } from '@nestjs/typeorm';
+
+const mockEntityManager = {
+  // Mock methods as needed, for example:
+  query: jest.fn().mockResolvedValue([]),
+};
 
 describe('HealthService', () => {
   let service: HealthService;
@@ -9,7 +15,14 @@ describe('HealthService', () => {
     jest.clearAllMocks(); // Ensures clean state between tests
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HealthService, CustomLogger],
+      providers: [
+        HealthService,
+        CustomLogger,
+        {
+          provide: getEntityManagerToken(), // This is how you get the correct token for EntityManager
+          useValue: mockEntityManager, // Use the mock you defined above
+        },
+      ],
     }).compile();
 
     service = module.get<HealthService>(HealthService);

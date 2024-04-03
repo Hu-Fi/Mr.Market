@@ -39,9 +39,9 @@ export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOr
 };
 
 export const sortSpot = (colHeader, data, ascendingOrder) => {
-  if (colHeader === 'first') {
+  if (colHeader === 'symbol') {
     return sortByString(colHeader, data, ascendingOrder);
-  } else if (colHeader === 'price' || colHeader === 'percentage') {
+  } else if (colHeader === 'price' || colHeader === 'change') {
     return sortByNumber(colHeader, data, ascendingOrder);
   }
   return data;

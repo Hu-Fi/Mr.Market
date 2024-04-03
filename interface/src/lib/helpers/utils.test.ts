@@ -1,5 +1,19 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { encodeSymbolToMemo, decodeSymbolToAssetID } from './utils';
 import { formatChartPrice, formatDecimals, formatOrderBookPrice, formatTimestampToTime, formatUSMoney, formatWalletBalance, numberInArray, toggleItemInArray, toggleNumberInArray } from './utils'
+
+vi.mock('$env/dynamic/public', () => {
+  return {
+    env: {
+      AppURL: '',
+      SHOW_BAR: '',
+      BOT_ID: '',
+      OAUTH_SCOPE: '',
+      MIXIN_MESSENGER_INSTALL: '',
+      MIXIN_API_BASE_URL: '',
+    }
+  }
+});
 
 describe('formatTimestampToTime', () => {
   it('format YYYY-MM-DD', () => {
@@ -308,12 +322,27 @@ describe('formatOrderBookPrice', () => {
 })
 })
 
-describe('formatOrderBookAmount', () => {
-  it.skip('', ()=>{
-    
-  }) 
-})
+describe('encodeSymbolToMemo', () => {
+  it('should return the correct memo code for a valid symbol', () => {
+    expect(encodeSymbolToMemo('USDT')).toBeUndefined();
+    expect(encodeSymbolToMemo('BTC/USDT')).toBe('Z7GC');
+  });
 
-// describe('', () => {
-  
-// })
+  it('should return undefined for an invalid symbol', () => {
+    expect(encodeSymbolToMemo('INVALID')).toBeUndefined();
+  });
+});
+
+describe('decodeSymbolToAssetID', () => {
+  it('should return the correct asset IDs for a valid symbol', () => {
+    expect(decodeSymbolToAssetID('USDT')).toBeUndefined();
+    expect(decodeSymbolToAssetID('BTC/USDT')).toEqual({
+      firstAssetID: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+      secondAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    });
+  });
+
+  it('should return undefined for an invalid symbol', () => {
+    expect(decodeSymbolToAssetID('INVALID')).toBeUndefined();
+  });
+});

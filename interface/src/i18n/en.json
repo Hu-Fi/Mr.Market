@@ -256,7 +256,6 @@
   "delete_info":"Delete this {grow_type}, all tokens will be refunded.",
   "asks": "Asks",
   "bids": "Bids",
-
   "password_incorrect": "Password incorrect",
   "enter_password": "Enter password",
   "dashboard": "Dashboard",
@@ -292,5 +291,13 @@
   "add_api_key": "Add api key",
   "remove_api_key": "Remove api key",
   "failed_to_load_market_data": "Failed to load market data",
-  "retry": "Retry"
+  "retry": "Retry",
+  "rebalance": "Rebalance",
+  "asset_id": "Mixin asset id",
+  "exchange_name": "Exchange name",
+  "minimum_balance": "Minimum balance",
+  "minimum_balance_settings": "Minimum balance settings",
+  "minimum_balance_settings_intro": "the minimum balance to keep in exchange or mixin",
+  "create_new_minimum_balance_record": "Create new minimum balance record",
+  "no_balance_in_wallet": "No balance in wallet"
 }

@@ -2,7 +2,6 @@
   import { currentPairOnly, openedOrders, orderFilterMode, pair } from "$lib/stores/spot";
   import SingleOrder from "$lib/components/spot/manage/singleOrder.svelte";
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
-  import CancelAllOrder from "$lib/components/dialogs/manageOrder/cancelAllOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
 
   $: os = [
@@ -94,9 +93,5 @@
     </div>
   {/each}
   <CancelOrder />
-  <CancelAllOrder />
   <OrderFilter />
 </div>
-
-<style>
-</style>

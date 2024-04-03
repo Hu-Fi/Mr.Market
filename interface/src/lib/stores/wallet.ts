@@ -12,7 +12,6 @@ export const assetDetailDialog = writable()
 
 export const checkMixinTokenExist = () => {
   if (!localStorage.getItem('mixin-oauth')) {
-    console.log('!token, remove mixin-oauth');
     localStorage.removeItem('mixin-oauth');
     mixinConnected.set(false);
     return false;

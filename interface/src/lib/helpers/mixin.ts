@@ -2,9 +2,11 @@
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
-import { hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { topAssetsCache, user, userAssets } from "$lib/stores/wallet";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
+import { GenerateSpotMemo } from "./memo";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -23,7 +25,7 @@ export const isMixin = () => {
 
 export const getMixinContext = () => {
   const ios = isIOS()
-  return ios 
+  return ios
     ? window?.webkit?.messageHandlers?.MixinContext
     : window?.MixinContext;
 }
@@ -39,15 +41,14 @@ export const mixinShare = (url: string, title: string, description: string, icon
   window.open(`mixin://send?category=app_card&data=${encodeURIComponent(btoa(JSON.stringify(data)))}`)
 }
 
-export const mixinPay = (p:{asset_id: string, amount:string, memo: string, trace_id: string}) => {
-  const params = new URLSearchParams({
-    recipient: BOT_ID,
-    asset: p.asset_id,
-    amount: p.amount,
-    memo: p.memo,
-    trace: p.trace_id
-  }).toString();
-  window.open(`mixin://pay?${params}`)
+export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
+  window.open(buildMixinOneSafePaymentUri({
+    uuid: BOT_ID,
+    asset: asset_id,
+    amount: amount,
+    memo: memo,
+    trace: trace_id,
+  }))
 }
 
 export const mixinUserMe = async (token: string) => {
@@ -61,7 +62,7 @@ export const mixinUserMe = async (token: string) => {
   return result.data ? result.data.data : {};
 }
 
-export const mixinSafeAllOutputs = async (members: string[], token: string)=> {
+export const mixinSafeAllOutputs = async (members: string[], token: string) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -73,7 +74,7 @@ export const mixinSafeAllOutputs = async (members: string[], token: string)=> {
   return result.data ? result.data.data : {};
 }
 
-export const mixinSafeOutputs = async (members: string[], token: string, spent: boolean = false)=> {
+export const mixinSafeOutputs = async (members: string[], token: string, spent: boolean = false) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -81,7 +82,7 @@ export const mixinSafeOutputs = async (members: string[], token: string, spent: 
   };
 
   const result = await axios
-    .get(MIXIN_API_BASE_URL + `/safe/outputs?members=${hashMembers(members)}&threshold=1&offset=0&limit=1000&state=${spent?"spent":"unspent"}&order=ASC`, config);
+    .get(MIXIN_API_BASE_URL + `/safe/outputs?members=${hashMembers(members)}&threshold=1&offset=0&limit=1000&state=${spent ? "spent" : "unspent"}&order=ASC`, config);
   return result.data ? result.data.data : {};
 }
 
@@ -94,12 +95,12 @@ export const mixinTopAssets = async () => {
 
 export const mixinAsset = async (asset_id: string) => {
   const result = await axios
-  .get(MIXIN_API_BASE_URL + `/network/assets/${asset_id}`);
+    .get(MIXIN_API_BASE_URL + `/network/assets/${asset_id}`);
 
   return result.data ? result.data.data : {};
 }
 
-export const mixinSafeAsset = async (asset_id: string, token: string)=> {
+export const mixinSafeAsset = async (asset_id: string, token: string) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -167,6 +168,9 @@ async function calculateTotalBTCBalance(totalUSDBalance) {
 }
 
 const getUserBalances = async (user_id: string, token: string) => {
+  if (isMixin) {
+    // TODO: implement get asset list from mixin webview context
+  }
   const topAssetsCache = await fetchTopAssetsCache();
   const outputs = await mixinSafeOutputs([user_id], token)
   // console.log(outputs)
@@ -174,8 +178,8 @@ const getUserBalances = async (user_id: string, token: string) => {
   balances = await calculateAndSortUSDBalances(balances, topAssetsCache);
   const totalUSDBalance = calculateTotalUSDBalance(balances);
   const totalBTCBalance = await calculateTotalBTCBalance(totalUSDBalance);
-  userAssets.set({balances, totalUSDBalance, totalBTCBalance})
-  return { balances, totalUSDBalance, totalBTCBalance}
+  userAssets.set({ balances, totalUSDBalance, totalBTCBalance })
+  return { balances, totalUSDBalance, totalBTCBalance }
 }
 
 export const AfterMixinOauth = async (token: string) => {
@@ -190,7 +194,7 @@ export const AfterMixinOauth = async (token: string) => {
     localStorage.removeItem('mixin-oauth')
     return
   }
-  user.set(data)  
+  user.set(data)
   mixinConnected.set(true)
   localStorage.setItem("mixin-oauth", JSON.stringify(token))
   getUserBalances(data.user_id, token)
@@ -200,4 +204,24 @@ export const MixinDisconnect = () => {
   user.set({})
   mixinConnected.set(false)
   localStorage.removeItem("mixin-oauth")
+}
+
+export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: { exchange: string, symbol: string, limit: boolean, price: string, buy: boolean, amount: string, trace: string }) => {
+  if (!exchange || !symbol || !amount || !trace) {
+    console.error('Invalid input parameters');
+    return;
+  }
+  if (!price) {
+    price = '0'
+  }
+  const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol)
+  if (!firstAssetID || !secondAssetID) {
+    console.error('Failed to get asset id because invaild symbol submmited')
+    return;
+  }
+  const memo = GenerateSpotMemo({ limit, buy, symbol, price, exchange });
+  if (buy) {
+    return mixinPay({asset_id:secondAssetID, amount, memo, trace_id:trace});
+  }
+  return mixinPay({asset_id:firstAssetID, amount, memo, trace_id:trace});
 }

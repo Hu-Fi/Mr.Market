@@ -107,12 +107,10 @@ export class MessageService implements OnModuleInit {
     }
   }
 
-  // Add a controller endpoint for this
   async sendTextMessage(user_id: string, message: string) {
     return await this.client.message.sendText(user_id, message);
   }
 
-  // Add a controller endpoint for this
   async broadcastTextMessage(message: string) {
     const users = await this.userService.getAllUsers();
     users.forEach(async (u) => {
@@ -120,6 +118,7 @@ export class MessageService implements OnModuleInit {
     });
   }
 
+  // This is used for handling mixin message. A customer service can be integrated.
   messageHandler = {
     onMessage: async (msg) => {
       // Filter only user message

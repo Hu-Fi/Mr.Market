@@ -2,7 +2,7 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Trade } from '../../common/entities/trade.entity';
+import { Trade } from 'src/common/entities/trade.entity';
 
 @Injectable()
 export class TradeRepository {
@@ -27,5 +27,4 @@ export class TradeRepository {
   async updateTradeStatus(orderId: string, status: string): Promise<void> {
     await this.repository.update({ orderId }, { status });
   }
-  // Add more custom methods as needed...
 }

@@ -17,10 +17,12 @@
     "test:watch": "jest --watch --config jest.config.js",
     "test:cov": "jest --coverage --config jest.config.js",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "pr:check": "yarn run test && yarn run lint"
   },
   "dependencies": {
     "@mixin.dev/mixin-node-sdk": "^7.0.8",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "10.3.3",
     "@nestjs/config": "^3.2.0",
@@ -52,6 +54,7 @@
     "dotenv": "^16.3.1",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.3",
