@@ -1,8 +1,13 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { asks, bids, current, usdValue, orderBookMode, orderTypeMarket, buy, orderBookLoaded, limitPrice } from "$lib/stores/spot";
+  import { asks, bids, pair, current, usdValue, orderBookMode, orderTypeMarket, buy, orderBookLoaded, limitPrice } from "$lib/stores/spot";
   import { formatFixedOrderBookAmount, formatFixedOrderBookPrice, formatUSMoney, formatUSNumber } from "$lib/helpers/utils";
   import { LIMIT_ORDERBOOK_LENGTH, LIMIT_ORDERBOOK_HALF_LENGTH, MARKET_ORDERBOOK_LENGTH, MARKET_ORDERBOOK_HALF_LENGTH } from "$lib/helpers/constants";
+
+  const estimateNumberOfDecimals = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length)
+  let estimatedPricePrecision = estimateNumberOfDecimals()
+  pair.subscribe(() => estimatedPricePrecision = estimateNumberOfDecimals())
+  current.subscribe(() => estimatedPricePrecision = Math.max(estimateNumberOfDecimals(), estimatedPricePrecision))
 </script>
 
 {#if $orderBookLoaded}
@@ -14,7 +19,7 @@
         {#each $asks.slice($orderTypeMarket ? $asks.length-MARKET_ORDERBOOK_HALF_LENGTH : $asks.length-LIMIT_ORDERBOOK_HALF_LENGTH, $asks.length) as a}
           <button class="flex justify-between" on:click={()=>{limitPrice.set(a.price)}}>
             <div class={clsx("text-xs text-start", "text-red-500")}>
-              <span> {formatFixedOrderBookPrice(a.price)} </span>
+              <span> {formatFixedOrderBookPrice(a.price, estimatedPricePrecision)} </span>
             </div>
 
             <div class="text-xs text-end">
@@ -41,7 +46,7 @@
         {#each $bids.slice(0, $orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as b}
           <button class="flex justify-between" on:click={()=>{limitPrice.set(b.price)}}>
             <div class={clsx("text-xs text-start", "text-green-500")}>
-              <span> {formatFixedOrderBookPrice(b.price)} </span>
+              <span> {formatFixedOrderBookPrice(b.price, estimatedPricePrecision)} </span>
             </div>
 
             <div class="text-xs text-end">
@@ -58,7 +63,7 @@
         {#each $asks.slice($orderTypeMarket ? $asks.length-MARKET_ORDERBOOK_LENGTH : $asks.length-LIMIT_ORDERBOOK_LENGTH, $asks.length) as a}
           <button class="flex justify-between" on:click={()=>{limitPrice.set(a.price)}}>
             <div class={clsx("text-xs text-start", "text-red-500")}>
-              <span> {formatFixedOrderBookPrice(a.price)} </span>
+              <span> {formatFixedOrderBookPrice(a.price, estimatedPricePrecision)} </span>
             </div>
 
             <div class="text-xs text-end">
@@ -96,7 +101,7 @@
         {#each $bids.slice(0, $orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as b}
           <button class="flex justify-between" on:click={()=>{limitPrice.set(b.price)}}>
             <div class={clsx("text-xs text-start", "text-green-500")}>
-              <span> {formatFixedOrderBookPrice(b.price)} </span>
+              <span> {formatFixedOrderBookPrice(b.price, estimatedPricePrecision)} </span>
             </div>
 
             <div class="text-xs text-end">

@@ -153,8 +153,8 @@ export const formatFixedOrderBookAmount = (x: string | number) => {
   return toFixed(formatOrderBookAmount(x), 4);
 }
 
-export const formatFixedOrderBookPrice = (x: string | number) => {
-  return toFixed(formatOrderBookPrice(x), 1)
+export const formatFixedOrderBookPrice = (x: string | number, precision: number) => {
+  return toFixed(formatOrderBookPrice(x), precision)
 }
 
 export const getAssetPercentage = (balance: string | number, total: string | number) => {
