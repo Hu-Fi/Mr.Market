@@ -8,8 +8,8 @@
   import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
 
   const items = [
-    {title: $_("swap"), route: '/swap'},
     {title: $_("spot"), route: '/spot'},
+    // {title: $_("swap"), route: '/swap'},
     // {title: "Leverage", route: "/leverage"},
     // {title: "Perpetual", route: "/perpetual"},
   ]
@@ -64,7 +64,6 @@
       {/if}
     </div>
   </div>
-  
   
   <!-- Close Button -->
   <div class="relative bottom-6 flex items-center justify-between w-80">    

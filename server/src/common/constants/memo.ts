@@ -22,3 +22,17 @@ export const SPOT_EXCHANGE_MAP: Record<string, string> = {
   '05': 'gate',
   '06': 'lbank',
 };
+
+// Decode memo for payment related actions, delete is auth protected
+export const ARBITRAGE_MEMO_ACTION_MAP: Record<string, string> = {
+  CR: 'create',
+  DE: 'deposit',
+  WI: 'withdraw',
+};
+
+// Decode memo for payment related actions, delete is auth protected
+export const MARKET_MAKING_MEMO_ACTION_MAP: Record<string, string> = {
+  CR: 'create',
+  DE: 'deposit',
+  WI: 'withdraw',
+};

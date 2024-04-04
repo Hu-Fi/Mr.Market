@@ -1,7 +1,9 @@
 <script>
   import GrowNewArbBar from "$lib/components/topBar/growNewArbBar.svelte";
-  import SelectUnit from "$lib/components/dialogs/grow/autoInvest/selectUnit.svelte";
-  import SelectPeriod from "$lib/components/dialogs/grow/autoInvest/selectPeriod.svelte";
+  import GrowNewArbNav from "$lib/components/bottomNav/growNewArbNav.svelte";
+  import SelectExchange from "$lib/components/dialogs/grow/arbitrage/selectExchange.svelte";
+  import SelectPair from "$lib/components/dialogs/grow/arbitrage/selectPair.svelte";
+  import ConfirmPayment from "$lib/components/dialogs/grow/arbitrage/confirmPayment.svelte";
 </script>
 
 <header class="sticky top-0 z-10 bg-base-100 pl-4 pr-[6px]">
@@ -12,8 +14,11 @@
   <slot />
 </main>
 
-<SelectPeriod />
-<SelectUnit />
+<GrowNewArbNav />
+<SelectExchange type=1 />
+<SelectExchange type=2 />
+<SelectPair />
+<ConfirmPayment />
 
 <style>
   main {
