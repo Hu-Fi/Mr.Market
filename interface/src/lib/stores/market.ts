@@ -1,7 +1,10 @@
-import { writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import { lineOptions } from "$lib/helpers/chart";
 import type { Chart } from "svelte-lightweight-charts";
 import type { OHLCVData, OrderBookPriceFormat, SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
+import { activeCoinTab } from "$lib/stores/home";
+import { marketQueryFn } from "$lib/helpers/hufi/coin";
+import { CoinsTypeTabs } from "$lib/helpers/constants";
 
 // Coin
 // 0 Favorites, 1 All, 2 MainStream, 3 Layer1, 4 Layer2, 5 Inscription, 6 AI, 7 Meme, 8 Defi, 9 GameFi, 10 NFT
@@ -12,7 +15,7 @@ export const showCoinPrice = writable(true)
 export const ChartPrice = writable([])
 export const ChartActiveTab = writable(0)
 export const ChartLineOption = writable(lineOptions)
-export const marketData = writable()
+//export const marketData = writable()
 export const searchValue = writable('')
 
 // For list sorting (change keys and 'sortCoins()' when data change)
@@ -50,3 +53,20 @@ export const CandleBids = writable<OrderBookPriceFormat[]>([])
 export const CandleAsks = writable<OrderBookPriceFormat[]>([])
 export const CandleNewData = writable<OHLCVData>()
 export const CandleActiveIndicators = writable<string[]>(['MA'])
+
+export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
+  marketDataState.set('loading')
+  const handleSuccess = (params: never[]) => {
+    set(params)
+    marketDataState.set('success')
+  };
+  const handleError = () => marketDataState.set('error');
+  marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
+  const interval = setInterval(() => {
+    marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
+  }, 10000)
+  return () => {
+    clearInterval(interval)
+  };
+}, [])
+export const marketDataState = writable('loading');

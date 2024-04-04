@@ -6,7 +6,7 @@
   import Filtered from "$lib/components/search/filtered.svelte";
 
   // In case access directly, no cache hit
-  if (!$marketData) { marketQueryFn().then(x => marketData.set(x)).catch(e => { console.log(e); goto('/home')} ) }
+  if (!$marketData) { marketQueryFn('').then(x => marketData.set(x)).catch(e => { console.log(e); goto('/home')} ) }
 </script>
 
 <div>
