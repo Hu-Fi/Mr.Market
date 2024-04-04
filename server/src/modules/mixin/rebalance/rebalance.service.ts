@@ -158,7 +158,7 @@ export class RebalanceService {
       const amountToTransfer = calculateRebalanceAmount(
         totalExchangeBalance,
         mixinAmount,
-      );
+      ).abs();
 
       // If amountToTransfer is less than minAmount * 2, skip rebalance;
       if (amountToTransfer.lte(minAmount.multipliedBy(2))) {
@@ -221,12 +221,12 @@ export class RebalanceService {
     const minBalance = new BigNumber(minimum_balance);
 
     // Determine if rebalance is necessary
-    if (balanceBN.isLessThanOrEqualTo(minBalance)) {
+    if (!balanceBN.isLessThanOrEqualTo(minBalance)) {
       return;
     }
-
+    console.warn(balanceBN.minus(minBalance).toString());
     // Calculate the amount needed to rebalance
-    const amountToRebalance = balanceBN.minus(minBalance);
+    const amountToRebalance = minBalance.minus(balanceBN);
     if (amountToRebalance.isLessThanOrEqualTo(0)) {
       this.logger.warn(
         `Calculated amount to rebalance is not positive. Calculated: ${amountToRebalance.toString()}`,
@@ -239,7 +239,7 @@ export class RebalanceService {
       exchange,
     );
 
-    if (!Array.isArray(apiKey) || apiKey.length === 0) {
+    if (!apiKey) {
       this.logger.error(
         `exchangeService.findFirstAPIKeyByExchange(${exchange}) => no api key found`,
       );
