@@ -43,24 +43,30 @@ export class CoingeckoProxyService {
   // /coins/markets
   async coinsMarkets(
     vs_currency = 'usd',
-    category?: "decentralized_finance_defi" | "stablecoins",
+    category?: 'decentralized_finance_defi' | 'stablecoins',
     per_page = 500,
   ): Promise<CoinMarket[]> {
     try {
       const key = `markets/${vs_currency}${category ? `/${category}` : ''}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
       if (!cachedData) {
-        const data = await this.coingecko.coinMarket(category ? {
-          vs_currency: vs_currency,
-          per_page,
-          category,
-        } : { vs_currency: vs_currency, per_page });
+        const data = await this.coingecko.coinMarket(
+          category
+            ? {
+                vs_currency: vs_currency,
+                per_page,
+                category,
+              }
+            : { vs_currency: vs_currency, per_page },
+        );
         await this.cacheService.set(key, data, this.cachingTTL);
         return data;
       }
       return cachedData;
     } catch (error) {
-      throw new Error(`markets/${vs_currency} Failed to GET /coins/market: ${error.message}`);
+      throw new Error(
+        `markets/${vs_currency} Failed to GET /coins/market: ${error.message}`,
+      );
     }
   }
 

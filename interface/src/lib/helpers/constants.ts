@@ -296,17 +296,13 @@ export const FocusUpColorBg = "focus:bg-green-500"
 export const FocusDownColorBg = "focus:bg-red-500"
 
 export const CoinsTypeTabs = [
-  {
-    name: "favorites",
-    id: "favorites",
-  },
+  // {
+  //   name: "favorites",
+  //   id: "favorites",
+  // },
   {
     name:  "all",
     id: "all",
-  },
-  {
-    name: "mainstream",
-    id: "mainstream",
   },
   {
     name:  "layer1",
@@ -317,8 +313,8 @@ export const CoinsTypeTabs = [
     id: "layer-2",
   },
   {
-    name: "inscription",
-    id: "inscription",
+    name: "inscriptions",
+    id: "inscriptions",
   },
   {
     name: "ai",
