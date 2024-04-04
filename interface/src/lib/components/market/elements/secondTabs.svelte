@@ -6,6 +6,7 @@
   import { darkTheme } from "$lib/stores/theme";  
   import { activeCoinTab } from "$lib/stores/home";
   import { CoinsTypeTabs, SUPPORTED_EXCHANGES } from "$lib/helpers/constants";
+    import { activeSpotTab } from "$lib/stores/market";
   
   const MARKET_BAR_ITEMS = [
     { name: $_("token"), key: '/market/token' },
@@ -20,6 +21,7 @@
 
   onDestroy(()=>{
     activeCoinTab.set(0);
+    activeSpotTab.set(0);
   })
 </script>
 
@@ -38,8 +40,8 @@
 {:else if active === 1}
   <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-200")}>
     {#each spotItems as item, i}
-      <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeCoinTab === i && "")} on:click={()=>{activeCoinTab.set(i);}}>
-        <span class={clsx("font-medium text-xs text-start capitalize", $activeCoinTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
+      <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSpotTab === i && "")} on:click={()=>{activeSpotTab.set(i);}}>
+        <span class={clsx("font-medium text-xs text-start capitalize", $activeSpotTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>
       </button>
     {/each}
   </div>
