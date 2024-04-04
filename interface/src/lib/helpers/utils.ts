@@ -3,6 +3,14 @@ import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
 import { PAIRS_MAP_REVERSED, SYMBOL_ASSET_ID_MAP } from "$lib/helpers/constants";
 
+const toFixed = (amount: string | number, decimalPlaces: number): string => {
+  const parts = `${amount}`.split('.')
+  const integerPart = parts[0];
+  const decimalPart = parts[1] || ''
+  const paddedDecimalPart = decimalPart.padEnd(decimalPlaces, '0').slice(0, decimalPlaces)
+  return `${integerPart}.${paddedDecimalPart}`
+}
+
 export const BN = BigNumber.clone({ DECIMAL_PLACES: 8 })
 export const BN2 = BigNumber.clone({ DECIMAL_PLACES: 2 })
 
@@ -139,6 +147,14 @@ export const formatOrderBookPrice = (s: string | number) => {
 
 export const formatOrderBookAmount = (x: string | number) => {
   return formatDecimals(x, 4)
+}
+
+export const formatFixedOrderBookAmount = (x: string | number) => {
+  return toFixed(formatOrderBookAmount(x), 4);
+}
+
+export const formatFixedOrderBookPrice = (x: string | number, precision: number) => {
+  return toFixed(formatOrderBookPrice(x), precision)
 }
 
 export const getAssetPercentage = (balance: string | number, total: string | number) => {
