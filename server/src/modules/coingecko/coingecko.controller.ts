@@ -23,9 +23,13 @@ export class CoingeckoController {
   @Get('/coins/markets/:vs_currency/category/:category')
   async getCoinMarketsByCategory(
     @Param('vs_currency') vs_currency = 'usd',
-    @Param('category') category: 'decentralized_finance_defi' | 'stablecoins' | 'all',
+    @Param('category')
+    category: 'decentralized_finance_defi' | 'stablecoins' | 'all',
   ): Promise<any> {
-    return this.coingeckoProxy.coinsMarkets(vs_currency, category === 'all' ? undefined : category);
+    return this.coingeckoProxy.coinsMarkets(
+      vs_currency,
+      category === 'all' ? undefined : category,
+    );
   }
 
   @Get('/coins/:id/market_chart')

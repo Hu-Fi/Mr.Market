@@ -3,37 +3,20 @@
   import { page } from "$app/stores";
   import { sortSpot } from "$lib/helpers/sortTable";
   import type { PairsData } from "$lib/types/hufi/exchanges";
-  import { activeSecondTab, asc, spotSelectedField } from "$lib/stores/market";
+  import { activeSpotTab, asc, spotSelectedField } from "$lib/stores/market";
   import SinglePair from "$lib/components/market/elements/singlePair.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SpotTableColumns from "$lib/components/market/elements/spotTableColumns.svelte";
 
   let defaultsPairs: PairsData[] = [];
-  $: pairs =
-    $activeSecondTab === 0
-      ? defaultsPairs
-      : $activeSecondTab === 1
-        ? defaultsPairs.filter((item) => {
-            return item.exchange === "okx";
-          })
-        : $activeSecondTab === 2
-          ? defaultsPairs.filter((item) => {
-              return item.exchange === "bitfinex";
-            })
-          : $activeSecondTab === 3
-            ? defaultsPairs.filter((item) => {
-                return item.exchange === "mexc";
-              })
-            : $activeSecondTab === 4
-              ? defaultsPairs.filter((item) => {
-                  return item.exchange === "gate";
-                })
-              : $activeSecondTab === 5
-                ? defaultsPairs.filter((item) => {
-                    return item.exchange === "lbank";
-                  })
-                : defaultsPairs;
-
+  const exchangeMap: { [key: number]: string} = {
+    1: "okx",
+    2: "bitfinex",
+    3: "mexc",
+    4: "gate",
+    5: "lbank"
+  };
+  $: pairs = $activeSpotTab === 0 ? defaultsPairs : defaultsPairs.filter(item => item.exchange === exchangeMap[$activeSpotTab]);
   $: sortedPairs = sortSpot($spotSelectedField, pairs, $asc);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,7 +30,7 @@
       resolved = false;
     });
   onDestroy(() => {
-    activeSecondTab.set(0);
+    activeSpotTab.set(0);
   });
 </script>
 

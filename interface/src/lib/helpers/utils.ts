@@ -261,3 +261,10 @@ export const decodeSymbolToAssetID = (symbol: string) => {
   }
   return { firstAssetID, secondAssetID }
 }
+
+export const handleCoingeckoTokenName = (name: string) => {
+  if (name.toUpperCase().includes('0X')){
+    return `${name.slice(0,6)}...`
+  }
+  return name
+}
