@@ -9,31 +9,14 @@
   import SpotTableColumns from "$lib/components/market/elements/spotTableColumns.svelte";
 
   let defaultsPairs: PairsData[] = [];
-  $: pairs =
-    $activeSpotTab === 0
-      ? defaultsPairs
-      : $activeSpotTab === 1
-        ? defaultsPairs.filter((item) => {
-            return item.exchange === "okx";
-          })
-        : $activeSpotTab === 2
-          ? defaultsPairs.filter((item) => {
-              return item.exchange === "bitfinex";
-            })
-          : $activeSpotTab === 3
-            ? defaultsPairs.filter((item) => {
-                return item.exchange === "mexc";
-              })
-            : $activeSpotTab === 4
-              ? defaultsPairs.filter((item) => {
-                  return item.exchange === "gate";
-                })
-              : $activeSpotTab === 5
-                ? defaultsPairs.filter((item) => {
-                    return item.exchange === "lbank";
-                  })
-                : defaultsPairs;
-
+  const exchangeMap: { [key: number]: string} = {
+    1: "okx",
+    2: "bitfinex",
+    3: "mexc",
+    4: "gate",
+    5: "lbank"
+  };
+  $: pairs = $activeSpotTab === 0 ? defaultsPairs : defaultsPairs.filter(item => item.exchange === exchangeMap[$activeSpotTab]);
   $: sortedPairs = sortSpot($spotSelectedField, pairs, $asc);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
