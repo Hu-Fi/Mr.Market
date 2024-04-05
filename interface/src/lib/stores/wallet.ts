@@ -27,7 +27,6 @@ export const autoConnectMixin = async () => {
   if (!browser) return;
   let token = localStorage.getItem('mixin-oauth')
   try {
-    token = JSON.parse(token)
     token = token.replace(/\n/g, '');
   } catch (e) {
     console.error('autoConnectMixin:', e)
