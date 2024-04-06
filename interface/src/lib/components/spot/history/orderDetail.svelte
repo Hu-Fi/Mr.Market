@@ -5,7 +5,7 @@
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
   $: o = $page.data.order
-  $: state = o.state;
+  $: state = o ? o.state : 'ORDER_CREATED';
 </script>
 
 <div class="mx-4 flex flex-col space-y-4">

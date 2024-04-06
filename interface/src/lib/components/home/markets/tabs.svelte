@@ -1,8 +1,12 @@
 <script lang="ts">
   import clsx from "clsx"
   import { _ } from "svelte-i18n"
+  import { onDestroy } from "svelte";
   import { activeCoinTab } from "$lib/stores/home";
   import { CoinsTypeTabs } from "$lib/helpers/constants";
+  onDestroy(()=>{
+    activeCoinTab.set(0);
+  })
 </script>
 
 <!-- Coins -->
