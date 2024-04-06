@@ -25,7 +25,7 @@
     // symbol: "",
     price: 43576,
     // exchange: "okx",
-    // time: "2019-10-12T07:20:50.52Z", 
+    // time: "2019-10-12T07:20:50.52Z",
     // type: "limit",
     // buy: true,
   };
@@ -42,7 +42,7 @@
           <img src={findExchangeIconByIdentifier(o.exchangeName)} alt="icon" loading="lazy" class="w-4 h-4" />
         </div>
       </div>
-      <span class="font-semibold"> 
+      <span class="font-semibold">
         {o.symbol}
       </span>
       <!-- Chevron right Icon -->
@@ -75,9 +75,9 @@
       <!-- Circle progress -->
       <!-- FIX: no traded amount field in return value (formatDecimals(o.traded/o.amount*100, 0))-->
       <div class={clsx("radial-progress border border-base-300", buy ? UpColorText : DownColorText)} style={`--value:${0}; --size: 44px; --thickness: 2px;`} role="progressbar">
-        <span class="text-sm text-base-content">{0}%</span> 
+        <span class="text-sm text-base-content">{0}%</span>
       </div>
-      
+
       <!-- Price -->
       <div class="flex flex-col justify-center space-y-2">
         <div class="flex items-center text-xs space-x-2 justify-between">

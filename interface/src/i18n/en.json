@@ -314,5 +314,14 @@
   "order_placed": "Order placed",
   "order_partially_filled": "Order partially filled",
   "order_filled": "Order filled",
-  "order_success": "Order success"
+  "order_success": "Order success",
+  "order_id": "Order ID",
+  "copy_to_clipboard": "Copy to clipboard",
+  "order_id_copied_to_clipboard": "Order id copied to clipboard",
+  "order_filled_amount": "Filled/Amount",
+  "order_avg_price": "Avg./Price",
+  "receiving_account": "Receiving account",
+  "time_created": "Time created",
+  "time_updated": "Time updated",
+  "mixin_wallet_icon": "Mixin Wallet Icon"
 }

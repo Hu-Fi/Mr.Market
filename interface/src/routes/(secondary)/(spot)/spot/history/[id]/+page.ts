@@ -1,5 +1,4 @@
 import { validate } from 'uuid';
-import { getOrderById } from '$lib/helpers/hufi/spot';
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */
@@ -13,6 +12,6 @@ export async function load({params}) {
   }
 
 	return {
-    order: await getOrderById(order_id)
+    orderId: order_id,
   }
 }

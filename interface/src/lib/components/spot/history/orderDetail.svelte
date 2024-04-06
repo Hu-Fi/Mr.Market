@@ -2,22 +2,52 @@
   import moment from "moment";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
+  import canceledSrc from "$lib/images/order/canceled.svg";
+  import waitingSrc from "$lib/images/order/waiting.svg";
+  import successSrc from "$lib/images/order/success.svg";
+  import mixinSrc from "$lib/images/order/mixin.svg";
+  import copySrc from "$lib/images/order/copy.svg";
+  import toast from 'svelte-french-toast';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { SPOT_ORDER_TYPE_MAP } from "$lib/helpers/memo";
+  import clsx from "clsx";
+  import { orderDetails } from "$lib/stores/spot";
+  import type { SpotOrder } from "$lib/types/hufi/spot";
 
-  $: o = $page.data.order
+  $: o = $orderDetails as SpotOrder | undefined;
+  $: orderId = $page.data.orderId;
   $: state = o ? o.state : 'ORDER_CREATED';
+  $: stateIcon = [
+    {
+      src: canceledSrc,
+      alt: 'Order canceled',
+      forStates: [],
+    },
+    {
+      src: waitingSrc,
+      alt: 'Order waiting',
+      forStates: ['EXCHANGE_ORDER_FILLED', 'EXCHANGE_ORDER_PARTIAL_FILLED', 'EXCHANGE_ORDER_PLACED', 'ORDER_CREATED'],
+    },
+    {
+      src: successSrc,
+      alt: 'Order completed',
+      forStates: ['ORDER_SUCCESS'],
+    },
+  ].find((stateIcon) => stateIcon.forStates.includes(state))
 </script>
-
-<div class="mx-4 flex flex-col space-y-4">
-  <!-- Symbol -->
-  <div class="flex items-center justify-center space-x-1">
-    <img src={findExchangeIconByIdentifier(o.exchangeName)} alt="icon" class="w-5 h-5">
-    <span class="font-bold"> {o.symbol} </span>
-  </div>
-
-  <!-- State -->
-  <div class="flex items-center justify-center">
-    <span class="text-sm">
+{#if o}
+<div class="flex flex-col space-y-4">
+  <div class="py-4 my-4 bg-gray-100">
+    <!-- Symbol -->
+    <div class="flex items-center justify-center space-x-1">
+      <span class="font-bold"> {o.symbol} </span>
+    </div>
+    <!-- State -->
+    <div class="flex items-center justify-center">
+    <span class="font-bold mt-2">
+      {#if stateIcon}
+        <img src={stateIcon.src} alt={stateIcon.alt} class="inline-block mr-0.5" />
+      {/if}
       {#if state == 'ORDER_CREATED'}
         {$_('order_created')}
       {:else if state == 'EXCHANGE_ORDER_PLACED'}
@@ -30,46 +60,77 @@
         {$_('order_success')}
       {/if}
     </span>
-  </div>
-
-  <!-- More -->
-  <div class="flex flex-col space-y-4 text-xs pt-3">
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('type')} </span>
-      <span class="font-bold"> {o.type} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('price')} </span>
-      <span class="font-bold"> {o.price} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('exchange')} </span>
-      <span class="font-bold"> {o.exchangeName} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('paid')} </span>
-      <span class="font-bold"> {o.amount} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('recipient')} </span>
-      <span class="font-bold"> {$_('mixin_wallet')} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('created_at')} </span>
-      <span class="font-bold"> {moment(o.createdAt).format('YYYY-MM-DD hh:mm')} </span>
-    </div>
-
-    <div class="flex justify-between">
-      <span class="opacity-60"> {$_('updated_at')} </span>
-      <span class="font-bold"> {moment(o.updatedAt).format('YYYY-MM-DD hh:mm')} </span>
     </div>
   </div>
-
+  <div class="max-w-24rem flex flex-col rounded-xl border border-base-200 relative">
+    <!-- More -->
+    <div class="flex flex-col space-y-3 text-xs">
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('order_id')} </span>
+        <span
+          class="opacity-60 cursor-pointer"
+          title={$_('copy_to_clipboard')}
+          on:click={() => {
+            navigator.clipboard.writeText(orderId);
+            toast.success($_('order_id_copied_to_clipboard'));
+          }}
+        > {orderId} <img class="inline-block" src={copySrc} alt={$_('copy_url')}/></span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('type')} </span>
+        <span class={clsx("font-bold", (o.type[1] || '') === 'S' ? 'text-red-400' : 'text-green-400')}>
+          {SPOT_ORDER_TYPE_MAP[o.type].replace(' ', '/')}
+        </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('exchange')} </span>
+        <span class="opacity-60"> <img src={findExchangeIconByIdentifier(o.exchangeName)} alt={`${findExchangeIconByIdentifier(o.exchangeName)} icon`} class="inline-block w-3 h-3">
+          {o.exchangeName} </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('order_filled_amount')} </span>
+        <span class="opacity-60"> {`${o.amount ? '/' : ''}`}{o.amount || ''} </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('order_avg_price')} </span>
+        <span class="opacity-60"> {`${o.price ? '/' : ''}`}{o.price || ''} </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('pay')} </span>
+        <span class="opacity-60"></span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('fee')} </span>
+        <span class="opacity-60"></span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('receive')} </span>
+        <span class="opacity-60"></span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('receiving_account')} </span>
+        <span class="opacity-60"> <img src={mixinSrc} class="inline-block" alt={$_('mixin_wallet_icon')} /> {$_('mixin_wallet')} </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('time_created')} </span>
+        <span class="opacity-60"> {moment(o.createdAt).format('YYYY/MM/DD hh:mm')} </span>
+      </div>
+      <hr/>
+      <div class="flex justify-between">
+        <span class="font-bold"> {$_('time_updated')} </span>
+        <span class="opacity-60"> {moment(o.updatedAt).format('YYYY/MM/DD hh:mm')} </span>
+      </div>
+    </div>
+  </div>
   <!-- Type: Limit/Market -->
   <!-- Buy: Buy/Sell -->
   <!-- State: Success/Partially success/Canceled -->
@@ -79,3 +140,22 @@
   <!-- Created Time -->
   <!-- Finished Time -->
 </div>
+{/if}
+<style>
+  .max-w-24rem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    max-width: 24rem;
+  }
+  hr {
+    border-top: 1px solid #eeeeee;
+  }
+  div.bg-gray-100 {
+    background-color: #F8FAFC;
+  }
+</style>
