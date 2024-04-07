@@ -4,8 +4,8 @@
   import { goto } from "$app/navigation";
 
   const bt = [
-    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/swap');}},
     {name: $_("spot"), icon: "spot", fn: ()=>{goto('/spot');}},
+    {name: $_("market"), icon: "token", fn: ()=>{goto('/market');}},
     {name: $_("grow"), icon: "earn", fn: ()=>{goto('/grow')}},
     {name: $_("arbitrage"), icon: "arbitrage", fn: ()=>{goto('/grow/arbitrage')}},
     {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},

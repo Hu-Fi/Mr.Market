@@ -2,8 +2,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transaction } from '../../common/entities/transaction.entity';
-import { UserBalance } from '../../common/entities/user-balance.entity';
+import { Transaction } from 'src/common/entities/transaction.entity';
+import { UserBalance } from 'src/common/entities/user-balance.entity';
 
 @Injectable()
 export class TransactionsService {

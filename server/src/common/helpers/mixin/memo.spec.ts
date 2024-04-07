@@ -1,4 +1,8 @@
-import { decodeSpotMemo } from './memo';
+import {
+  decodeArbitrageMemo,
+  decodeMarketMakingMemo,
+  decodeSpotMemo,
+} from './memo';
 import {
   TARDING_TYPE_MAP,
   SPOT_ORDER_TYPE_MAP,
@@ -65,5 +69,67 @@ describe('decodeSpotMemo', () => {
       spotOrderType: undefined,
       tradingType: undefined,
     });
+  });
+});
+
+describe('decodeArbitrageMemo', () => {
+  it('should decode a valid arbitrage memo correctly', () => {
+    const decodedMemo = 'AR:CR:01:02:Z7GC:123';
+    const result = decodeArbitrageMemo(decodedMemo);
+    expect(result).toEqual({
+      tradingType: 'Arbitrage',
+      action: 'create',
+      exchangeAName: 'binance',
+      exchangeBName: 'bitfinex',
+      symbol: 'BTC/USDT-ERC20',
+      traceId: '123',
+    });
+  });
+
+  it('should return null for empty input', () => {
+    const result = decodeArbitrageMemo('');
+    expect(result).toBeNull();
+  });
+
+  it('should return null for invalid memo format', () => {
+    const decodedMemo = 'AR:CR:01'; // Missing parts
+    const result = decodeArbitrageMemo(decodedMemo);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when destId does not map to a symbol', () => {
+    const decodedMemo = 'AR:CR:01:02:99';
+    const result = decodeArbitrageMemo(decodedMemo);
+    expect(result).toBeNull();
+  });
+});
+
+describe('decodeMarketMakingMemo', () => {
+  it('should decode a valid market making memo correctly', () => {
+    const decodedMemo = 'MM:DE:03:Z7GC:qwe';
+    const result = decodeMarketMakingMemo(decodedMemo);
+    expect(result).toEqual({
+      tradingType: 'Market Making',
+      action: 'deposit',
+      exchangeName: 'mexc',
+      symbol: 'BTC/USDT-ERC20',
+      traceId: 'qwe',
+    });
+  });
+
+  it('should return null for empty input', () => {
+    const result = decodeMarketMakingMemo('');
+    expect(result).toBeNull();
+  });
+
+  it('should return null for invalid memo format', () => {
+    const decodedMemo = 'MM:CR:ETHUSD'; // Incorrect format
+    expect(decodeMarketMakingMemo(decodedMemo)).toBeNull();
+  });
+
+  it('should return null when destId does not map to a symbol', () => {
+    const decodedMemo = 'MM:CR:03:99'; // '99' does not map to any symbol
+    const result = decodeMarketMakingMemo(decodedMemo);
+    expect(result).toBeNull();
   });
 });
