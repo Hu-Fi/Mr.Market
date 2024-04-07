@@ -67,12 +67,20 @@ export const cancelOrderDone = (o: object) => {
   cancelOrderDialog.set(false)
 }
 
+export const orderDetailsStatus = writable('loading');
 export const orderDetails = derived(
   page,
   ($page, set) => {
+    const handleSuccess = (params: unknown) => {
+      set(params);
+      orderDetailsStatus.set('success');
+    }
+    const handleError = () => {
+      orderDetailsStatus.set('error');
+    }
     const interval = setInterval(() => {
       if ($page.data.orderId) {
-        getOrderById($page.data.orderId).then(set)
+        getOrderById($page.data.orderId).then(handleSuccess).catch(handleError);
       }
     }, 1000);
 

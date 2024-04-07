@@ -5,6 +5,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
+import {SpotOrderDetails} from "../../../common/types/orders/details";
 
 @ApiTags('exchange')
 @Controller('exchange')
@@ -29,9 +30,18 @@ export class ExchangeUserController {
   @ApiOperation({ summary: 'Get order details by id' })
   @ApiResponse({ status: 200, description: 'Get order details by id' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getDepositAddress(@Param('order_id') orderId: string) {
+  async getDepositAddress(@Param('order_id') orderId: string): Promise<SpotOrderDetails> {
     try {
-      return this.exchagneService.readOrderById(orderId);
+      return {
+        ...(await this.exchagneService.readOrderById(orderId)),
+        amount: `${Math.random()}`, // TODO determine where should it come from
+        price: `${Math.random()}`, // TODO determine where should it come from
+        avg: `${Math.random()}`, // TODO determine where should it come from
+        filled: `${Math.random()}`, // TODO determine where should it come from
+        pay: `${Math.random()}`, // TODO determine where should it come from
+        fee: `${Math.random()}`, // TODO determine where should it come from
+        receive:`${Math.random()}`, // TODO determine where should it come from
+      };
     } catch (e) {
       this.logger.error(`Get order by id error: ${e.message}`);
     }

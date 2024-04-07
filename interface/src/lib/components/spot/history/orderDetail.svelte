@@ -11,10 +11,11 @@
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { SPOT_ORDER_TYPE_MAP } from "$lib/helpers/memo";
   import clsx from "clsx";
-  import { orderDetails } from "$lib/stores/spot";
-  import type { SpotOrder } from "$lib/types/hufi/spot";
+  import { orderDetails, orderDetailsStatus } from "$lib/stores/spot";
+  import OrderDetailLoader from "./orderDetailLoader.svelte"
+  import type { SpotOrderDetails } from "$lib/types/hufi/spot_details";
 
-  $: o = $orderDetails as SpotOrder | undefined;
+  $: o = $orderDetails as SpotOrderDetails | undefined;
   $: orderId = $page.data.orderId;
   $: state = o ? o.state : 'ORDER_CREATED';
   $: stateIcon = [
@@ -35,7 +36,10 @@
     },
   ].find((stateIcon) => stateIcon.forStates.includes(state))
 </script>
-{#if o}
+{#if $orderDetailsStatus === 'loading'}
+  <OrderDetailLoader />
+{/if}
+{#if o && $orderDetailsStatus === 'success'}
 <div class="flex flex-col space-y-4">
   <div class="py-4 my-4 bg-gray-100">
     <!-- Symbol -->
@@ -92,27 +96,27 @@
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('order_filled_amount')} </span>
-        <span class="opacity-60"> {`${o.amount ? '/' : ''}`}{o.amount || ''} </span>
+        <span class="opacity-60"> {o.filled || ''}{`${o.amount ? '/' : ''}`}{o.amount || ''} </span>
       </div>
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('order_avg_price')} </span>
-        <span class="opacity-60"> {`${o.price ? '/' : ''}`}{o.price || ''} </span>
+        <span class="opacity-60"> {o.avg || ''}{`${o.price ? '/' : ''}`}{o.price || ''} </span>
       </div>
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('pay')} </span>
-        <span class="opacity-60"></span>
+        <span class="opacity-60">{o.pay || ''}</span>
       </div>
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('fee')} </span>
-        <span class="opacity-60"></span>
+        <span class="opacity-60">{o.fee || ''}</span>
       </div>
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('receive')} </span>
-        <span class="opacity-60"></span>
+        <span class="opacity-60">{o.receive || ''}</span>
       </div>
       <hr/>
       <div class="flex justify-between">
@@ -131,14 +135,6 @@
       </div>
     </div>
   </div>
-  <!-- Type: Limit/Market -->
-  <!-- Buy: Buy/Sell -->
-  <!-- State: Success/Partially success/Canceled -->
-  <!-- Amount -->
-  <!-- Price -->
-  <!-- Recipient account -->
-  <!-- Created Time -->
-  <!-- Finished Time -->
 </div>
 {/if}
 <style>
