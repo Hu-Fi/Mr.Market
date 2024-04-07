@@ -8,7 +8,7 @@
 
   const items = [
     {key: 'lang', name: $_('language'), value: getNameByKey($locale || 'en-US'), fn: ()=>{goto('/home/user/i18n')}},
-    {key: 'theme', name: $_('theme'), value: 0, fn: ()=>{}},
+    // {key: 'theme', name: $_('theme'), value: 0, fn: ()=>{}},
     {key: 'quotation', name: $_('quotation'), value: 0, fn: ()=>{}},
     {key: 'faq', name: $_('faq'), value: 0, fn: ()=>{}},
     {key: 'us', name: $_('about_us'), value: 0, fn: ()=>{}},
