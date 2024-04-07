@@ -5,11 +5,11 @@
 	import { initi18n as i18n } from "../i18n/i18n";
 	import { autoConnectMixin, checkMixinTokenExist } from "$lib/stores/wallet";
 	import Loading from "$lib/components/home/loading.svelte";
-	import { detectSystemDark, theme } from "$lib/stores/theme";
+	import { theme } from "$lib/stores/theme";
 
 	const init = async () => {
 		await i18n();
-		detectSystemDark();
+		// detectSystemDark();
 		if (checkMixinTokenExist()) {
 			await autoConnectMixin();
 		}
