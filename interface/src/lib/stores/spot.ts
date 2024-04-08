@@ -1,6 +1,8 @@
 import type { Socket } from "socket.io-client";
 import { derived, writable, type Writable } from "svelte/store";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
+import { getOrderById } from "$lib/helpers/hufi/spot";
+import  { page } from "$app/stores";
 
 export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
@@ -64,3 +66,26 @@ export const cancelOrderDone = (o: object) => {
   cancelingOrder.set({})
   cancelOrderDialog.set(false)
 }
+
+export const orderDetailsStatus = writable('loading');
+export const orderDetails = derived(
+  page,
+  ($page, set) => {
+    const handleSuccess = (params: unknown) => {
+      set(params);
+      orderDetailsStatus.set('success');
+    }
+    const handleError = () => {
+      orderDetailsStatus.set('error');
+    }
+    const interval = setInterval(() => {
+      if ($page.data.orderId) {
+        getOrderById($page.data.orderId).then(handleSuccess).catch(handleError);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  },
+);
