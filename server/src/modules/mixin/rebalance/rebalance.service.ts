@@ -114,7 +114,7 @@ export class RebalanceService {
             BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
           ) {
             this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
-            await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
+            await this.rebalanceFromMixinToExchange(symbol, balance, exchange, mixinSymbolBalanceMap[symbol]);
           }
         }
       }
@@ -204,8 +204,10 @@ export class RebalanceService {
     symbol: string,
     balance: BigNumber.Value,
     exchange: string,
+    mixinBalance: BigNumber.Value,
   ) {
     const balanceBN = new BigNumber(balance);
+    const mixinBalanceBN = new BigNumber(mixinBalance);
 
     // Log the initiation of the rebalance process
     this.logger.log(
@@ -226,7 +228,10 @@ export class RebalanceService {
     }
     console.warn(balanceBN.minus(minBalance).toString());
     // Calculate the amount needed to rebalance
-    const amountToRebalance = minBalance.minus(balanceBN);
+    const amountToRebalance = calculateRebalanceAmount(
+      balanceBN,
+      mixinBalanceBN,
+    ).abs();
     if (amountToRebalance.isLessThanOrEqualTo(0)) {
       this.logger.warn(
         `Calculated amount to rebalance is not positive. Calculated: ${amountToRebalance.toString()}`,
