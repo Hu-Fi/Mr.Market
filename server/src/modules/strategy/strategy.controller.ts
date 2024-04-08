@@ -1,6 +1,13 @@
 // strategy.controller.ts
 import { StrategyService } from 'src/modules/strategy/strategy.service';
-import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('strategy')
@@ -8,17 +15,42 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class StrategyController {
   constructor(private readonly strategyService: StrategyService) {}
 
-  // Get all strategy by user
+  @Get('/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all strategy by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'All strategies of user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getAllStrategy() {}
 
-  // Stop arbitrage by id
-  // Get all arbitrage by user
-  // Get arbitrage details by id
+  @Get('/arbitrage/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all arbitrage by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'All arbitrage order of user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getAllArbitrageByUser() {}
 
-  // Stop market making by id
-  // Get all market making by user
-  // Get market making details by id
+  @Get('/arbitrage/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all arbitrage by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The details of the arbitrage.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getArbitrageDetailsById(@Param('id') id: string) {
+    console.log(id);
+  }
 
-  @Get('/stop-arbitrage')
+  @Get('/arbitrage/stop')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop arbitrage strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -39,7 +71,31 @@ export class StrategyController {
     );
   }
 
-  @Get('/stop-pure-market-making')
+  @Get('/market_making/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all market making by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'All market making order of user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getAllMarketMakingByUser() {}
+
+  @Get('/market_making/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all market making by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The details of the market making.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getMarketMakingDetailsById(@Param('id') id: string) {
+    console.log(id);
+  }
+
+  @Get('/market_making/stop')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop pure market making strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -62,8 +118,8 @@ export class StrategyController {
     );
   }
 
-  // We shouldn't expose these endpoints if we don't need to do them directly
-  // For mixin side we will only call from snapshot service
+  // We shouldn't expose these endpoints
+  // For mixin side we will only call from service
   //
   // @Post('/execute-arbitrage')
   // @HttpCode(HttpStatus.OK)

@@ -9,6 +9,7 @@ import {
   ArbitrageMemoDetails,
   ExchangeIndexValue,
   MarketMakingMemoActionValueType,
+  MarketMakingMemoDetails,
   SpotMemoDetails,
   SpotOrderTypeValue,
   TradingTypeValue,
@@ -67,7 +68,9 @@ export const decodeArbitrageMemo = (
   };
 };
 
-export const decodeMarketMakingMemo = (decodedMemo: string) => {
+export const decodeMarketMakingMemo = (
+  decodedMemo: string,
+): MarketMakingMemoDetails => {
   if (!decodedMemo) {
     return null;
   }

@@ -19,7 +19,7 @@ export const executeArbitrage = async (strategyParamsDto: StrategyDto) => {
 }
 
 export const stopArbitrage = async (userId: string, clientId: string) => {
-  const response = await fetch(`${HUFI_BACKEND_URL}/strategy/stop-arbitrage?userId=${userId}&clientId=${clientId}`, {
+  const response = await fetch(`${HUFI_BACKEND_URL}/strategy/arbitrage/stop?userId=${userId}&clientId=${clientId}`, {
     method: 'GET',
   });
 

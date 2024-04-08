@@ -1,13 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as ccxt from 'ccxt';
-import { TradeService } from '../trade/trade.service';
 import {
   ArbitrageStrategyDto,
   PureMarketMakingStrategyDto,
-} from './strategy.dto';
-import { PerformanceService } from '../performance/performance.service';
+} from 'src/modules/strategy/strategy.dto';
+import { TradeService } from 'src/modules/trade/trade.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { CustomLogger } from '../logger/logger.service';
+import { PerformanceService } from '../performance/performance.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class StrategyService {

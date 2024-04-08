@@ -481,12 +481,6 @@ export class SnapshotsService {
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
-      // Mixin snapshot handler for arb and mm
-      // 1. Once memo type detected, check if order exist
-      // 2. If exist, check if action valid (by payment asset index and db history)
-      // 3. If doesn't exist, create the arb or mm.
-      // 4. And if doesn't exist while the transfer type is not create, refund.
-      // We need to determine we support 1 token creation or not
       case 'AR':
         const arbDetails = decodeArbitrageMemo(snapshot.memo);
         this.logger.log(arbDetails);
@@ -496,7 +490,7 @@ export class SnapshotsService {
       case 'MM':
         const mmDetails = decodeMarketMakingMemo(snapshot.memo);
         this.logger.log(mmDetails);
-        this.events.emit('marketmaking.create', mmDetails);
+        this.events.emit('market_making.create', mmDetails);
         break;
 
       default:

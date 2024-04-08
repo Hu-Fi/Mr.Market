@@ -1,8 +1,9 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { PriceSourceType } from '../enum/pricesourcetype';
+import { PriceSourceType } from 'src/common/enum/pricesourcetype';
+import { ArbitrageStates, MarketMakingStates } from '../types/orders/states';
 
 @Entity()
-export class ArbitrageStrategyDto {
+export class ArbitrageOrder {
   @PrimaryColumn()
   orderId: string;
 
@@ -23,12 +24,15 @@ export class ArbitrageStrategyDto {
 
   @Column()
   exchangeBName: string;
+
+  @Column()
+  state: ArbitrageStates;
 }
 
 @Entity()
 export class MarketMakingOrder {
   @PrimaryColumn()
-  clientId: string;
+  orderId: string;
 
   @Column()
   userId: string;
@@ -68,4 +72,7 @@ export class MarketMakingOrder {
 
   @Column()
   floorPrice?: number;
+
+  @Column()
+  state: MarketMakingStates;
 }

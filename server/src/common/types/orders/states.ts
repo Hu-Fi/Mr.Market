@@ -32,3 +32,10 @@ export const STATE_TEXT_MAP: {
   },
 );
 export type SpotOrderStatus = keyof typeof STATE_CODE_MAP;
+
+// temporary: 1 asset received
+// created: both asset received, order created
+// paused: order paused
+// deleted: soft delete
+export type ArbitrageStates = 'temporary' | 'created' | 'paused' | 'deleted';
+export type MarketMakingStates = 'temporary' | 'created' | 'paused' | 'deleted';
