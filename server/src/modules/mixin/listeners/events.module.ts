@@ -8,9 +8,15 @@ import { SnapshotsModule } from 'src/modules/mixin/snapshots/snapshots.module';
 import { CustomConfigModule } from 'src/modules/customConfig/customConfig.module';
 import { ArbitrageListener } from 'src/modules/mixin/listeners/arbitrage.listener';
 import { MarketMakingListener } from 'src/modules/mixin/listeners/market_making.listener';
+import { StrategyModule } from 'src/modules/strategy/strategy.module';
 
 @Module({
-  imports: [ExchangeModule, SnapshotsModule, CustomConfigModule],
+  imports: [
+    ExchangeModule,
+    SnapshotsModule,
+    CustomConfigModule,
+    StrategyModule,
+  ],
   providers: [
     ExchangeListener,
     MixinListener,
