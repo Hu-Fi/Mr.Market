@@ -1,8 +1,10 @@
 // This file is used for creation of strategy order on user side
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
+  PaymentState,
 } from 'src/common/entities/strategy.entity';
 import {
   ArbitrageStates,
@@ -129,5 +131,37 @@ export class StrategyUserService {
       );
       throw error;
     }
+  }
+
+  async createPaymentState(paymentState: PaymentState): Promise<PaymentState> {
+    return await this.strategyUserRepository.createPaymentState(paymentState);
+  }
+
+  async findPaymentStateById(orderId: string): Promise<PaymentState> {
+    return await this.strategyUserRepository.findPaymentStateById(orderId);
+  }
+
+  async updatePaymentStateById(
+    orderId: string,
+    newPaymentState: Partial<PaymentState>,
+  ) {
+    return await this.strategyUserRepository.updatePaymentStateById(
+      orderId,
+      newPaymentState,
+    );
+  }
+
+  // Timeout worker
+  @Cron('*/60 * * * * *') // 60s
+  async clearTimeoutOrders() {
+    // Read all PaymentState
+    // Check if created time over timeout 10m
+    // Update state timeout, refund
+  }
+
+  @Cron('*/60 * * * * *') // 60s
+  async updateExecutionBasedOnOrders() {
+    // Get orders states that are created
+    // Check if order is already running in strategy
   }
 }

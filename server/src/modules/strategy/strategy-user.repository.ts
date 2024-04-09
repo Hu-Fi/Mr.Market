@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
+  PaymentState,
 } from 'src/common/entities/strategy.entity';
 import {
   ArbitrageStates,
@@ -17,6 +18,8 @@ export class StrategyUserRepository {
     private readonly arbitrageRepository: Repository<ArbitrageOrder>,
     @InjectRepository(MarketMakingOrder)
     private readonly marketMakingRepository: Repository<MarketMakingOrder>,
+    @InjectRepository(PaymentState)
+    private readonly paymentStateRepository: Repository<PaymentState>,
   ) {}
 
   async createArbitrage(
@@ -68,7 +71,7 @@ export class StrategyUserRepository {
   async updateMarketMakingOrderState(
     orderId: string,
     newState: MarketMakingStates,
-  ): Promise<void> {
+  ): Promise<MarketMakingOrder> {
     const marketMakingOrder = await this.marketMakingRepository.findOneBy({
       orderId,
     });
@@ -76,6 +79,29 @@ export class StrategyUserRepository {
       throw new Error('MarketMakingOrder not found');
     }
     marketMakingOrder.state = newState;
-    await this.marketMakingRepository.save(marketMakingOrder);
+    return await this.marketMakingRepository.save(marketMakingOrder);
+  }
+
+  async createPaymentState(paymentState: PaymentState): Promise<PaymentState> {
+    return this.paymentStateRepository.save(paymentState);
+  }
+
+  async findPaymentStateById(orderId: string): Promise<PaymentState> {
+    return this.paymentStateRepository.findOneBy({ orderId });
+  }
+
+  async updatePaymentStateById(
+    orderId: string,
+    newPaymentState: Partial<PaymentState>,
+  ) {
+    const updateResult = await this.paymentStateRepository.update(
+      { orderId },
+      newPaymentState,
+    );
+
+    if (updateResult.affected === 0) {
+      return null;
+    }
+    return updateResult;
   }
 }

@@ -8,6 +8,7 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PerformanceService } from '../performance/performance.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { createStrategyKey } from 'src/common/helpers/strategyKey';
 
 @Injectable()
 export class StrategyService {
@@ -74,7 +75,11 @@ export class StrategyService {
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
     const { userId, clientId, pair, exchangeAName, exchangeBName } =
       strategyParamsDto;
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
 
@@ -123,10 +128,18 @@ export class StrategyService {
     );
 
     let strategyKey;
-    if (strategyType === 'Arbitrage') {
-      strategyKey = `${userId}-${clientId}-Arbitrage`;
+    if (strategyType === 'arbitrage') {
+      strategyKey = createStrategyKey({
+        type: 'arbitrage',
+        user_id: userId,
+        client_id: clientId,
+      });
     } else if (strategyType === 'pureMarketMaking') {
-      strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+      strategyKey = createStrategyKey({
+        type: 'pureMarketMaking',
+        user_id: userId,
+        client_id: clientId,
+      });
     }
 
     // Cancel all orders for this strategy before stopping
@@ -493,7 +506,11 @@ export class StrategyService {
     buyPrice: number,
     sellPrice: number,
   ) {
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
     try {
       // Place buy limit order on Exchange A
       const buyOrder = await this.tradeService.executeLimitTrade({

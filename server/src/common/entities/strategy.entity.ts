@@ -14,10 +14,10 @@ export class ArbitrageOrder {
   pair: string;
 
   @Column()
-  amountToTrade: number;
+  amountToTrade: string;
 
   @Column()
-  minProfitability: number;
+  minProfitability: string;
 
   @Column()
   exchangeAName: string;
@@ -27,6 +27,9 @@ export class ArbitrageOrder {
 
   @Column()
   state: ArbitrageStates;
+
+  @Column()
+  createdAt: string;
 }
 
 @Entity()
@@ -44,35 +47,77 @@ export class MarketMakingOrder {
   exchangeName: string;
 
   @Column()
-  bidSpread: number;
+  bidSpread: string;
 
   @Column()
-  askSpread: number;
+  askSpread: string;
 
   @Column()
-  orderAmount: number;
+  orderAmount: string;
 
   @Column()
-  orderRefreshTime: number;
+  orderRefreshTime: string;
 
   @Column()
-  numberOfLayers: number;
+  numberOfLayers: string;
 
   @Column()
   priceSourceType: PriceSourceType;
 
   @Column()
-  amountChangePerLayer: number; // This can be a fixed amount or a percentage
+  amountChangePerLayer: string; // This can be a fixed amount or a percentage
 
   @Column()
   amountChangeType: 'fixed' | 'percentage';
 
   @Column()
-  ceilingPrice?: number;
+  ceilingPrice?: string;
 
   @Column()
-  floorPrice?: number;
+  floorPrice?: string;
 
   @Column()
   state: MarketMakingStates;
+
+  @Column()
+  createdAt: string;
+}
+
+@Entity()
+export class PaymentState {
+  @PrimaryColumn()
+  orderId: string; // the uuid of order
+
+  @Column()
+  type: string; // arbitrage or market_making
+
+  @Column()
+  symbol: string; // the symbol of trading pair
+
+  @Column()
+  firstAssetId: string; // the mixin uuid of the first asset
+
+  @Column()
+  firstAssetAmount: string; // the amount of the first asset
+
+  @Column({ nullable: true })
+  secondAssetId: string; // the mixin uuid of the second asset
+
+  @Column({ nullable: true })
+  secondAssetAmount: string; // the amount of the second asset
+
+  @Column()
+  firstSnapshotId: string; // the mixin snapshot id of first transfer
+
+  @Column({ nullable: true })
+  secondSnapshotId: string; // the mixin snapshot id of second transfer
+
+  @Column({ nullable: true })
+  state: string; // created or timeout
+
+  @Column()
+  createdAt: string; // timestamp
+
+  @Column()
+  updatedAt: string; // timestamp
 }

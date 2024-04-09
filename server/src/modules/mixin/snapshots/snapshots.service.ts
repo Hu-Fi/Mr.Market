@@ -484,13 +484,13 @@ export class SnapshotsService {
       case 'AR':
         const arbDetails = decodeArbitrageMemo(snapshot.memo);
         this.logger.log(arbDetails);
-        this.events.emit('arbitrage.create', arbDetails);
+        this.events.emit('arbitrage.create', arbDetails, snapshot);
         break;
 
       case 'MM':
         const mmDetails = decodeMarketMakingMemo(snapshot.memo);
         this.logger.log(mmDetails);
-        this.events.emit('market_making.create', mmDetails);
+        this.events.emit('market_making.create', mmDetails, snapshot);
         break;
 
       default:

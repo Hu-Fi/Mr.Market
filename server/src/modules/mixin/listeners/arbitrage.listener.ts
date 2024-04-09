@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { ArbitrageStates } from 'src/common/types/orders/states';
+import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
+import {
+  getAssetIDBySymbol,
+  getRFC3339Timestamp,
+} from 'src/common/helpers/utils';
 import { ArbitrageMemoDetails } from 'src/common/types/memo/memo';
-import { ArbitrageOrder } from 'src/common/entities/strategy.entity';
+import { PaymentState } from 'src/common/entities/strategy.entity';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 
 @Injectable()
 export class ArbitrageListener {
@@ -19,40 +22,56 @@ export class ArbitrageListener {
     details: ArbitrageMemoDetails,
     snapshot: SafeSnapshot,
   ) {
-    // 1. Find if orderId is already created
-    const order = await this.strategyUserService.findArbitrageByOrderId(
+    const paymentState = await this.strategyUserService.findPaymentStateById(
       details.traceId,
     );
 
-    // 2. Not created, create temporary order (TODO: Add default arbitrage parameters)
-    if (!order) {
-      const newOrder: ArbitrageOrder = this.mapDetailsToArbitrageOrder(
-        details,
-        'temporary',
-      );
-      await this.strategyUserService.createArbitrage(newOrder);
-      return;
+    const { baseAssetID, targetAssetID } = getAssetIDBySymbol(details.symbol);
+    if (
+      snapshot.asset_id != baseAssetID &&
+      snapshot.asset_id != targetAssetID
+    ) {
+      // Transfer asset doesn't match any of symbol, refund
+      return await this.snapshotService.refund(snapshot);
     }
 
-    // 3. Created, check if second transfer
-    if (order.state === 'temporary') {
-      // Check if second transfer valid
-      await this.strategyUserService.updateArbitrageOrderState(
-        order.orderId,
-        'created',
-      );
-    } else {
-      await this.snapshotService.refund(snapshot);
-    }
-  }
+    // TODO: check max/min amount when creating
 
-  private mapDetailsToArbitrageOrder(
-    details: ArbitrageMemoDetails,
-    state: ArbitrageStates,
-  ): ArbitrageOrder {
-    return {
-      orderId: details.traceId,
-      state,
-    } as ArbitrageOrder;
+    // First asset
+    if (!paymentState) {
+      const now = getRFC3339Timestamp();
+      return await this.strategyUserService.createPaymentState({
+        orderId: details.traceId,
+        type: 'arbitrage',
+        symbol: details.symbol,
+        firstAssetId: snapshot.asset_id,
+        firstAssetAmount: snapshot.amount,
+        firstSnapshotId: snapshot.snapshot_id,
+        createdAt: now,
+        updatedAt: now,
+      } as PaymentState);
+    }
+
+    // Check if second asset
+    if (paymentState && !paymentState.secondAssetId) {
+      await this.strategyUserService.updatePaymentStateById(details.traceId, {
+        secondAssetId: snapshot.asset_id,
+        secondAssetAmount: snapshot.amount,
+        secondSnapshotId: snapshot.snapshot_id,
+        updatedAt: getRFC3339Timestamp(),
+      } as PaymentState);
+
+      await this.strategyUserService.createArbitrage({
+        orderId: details.traceId,
+        userId: snapshot.opponent_id,
+        pair: details.symbol,
+        amountToTrade: '',
+        minProfitability: '0.01',
+        exchangeAName: details.exchangeAName,
+        exchangeBName: details.exchangeBName,
+        state: 'created',
+        createdAt: getRFC3339Timestamp(),
+      });
+    }
   }
 }

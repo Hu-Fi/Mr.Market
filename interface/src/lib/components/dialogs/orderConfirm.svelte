@@ -73,10 +73,10 @@
     let found = false;
     let totalTime = 0;
 
-    var interval = setInterval(() => {
+    var interval = setInterval(async () => {
       console.log(`${new Date()} called`);
       // TODO: TEST IT;
-      found = getOrderById(trace);
+      found = await getOrderById(trace);
       totalTime += FETCH_INTERVAL;
 
       if (found) {
