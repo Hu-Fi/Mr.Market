@@ -20,7 +20,7 @@
       }}
     >
       <span>
-        { text }
+        { btnText }
       </span>
     </button>
   </div>

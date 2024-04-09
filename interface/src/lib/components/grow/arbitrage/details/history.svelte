@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import SingleHistory from "$lib/components/grow/arbitrage/details/singleHistory.svelte";
 
   // TODO: Set type when backend is ready
