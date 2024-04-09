@@ -3,7 +3,6 @@ import { ArbitrageListener } from './arbitrage.listener';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
-import { PaymentState } from 'src/common/entities/strategy.entity';
 
 jest.mock('src/modules/mixin/snapshots/snapshots.service');
 jest.mock('src/modules/strategy/strategy-user.service');

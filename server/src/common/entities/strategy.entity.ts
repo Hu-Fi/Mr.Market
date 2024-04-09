@@ -25,6 +25,12 @@ export class ArbitrageOrder {
   @Column()
   exchangeBName: string;
 
+  @Column({ nullable: true })
+  balanceA?: string;
+
+  @Column({ nullable: true })
+  balanceB?: string;
+
   @Column()
   state: ArbitrageStates;
 
@@ -75,6 +81,12 @@ export class MarketMakingOrder {
 
   @Column()
   floorPrice?: string;
+
+  @Column({ nullable: true })
+  balanceA?: string;
+
+  @Column({ nullable: true })
+  balanceB?: string;
 
   @Column()
   state: MarketMakingStates;

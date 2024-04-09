@@ -72,6 +72,16 @@ export class StrategyService {
     return supportedExchanges;
   }
 
+  async startArbitrageIfNotStarted(
+    strategyKey: string,
+    strategyParamsDto: ArbitrageStrategyDto,
+  ) {
+    if (this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.startArbitrageStrategyForUser(strategyParamsDto);
+  }
+
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
     const { userId, clientId, pair, exchangeAName, exchangeBName } =
       strategyParamsDto;
@@ -192,6 +202,16 @@ export class StrategyService {
     }
   }
 
+  async startMarketMakingIfNotStarted(
+    strategyKey: string,
+    strategyParamsDto: PureMarketMakingStrategyDto,
+  ) {
+    if (this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.executePureMarketMakingStrategy(strategyParamsDto);
+  }
+
   async executePureMarketMakingStrategy(
     strategyParamsDto: PureMarketMakingStrategyDto,
   ) {
@@ -211,7 +231,11 @@ export class StrategyService {
       ceilingPrice,
       floorPrice,
     } = strategyParamsDto;
-    const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+    const strategyKey = createStrategyKey({
+      type: 'pureMarketMaking',
+      user_id: userId,
+      client_id: clientId,
+    });
 
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
@@ -279,7 +303,11 @@ export class StrategyService {
     await this.cancelAllOrders(
       exchange,
       pair,
-      `${userId}-${clientId}-pureMarketMaking`,
+      createStrategyKey({
+        type: 'pureMarketMaking',
+        user_id: userId,
+        client_id: clientId,
+      }),
     );
 
     let currentOrderAmount = baseOrderAmount;
@@ -448,7 +476,11 @@ export class StrategyService {
     const cacheKeyB = `${pair}-${exchangeB.id}`;
     const cachedOrderBookA = this.orderBookCache.get(cacheKeyA);
     const cachedOrderBookB = this.orderBookCache.get(cacheKeyB);
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
 
     // Check and clean filled orders before evaluating opportunities
     const allOrdersFilled = await this.checkAndCleanFilledOrders(strategyKey);

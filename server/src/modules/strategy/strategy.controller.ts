@@ -1,5 +1,4 @@
 // strategy.controller.ts
-import { StrategyService } from 'src/modules/strategy/strategy.service';
 import {
   Controller,
   Get,
@@ -8,12 +7,17 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
+import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 
 @ApiTags('strategy')
 @Controller('strategy')
 export class StrategyController {
-  constructor(private readonly strategyService: StrategyService) {}
+  constructor(
+    private readonly strategyService: StrategyService,
+    private readonly strategyUserSerive: StrategyUserService,
+  ) {}
 
   @Get('/all')
   @HttpCode(HttpStatus.OK)
@@ -24,7 +28,9 @@ export class StrategyController {
     description: 'All strategies of user.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getAllStrategy() {}
+  async getAllStrategy(@Query('userId') userId: string) {
+    return await this.strategyUserSerive.findAllStrategyByUser(userId);
+  }
 
   @Get('/arbitrage/all')
   @HttpCode(HttpStatus.OK)
@@ -35,7 +41,9 @@ export class StrategyController {
     description: 'All arbitrage order of user.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getAllArbitrageByUser() {}
+  async getAllArbitrageByUser(@Query('userId') userId: string) {
+    return await this.strategyUserSerive.findArbitrageByUserId(userId);
+  }
 
   @Get('/arbitrage/:id')
   @HttpCode(HttpStatus.OK)
@@ -47,7 +55,7 @@ export class StrategyController {
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getArbitrageDetailsById(@Param('id') id: string) {
-    console.log(id);
+    return await this.strategyUserSerive.findArbitrageByOrderId(id);
   }
 
   @Get('/arbitrage/stop')
@@ -64,10 +72,10 @@ export class StrategyController {
     @Query('userId') userId: string,
     @Query('clientId') clientId: string,
   ) {
-    return this.strategyService.stopStrategyForUser(
+    return await this.strategyService.stopStrategyForUser(
       userId,
       clientId,
-      'Arbitrage',
+      'arbitrage',
     );
   }
 
@@ -80,7 +88,9 @@ export class StrategyController {
     description: 'All market making order of user.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getAllMarketMakingByUser() {}
+  async getAllMarketMakingByUser(@Query('userId') userId: string) {
+    return await this.strategyUserSerive.findMarketMakingByUserId(userId);
+  }
 
   @Get('/market_making/:id')
   @HttpCode(HttpStatus.OK)
@@ -92,7 +102,7 @@ export class StrategyController {
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getMarketMakingDetailsById(@Param('id') id: string) {
-    console.log(id);
+    return await this.strategyUserSerive.findMarketMakingByOrderId(id);
   }
 
   @Get('/market_making/stop')
@@ -117,48 +127,4 @@ export class StrategyController {
       'pureMarketMaking',
     );
   }
-
-  // We shouldn't expose these endpoints
-  // For mixin side we will only call from service
-  //
-  // @Post('/execute-arbitrage')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Execute arbitrage strategy for a user' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'The arbitrage strategy has been initiated for the user.',
-  // })
-  // @ApiResponse({ status: 400, description: 'Bad request.' })
-  // async executeArbitrage(@Body() strategyParamsDto: ArbitrageStrategyDto) {
-  //   return this.strategyService.startArbitrageStrategyForUser(
-  //     strategyParamsDto,
-  //   );
-  // }
-
-  // @Post('/execute-pure-market-making')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Execute pure market making strategy for a user' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description:
-  //     'The pure market making strategy has been initiated for the user.',
-  // })
-  // @ApiResponse({ status: 400, description: 'Bad request.' })
-  // async executePureMarketMaking(
-  //   @Body() strategyParamsDto: PureMarketMakingStrategyDto,
-  // ) {
-  //   // Assuming strategyParamsDto includes all necessary parameters for the market making strategy
-  //   return this.strategyService.executePureMarketMakingStrategy(
-  //     strategyParamsDto,
-  //   );
-  // }
-
-  // @Get('/supported-exchanges')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Get list of supported exchanges' })
-  // @ApiResponse({ status: 200, description: 'List of supported exchanges.' })
-  // @ApiResponse({ status: 400, description: 'Bad request.' })
-  // async getSupportedExchanges() {
-  //   return this.strategyService.getSupportedExchanges();
-  // }
 }

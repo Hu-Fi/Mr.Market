@@ -65,7 +65,7 @@ export class ArbitrageListener {
         orderId: details.traceId,
         userId: snapshot.opponent_id,
         pair: details.symbol,
-        amountToTrade: '',
+        amountToTrade: '1',
         minProfitability: '0.01',
         exchangeAName: details.exchangeAName,
         exchangeBName: details.exchangeBName,

@@ -68,7 +68,7 @@ export class MarketMakingListener {
         exchangeName: details.exchangeName,
         bidSpread: '0.1',
         askSpread: '0.1',
-        orderAmount: '',
+        orderAmount: '1',
         orderRefreshTime: '15000',
         numberOfLayers: '1',
         priceSourceType: PriceSourceType.MID_PRICE,

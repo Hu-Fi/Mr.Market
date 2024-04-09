@@ -38,6 +38,10 @@ export class StrategyUserRepository {
     return this.arbitrageRepository.findBy({ userId });
   }
 
+  async findRunningArbitrageOrders(): Promise<ArbitrageOrder[]> {
+    return this.arbitrageRepository.findBy({ state: 'created' });
+  }
+
   async updateArbitrageOrderState(
     orderId: string,
     newState: ArbitrageStates,
@@ -68,6 +72,10 @@ export class StrategyUserRepository {
     return this.marketMakingRepository.findBy({ userId });
   }
 
+  async findRunningMarketMakingOrders(): Promise<MarketMakingOrder[]> {
+    return this.marketMakingRepository.findBy({ state: 'created' });
+  }
+
   async updateMarketMakingOrderState(
     orderId: string,
     newState: MarketMakingStates,
@@ -88,6 +96,10 @@ export class StrategyUserRepository {
 
   async findPaymentStateById(orderId: string): Promise<PaymentState> {
     return this.paymentStateRepository.findOneBy({ orderId });
+  }
+
+  async findPaymentStateByState(state: string): Promise<PaymentState[]> {
+    return this.paymentStateRepository.findBy({ state });
   }
 
   async updatePaymentStateById(

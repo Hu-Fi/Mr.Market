@@ -11,15 +11,31 @@ import {
   MarketMakingStates,
 } from 'src/common/types/orders/states';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { StrategyUserRepository } from 'src/modules/strategy/strategy-user.repository';
+import { createStrategyKey } from 'src/common/helpers/strategyKey';
 
 @Injectable()
 export class StrategyUserService {
   private readonly logger = new CustomLogger(StrategyUserService.name);
 
   constructor(
+    private readonly strategyService: StrategyService,
     private readonly strategyUserRepository: StrategyUserRepository,
   ) {}
+
+  async findAllStrategyByUser(userId: string) {
+    try {
+      const arbitrages =
+        await this.strategyUserRepository.findArbitrageByUserId(userId);
+      const market_makings =
+        await this.strategyUserRepository.findMarketMakingByUserId(userId);
+      return [...arbitrages, ...market_makings];
+    } catch (error) {
+      this.logger.error('Error finding all strategy by user', error);
+      return [];
+    }
+  }
 
   async createArbitrage(
     arbitrageOrder: ArbitrageOrder,
@@ -141,6 +157,10 @@ export class StrategyUserService {
     return await this.strategyUserRepository.findPaymentStateById(orderId);
   }
 
+  async findPaymentStateByState(state: string): Promise<PaymentState[]> {
+    return await this.strategyUserRepository.findPaymentStateByState(state);
+  }
+
   async updatePaymentStateById(
     orderId: string,
     newPaymentState: Partial<PaymentState>,
@@ -155,13 +175,58 @@ export class StrategyUserService {
   @Cron('*/60 * * * * *') // 60s
   async clearTimeoutOrders() {
     // Read all PaymentState
+    const created = await this.findPaymentStateByState('created');
     // Check if created time over timeout 10m
-    // Update state timeout, refund
+    created.forEach((item) => {
+      // check if timeout, refund if timeout, update state to timeout
+      if (item.createdAt) {
+      }
+    });
   }
 
+  // Get all created order to run in strategy
   @Cron('*/60 * * * * *') // 60s
   async updateExecutionBasedOnOrders() {
     // Get orders states that are created
-    // Check if order is already running in strategy
+    const activeArb =
+      await this.strategyUserRepository.findRunningArbitrageOrders();
+    const activeMM =
+      await this.strategyUserRepository.findRunningMarketMakingOrders();
+    if (activeArb) {
+      activeArb.forEach(async (arb) => {
+        const key = createStrategyKey({
+          user_id: arb.userId,
+          client_id: arb.orderId,
+          type: 'arbitrage',
+        });
+        await this.strategyService.startArbitrageIfNotStarted(key, {
+          ...arb,
+          clientId: arb.orderId,
+          amountToTrade: Number(arb.amountToTrade),
+          minProfitability: Number(arb.minProfitability),
+        });
+      });
+    }
+    if (activeMM) {
+      activeMM.forEach(async (mm) => {
+        const key = createStrategyKey({
+          user_id: mm.userId,
+          client_id: mm.orderId,
+          type: 'pureMarketMaking',
+        });
+        await this.strategyService.startMarketMakingIfNotStarted(key, {
+          ...mm,
+          clientId: mm.orderId,
+          bidSpread: Number(mm.bidSpread),
+          askSpread: Number(mm.askSpread),
+          orderAmount: Number(mm.orderAmount),
+          orderRefreshTime: Number(mm.orderRefreshTime),
+          numberOfLayers: Number(mm.numberOfLayers),
+          amountChangePerLayer: Number(mm.amountChangePerLayer),
+          ceilingPrice: Number(mm.ceilingPrice),
+          floorPrice: Number(mm.floorPrice),
+        });
+      });
+    }
   }
 }
