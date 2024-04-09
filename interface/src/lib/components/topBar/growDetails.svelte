@@ -6,6 +6,8 @@
   import MixinMenu from "../common/MixinMenu.svelte";
   import { easyAdvancedMode } from "$lib/stores/grow";
 
+  export let titleLeft = false;
+
   onDestroy(()=>{easyAdvancedMode.set(0)})
 
   const back = () => {
@@ -27,12 +29,15 @@
   <div class="flex items-center px-4 w-[calc(66pt)]">
     <button on:click={()=>{back()}}>
       <!-- Chevron left Icon -->
-      <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>    
+      <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
     </button>
+    {#if pageName && titleLeft}
+      <span class="font-bold"> {pageName} </span>
+    {/if}
   </div>
 
   <div>
-    {#if pageName}
+    {#if pageName && !titleLeft}
       <span> {pageName} </span>
     {/if}
   </div>

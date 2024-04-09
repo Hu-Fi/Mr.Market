@@ -4,6 +4,7 @@
   import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow";
 
   $: inputValid = $createArbExchange1 && $createArbExchange2 && $createArbPair && $createArbAmount[0] && $createArbAmount[1];
+  export let btnText = $_('confirm');
 </script>
 
 <div
@@ -19,7 +20,7 @@
       }}
     >
       <span>
-        { $_('confirm') }
+        { text }
       </span>
     </button>
   </div>

@@ -21,7 +21,7 @@
 <div class="flex flex-col space-y-8">
   <!-- 1. Select both exchange -->
   <div class="flex flex-col space-y-2 mx-2">
-    <span class="text-sm">
+    <span class="text-sm font-bold">
       {$_("exchange1")}
     </span>
 
@@ -86,7 +86,7 @@
   </div>
 
   <div class="flex flex-col space-y-2 mx-2">
-    <span class="text-sm">
+    <span class="text-sm font-bold">
       {$_("exchange2")}
     </span>
 
@@ -151,7 +151,7 @@
   </div>
   <!-- 2. Select trading pair -->
   <div class="flex flex-col space-y-2 mx-2">
-    <span class="text-sm">
+    <span class="text-sm font-bold">
       {$_("trading_pair")}
     </span>
 
@@ -199,12 +199,7 @@
   <!-- 3. Enter amount of each token -->
   {#if $createArbPair}
     <div class="flex flex-col space-y-2">
-      <div class="flex justify-between mx-2">
-        <span class="text-sm">
-          {$_("amount")}
-        </span>
-      </div>
-
+      <hr />
       {#each Array(2) as _, i}
         <div class="flex items-center justify-between space-x-2 mx-2">
           <div class="flex space-x-2">
@@ -223,7 +218,7 @@
               bind:value={$createArbAmount[i]}
             />
             <div class="join-item mr-2">
-              <span class="text-sm opacity-60"> 
+              <span class="text-sm opacity-60">
                 {$createArbPair.split("/")[i]}
               </span>
             </div>
@@ -237,3 +232,11 @@
 <!-- 4. Create arbitrage order, confirm payment -->
 
 <!-- 5. Redirect to arbtirage details page -->
+<style>
+    hr {
+        border-top: 1px solid #eeeeee;
+        margin-left: 10px;
+        margin-right: 10px;
+        padding-bottom: 20px;
+    }
+</style>
