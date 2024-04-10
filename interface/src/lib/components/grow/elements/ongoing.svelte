@@ -59,7 +59,7 @@
 {#if placeholder.length === 0}
   <Create />
 {:else}
-  <div class="flex flex-col space-y-4 mx-4 mt-6">
+  <div class="flex flex-col space-y-4 mx-4 mt-6 mb-24">
     {#each placeholder as item}
       {#if item.type === "arb"}
         <ArbCard data={item} />

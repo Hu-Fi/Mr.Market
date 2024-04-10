@@ -10,7 +10,7 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<div class="flex flex-col rounded-xl border border-base-200 relative shadow">
+<div class="flex flex-col rounded-xl border border-base-200 relative shadow-sm">
   <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/market_making/${data.id}`)}>
     <!-- Title -->
     <div class="flex justify-between items-center">
