@@ -471,7 +471,6 @@ export class SnapshotsService {
       snapshot.snapshot_id,
     );
     if (exist) {
-      // this.logger.log('snapshot found, return');
       return;
     }
     if (!snapshot.memo) {
@@ -486,16 +485,16 @@ export class SnapshotsService {
       return;
     }
 
-    this.logger.log(`encodedMemo:${snapshot.memo}`);
+    // this.logger.log(`encodedMemo:${snapshot.memo}`);
     const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    this.logger.log(`hexDecoedMemo:${hexDecoedMemo}`);
+    // this.logger.log(`hexDecoedMemo:${hexDecoedMemo}`);
     const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    this.logger.log(`decodedMemo:${decodedMemo}`);
+    // this.logger.log(`decodedMemo:${decodedMemo}`);
     const tradingType = decodedMemo.slice(0, 2);
-    this.logger.log(`tradingType:${tradingType}`);
+    // this.logger.log(`tradingType:${tradingType}`);
     switch (tradingType) {
       case 'SP':
-        const spotDetails = decodeSpotMemo(snapshot.memo);
+        const spotDetails = decodeSpotMemo(decodedMemo);
         if (!spotDetails) {
           break;
         }
@@ -505,8 +504,8 @@ export class SnapshotsService {
         break;
 
       case 'AR':
-        const arbDetails = decodeArbitrageMemo(snapshot.memo);
-        this.logger.log(arbDetails);
+        const arbDetails = decodeArbitrageMemo(decodedMemo);
+        // this.logger.log(`arbDetails: ${arbDetails}`);
         if (!arbDetails) {
           break;
         }
@@ -514,8 +513,8 @@ export class SnapshotsService {
         break;
 
       case 'MM':
-        const mmDetails = decodeMarketMakingMemo(snapshot.memo);
-        this.logger.log(mmDetails);
+        const mmDetails = decodeMarketMakingMemo(decodedMemo);
+        // this.logger.log(`mmDetails: ${mmDetails}`);
         if (!mmDetails) {
           break;
         }

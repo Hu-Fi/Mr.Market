@@ -42,6 +42,13 @@ export class StrategyService {
   private async initializeExchanges() {
     // Initialize exchanges
     this.exchanges.set(
+      'okx',
+      new ccxt.pro.okx({
+        apiKey: process.env.OKX_API_KEY,
+        secret: process.env.OKX_SECRET,
+      }),
+    );
+    this.exchanges.set(
       'bitfinex',
       new ccxt.pro.bitfinex({
         apiKey: process.env.BITFINEX_API_KEY,

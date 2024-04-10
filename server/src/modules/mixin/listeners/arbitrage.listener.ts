@@ -73,6 +73,8 @@ export class ArbitrageListener {
         minProfitability: '0.01',
         exchangeAName: details.exchangeAName,
         exchangeBName: details.exchangeBName,
+        balanceA: paymentState.firstAssetAmount,
+        balanceB: paymentState.secondAssetAmount,
         state: 'created',
         createdAt: getRFC3339Timestamp(),
       });

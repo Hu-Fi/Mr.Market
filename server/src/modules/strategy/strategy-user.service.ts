@@ -14,12 +14,14 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { StrategyUserRepository } from 'src/modules/strategy/strategy-user.repository';
 import { createStrategyKey } from 'src/common/helpers/strategyKey';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StrategyUserService {
   private readonly logger = new CustomLogger(StrategyUserService.name);
 
   constructor(
+    private readonly configService: ConfigService,
     private readonly strategyService: StrategyService,
     private readonly strategyUserRepository: StrategyUserRepository,
   ) {}
@@ -187,6 +189,11 @@ export class StrategyUserService {
   // Get all created order to run in strategy
   @Cron('*/60 * * * * *') // 60s
   async updateExecutionBasedOnOrders() {
+    const enabled = this.configService.get<string>('strategy.run');
+    if (enabled === 'false') {
+      return;
+    }
+
     // Get orders states that are created
     const activeArb =
       await this.strategyUserRepository.findRunningArbitrageOrders();
@@ -199,8 +206,10 @@ export class StrategyUserService {
           client_id: arb.orderId,
           type: 'arbitrage',
         });
+        // TODO: FIX THIS HARDCODE -ERC20
         await this.strategyService.startArbitrageIfNotStarted(key, {
           ...arb,
+          pair: arb.pair.replaceAll('-ERC20', ''),
           clientId: arb.orderId,
           amountToTrade: Number(arb.amountToTrade),
           minProfitability: Number(arb.minProfitability),
@@ -214,8 +223,10 @@ export class StrategyUserService {
           client_id: mm.orderId,
           type: 'pureMarketMaking',
         });
+        // TODO: FIX THIS HARDCODE -ERC20
         await this.strategyService.startMarketMakingIfNotStarted(key, {
           ...mm,
+          pair: mm.pair.replaceAll('-ERC20', ''),
           clientId: mm.orderId,
           bidSpread: Number(mm.bidSpread),
           askSpread: Number(mm.askSpread),

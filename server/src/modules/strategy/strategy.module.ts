@@ -14,12 +14,14 @@ import {
   MarketMakingOrder,
   PaymentState,
 } from 'src/common/entities/strategy.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TradeModule,
     PerformanceModule,
     LoggerModule,
+    ConfigModule,
     TypeOrmModule.forFeature([ArbitrageOrder, MarketMakingOrder, PaymentState]),
   ],
   controllers: [StrategyController],
