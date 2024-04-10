@@ -66,13 +66,13 @@ export const GenerateArbitrageMemo = ({
   exchangeA,
   exchangeB,
   symbol,
-  traceId,
+  orderId,
 }:{
   action: string
   exchangeA: string
   exchangeB: string
   symbol: string
-  traceId: string
+  orderId: string
 }) => {
   const tradingType = 'AR';
   const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
@@ -92,7 +92,7 @@ export const GenerateArbitrageMemo = ({
     return;
   }
 
-  const memo = `${tradingType}:${actionCode}:${exchangeAId}:${exchangeBId}:${symbolKey}:${traceId}`;
+  const memo = `${tradingType}:${actionCode}:${exchangeAId}:${exchangeBId}:${symbolKey}:${orderId}`;
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 };
 
@@ -100,12 +100,12 @@ export const GenerateMarketMakingMemo = ({
   action,
   exchange,
   symbol,
-  traceId,
+  orderId,
 }:{
   action: string
   exchange: string
   symbol: string
-  traceId: string
+  orderId: string
 }) => {
   const tradingType = 'MM';
   const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
@@ -124,6 +124,6 @@ export const GenerateMarketMakingMemo = ({
     return;
   }
 
-  const memo = `${tradingType}:${actionCode}:${exchangeId}:${symbolKey}:${traceId}`;
+  const memo = `${tradingType}:${actionCode}:${exchangeId}:${symbolKey}:${orderId}`;
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 };
