@@ -26,9 +26,6 @@
 </div>
 
 <style>
-    hr {
-        border-top: 1px solid #eeeeee;
-    }
     div.bg-gray-100 {
         background-color: #F8FAFC;
     }
