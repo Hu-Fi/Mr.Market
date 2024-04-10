@@ -21,6 +21,7 @@ import {
 } from '@mixin.dev/mixin-node-sdk';
 import {
   decodeArbitrageMemo,
+  decodeMarketMakingMemo,
   decodeSpotMemo,
 } from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -480,20 +481,18 @@ export class SnapshotsService {
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
-      // Mixin snapshot handler for arb and mm
-      // 1. Once memo type detected, check if order exist
-      // 2. If exist, check if action valid (by payment asset index and db history)
-      // 3. If doesn't exist, create the arb or mm.
-      // 4. And if doesn't exist while the transfer type is not create, refund.
-      // We need to determine we support 1 token creation or not
       case 'AR':
         const arbDetails = decodeArbitrageMemo(snapshot.memo);
-        console.log(arbDetails);
+        this.logger.log(arbDetails);
+        this.events.emit('arbitrage.create', arbDetails, snapshot);
         break;
+
       case 'MM':
-        const mmDetails = decodeArbitrageMemo(snapshot.memo);
-        console.log(mmDetails);
+        const mmDetails = decodeMarketMakingMemo(snapshot.memo);
+        this.logger.log(mmDetails);
+        this.events.emit('market_making.create', mmDetails, snapshot);
         break;
+
       default:
         await this.refund(snapshot);
         break;

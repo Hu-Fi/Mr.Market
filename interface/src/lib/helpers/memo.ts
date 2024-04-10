@@ -61,17 +61,69 @@ export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limi
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 }
 
-export const GenerateArbitrageMemo = () => {
-  // 1. AB (Memo Type)
-  // 2. CR/DE/WI (Transfer Type) (Create/Deposit/Withdraw)
-  // 3. 01 (Exchange0 index) (binance)
-  // 4. 02 (Exchange1 index) (mexc)
-  // 5. Z7GC (Key of the arbitrage pair) (BTC/USDT)
-}
+export const GenerateArbitrageMemo = ({
+  action,
+  exchangeA,
+  exchangeB,
+  symbol,
+  traceId,
+}:{
+  action: string
+  exchangeA: string
+  exchangeB: string
+  symbol: string
+  traceId: string
+}) => {
+  const tradingType = 'AR';
+  const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
+  const exchangeAId = REVERSED_SPOT_EXCHANGE_MAP[exchangeA.toLowerCase()];
+  const exchangeBId = REVERSED_SPOT_EXCHANGE_MAP[exchangeB.toLowerCase()];
+  if (!exchangeAId || !exchangeBId) {
+    console.error(`GenerateArbitrageMemo failed to get exchange indices for: ${exchangeA}, ${exchangeB}`);
+    return;
+  }
+  let finalSymbol = symbol;
+  if (symbol.endsWith('USDT')) {
+    finalSymbol = `${symbol}-ERC20`
+  }
+  const symbolKey = PAIRS_MAP_REVERSED[finalSymbol];
+  if (!symbolKey) {
+    console.error(`GenerateArbitrageMemo failed to get symbol key for: ${finalSymbol}`);
+    return;
+  }
 
-export const GenerateMarketMakingMemo = () => {
-  // 1. MM (Memo Type)
-  // 2. CR/DE/WI (Transfer Type) (Create/Deposit/Withdraw)
-  // 3. 01 (Exchange index) (okx)
-  // 4. Z7GC (Key of the market making pair)
-}
+  const memo = `${tradingType}:${actionCode}:${exchangeAId}:${exchangeBId}:${symbolKey}:${traceId}`;
+  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+};
+
+export const GenerateMarketMakingMemo = ({
+  action,
+  exchange,
+  symbol,
+  traceId,
+}:{
+  action: string
+  exchange: string
+  symbol: string
+  traceId: string
+}) => {
+  const tradingType = 'MM';
+  const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
+  const exchangeId = REVERSED_SPOT_EXCHANGE_MAP[exchange.toLowerCase()];
+  if (!exchangeId) {
+    console.error(`GenerateMarketMakingMemo failed to get exchange index for: ${exchange}`);
+    return;
+  }
+  let finalSymbol = symbol;
+  if (symbol.endsWith('USDT')) {
+    finalSymbol = `${symbol}-ERC20`
+  }
+  const symbolKey = PAIRS_MAP_REVERSED[finalSymbol];
+  if (!symbolKey) {
+    console.error(`GenerateMarketMakingMemo failed to get symbol key for: ${symbol}`);
+    return;
+  }
+
+  const memo = `${tradingType}:${actionCode}:${exchangeId}:${symbolKey}:${traceId}`;
+  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+};

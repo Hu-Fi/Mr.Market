@@ -38,7 +38,7 @@ describe('StrategyService', () => {
 
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
-      '1-client1-Arbitrage',
+      '1-client1-arbitrage',
       new Set<string>(),
     );
   });
@@ -69,7 +69,7 @@ describe('StrategyService', () => {
       };
       await service.startArbitrageStrategyForUser(strategyParamsDto);
       expect(
-        service['strategyInstances'].has('1-client1-Arbitrage'),
+        service['strategyInstances'].has('1-client1-arbitrage'),
       ).toBeTruthy();
     });
 

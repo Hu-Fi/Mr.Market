@@ -114,7 +114,12 @@ export class RebalanceService {
             BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
           ) {
             this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
-            await this.rebalanceFromMixinToExchange(symbol, balance, exchange, mixinSymbolBalanceMap[symbol]);
+            await this.rebalanceFromMixinToExchange(
+              symbol,
+              balance,
+              exchange,
+              mixinSymbolBalanceMap[symbol],
+            );
           }
         }
       }

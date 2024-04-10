@@ -1,13 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as ccxt from 'ccxt';
-import { TradeService } from '../trade/trade.service';
 import {
   ArbitrageStrategyDto,
   PureMarketMakingStrategyDto,
-} from './strategy.dto';
-import { PerformanceService } from '../performance/performance.service';
+} from 'src/modules/strategy/strategy.dto';
+import { TradeService } from 'src/modules/trade/trade.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { CustomLogger } from '../logger/logger.service';
+import { PerformanceService } from '../performance/performance.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 
 @Injectable()
 export class StrategyService {
@@ -71,10 +72,32 @@ export class StrategyService {
     return supportedExchanges;
   }
 
+  async startArbitrageIfNotStarted(
+    strategyKey: string,
+    strategyParamsDto: ArbitrageStrategyDto,
+  ) {
+    if (this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.startArbitrageStrategyForUser(strategyParamsDto);
+  }
+
+  async pauseStrategyIfNotPaused(key: StrategyKey) {
+    const strategyKey = createStrategyKey(key);
+    if (!this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.stopStrategyForUser(key.user_id, key.client_id, key.type);
+  }
+
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
     const { userId, clientId, pair, exchangeAName, exchangeBName } =
       strategyParamsDto;
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
     const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
     const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
 
@@ -123,10 +146,18 @@ export class StrategyService {
     );
 
     let strategyKey;
-    if (strategyType === 'Arbitrage') {
-      strategyKey = `${userId}-${clientId}-Arbitrage`;
+    if (strategyType === 'arbitrage') {
+      strategyKey = createStrategyKey({
+        type: 'arbitrage',
+        user_id: userId,
+        client_id: clientId,
+      });
     } else if (strategyType === 'pureMarketMaking') {
-      strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+      strategyKey = createStrategyKey({
+        type: 'pureMarketMaking',
+        user_id: userId,
+        client_id: clientId,
+      });
     }
 
     // Cancel all orders for this strategy before stopping
@@ -179,6 +210,16 @@ export class StrategyService {
     }
   }
 
+  async startMarketMakingIfNotStarted(
+    strategyKey: string,
+    strategyParamsDto: PureMarketMakingStrategyDto,
+  ) {
+    if (this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.executePureMarketMakingStrategy(strategyParamsDto);
+  }
+
   async executePureMarketMakingStrategy(
     strategyParamsDto: PureMarketMakingStrategyDto,
   ) {
@@ -198,7 +239,11 @@ export class StrategyService {
       ceilingPrice,
       floorPrice,
     } = strategyParamsDto;
-    const strategyKey = `${userId}-${clientId}-pureMarketMaking`;
+    const strategyKey = createStrategyKey({
+      type: 'pureMarketMaking',
+      user_id: userId,
+      client_id: clientId,
+    });
 
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
@@ -266,7 +311,11 @@ export class StrategyService {
     await this.cancelAllOrders(
       exchange,
       pair,
-      `${userId}-${clientId}-pureMarketMaking`,
+      createStrategyKey({
+        type: 'pureMarketMaking',
+        user_id: userId,
+        client_id: clientId,
+      }),
     );
 
     let currentOrderAmount = baseOrderAmount;
@@ -435,7 +484,11 @@ export class StrategyService {
     const cacheKeyB = `${pair}-${exchangeB.id}`;
     const cachedOrderBookA = this.orderBookCache.get(cacheKeyA);
     const cachedOrderBookB = this.orderBookCache.get(cacheKeyB);
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
 
     // Check and clean filled orders before evaluating opportunities
     const allOrdersFilled = await this.checkAndCleanFilledOrders(strategyKey);
@@ -493,7 +546,11 @@ export class StrategyService {
     buyPrice: number,
     sellPrice: number,
   ) {
-    const strategyKey = `${userId}-${clientId}-Arbitrage`;
+    const strategyKey = createStrategyKey({
+      type: 'arbitrage',
+      user_id: userId,
+      client_id: clientId,
+    });
     try {
       // Place buy limit order on Exchange A
       const buyOrder = await this.tradeService.executeLimitTrade({
