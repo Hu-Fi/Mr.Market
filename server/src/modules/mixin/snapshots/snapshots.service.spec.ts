@@ -52,6 +52,7 @@ jest.mock('@nestjs/config', () => ({
 const mockSnapshotsRepository = {
   findSnapshotByID: jest.fn().mockResolvedValue([]),
   createSnapshot: jest.fn().mockResolvedValue([]),
+  checkSnapshotExist: jest.fn().mockResolvedValue([]),
 };
 
 describe('SnapshotsService', () => {
