@@ -64,10 +64,3 @@ export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame,
   const r = await fetch(url)
   return  await r.json()
 }
-
-export const getArbitrageById = async (id: string) => {
-  console.log(id)
-  const r = await fetch(`${HUFI_BACKEND_URL}`)
-  const res = await r.json()
-  return res
-}

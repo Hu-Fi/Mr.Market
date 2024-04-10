@@ -1,13 +1,13 @@
 <script lang="ts">
+  import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import { darkTheme } from "$lib/stores/theme";
   import { hideBalance } from "$lib/stores/home";
   import { userAssets } from "$lib/stores/wallet";
   import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import HideBalance from "$lib/components/home/walletBalance/hideBalance.svelte";
 	import BalanceNumberLoader from '$lib/components/skeleton/home/balanceNumberLoader.svelte';
-    import { darkTheme } from "$lib/stores/theme";
-    import clsx from "clsx";
 
   let open = false;
   let currency = "USDT"
@@ -78,9 +78,7 @@
     </div>
   </div>
   <!-- Right -->
-  <div class="">
-    <button class={clsx("btn btn-sm rounded-full no-animation", $darkTheme ? "bg-slate-700 hover:bg-slate-700 hover:border-slate-700 focus:bg-slate-700": "bg-slate-100 hover:bg-slate-100 border border-slate-100 focus:border-slate-100")} on:click={()=>goto("/wallet")}>
-      <span class="mx-3 text-sm text-base-content">{$_('view')}</span>
-    </button>
-  </div>
+  <button class={clsx("btn btn-sm rounded-full no-animation", $darkTheme ? "bg-slate-700 hover:bg-slate-700 hover:border-slate-700 focus:bg-slate-700": "bg-slate-100 hover:bg-slate-100 border border-slate-100 focus:border-slate-100")} on:click={()=>goto("/wallet")}>
+    <span class="mx-3 text-sm text-base-content">{$_('view')}</span>
+  </button>
 </div>

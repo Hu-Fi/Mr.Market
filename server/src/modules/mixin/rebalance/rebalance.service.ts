@@ -114,7 +114,12 @@ export class RebalanceService {
             BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
           ) {
             this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
-            await this.rebalanceFromMixinToExchange(symbol, balance, exchange);
+            await this.rebalanceFromMixinToExchange(
+              symbol,
+              balance,
+              exchange,
+              mixinSymbolBalanceMap[symbol],
+            );
           }
         }
       }
@@ -158,7 +163,7 @@ export class RebalanceService {
       const amountToTransfer = calculateRebalanceAmount(
         totalExchangeBalance,
         mixinAmount,
-      );
+      ).abs();
 
       // If amountToTransfer is less than minAmount * 2, skip rebalance;
       if (amountToTransfer.lte(minAmount.multipliedBy(2))) {
@@ -204,8 +209,10 @@ export class RebalanceService {
     symbol: string,
     balance: BigNumber.Value,
     exchange: string,
+    mixinBalance: BigNumber.Value,
   ) {
     const balanceBN = new BigNumber(balance);
+    const mixinBalanceBN = new BigNumber(mixinBalance);
 
     // Log the initiation of the rebalance process
     this.logger.log(
@@ -221,12 +228,15 @@ export class RebalanceService {
     const minBalance = new BigNumber(minimum_balance);
 
     // Determine if rebalance is necessary
-    if (balanceBN.isLessThanOrEqualTo(minBalance)) {
+    if (!balanceBN.isLessThanOrEqualTo(minBalance)) {
       return;
     }
-
+    console.warn(balanceBN.minus(minBalance).toString());
     // Calculate the amount needed to rebalance
-    const amountToRebalance = balanceBN.minus(minBalance);
+    const amountToRebalance = calculateRebalanceAmount(
+      balanceBN,
+      mixinBalanceBN,
+    ).abs();
     if (amountToRebalance.isLessThanOrEqualTo(0)) {
       this.logger.warn(
         `Calculated amount to rebalance is not positive. Calculated: ${amountToRebalance.toString()}`,
@@ -239,7 +249,7 @@ export class RebalanceService {
       exchange,
     );
 
-    if (!Array.isArray(apiKey) || apiKey.length === 0) {
+    if (!apiKey) {
       this.logger.error(
         `exchangeService.findFirstAPIKeyByExchange(${exchange}) => no api key found`,
       );

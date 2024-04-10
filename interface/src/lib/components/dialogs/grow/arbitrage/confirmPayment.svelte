@@ -1,8 +1,11 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import { ArbitragePay } from "$lib/helpers/mixin";
+  import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import { createArbAmount, createArbConfirmDialog, createArbPair } from "$lib/stores/grow"
+  import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow"
 
   $: baseAssetSymbol = $createArbPair.split("/")[0] || ''
   $: baseAssetAmount = $createArbAmount[0]
@@ -13,12 +16,43 @@
   let btn2Loading = false;
   let btn1Paid = false;
   let btn2Paid = false;
+  let orderId = getUuid();
+  let traceId: string | undefined;
 
   const payment = (type: string) => {
-    if (type === '1') btn1Loading = true;
-    if (type === '2') btn2Loading = true;
-    btn1Paid = false;
-    btn2Paid = false;
+    const ids = decodeSymbolToAssetID($createArbPair);
+    if (!ids?.firstAssetID || !ids.secondAssetID) {
+      console.error('Unable to get asset id from symbol')
+      return;
+    }
+
+    if (type === '1') {
+      btn1Loading = true;
+      traceId = ArbitragePay({
+        action: 'CR', 
+        exchangeA: $createArbExchange1, 
+        exchangeB: $createArbExchange2, 
+        symbol: $createArbPair,
+        amount: baseAssetAmount,
+        assetId: ids.firstAssetID,
+        orderId,
+      })
+      // Fetch state
+    }
+    if (type === '2') {
+      btn2Loading = true;
+      traceId = ArbitragePay({
+        action: 'CR', 
+        exchangeA: $createArbExchange1, 
+        exchangeB: $createArbExchange2, 
+        symbol: $createArbPair,
+        amount: targetAssetAmount,
+        assetId: ids.secondAssetID,
+        orderId,
+      })
+      // Fetch state
+    }
+    console.log(traceId);
   }
 </script>
 
