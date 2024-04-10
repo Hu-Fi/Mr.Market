@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import { v4 as uuidv4 } from "uuid";
   import { ArbitragePay } from "$lib/helpers/mixin";
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
@@ -16,7 +16,7 @@
   let btn2Loading = false;
   let btn1Paid = false;
   let btn2Paid = false;
-  let orderId = getUuid();
+  let orderId = uuidv4();
   let traceId: string | undefined;
 
   const payment = (type: string) => {
