@@ -11,7 +11,7 @@
 </script>
 
 <!-- Tabs -->
-<div class="mx-7 mt-2">
+<div class="mx-4 mt-2">
   <div class={clsx("w-full grid gap-2 rounded-2xl", `grid-cols-${items.length}`)}>
     {#each items as item, i}
       <button

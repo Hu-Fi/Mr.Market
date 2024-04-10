@@ -1,31 +1,6 @@
 <script lang="ts">
-  import { BOT_ID, OAUTH_SCOPE } from "$lib/helpers/constants";
-  import { AfterMixinOauth } from "$lib/helpers/mixin";
-  import authorize from "$lib/helpers/mixin-oauth";
-  import { mixinConnectLoading } from "$lib/stores/home";
-  import clsx from "clsx"
   import { _ } from "svelte-i18n"
-  
-  const auth = async () => {
-    mixinConnectLoading.set(true);
-    authorize(
-      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
-      {
-        onShowUrl: (url: string) => {
-          window.open(url)
-        },
-        onError: (error: Error) => {
-          console.error(error);
-          mixinConnectLoading.set(false);
-          return;
-        },
-        onSuccess: async (token: string) => {
-          await AfterMixinOauth(token)
-          mixinConnectLoading.set(false);
-        },
-      },
-    );
-  };
+  import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
 </script>
 
 <div class="flex flex-col items-center justify-center space-y-12 mb-24 h-[100%] grow">
@@ -33,8 +8,6 @@
 
   <div class="flex flex-col space-y-6 items-center">
     <span class="font-medium"> {$_("connect_wallet_intro")} </span>
-    <button class="btn btn-md rounded-full bg-base-content hover:bg-base-content no-animation" on:click={()=>{auth()}}>
-      <span class={clsx("mx-3 font-bold text-sm text-base-100", $mixinConnectLoading && "loading")}>{$_("connect_wallet")}</span>
-    </button>
+    <ConnectWalletBtn clazz="btn btn-md rounded-full text-base-100 bg-base-content hover:bg-base-content no-animation" />
   </div>
 </div>

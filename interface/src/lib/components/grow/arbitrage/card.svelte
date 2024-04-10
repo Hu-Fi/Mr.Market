@@ -10,30 +10,32 @@
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<div class="flex flex-col rounded-xl border border-base-200 relative">
-  <div class="absolute right-0 -top-1 flex items-center justify-end">
-    <span class="text-xs text-base-100 from-sky-400 to-blue-500 bg-gradient-to-r px-6 py-0.5 rounded-tr-lg rounded-bl-lg">
-      {$_('arbitrage')}
-    </span>
-  </div>
-  <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-6" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
+<div class="flex flex-col rounded-xl border border-base-200 relative shadow">
+  <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
     <!-- Title -->
-    <div class="flex space-x-2 w-full justify-start">
-      <div class="-rotate-45 flex -space-x-1 items-center">
-        <div class="avatar">
-          <div class="w-5 h-5 rounded-full rotate-45">
-            <img class="" src={findExchangeIconByIdentifier(data.baseExchange)} alt=""/>        
+    <div class="flex justify-between">
+      <div class="flex space-x-2 w-full justify-start">
+        <div class="-rotate-45 flex -space-x-1 items-center">
+          <div class="avatar">
+            <div class="w-5 h-5 rounded-full rotate-45">
+              <img class="" src={findExchangeIconByIdentifier(data.baseExchange)} alt=""/>        
+            </div>
+          </div>
+          <div class="avatar">
+            <div class="w-5 h-5 rounded-full rotate-45">
+              <img class="" src={findExchangeIconByIdentifier(data.targetExchange)} alt=""/>
+            </div>
           </div>
         </div>
-        <div class="avatar">
-          <div class="w-5 h-5 rounded-full rotate-45">
-            <img class="" src={findExchangeIconByIdentifier(data.targetExchange)} alt=""/>
-          </div>
-        </div>
+        <span class="text-base font-bold capitalize">
+          { data.baseExchange }/{ data.targetExchange }
+        </span>
       </div>
-      <span class="text-base font-bold capitalize">
-        { data.baseExchange }/{ data.targetExchange }
-      </span>
+      <div class="flex items-center justify-center">
+        <span class="text-xs text-blue-600 border-blue-600 px-2.5 bg-base-100 border rounded-md">
+          {$_('arbitrage')}
+        </span>
+      </div>
     </div>
 
     <div class="flex w-full justify-between items-center">

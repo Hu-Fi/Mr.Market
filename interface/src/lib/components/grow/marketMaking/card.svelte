@@ -7,36 +7,30 @@
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
 
   export let data = {type: 'mm',  name: $_('market_making'), exchange: 'binance', base: 'ETH', target: 'USDT', profit: '-1.08', amount: '17232', started: '2023-09-28T12:00:12Z', id: '1c7aeede-e14e-4017-bb38-8ffe57667b93' }
-
-  // let infos = [
-  //   { f: 'pair', key: $_('pair'), value: `${data.base}/${data.target}` },
-  //   { f: 'profit', key: $_('profit'), value: data.profit },
-  //   { f: 'amount', key: $_('amount'), value: data.amount },
-  // ]
   $: makingProfit = Number(data.profit) >= 0
 </script>
 
-<div class="flex flex-col rounded-xl border border-base-200 relative">
-  <div class="absolute right-0 -top-1 flex items-center justify-end">
-    <span class="text-xs text-base-100 from-emerald-400 to-green-500 bg-gradient-to-r px-6 py-0.5 rounded-tr-lg rounded-bl-lg">
-      {$_('market_making')}
-    </span>
-  </div>
-  <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-6" on:click={()=>goto(`/grow/market_making/${data.id}`)}>
+<div class="flex flex-col rounded-xl border border-base-200 relative shadow">
+  <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/market_making/${data.id}`)}>
     <!-- Title -->
-    <div class="flex space-x-2 w-full justify-start">
-      <!-- Exchange Icon -->
-      <div class="flex avatar items-center">
-        <div class="w-6 h-6 rounded-full">
-          <img class="" src={findExchangeIconByIdentifier(data.exchange)} alt=""/>
+    <div class="flex justify-between items-center">
+      <div class="flex space-x-2 w-full justify-start">
+        <!-- Exchange Icon -->
+        <div class="flex avatar items-center">
+          <div class="w-6 h-6 rounded-full">
+            <img class="" src={findExchangeIconByIdentifier(data.exchange)} alt=""/>
+          </div>
         </div>
+        <!-- Name -->
+        <span class="text-base font-bold capitalize">
+          {data.exchange}
+        </span>
       </div>
-      <!-- Name -->
-      <span class="text-base font-bold capitalize">
-        {data.exchange}</span>
-      
+      <span class="text-xs text-green-600 border-green-600 px-2.5 bg-base-100 border rounded-md text-nowrap">
+        {$_('market_making')}
+      </span>
     </div>
-
+    
     <div class="flex w-full justify-between items-center">
       <div class="flex flex-col space-y-2 text-xs justify-start">
         <div class="flex space-x-2 items-center mt-1">
