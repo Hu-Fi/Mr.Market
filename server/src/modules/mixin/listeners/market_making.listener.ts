@@ -23,6 +23,10 @@ export class MarketMakingListener {
     details: MarketMakingMemoDetails,
     snapshot: SafeSnapshot,
   ) {
+    if (!details || !snapshot) {
+      console.error('Invalid arguments passed to handleMarketMakingCreate');
+      return;
+    }
     const paymentState = await this.strategyUserService.findPaymentStateById(
       details.traceId,
     );

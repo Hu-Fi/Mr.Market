@@ -46,18 +46,11 @@ export class StrategyUserRepository {
     return this.arbitrageRepository.findBy({ state: 'paused' });
   }
 
-  async updateArbitrageOrderState(
-    orderId: string,
-    newState: ArbitrageStates,
-  ): Promise<void> {
-    const arbitrageOrder = await this.arbitrageRepository.findOneBy({
-      orderId,
-    });
-    if (!arbitrageOrder) {
-      throw new Error('ArbitrageOrder not found');
-    }
-    arbitrageOrder.state = newState;
-    await this.arbitrageRepository.save(arbitrageOrder);
+  async updateArbitrageOrderState(orderId: string, newState: ArbitrageStates) {
+    return await this.arbitrageRepository.update(
+      { orderId },
+      { state: newState },
+    );
   }
 
   async createMarketMaking(
@@ -87,15 +80,11 @@ export class StrategyUserRepository {
   async updateMarketMakingOrderState(
     orderId: string,
     newState: MarketMakingStates,
-  ): Promise<MarketMakingOrder> {
-    const marketMakingOrder = await this.marketMakingRepository.findOneBy({
-      orderId,
-    });
-    if (!marketMakingOrder) {
-      throw new Error('MarketMakingOrder not found');
-    }
-    marketMakingOrder.state = newState;
-    return await this.marketMakingRepository.save(marketMakingOrder);
+  ) {
+    return await this.marketMakingRepository.update(
+      { orderId },
+      { state: newState },
+    );
   }
 
   async createPaymentState(paymentState: PaymentState): Promise<PaymentState> {

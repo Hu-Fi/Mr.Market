@@ -22,6 +22,10 @@ export class ArbitrageListener {
     details: ArbitrageMemoDetails,
     snapshot: SafeSnapshot,
   ) {
+    if (!details || !snapshot) {
+      console.error('Invalid arguments passed to handleArbitrageCreate');
+      return;
+    }
     const paymentState = await this.strategyUserService.findPaymentStateById(
       details.traceId,
     );
