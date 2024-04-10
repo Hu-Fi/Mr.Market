@@ -11,15 +11,15 @@ import {
 
 describe('decodeSpotMemo', () => {
   it('should decode a valid spot memo correctly', () => {
-    const validMemo = 'U1A6TEI6MDE6WjdHQzo5OTk5Ljk5OTk6MTIzNDU2Nzg';
+    const validMemo = 'U1A6TEI6MDE6WjdHQzo1MDAwMDo';
     const memo = Buffer.from(validMemo, 'base64').toString('utf-8');
     const expectedResult = {
       tradingType: TARDING_TYPE_MAP['SP'],
       spotOrderType: SPOT_ORDER_TYPE_MAP['LB'],
       exchangeName: SPOT_EXCHANGE_MAP['01'],
       destId: 'Z7GC',
-      limitPrice: '9999.9999',
-      refId: '12345678',
+      limitPrice: '50000',
+      refId: '',
     };
 
     const decodedMemo = decodeSpotMemo(memo);
@@ -74,7 +74,7 @@ describe('decodeSpotMemo', () => {
 
 describe('decodeArbitrageMemo', () => {
   it('should decode a valid arbitrage memo correctly', () => {
-    const decodedMemo = 'AR:CR:01:02:Z7GC:123';
+    const decodedMemo = 'AR:CR:01:02:Z7GC:b0177350-ae29-43ec-a26e-d46f821e416e';
     const result = decodeArbitrageMemo(decodedMemo);
     expect(result).toEqual({
       tradingType: 'Arbitrage',
@@ -82,7 +82,7 @@ describe('decodeArbitrageMemo', () => {
       exchangeAName: 'binance',
       exchangeBName: 'bitfinex',
       symbol: 'BTC/USDT-ERC20',
-      traceId: '123',
+      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
     });
   });
 
@@ -106,14 +106,14 @@ describe('decodeArbitrageMemo', () => {
 
 describe('decodeMarketMakingMemo', () => {
   it('should decode a valid market making memo correctly', () => {
-    const decodedMemo = 'MM:DE:03:Z7GC:qwe';
+    const decodedMemo = 'MM:DE:04:MX5C:b0177350-ae29-43ec-a26e-d46f821e416e';
     const result = decodeMarketMakingMemo(decodedMemo);
     expect(result).toEqual({
       tradingType: 'Market Making',
       action: 'deposit',
-      exchangeName: 'mexc',
-      symbol: 'BTC/USDT-ERC20',
-      traceId: 'qwe',
+      exchangeName: 'okx',
+      symbol: 'ETH/USDT-ERC20',
+      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
     });
   });
 

@@ -8,7 +8,7 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PerformanceService } from '../performance/performance.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { createStrategyKey } from 'src/common/helpers/strategyKey';
+import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 
 @Injectable()
 export class StrategyService {
@@ -80,6 +80,14 @@ export class StrategyService {
       return;
     }
     return await this.startArbitrageStrategyForUser(strategyParamsDto);
+  }
+
+  async pauseStrategyIfNotPaused(key: StrategyKey) {
+    const strategyKey = createStrategyKey(key);
+    if (!this.strategyInstances.has(strategyKey)) {
+      return;
+    }
+    return await this.stopStrategyForUser(key.user_id, key.client_id, key.type);
   }
 
   async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {

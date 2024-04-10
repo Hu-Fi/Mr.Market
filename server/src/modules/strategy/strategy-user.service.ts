@@ -228,5 +228,28 @@ export class StrategyUserService {
         });
       });
     }
+
+    const pausedArb =
+      await this.strategyUserRepository.findPausedArbitrageOrders();
+    const pausedMM =
+      await this.strategyUserRepository.findPausedMarketMakingOrders();
+    if (pausedArb) {
+      pausedArb.forEach(async (arb) => {
+        await this.strategyService.pauseStrategyIfNotPaused({
+          type: 'arbitrage',
+          user_id: arb.userId,
+          client_id: arb.orderId,
+        });
+      });
+    }
+    if (pausedMM) {
+      pausedMM.forEach(async (mm) => {
+        await this.strategyService.pauseStrategyIfNotPaused({
+          type: 'pureMarketMaking',
+          user_id: mm.userId,
+          client_id: mm.orderId,
+        });
+      });
+    }
   }
 }

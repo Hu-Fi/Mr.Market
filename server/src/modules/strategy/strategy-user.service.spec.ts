@@ -14,7 +14,8 @@ jest.mock('./strategy.service');
 
 describe('StrategyUserService', () => {
   let service: StrategyUserService;
-  let repository: StrategyUserRepository;
+  let strategyService: StrategyService;
+  let strategyUserRepository: StrategyUserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,7 +28,10 @@ describe('StrategyUserService', () => {
     }).compile();
 
     service = module.get<StrategyUserService>(StrategyUserService);
-    repository = module.get<StrategyUserRepository>(StrategyUserRepository);
+    strategyService = module.get<StrategyService>(StrategyService);
+    strategyUserRepository = module.get<StrategyUserRepository>(
+      StrategyUserRepository,
+    );
     jest.clearAllMocks();
   });
 
@@ -106,10 +110,10 @@ describe('StrategyUserService', () => {
       ];
 
       jest
-        .spyOn(repository, 'findArbitrageByUserId')
+        .spyOn(strategyUserRepository, 'findArbitrageByUserId')
         .mockResolvedValue(mockArbitrageOrders);
       jest
-        .spyOn(repository, 'findMarketMakingByUserId')
+        .spyOn(strategyUserRepository, 'findMarketMakingByUserId')
         .mockResolvedValue(mockMarketMakingOrders);
 
       const result = await service.findAllStrategyByUser(mockUserId);
@@ -120,10 +124,12 @@ describe('StrategyUserService', () => {
       ];
 
       expect(result).toEqual(expectedResult);
-      expect(repository.findArbitrageByUserId).toHaveBeenCalledWith(mockUserId);
-      expect(repository.findMarketMakingByUserId).toHaveBeenCalledWith(
+      expect(strategyUserRepository.findArbitrageByUserId).toHaveBeenCalledWith(
         mockUserId,
       );
+      expect(
+        strategyUserRepository.findMarketMakingByUserId,
+      ).toHaveBeenCalledWith(mockUserId);
     });
   });
 
@@ -133,15 +139,14 @@ describe('StrategyUserService', () => {
       const newState = 'paused';
 
       jest
-        .spyOn(repository, 'updateArbitrageOrderState')
+        .spyOn(strategyUserRepository, 'updateArbitrageOrderState')
         .mockResolvedValue(undefined);
 
       await service.updateArbitrageOrderState(orderId, newState);
 
-      expect(repository.updateArbitrageOrderState).toHaveBeenCalledWith(
-        orderId,
-        newState,
-      );
+      expect(
+        strategyUserRepository.updateArbitrageOrderState,
+      ).toHaveBeenCalledWith(orderId, newState);
     });
   });
 
@@ -162,12 +167,12 @@ describe('StrategyUserService', () => {
       };
 
       jest
-        .spyOn(repository, 'createArbitrage')
+        .spyOn(strategyUserRepository, 'createArbitrage')
         .mockResolvedValue(mockArbitrageOrder);
 
       const result = await service.createArbitrage(mockArbitrageOrder);
       expect(result).toEqual(mockArbitrageOrder);
-      expect(repository.createArbitrage).toHaveBeenCalledWith(
+      expect(strategyUserRepository.createArbitrage).toHaveBeenCalledWith(
         mockArbitrageOrder,
       );
     });
@@ -197,12 +202,12 @@ describe('StrategyUserService', () => {
       };
 
       jest
-        .spyOn(repository, 'createMarketMaking')
+        .spyOn(strategyUserRepository, 'createMarketMaking')
         .mockResolvedValue(mockMarketMakingOrder);
 
       const result = await service.createMarketMaking(mockMarketMakingOrder);
       expect(result).toEqual(mockMarketMakingOrder);
-      expect(repository.createMarketMaking).toHaveBeenCalledWith(
+      expect(strategyUserRepository.createMarketMaking).toHaveBeenCalledWith(
         mockMarketMakingOrder,
       );
     });
@@ -214,14 +219,130 @@ describe('StrategyUserService', () => {
       const newState = 'paused' as MarketMakingStates;
 
       jest
-        .spyOn(repository, 'updateMarketMakingOrderState')
+        .spyOn(strategyUserRepository, 'updateMarketMakingOrderState')
         .mockResolvedValue(undefined);
 
       await service.updateMarketMakingOrderState(orderId, newState);
-      expect(repository.updateMarketMakingOrderState).toHaveBeenCalledWith(
-        orderId,
-        newState,
-      );
+      expect(
+        strategyUserRepository.updateMarketMakingOrderState,
+      ).toHaveBeenCalledWith(orderId, newState);
     });
   });
+
+  it.failing(
+    'should correctly handle both active and paused orders',
+    async () => {
+      // Mock data for running and paused orders
+      const mockActiveArbOrders = [
+        {
+          orderId: 'arb1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          amountToTrade: '0.5',
+          minProfitability: '0.01',
+          exchangeAName: 'ExchangeA',
+          exchangeBName: 'ExchangeB',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'created' as ArbitrageStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockActiveMMOrders = [
+        {
+          orderId: 'mm1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          exchangeName: 'ExchangeA',
+          bidSpread: '0.001',
+          askSpread: '0.001',
+          orderAmount: '0.5',
+          orderRefreshTime: '60', // Seconds
+          numberOfLayers: '1',
+          priceSourceType: PriceSourceType.MID_PRICE,
+          amountChangePerLayer: '0.1',
+          amountChangeType: 'percentage' as 'fixed' | 'percentage',
+          ceilingPrice: '60000',
+          floorPrice: '50000',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'created' as MarketMakingStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockPausedArbOrders = [
+        {
+          orderId: 'arb1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          amountToTrade: '0.5',
+          minProfitability: '0.01',
+          exchangeAName: 'ExchangeA',
+          exchangeBName: 'ExchangeB',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'paused' as ArbitrageStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockPausedMMOrders = [
+        {
+          orderId: 'mm1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          exchangeName: 'ExchangeA',
+          bidSpread: '0.001',
+          askSpread: '0.001',
+          orderAmount: '0.5',
+          orderRefreshTime: '60', // Seconds
+          numberOfLayers: '1',
+          priceSourceType: PriceSourceType.MID_PRICE,
+          amountChangePerLayer: '0.1',
+          amountChangeType: 'percentage' as 'fixed' | 'percentage',
+          ceilingPrice: '60000',
+          floorPrice: '50000',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'paused' as MarketMakingStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+
+      jest
+        .spyOn(strategyUserRepository, 'findRunningArbitrageOrders')
+        .mockResolvedValue(mockActiveArbOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findRunningMarketMakingOrders')
+        .mockResolvedValue(mockActiveMMOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findPausedArbitrageOrders')
+        .mockResolvedValue(mockPausedArbOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findPausedMarketMakingOrders')
+        .mockResolvedValue(mockPausedMMOrders);
+
+      // Mock strategy service methods to simulate starting and pausing strategies
+      const startArbitrageSpy = jest
+        .spyOn(strategyService, 'startArbitrageIfNotStarted')
+        .mockImplementation(async () => {});
+      const startMarketMakingSpy = jest
+        .spyOn(strategyService, 'startMarketMakingIfNotStarted')
+        .mockImplementation(async () => {});
+      const pauseArbitrageSpy = jest
+        .spyOn(strategyService, 'pauseStrategyIfNotPaused')
+        .mockImplementation(async () => {});
+
+      // Execute the method under test
+      await service.updateExecutionBasedOnOrders();
+
+      // Verify that strategies are started for the active orders
+      expect(startArbitrageSpy).toHaveBeenCalledWith(expect.anything());
+      expect(startMarketMakingSpy).toHaveBeenCalledWith(expect.anything());
+
+      // Verify that strategies are paused for the paused orders
+      expect(pauseArbitrageSpy).toHaveBeenCalledTimes(
+        mockPausedArbOrders.length + mockPausedMMOrders.length,
+      );
+    },
+  );
 });

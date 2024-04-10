@@ -42,6 +42,10 @@ export class StrategyUserRepository {
     return this.arbitrageRepository.findBy({ state: 'created' });
   }
 
+  async findPausedArbitrageOrders(): Promise<ArbitrageOrder[]> {
+    return this.arbitrageRepository.findBy({ state: 'paused' });
+  }
+
   async updateArbitrageOrderState(
     orderId: string,
     newState: ArbitrageStates,
@@ -74,6 +78,10 @@ export class StrategyUserRepository {
 
   async findRunningMarketMakingOrders(): Promise<MarketMakingOrder[]> {
     return this.marketMakingRepository.findBy({ state: 'created' });
+  }
+
+  async findPausedMarketMakingOrders(): Promise<MarketMakingOrder[]> {
+    return this.marketMakingRepository.findBy({ state: 'paused' });
   }
 
   async updateMarketMakingOrderState(
