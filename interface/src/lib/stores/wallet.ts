@@ -6,8 +6,10 @@ import type { SpotOrder } from "$lib/types/hufi/spot";
 
 export const user = writable()
 export const userAssets = writable()
-export const userOrders:Writable<SpotOrder[]>  = writable([])
-export const userOrdersLoaded = writable()
+export const userSpotOrders:Writable<SpotOrder[]> = writable([])
+export const userSpotOrdersLoaded = writable(false)
+export const userStrategyOrders: Writable<unknown[]> = writable([])
+export const userStrategyOrdersLoaded = writable(false)
 export const topAssetsCache = writable({})
 export const currencySymbol = writable("$")
 export const assetDetailAsset = writable()

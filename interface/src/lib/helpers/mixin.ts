@@ -2,13 +2,13 @@
 import axios from "axios";
 import { get } from "svelte/store";
 import { mixinConnected } from "$lib/stores/home";
-import { GenerateSpotMemo } from "$lib/helpers/memo";
 import { getOrdersByUser } from "$lib/helpers/hufi/spot";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
-import { topAssetsCache, user, userAssets, userOrders, userOrdersLoaded } from "$lib/stores/wallet";
-import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
+import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
-import { randomUUID } from "crypto";
+import { GenerateSpotMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from "$lib/helpers/memo";
+import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -51,6 +51,7 @@ export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: strin
     memo: memo,
     trace: trace_id,
   }))
+  return trace_id
 }
 
 export const mixinUserMe = async (token: string) => {
@@ -184,19 +185,36 @@ const getUserBalances = async (user_id: string, token: string) => {
   return { balances, totalUSDBalance, totalBTCBalance }
 }
 
-const getUserOrders = async (user_id: string) => {
+const getUserSpotOrders = async (user_id: string) => {
   try {
     const orders = await getOrdersByUser(user_id);
-    console.log('getUserOrders()=>', orders)
+    console.log('getUserSpotOrders()=>', orders)
     if (!orders) {
-      userOrdersLoaded.set(true);
+      userSpotOrdersLoaded.set(true);
       return;
     }
-    userOrders.set(orders);
-    userOrdersLoaded.set(true);
+    userSpotOrders.set(orders);
+    userSpotOrdersLoaded.set(true);
   } catch (e) {
-    userOrders.set([]);
-    userOrdersLoaded.set(true);
+    userSpotOrders.set([]);
+    userSpotOrdersLoaded.set(true);
+    console.error(e);
+  }
+}
+
+const getUserStrategyOrders = async (user_id: string) => {
+  try {
+    const orders = await getAllStrategyByUser(user_id);
+    console.log('getAllStrategyByUser()=>', orders)
+    if (!orders) {
+      userStrategyOrdersLoaded.set(true);
+      return;
+    }
+    userStrategyOrders.set(orders);
+    userStrategyOrdersLoaded.set(true);
+  } catch (e) {
+    userStrategyOrders.set([]);
+    userStrategyOrdersLoaded.set(true);
     console.error(e);
   }
 }
@@ -217,7 +235,8 @@ export const AfterMixinOauth = async (token: string) => {
   mixinConnected.set(true)
   localStorage.setItem("mixin-oauth", token)
   getUserBalances(data.user_id, token)
-  getUserOrders(data.user_id)
+  getUserSpotOrders(data.user_id)
+  getUserStrategyOrders(data.user_id)
 }
 
 export const MixinDisconnect = () => {
@@ -253,7 +272,7 @@ export const ArbitragePay = ({
   symbol,
   amount,
   assetId,
-  traceId,
+  orderId,
 }: {
   action: string,
   exchangeA: string,
@@ -261,9 +280,9 @@ export const ArbitragePay = ({
   symbol: string,
   amount: string,
   assetId: string,
-  traceId: string,
+  orderId: string,
 }) => {
-  if (!exchangeA || !exchangeB || !symbol || !amount || !traceId || !assetId) {
+  if (!exchangeA || !exchangeB || !symbol || !amount || !orderId || !assetId) {
     console.error('Invalid input parameters for ArbitragePay');
     return;
   }
@@ -273,7 +292,7 @@ export const ArbitragePay = ({
     exchangeA,
     exchangeB,
     symbol,
-    traceId,
+    orderId,
   });
   if (!memo) {
     console.error('Failed to generate Arbitrage memo');
@@ -292,10 +311,10 @@ export const ArbitragePay = ({
   }
   
   return mixinPay({
-    asset_id,
+    asset_id: assetId,
     amount,
     memo,
-    trace_id: randomUUID(),
+    trace_id: getUuid(),
   });
 };
 
@@ -305,16 +324,16 @@ export const MarketMakingPay = ({
   symbol,
   assetId,
   amount,
-  traceId,
+  orderId,
 }: {
   action: string,
   exchange: string,
   symbol: string,
   assetId: string,
   amount: string,
-  traceId: string,
+  orderId: string,
 }) => {
-  if (!exchange || !symbol || !amount || !traceId || !assetId) {
+  if (!exchange || !symbol || !amount || !orderId || !assetId) {
     console.error('Invalid input parameters for MarketMakingPay');
     return;
   }
@@ -323,7 +342,7 @@ export const MarketMakingPay = ({
     action,
     exchange,
     symbol,
-    traceId,
+    orderId,
   });
   if (!memo) {
     console.error('Failed to generate Market Making memo');
@@ -342,9 +361,9 @@ export const MarketMakingPay = ({
   }
 
   return mixinPay({
-    asset_id,
+    asset_id: assetId,
     amount,
     memo,
-    trace_id: randomUUID(),
+    trace_id: getUuid(),
   });
 };

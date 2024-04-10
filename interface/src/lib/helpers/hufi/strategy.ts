@@ -7,7 +7,7 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-export const getAllStrategy = async (userId: string) => {
+export const getAllStrategyByUser = async (userId: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/strategy/all?userId=${userId}`);
     return await handleResponse(response);
