@@ -89,6 +89,9 @@ export class SpotOrderListener {
       updatedAt: timeNow,
       limitPrice: event.limitPrice,
       refId: event.refId,
+      limitAmount: event.snapshot.amount,
+      limitFilled: '',
+      receiveAmount: '',
     };
 
     const mixinEvent: MixinReleaseTokenEvent = {
@@ -98,6 +101,9 @@ export class SpotOrderListener {
       amount: '',
       createdAt: timeNow,
       updatedAt: timeNow,
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     await this.exchangeService.createSpotOrder(order);
 

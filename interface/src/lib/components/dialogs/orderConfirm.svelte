@@ -26,21 +26,21 @@
         $buy
           ? `${$limitTotal} ${$pair.symbol.split("/")[1]}`
           : `${$limitAmount} ${$pair.symbol.split("/")[0]}`
-      : $orderTypeMarket ? 
+      : $orderTypeMarket ?
         $buy
           ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
           : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
       : ''
     },
-    { 
-      title: $_("estimated_price"), 
-      value: $orderTypeLimit ? 
+    {
+      title: $_("estimated_price"),
+      value: $orderTypeLimit ?
         $buy
           ? $limitPrice : $limitPrice
       : $orderTypeMarket ?
         $buy
           ? $current : $current
-      : '' 
+      : ''
     },
     { title: $_("recipient"), value: $_("mixin_wallet") },
   ];
@@ -49,7 +49,7 @@
 
   const confirmPayment = () => {
     loading = true;
-    let payAmount = 0;
+    let payAmount: number | '' = 0;
     if ($orderTypeLimit) {
       if ($buy) {
         payAmount = $limitTotal;
@@ -65,8 +65,16 @@
       }
     }
     const trace = getUuid();
-    
-    SpotPay({ $orderTypeLimit, buy: $buy, symbol: $pair.symbol, exchange: $pair.exchange, price: String($limitPrice), amount: payAmount, trace})
+
+    SpotPay({
+      limit: $orderTypeLimit,
+      buy: $buy,
+      symbol: $pair.symbol,
+      exchange: $pair.exchange,
+      price: String($limitPrice),
+      amount: String(payAmount),
+      trace
+    })
 
     const FETCH_INTERVAL = 2000;
     const TIMEOUT_DURATION = 60000;

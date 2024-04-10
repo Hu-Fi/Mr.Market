@@ -33,6 +33,9 @@ export class ExchangePlaceSpotEvent {
   updatedAt: string;
   limitPrice?: string;
   refId?: string;
+  limitAmount: string;
+  limitFilled: string;
+  receiveAmount: string;
 }
 
 export class MixinReleaseTokenEvent {
@@ -42,4 +45,7 @@ export class MixinReleaseTokenEvent {
   amount: string;
   createdAt: string;
   updatedAt: string;
+  limitAmount: string;
+  limitFilled: string;
+  receiveAmount: string;
 }

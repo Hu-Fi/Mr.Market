@@ -487,6 +487,14 @@ export class ExchangeService {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
+  async updateSpotOrderMarketReceived(orderId: string, marketReceived: string) {
+    await this.exchangeRepository.updateSpotOrderUpdatedAt(
+      orderId,
+      getRFC3339Timestamp(),
+    );
+    return await this.exchangeRepository.updateSpotOrderMarketReceived(orderId, marketReceived);
+  }
+
   async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {
     await this.exchangeRepository.updateSpotOrderUpdatedAt(
       orderId,
@@ -617,7 +625,10 @@ export class ExchangeService {
             STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
           );
         }
-
+        await this.updateSpotOrderMarketReceived(
+          o.orderId,
+          String(order.filled),
+        );
         // TODO: add a final amount field to order and store in db. Use this value when release token
 
         // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)

@@ -6,6 +6,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
 import { SpotOrderDetails } from "src/common/types/orders/details";
+import {STATE_CODE_MAP} from "../../../common/types/orders/states";
+import BigNumber from "bignumber.js";
 
 @ApiTags('exchange')
 @Controller('exchange')
@@ -32,15 +34,18 @@ export class ExchangeUserController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getDepositAddress(@Param('order_id') orderId: string): Promise<SpotOrderDetails> {
     try {
+      const order = await this.exchagneService.readOrderById(orderId);
+      const completed = STATE_CODE_MAP[order.state] === 'ORDER_SUCCESS';
+      const price = completed ? BigNumber(order.receiveAmount).div(BigNumber(order.amount)).toString() : '';
+
       return {
-        ...(await this.exchagneService.readOrderById(orderId)),
-        amount: `${Math.random()}`, // TODO determine where should it come from
-        price: `${Math.random()}`, // TODO determine where should it come from
-        avg: `${Math.random()}`, // TODO determine where should it come from
-        filled: `${Math.random()}`, // TODO determine where should it come from
-        pay: `${Math.random()}`, // TODO determine where should it come from
-        fee: `${Math.random()}`, // TODO determine where should it come from
-        receive:`${Math.random()}`, // TODO determine where should it come from
+        ...order,
+        price,
+        avg: price,
+        filled: order.type[0] === 'M' ? order.receiveAmount : order.limitFilled,
+        pay: order.amount,
+        fee: BigNumber(order.amount).multipliedBy(2).div(1000).toString(),
+        receive: order.receiveAmount
       };
     } catch (e) {
       this.logger.error(`Get order by id error: ${e.message}`);

@@ -30,6 +30,15 @@ export class SpotOrder {
   amount: string; // The amount of pay asset received
 
   @Column()
+  limitAmount: string; // Arbitrage amount
+
+  @Column()
+  limitFilled: string; // Limit filled
+
+  @Column()
+  receiveAmount: string; // Receive amount
+
+  @Column()
   baseAssetId: string; // Mixin asset UUID
 
   @Column()
