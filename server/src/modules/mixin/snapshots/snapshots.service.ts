@@ -59,6 +59,14 @@ export class SnapshotsService {
     this.events = this.eventEmitter;
   }
 
+  async createSnapshot(snapshot: SafeSnapshot) {
+    try {
+      return await this.snapshotsRepository.createSnapshot(snapshot);
+    } catch (e) {
+      this.logger.error(`createSnapshot()=> ${e}`);
+    }
+  }
+
   async fetchAndProcessSnapshots() {
     try {
       const snapshots = await this.client.safe.fetchSafeSnapshots({});
@@ -323,6 +331,8 @@ export class SnapshotsService {
       state: 'unspent',
     });
 
+    this.logger.log(`this.sendMixinTx.outputs => ${JSON.stringify(outputs)}`);
+
     const balance = getTotalBalanceFromOutputs(outputs);
     const amountBN = BigNumber(amount);
     if (balance.isLessThan(amountBN)) {
@@ -330,6 +340,7 @@ export class SnapshotsService {
       return;
     }
 
+    this.logger.log(`this.sendMixinTx.balance => ${balance}`);
     const { utxos, change } = getUnspentOutputsForRecipients(
       outputs,
       recipients,
@@ -456,48 +467,65 @@ export class SnapshotsService {
   // 4. Wait for state update scheduler to update order state, in exchange.service.ts
   // 5. If the state updated to succeess, send release token event to mixin.listener.ts, event keyword: `mixin.release`
   private async handleSnapshot(snapshot: SafeSnapshot) {
-    const s = await this.snapshotsRepository.findSnapshotByID(
+    const exist = await this.snapshotsRepository.checkSnapshotExist(
       snapshot.snapshot_id,
     );
-    if (s) {
+    if (exist) {
       return;
     }
     if (!snapshot.memo) {
-      await this.refund(snapshot);
+      await this.createSnapshot(snapshot);
+      this.logger.log('snapshot no memo, return');
       return;
     }
     if (snapshot.memo.length === 0) {
-      await this.refund(snapshot);
+      await this.createSnapshot(snapshot);
+      this.logger.log('snapshot.memo.length === 0, return');
+      // await this.refund(snapshot);
       return;
     }
 
-    const decodedMemo = Buffer.from(snapshot.memo, 'base64').toString('utf-8');
+    // this.logger.log(`encodedMemo:${snapshot.memo}`);
+    const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
+    // this.logger.log(`hexDecoedMemo:${hexDecoedMemo}`);
+    const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
+    // this.logger.log(`decodedMemo:${decodedMemo}`);
     const tradingType = decodedMemo.slice(0, 2);
+    // this.logger.log(`tradingType:${tradingType}`);
     switch (tradingType) {
       case 'SP':
-        const spotDetails = decodeSpotMemo(snapshot.memo);
+        const spotDetails = decodeSpotMemo(decodedMemo);
+        if (!spotDetails) {
+          break;
+        }
         let spotOrderCreateEvent = new SpotOrderCreateEvent();
         spotOrderCreateEvent = { ...spotDetails, snapshot };
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 
       case 'AR':
-        const arbDetails = decodeArbitrageMemo(snapshot.memo);
-        this.logger.log(arbDetails);
+        const arbDetails = decodeArbitrageMemo(decodedMemo);
+        // this.logger.log(`arbDetails: ${arbDetails}`);
+        if (!arbDetails) {
+          break;
+        }
         this.events.emit('arbitrage.create', arbDetails, snapshot);
         break;
 
       case 'MM':
-        const mmDetails = decodeMarketMakingMemo(snapshot.memo);
-        this.logger.log(mmDetails);
+        const mmDetails = decodeMarketMakingMemo(decodedMemo);
+        // this.logger.log(`mmDetails: ${mmDetails}`);
+        if (!mmDetails) {
+          break;
+        }
         this.events.emit('market_making.create', mmDetails, snapshot);
         break;
 
       default:
-        await this.refund(snapshot);
+        // await this.refund(snapshot);
         break;
     }
-    await this.snapshotsRepository.createSnapshot(snapshot);
+    await this.createSnapshot(snapshot);
   }
 
   @Cron('*/5 * * * * *') // Every 5 seconds

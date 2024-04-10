@@ -80,6 +80,8 @@ export class MarketMakingListener {
         amountChangeType: 'percentage',
         ceilingPrice: '0',
         floorPrice: '0',
+        balanceA: paymentState.firstAssetAmount,
+        balanceB: paymentState.secondAssetAmount,
         createdAt: getRFC3339Timestamp(),
       });
     }

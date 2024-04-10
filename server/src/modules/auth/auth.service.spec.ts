@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { StrategyUserRepository } from '../strategy/strategy-user.repository';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -33,6 +34,16 @@ describe('AuthService', () => {
                   throw new Error(`Unhandled key: ${key}`);
               }
             }),
+          },
+        },
+        {
+          provide: StrategyUserRepository,
+          useValue: {
+            findArbitrageByUserId: jest.fn().mockResolvedValue([]),
+            findMarketMakingByUserId: jest.fn().mockResolvedValue([]),
+            // Mock the `checkSnapshotExist` method here:
+            checkSnapshotExist: jest.fn().mockResolvedValue(false),
+            // Add other methods as necessary
           },
         },
       ],

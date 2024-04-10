@@ -34,7 +34,7 @@ vi.mock('$env/dynamic/public', () => {
       exchangeA: 'Binance',
       exchangeB: 'Bitfinex',
       symbol: 'BTC/USDT',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
     });
     // Assuming the PAIRS_MAP_REVERSED['BTC/USDT'] = 'Z7GC'
     const encoded = Buffer.from('AR:CR:01:02:Z7GC:b0177350-ae29-43ec-a26e-d46f821e416e', 'binary').toString('base64').replaceAll('=', '');
@@ -47,7 +47,7 @@ vi.mock('$env/dynamic/public', () => {
       action: 'DE',
       exchange: 'okx',
       symbol: 'ETH/USDT',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
     });
     // Assuming the PAIRS_MAP_REVERSED['ETH/USDT'] = 'MX5C'
     const encoded = Buffer.from('MM:DE:04:MX5C:b0177350-ae29-43ec-a26e-d46f821e416e', 'binary').toString('base64').replaceAll('=', '');
