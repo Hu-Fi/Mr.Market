@@ -16,7 +16,7 @@
     {#each items as item, i}
       <button
         class={clsx(
-          "items-center justify-between no-animation hover:bg-slate-50 focus:bg-slate-50 bg-slate-50 focus:border-none border border-slate-100 flex flex-col space-y-1.5 rounded-2xl py-5",
+          "items-center justify-between no-animation hover:bg-slate-50 focus:bg-slate-50 bg-slate-50 border border-slate-100 flex flex-col space-y-1.5 rounded-2xl py-5",
         )}
         on:click={() => {
           item.fn();
