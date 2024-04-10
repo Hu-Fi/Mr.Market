@@ -1,15 +1,15 @@
 <script>
   import { _ } from "svelte-i18n";
-  import { userOrders } from "$lib/stores/wallet";
+  import { userSpotOrders } from "$lib/stores/wallet";
   import { mixinConnected } from "$lib/stores/home";
   import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
   import SingleSpotHistory from "$lib/components/spot/history/singleSpotHistory.svelte";
 </script>
 
 {#if $mixinConnected}
-  {#if $userOrders && $userOrders.length != 0}
+  {#if $userSpotOrders && $userSpotOrders.length != 0}
     <div class="mx-6 flex flex-col space-y-3">
-      {#each $userOrders as o}
+      {#each $userSpotOrders as o}
         <SingleSpotHistory {o} />
       {/each}
     </div>

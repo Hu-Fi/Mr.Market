@@ -53,27 +53,13 @@
       started: "2023-09-28T12:00:12Z",
       id: "1c7aeede-e14e-4017-bb38-8ffe57667b93",
     },
-    // {
-    //   type: "auto",
-    //   name: $_("auto_invest"),
-    //   base: "CNY",
-    //   target: "Bitcoin",
-    //   targetSymbol: "BTC",
-    //   profit: "10",
-    //   amount: "450",
-    //   period: "10",
-    //   started: "2023-09-28T12:00:12Z",
-    //   id: "313c542d-7122-4db5-8792-2a1339453af7",
-    // },
   ];
 </script>
 
 {#if placeholder.length === 0}
-  <div class="">
-    <Create />
-  </div>
+  <Create />
 {:else}
-  <div class="flex flex-col space-y-4 mx-7 mt-6">
+  <div class="flex flex-col space-y-4 mx-4 mt-6 mb-24">
     {#each placeholder as item}
       {#if item.type === "arb"}
         <ArbCard data={item} />

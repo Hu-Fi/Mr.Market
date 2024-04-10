@@ -1,6 +1,9 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import { MarketMakingPay } from "$lib/helpers/mixin";
+  import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts } from "$lib/stores/grow"
 
@@ -13,12 +16,41 @@
   let btn2Loading = false;
   let btn1Paid = false;
   let btn2Paid = false;
+  let orderId = getUuid();
+  let traceId: string | undefined;
 
   const payment = (type: string) => {
-    if (type === '1') btn1Loading = true;
-    if (type === '2') btn2Loading = true;
-    btn1Paid = false;
-    btn2Paid = false;
+    const ids = decodeSymbolToAssetID($createMMEasyPair.symbol);
+    if (!ids?.firstAssetID || !ids.secondAssetID) {
+      console.error('Unable to get asset id from symbol')
+      return;
+    }
+
+    if (type === '1') {
+      btn1Loading = true;
+      traceId = MarketMakingPay({
+        action: 'CR', 
+        exchange: $createMMEasyPair.exchange,
+        symbol: $createMMEasyPair.symbol,
+        amount: baseAssetAmount,
+        assetId: ids.firstAssetID,
+        orderId,
+      })
+      // Fetch state
+    }
+    if (type === '2') {
+      btn2Loading = true;
+      traceId = MarketMakingPay({
+        action: 'CR', 
+        exchange: $createMMEasyPair.exchange,
+        symbol: $createMMEasyPair.symbol,
+        amount: targetAssetAmount,
+        assetId: ids.secondAssetID,
+        orderId,
+      })
+      // Fetch state
+    }
+    console.log(traceId);
   }
 </script>
 
