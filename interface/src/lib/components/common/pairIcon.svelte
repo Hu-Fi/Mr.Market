@@ -8,16 +8,23 @@
   export let claxx = "w-3 h-3"
   export let space = "-space-x-1"
   export let directionRight = true
+  export let rotate = true
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
 </script>
 
 <div class="relative flex items-center">
-  <div class={clsx("min-w-[2rem] inline-grid grid-cols-2", space, directionRight ? "rotate-45" : "-rotate-45")}>
-    <div class={clsx("avatar", clazz, directionRight ? "-rotate-45" : 'rotate-45')}>
-      <AssetIcon chainIcon={chain0Icon} assetIcon={asset0Icon} clazz={clazz} claxx={claxx}/>
+  <div class={clsx("min-w-[2rem] inline-grid grid-cols-2", space, rotate ? (directionRight ? "rotate-45" : "-rotate-45") : '')}>
+    <div class={clsx("avatar", clazz, rotate ? (directionRight ? "-rotate-45" : 'rotate-45') : 'z-10')}>
+      <AssetIcon chainIcon={chain0Icon} assetIcon={asset0Icon} clazz={clazz} claxx={claxx} imageClass={clsx({'rounded-full': !rotate})} />
     </div>
-    <div class={clsx("avatar", clazz, directionRight ? "-rotate-45" : 'rotate-45')}>
-      <AssetIcon chainIcon={chain1Icon} assetIcon={asset1Icon} clazz={clazz} claxx={claxx} />
+    <div class={clsx("avatar", clazz, rotate ? (directionRight ? "-rotate-45" : 'rotate-45') : 'ml-minus-10')}>
+      <AssetIcon chainIcon={chain1Icon} assetIcon={asset1Icon} clazz={clazz} claxx={claxx} imageClass={clsx({'rounded-full': !rotate})} />
     </div>
   </div>
 </div>
+
+<style>
+  .ml-minus-10 {
+      margin-left: -15px !important;
+  }
+</style>

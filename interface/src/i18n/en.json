@@ -237,6 +237,7 @@
   "withdraw_amount_made": "Withdraw {amount} {symbol}",
   "buy_token_for_amount": "Buy {amount0} {symbol0} for {amount1} {symbol1}",
   "sell_token_for_amount": "Sell {amount0} {symbol0} for {amount1} {symbol1}",
+  "token_for_amount": "{amount0} {symbol0} for {amount1} {symbol1}",
   "buy_order_placed": "Placed {amount0} {symbol0} buy order at price {price} for {amount1} {symbol1}",
   "buy_order_filled": "{amount0} {symbol0} buy order filled for {amount1} {symbol1}",
   "buy_order_canceled": "Buy order canceled",
