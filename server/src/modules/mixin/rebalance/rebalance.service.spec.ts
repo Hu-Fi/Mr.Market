@@ -40,24 +40,30 @@ describe('Rebalancing from exchange to mixin', () => {
       }),
       aggregateBalancesByExchange: jest.fn().mockReturnValue({
         exchange1: {
-          total: {'BTC': '1'},
-          apiKeyBalances: [{
-            balances: {
-              'BTC': '10',
+          total: { BTC: '1' },
+          apiKeyBalances: [
+            {
+              balances: {
+                BTC: '10',
+              },
             },
-          }],
+          ],
         },
         exchange2: {
-          total: {'BTC': '1'},
-          apiKeyBalances: [{
-            balances: {
-              'BTC': '2',
+          total: { BTC: '1' },
+          apiKeyBalances: [
+            {
+              balances: {
+                BTC: '2',
+              },
             },
-          }],
+          ],
         },
       }),
       createWithdrawal: jest.fn(),
-      findFirstAPIKeyByExchange: jest.fn().mockResolvedValue({ key_id: 'key1' }),
+      findFirstAPIKeyByExchange: jest
+        .fn()
+        .mockResolvedValue({ key_id: 'key1' }),
       getDepositAddress: jest.fn().mockResolvedValue({
         address: 'mixinDepositAddress',
         memo: 'mixinMemo',
@@ -104,7 +110,6 @@ describe('Rebalancing from exchange to mixin', () => {
   });
 });
 
-
 describe('Rebalancing from Mixin to exchange', () => {
   let service: RebalanceService;
   let exchangeServiceMock: Partial<ExchangeService>;
@@ -123,24 +128,30 @@ describe('Rebalancing from Mixin to exchange', () => {
       }),
       aggregateBalancesByExchange: jest.fn().mockReturnValue({
         exchange1: {
-          total: {'BTC': '0.1'},
-          apiKeyBalances: [{
-            balances: {
-              'BTC': '0.1',
+          total: { BTC: '0.1' },
+          apiKeyBalances: [
+            {
+              balances: {
+                BTC: '0.1',
+              },
             },
-          }],
+          ],
         },
         exchange2: {
-          total: {'BTC': '0.1'},
-          apiKeyBalances: [{
-            balances: {
-              'BTC': '0.1',
+          total: { BTC: '0.1' },
+          apiKeyBalances: [
+            {
+              balances: {
+                BTC: '0.1',
+              },
             },
-          }],
+          ],
         },
       }),
       createWithdrawal: jest.fn(),
-      findFirstAPIKeyByExchange: jest.fn().mockResolvedValue([{ key_id: 'key1' }]),
+      findFirstAPIKeyByExchange: jest
+        .fn()
+        .mockResolvedValue([{ key_id: 'key1' }]),
       getDepositAddress: jest.fn().mockResolvedValue({
         address: 'mixinDepositAddress',
         memo: 'mixinMemo',
@@ -154,7 +165,7 @@ describe('Rebalancing from Mixin to exchange', () => {
         address: 'mixinDepositAddress',
         memo: 'mixinMemo',
       }),
-      withdrawal:  jest.fn().mockResolvedValue({}),
+      withdrawal: jest.fn().mockResolvedValue({}),
     };
     rebalanceRepositoryMock = {
       getCurrencyMinAmountBySymbol: jest.fn().mockResolvedValue('0.2'),
