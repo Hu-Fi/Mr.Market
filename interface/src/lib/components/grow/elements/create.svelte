@@ -15,7 +15,7 @@
     </span>
   </div>
   <div>
-    <button class="btn btn-md rounded-full bg-base-content no-animation" on:click={()=>addMoreDialog.set(true)}>
+    <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>addMoreDialog.set(true)}>
       <span class="text-base-100">
         {$_("explore")}
       </span>

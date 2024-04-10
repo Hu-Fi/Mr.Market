@@ -8,6 +8,7 @@ import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { topAssetsCache, user, userAssets, userOrders, userOrdersLoaded } from "$lib/stores/wallet";
 import { buildMixinOneSafePaymentUri, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
+import { randomUUID } from "crypto";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -245,10 +246,105 @@ export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: 
   return mixinPay({ asset_id: firstAssetID, amount, memo, trace_id: trace });
 }
 
-export const ArbitragePay = ({ exchange0, exchange1, symbol, amount }: { exchange0: string, exchange1: string, symbol: string, amount: string }) => {
-  console.log(exchange0, exchange1, symbol, amount)
-}
+export const ArbitragePay = ({
+  action,
+  exchangeA,
+  exchangeB,
+  symbol,
+  amount,
+  assetId,
+  traceId,
+}: {
+  action: string,
+  exchangeA: string,
+  exchangeB: string,
+  symbol: string,
+  amount: string,
+  assetId: string,
+  traceId: string,
+}) => {
+  if (!exchangeA || !exchangeB || !symbol || !amount || !traceId || !assetId) {
+    console.error('Invalid input parameters for ArbitragePay');
+    return;
+  }
+  
+  const memo = GenerateArbitrageMemo({
+    action,
+    exchangeA,
+    exchangeB,
+    symbol,
+    traceId,
+  });
+  if (!memo) {
+    console.error('Failed to generate Arbitrage memo');
+    return;
+  }
 
-export const MarketMakingPay = ({ exchange, symbol, amount }: { exchange: string, symbol: string, amount: string }) => {
-  console.log(exchange, symbol, amount)
-}
+  const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol);
+  if (!firstAssetID || !secondAssetID) {
+    console.error('Failed to get asset id for symbol:', symbol);
+    return;
+  }
+
+  if (assetId != firstAssetID && assetId != secondAssetID) {
+    console.error('Incorrect payment asset');
+    return;
+  }
+  
+  return mixinPay({
+    asset_id,
+    amount,
+    memo,
+    trace_id: randomUUID(),
+  });
+};
+
+export const MarketMakingPay = ({
+  action,
+  exchange,
+  symbol,
+  assetId,
+  amount,
+  traceId,
+}: {
+  action: string,
+  exchange: string,
+  symbol: string,
+  assetId: string,
+  amount: string,
+  traceId: string,
+}) => {
+  if (!exchange || !symbol || !amount || !traceId || !assetId) {
+    console.error('Invalid input parameters for MarketMakingPay');
+    return;
+  }
+
+  const memo = GenerateMarketMakingMemo({
+    action,
+    exchange,
+    symbol,
+    traceId,
+  });
+  if (!memo) {
+    console.error('Failed to generate Market Making memo');
+    return;
+  }
+
+  const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol);
+  if (!firstAssetID || !secondAssetID) {
+    console.error('Failed to get asset id for symbol:', symbol);
+    return;
+  }
+
+  if (assetId != firstAssetID && assetId != secondAssetID) {
+    console.error('Incorrect payment asset');
+    return;
+  }
+
+  return mixinPay({
+    asset_id,
+    amount,
+    memo,
+    trace_id: randomUUID(),
+  });
+};
