@@ -202,7 +202,7 @@ const getUserSpotOrders = async (user_id: string) => {
   }
 }
 
-const getUserStrategyOrders = async (user_id: string) => {
+export const getUserStrategyOrders = async (user_id: string) => {
   try {
     const orders = await getAllStrategyByUser(user_id);
     console.log('getAllStrategyByUser()=>', orders)

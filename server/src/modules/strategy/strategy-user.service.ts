@@ -159,8 +159,19 @@ export class StrategyUserService {
     return await this.strategyUserRepository.createPaymentState(paymentState);
   }
 
-  async findPaymentStateById(orderId: string): Promise<PaymentState> {
-    return await this.strategyUserRepository.findPaymentStateById(orderId);
+  async findPaymentStateById(orderId: string) {
+    try {
+      const result =
+        await this.strategyUserRepository.findPaymentStateByOrderId(orderId);
+      if (!result) {
+        return { code: 404, message: 'Not found', data: {} };
+      } else {
+        return { code: 200, message: 'Found', data: result };
+      }
+    } catch (error) {
+      this.logger.error('Error finding state by id', error);
+      return { code: 404, message: 'Not found', data: {} };
+    }
   }
 
   async findPaymentStateByState(state: string): Promise<PaymentState[]> {

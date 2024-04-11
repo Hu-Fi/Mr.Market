@@ -32,6 +32,18 @@ export class StrategyController {
     return await this.strategyUserSerive.findAllStrategyByUser(userId);
   }
 
+  @Get('/payment_state/:order_id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get payment state by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The payment state of order.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getPaymentState(@Param('order_id') orderId: string) {
+    return await this.strategyUserSerive.findPaymentStateById(orderId);
+  }
+
   @Get('/arbitrage/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all arbitrage by user' })

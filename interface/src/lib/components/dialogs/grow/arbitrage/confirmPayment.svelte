@@ -5,6 +5,7 @@
   import { ArbitragePay } from "$lib/helpers/mixin";
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
+  import { getPaymentState } from "$lib/helpers/hufi/strategy";
   import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow"
 
   $: baseAssetSymbol = $createArbPair.split("/")[0] || ''
@@ -37,7 +38,6 @@
         assetId: ids.firstAssetID,
         orderId,
       })
-      // Fetch state
     }
     if (type === '2') {
       btn2Loading = true;
@@ -50,8 +50,9 @@
         assetId: ids.secondAssetID,
         orderId,
       })
-      // Fetch state
     }
+    // Fetch state
+    getPaymentState(orderId)
     console.log(traceId);
   }
 </script>
