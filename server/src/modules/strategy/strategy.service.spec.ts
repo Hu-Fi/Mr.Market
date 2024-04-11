@@ -25,29 +25,32 @@ describe('StrategyService', () => {
   let service: StrategyService;
 
   // Example mock repository implementation
-const mockOrderRepository = {
-  find: jest.fn(),
-  findOne: jest.fn(),
-  save: jest.fn(),
-  // Add other repository methods as needed
-};
+  const mockOrderRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    // Add other repository methods as needed
+  };
 
-const mockArbitrageOrderRepository = {
-  find: jest.fn(),
-  findOne: jest.fn(),
-  save: jest.fn(),
-  // Add other repository methods as needed
-};
+  const mockArbitrageOrderRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    // Add other repository methods as needed
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StrategyService,
-        
+
         { provide: TradeService, useClass: TradeServiceMock },
         { provide: PerformanceService, useClass: PerformanceServiceMock },
         { provide: getRepositoryToken(Order), useValue: mockOrderRepository },
-        { provide: getRepositoryToken(ArbitrageOrder), useValue: mockArbitrageOrderRepository },
-        
+        {
+          provide: getRepositoryToken(ArbitrageOrder),
+          useValue: mockArbitrageOrderRepository,
+        },
+
         {
           provide: CustomLogger,
           useValue: { log: jest.fn(), error: jest.fn() },

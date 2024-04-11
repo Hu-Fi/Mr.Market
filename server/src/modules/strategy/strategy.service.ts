@@ -424,7 +424,7 @@ export class StrategyService {
           clientId,
           exchange: exchangeName,
           pair,
-          side: 'buy',
+          side: 'sell',
           amount: parseFloat(adjustedSellAmount),
           price: parseFloat(adjustedSellPrice),
           orderId: order.id,
