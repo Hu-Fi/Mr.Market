@@ -15,30 +15,30 @@ export class ArbitrageOrder {
   @Column()
   pair: string;
 
-  @Column()
-  buyExchange: string;
+  @Column({ nullable: true })
+  exchangeAName: string;
 
-  @Column()
-  sellExchange: string;
+  @Column({ nullable: true })
+  exchangeBName: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   amount: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   buyPrice: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   sellPrice: number;
 
-  @Column()
+  @Column({ nullable: true })
   profit: number;
 
-  @Column()
+  @Column({ nullable: true })
   executedAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   status: string; // 'open', 'closed', 'canceled'
 
-  @Column()
+  @Column({ nullable: true })
   strategy: string; // 'arbitrage', 'market-making', etc.
 }

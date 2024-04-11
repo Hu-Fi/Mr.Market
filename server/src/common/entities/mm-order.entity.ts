@@ -20,10 +20,10 @@ export class MMOrder {
   @Column()
   side: string; // 'buy' or 'sell'
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   amount: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   price: number;
 
   @Column()
@@ -35,6 +35,6 @@ export class MMOrder {
   @Column({ nullable: true })
   status: string; // 'open', 'closed', 'canceled'
 
-  @Column()
+  @Column({ nullable: true })
   strategy: string; // 'arbitrage', 'market-making', etc.
 }
