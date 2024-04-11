@@ -61,6 +61,11 @@ export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
       marketDataState.set('error');
       return;
     }
+    if (params.length === 0) {
+      console.error('No data received');
+      marketDataState.set('error');
+      return;
+    }
     set(params)
     marketDataState.set('success')
   };

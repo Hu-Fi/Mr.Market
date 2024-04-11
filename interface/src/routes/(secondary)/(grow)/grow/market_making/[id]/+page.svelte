@@ -1,27 +1,30 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import binance from "$lib/images/exchanges/binance.jpg";
-  import Exchange from "$lib/components/grow/marketMaking/details/exchange.svelte";
+  import { page } from "$app/stores";
+  import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import Pair from "$lib/components/grow/marketMaking/details/pair.svelte";
   import Infos from "$lib/components/grow/marketMaking/details/infos.svelte";
 	import History from '$lib/components/grow/marketMaking/details/history.svelte';
+  import Exchange from "$lib/components/grow/marketMaking/details/exchange.svelte";
 
-  const placeholder = {
-    exchange: $_("binance"),
-    exchangeIcon: binance,
-    pairBase: "BTC",
-    pairTarget: "EOS",
+  const pairBase = $page.data.data.pair.split('/')[0]
+  const pairTarget = $page.data.data.pair.split('/')[1].replaceAll('-ERC20', '')
+  const mmData = {
+    exchange: $_($page.data.data.exchangeName),
+    exchangeIcon: findExchangeIconByIdentifier($page.data.data.exchangeName),
+    pairBase: pairBase,
+    pairTarget: pairTarget,
     balance: {
-      tokenSymbol0: "BTC",
-      tokenSymbol1: "EOS",
+      tokenSymbol0: pairBase,
+      tokenSymbol1: pairTarget,
       startedAmount0: 0.213,
       startedAmount1: 1234.1234,
-      nowAmount0: 0.232,
-      nowAmount1: 1264.21,
-      apy: 12.123,
-      profit: 231.1234,
+      nowAmount0: $page.data.data.balanceA,
+      nowAmount1: $page.data.data.balanceB,
+      apy: undefined,
+      profit: undefined,
     },
-    createAt: "2023-01-31T02:22:01Z",
+    createAt: $page.data.data.createdAt,
     histories: [
       { type: 'place_buy' },
       { type: 'place_sell' },
@@ -40,27 +43,27 @@
 
 <div class="flex flex-col space-y-0 mb-20">
   <Exchange
-    exchange={placeholder.exchange}
-    exchangeIcon={placeholder.exchangeIcon}
+    exchange={mmData.exchange}
+    exchangeIcon={mmData.exchangeIcon}
   />
   <Pair
-    exchange={placeholder.exchange}
-    exchangeIcon={placeholder.exchangeIcon}
-    pairBase={placeholder.pairBase}
-    pairTarget={placeholder.pairTarget}
+    exchange={mmData.exchange}
+    exchangeIcon={mmData.exchangeIcon}
+    pairBase={mmData.pairBase}
+    pairTarget={mmData.pairTarget}
   />
   <Infos 
-    tokenSymbol0={placeholder.balance.tokenSymbol0}
-    tokenSymbol1={placeholder.balance.tokenSymbol1}
-    amount0Start={placeholder.balance.startedAmount0}
-    amount0Now={placeholder.balance.nowAmount0}
-    amount1Start={placeholder.balance.startedAmount1}
-    amount1Now={placeholder.balance.nowAmount1}
-    apy={placeholder.balance.apy}
-    profit={placeholder.balance.profit}
-    createdAt={placeholder.createAt}
+    tokenSymbol0={mmData.balance.tokenSymbol0}
+    tokenSymbol1={mmData.balance.tokenSymbol1}
+    amount0Start={mmData.balance.startedAmount0}
+    amount0Now={mmData.balance.nowAmount0}
+    amount1Start={mmData.balance.startedAmount1}
+    amount1Now={mmData.balance.nowAmount1}
+    apy={mmData.balance.apy}
+    profit={mmData.balance.profit}
+    createdAt={mmData.createAt}
   />
   <History
-    histories={placeholder.histories}
+    histories={mmData.histories}
   />
 </div>

@@ -32,10 +32,14 @@ export class StrategyUserService {
         await this.strategyUserRepository.findArbitrageByUserId(userId);
       const market_makings =
         await this.strategyUserRepository.findMarketMakingByUserId(userId);
-      return [...arbitrages, ...market_makings];
+      return {
+        arbitrage: arbitrages,
+        market_making: market_makings,
+        total: arbitrages.length + market_makings.length,
+      };
     } catch (error) {
       this.logger.error('Error finding all strategy by user', error);
-      return [];
+      return { arbitrage: [], market_making: [], total: 0 };
     }
   }
 

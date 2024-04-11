@@ -1,13 +1,12 @@
 <script lang="ts">
-  import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { BN, formatDecimals, formatTimestampToTime } from "$lib/helpers/utils";
+  import { formatDecimals, formatTimestampToTime } from "$lib/helpers/utils";
 
   export let tokenSymbol0 = "";
   export let tokenSymbol1 = "";
-  export let amount0Start = 0;
+  // export let amount0Start = 0;
+  // export let amount1Start = 0;
   export let amount0Now = 0;
-  export let amount1Start = 0;
   export let amount1Now = 0;
   export let apy = 0;
   export let profit = 0;
@@ -27,7 +26,7 @@
             {i === 0 ? tokenSymbol0 : tokenSymbol1}
           </span>
 
-          <div
+          <!-- <div
             class="tooltip"
             data-tip={clsx(i === 0
               ? `${formatDecimals(BN(amount0Now).dividedBy(BN(amount0Start)).toNumber(), 2)}%`
@@ -47,7 +46,14 @@
                 `(${formatDecimals(BN(amount0Now).dividedBy(BN(amount0Start)).toNumber(), 2)}%)` :
                 `(${formatDecimals(BN(amount1Now).dividedBy(BN(amount1Start)).toNumber(), 2)}%)` }
             </span>
-          </div>
+          </div> -->
+          <span class="font-base text-sm">
+            {
+              i === 0
+              ? `${formatDecimals(amount0Now, 8)}`
+              : `${formatDecimals(amount1Now, 8)}`
+            }
+          </span>
         </div>
       {/each}
     </div>
@@ -63,7 +69,7 @@
           {$_("apy")}
         </span>
         <span class="text-sm">
-          {apy}%
+          {apy ? `${apy}%` : '-'}
         </span>
       </div>
 
@@ -72,7 +78,7 @@
           {$_("profit")}
         </span>
         <span class="text-sm">
-          ${formatDecimals(profit, 2)}
+          {profit ? `${formatDecimals(profit, 2)}` : '-'}
         </span>
       </div>
 

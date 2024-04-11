@@ -74,7 +74,7 @@ export class ArbitrageListener {
         exchangeAName: details.exchangeAName,
         exchangeBName: details.exchangeBName,
         balanceA: paymentState.firstAssetAmount,
-        balanceB: paymentState.secondAssetAmount,
+        balanceB: snapshot.amount,
         state: 'created',
         createdAt: getRFC3339Timestamp(),
       });
