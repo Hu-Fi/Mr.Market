@@ -44,6 +44,9 @@ describe('MixinListener', () => {
       amount: '100',
       createdAt: getRFC3339Timestamp(),
       updatedAt: getRFC3339Timestamp(),
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     await listener.handleReleaseTokenEvent(mockEvent);
     expect(exchangeService.updateSpotOrderState).toHaveBeenCalledWith(
@@ -76,6 +79,9 @@ describe('MixinListener', () => {
       amount: '100',
       createdAt: getRFC3339Timestamp(),
       updatedAt: getRFC3339Timestamp(),
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     exchangeService.readMixinReleaseHistory.mockResolvedValueOnce(true); // Simulate order already in release history
     await listener.handleReleaseTokenEvent(mockEvent);
@@ -93,6 +99,9 @@ describe('MixinListener', () => {
       amount: '100',
       createdAt: getRFC3339Timestamp(),
       updatedAt: getRFC3339Timestamp(),
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     exchangeService.readMixinReleaseHistory.mockResolvedValueOnce(false); // Simulate order not in release history
     customConfigService.readSpotFee.mockResolvedValue('0.01');
@@ -138,6 +147,9 @@ describe('MixinListener', () => {
       amount: '100',
       createdAt: getRFC3339Timestamp(),
       updatedAt: getRFC3339Timestamp(),
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     exchangeService.readMixinReleaseHistory.mockResolvedValueOnce(false); // Simulate order not in release history
     customConfigService.readSpotFee.mockResolvedValue('0.01');
