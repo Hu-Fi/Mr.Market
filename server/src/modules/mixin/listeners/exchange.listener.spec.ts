@@ -60,6 +60,9 @@ describe('ExchangeListener', () => {
         snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
       mixinEvent: {
         orderId: '30e342ab-a250-4d8a-bea1-09f6de1acc5e',
@@ -68,6 +71,9 @@ describe('ExchangeListener', () => {
         amount: '100',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
     };
 
@@ -104,6 +110,9 @@ describe('ExchangeListener', () => {
         snapshotId: 'eaef5c6f-47cc-449a-8314-4aa676438659',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
       mixinEvent: {
         orderId: '30e342ab-a250-4d8a-bea1-09f6de1acc5e',
@@ -112,6 +121,9 @@ describe('ExchangeListener', () => {
         amount: '100',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
     };
 
@@ -141,6 +153,9 @@ describe('ExchangeListener', () => {
         state: 'created',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
       mixinEvent: {
         orderId: '125',
@@ -149,6 +164,9 @@ describe('ExchangeListener', () => {
         amount: '0.5',
         createdAt: getRFC3339Timestamp(),
         updatedAt: getRFC3339Timestamp(),
+        limitAmount: '',
+        limitFilled: '',
+        receiveAmount: '',
       },
     };
 
