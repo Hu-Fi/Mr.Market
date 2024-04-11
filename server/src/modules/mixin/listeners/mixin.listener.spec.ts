@@ -63,6 +63,9 @@ describe('MixinListener', () => {
       amount: '100',
       createdAt: getRFC3339Timestamp(),
       updatedAt: getRFC3339Timestamp(),
+      limitAmount: '',
+      limitFilled: '',
+      receiveAmount: '',
     };
     await listener.handleReleaseTokenEvent(mockEvent);
     expect(exchangeService.updateSpotOrderState).toHaveBeenCalledWith(
