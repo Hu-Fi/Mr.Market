@@ -39,6 +39,9 @@
 {#if $orderDetailsStatus === 'loading'}
   <OrderDetailLoader />
 {/if}
+{#if $orderDetailsStatus === 'error'}
+  <div class="p-5 m-auto max-w-44">{$_('order_not_found')}</div>
+{/if}
 {#if o && $orderDetailsStatus === 'success'}
 <div class="flex flex-col space-y-4">
   <div class="py-4 my-4 bg-gray-100">
@@ -71,14 +74,15 @@
     <div class="flex flex-col space-y-3 text-xs">
       <div class="flex justify-between">
         <span class="font-bold"> {$_('order_id')} </span>
-        <span
+        <button
+          type="button"
           class="opacity-60 cursor-pointer"
           title={$_('copy_to_clipboard')}
           on:click={() => {
             navigator.clipboard.writeText(orderId);
             toast.success($_('order_id_copied_to_clipboard'));
           }}
-        > {orderId} <img class="inline-block" src={copySrc} alt={$_('copy_url')}/></span>
+        > {orderId} <img class="inline-block" src={copySrc} alt={$_('copy_url')}/></button>
       </div>
       <hr/>
       <div class="flex justify-between">

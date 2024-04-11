@@ -530,6 +530,10 @@ export class ExchangeService {
     return await this.exchangeRepository.readOrderByID(orderId);
   }
 
+  async exists(orderId: string): Promise<boolean> {
+    return await this.exchangeRepository.exists(orderId);
+  }
+
   async readOrdersByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
     return await this.exchangeRepository.readOrdersByState(state);
   }

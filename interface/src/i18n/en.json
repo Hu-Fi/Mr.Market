@@ -323,5 +323,6 @@
   "receiving_account": "Receiving account",
   "time_created": "Time created",
   "time_updated": "Time updated",
-  "mixin_wallet_icon": "Mixin Wallet Icon"
+  "mixin_wallet_icon": "Mixin Wallet Icon",
+  "order_not_found": "Order not found"
 }

@@ -82,7 +82,7 @@ export const orderDetails = derived(
       if ($page.data.orderId) {
         getOrderById($page.data.orderId).then(handleSuccess).catch(handleError);
       }
-    }, 1000);
+    }, 10000);
 
     return () => {
       clearInterval(interval);

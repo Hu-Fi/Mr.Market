@@ -1,7 +1,7 @@
 // These endpoints are used for getting spot related data for user
 // TODO: Add jwt auth layer
 
-import { Controller, Get, Param } from '@nestjs/common';
+import {Controller, Get, HttpException, Param} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
@@ -31,8 +31,15 @@ export class ExchangeUserController {
   @Get('orders/order/:order_id')
   @ApiOperation({ summary: 'Get order details by id' })
   @ApiResponse({ status: 200, description: 'Get order details by id' })
+  @ApiResponse({ status: 404, description: 'Order not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getDepositAddress(@Param('order_id') orderId: string): Promise<SpotOrderDetails> {
+    if (!await this.exchagneService.exists(orderId)) {
+      throw new HttpException(
+        'Order not found',
+        404,
+      );
+    }
     try {
       const order = await this.exchagneService.readOrderById(orderId);
       const completed = STATE_CODE_MAP[order.state] === 'ORDER_SUCCESS';

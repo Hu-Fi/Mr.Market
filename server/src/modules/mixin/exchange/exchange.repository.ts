@@ -69,6 +69,12 @@ export class ExchangeRepository {
     return order;
   }
 
+  async exists(orderId: string): Promise<boolean> {
+    return await this.spotOrderRepository.exists({
+      where: { orderId },
+    });
+  }
+
   async readOrdersByState(state: SpotOrderStatus): Promise<SpotOrder[]> {
     return await this.spotOrderRepository.find({ where: { state } });
   }

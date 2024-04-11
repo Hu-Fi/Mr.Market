@@ -16,9 +16,13 @@ export const getOrdersByUser = async (userId: string) => {
 export const getOrderById = async (orderId: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/exchange/orders/order/${orderId}`);
+    if (!response.ok && response.status === 404) {
+      throw new Error(`Order not found`);
+    }
     const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching order by id:', error);
+    throw error;
   }
 };
