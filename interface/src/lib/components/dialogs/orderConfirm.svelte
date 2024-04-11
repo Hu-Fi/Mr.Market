@@ -19,7 +19,13 @@
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { getOrderById } from "$lib/helpers/hufi/spot";
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION} from "$lib/helpers/constants";
+  import toast from "svelte-french-toast";
+  import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
+  const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
+  const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
+  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * 1.2, precisionLimit()) : $limitPrice;
+  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * 1.2, precisionCurrent()) : $current;
   $: infos = [
     {
       title: $_("payment_amount"),
@@ -37,10 +43,10 @@
       title: $_("estimated_price"),
       value: $orderTypeLimit ?
         $buy
-          ? $limitPrice : $limitPrice
+          ? limitPriceWithFee : limitPriceWithFee
       : $orderTypeMarket ?
         $buy
-          ? $current : $current
+          ? currentWithFee : currentWithFee
       : ''
     },
     { title: $_("recipient"), value: $_("mixin_wallet") },
@@ -67,6 +73,9 @@
     }
     const trace = getUuid();
 
+    // Adding fee:
+    payAmount = Number(payAmount) * 1.2;
+
     SpotPay({
       limit: $orderTypeLimit,
       buy: $buy,
@@ -77,7 +86,7 @@
       trace
     })
 
-    
+
     let found = false;
     let totalTime = 0;
 
@@ -92,6 +101,7 @@
         goto(`/spot/history/${trace}`);
       } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
         clearInterval(interval);
+        toast.error('Timeout. Your order was still not created.')
         console.log('Timeout reached, stopping execution.');
       }
     }, ORDER_STATE_FETCH_INTERVAL);

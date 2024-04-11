@@ -4,9 +4,10 @@
   //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
+  import { userAssets } from "$lib/stores/wallet";
   import authorize from "$lib/helpers/mixin-oauth";
   import { AfterMixinOauth } from "$lib/helpers/mixin";
-  import { BN, formatDecimals } from "$lib/helpers/utils";
+  import { BN, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";
   import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
   import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
   import {
@@ -22,12 +23,19 @@
     marketTotal,
     marketPrice,
   } from "$lib/stores/spot";
-
   let usdValue = 1;
   let slider = 0;
   let tooltipOpen = false;
-  let baseBalance = 6543.223;
-  let targetBalance = 12.231;
+
+  const extractBalance = (symbol: string) => {
+    const extractedData = $userAssets.balances.find((balance: any) => balance.details.symbol === symbol);
+    if (!extractedData) {
+      return 0;
+    }
+    return formatWalletBalance(extractedData.balance);
+  };
+  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
+  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -208,6 +216,7 @@
     {:else if $orderTypeMarket}
       <input
         disabled
+        bind:value={$current}
         placeholder={$_("market_price")}
         class={clsx(
           "h-[2rem] text-base w-full px-0",
