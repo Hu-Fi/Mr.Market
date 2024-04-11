@@ -4,6 +4,6 @@ export const ssr = false;
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({params}) {
 	return {
-		data: getArbitrageDetailsById(params.id),
+		data: await getArbitrageDetailsById(params.id),
 	}
 }

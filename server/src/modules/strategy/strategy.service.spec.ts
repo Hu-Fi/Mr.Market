@@ -7,6 +7,9 @@ import { InternalServerErrorException } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PureMarketMakingStrategyDto } from './strategy.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
 // Mocking the TradeService
 class TradeServiceMock {
@@ -21,12 +24,36 @@ class PerformanceServiceMock {
 describe('StrategyService', () => {
   let service: StrategyService;
 
+  // Example mock repository implementation
+  const mockOrderRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    // Add other repository methods as needed
+  };
+
+  const mockArbitrageOrderRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    // Add other repository methods as needed
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StrategyService,
+
         { provide: TradeService, useClass: TradeServiceMock },
         { provide: PerformanceService, useClass: PerformanceServiceMock },
+        {
+          provide: getRepositoryToken(MarketMakingHistory),
+          useValue: mockOrderRepository,
+        },
+        {
+          provide: getRepositoryToken(ArbitrageHistory),
+          useValue: mockArbitrageOrderRepository,
+        },
+
         {
           provide: CustomLogger,
           useValue: { log: jest.fn(), error: jest.fn() },

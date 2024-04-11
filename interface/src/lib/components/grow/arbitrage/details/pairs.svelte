@@ -11,13 +11,13 @@
   export let pair1Target = "";
 </script>
 
-<div class="flex items-center p-6">
-  <div class="flex flex-col w-full space-y-4">
-    <span class="opacity-60 text-sm">
+<div class="flex items-center w-full">
+  <div class="flex flex-col w-full space-y-4 ">
+    <span class="font-bold px-6 py-3 text-sm bg-gray-100 p-2">
       {$_("pair")}
     </span>
 
-    <div class="flex flex-col w-full items-start space-y-3">
+    <div class="flex  flex-col w-full items-start space-y-3 py-2 px-5">
       <!-- Pair 0 -->
       <div class="flex items-center w-full justify-between capitalize space-x-3">
         <div class="flex space-x-2 items-center">
@@ -42,3 +42,9 @@
     </div>
   </div>
 </div>
+
+<style>
+    .bg-gray-100 {
+        background-color: #F8FAFC;
+    }
+</style>

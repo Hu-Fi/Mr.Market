@@ -51,4 +51,7 @@ export default () => ({
     mixin_api_base_url:
       process.env.MIXIN_API_BASE_URL || 'https://api.mixin.one',
   },
+  strategy: {
+    run: process.env.RUN_STARTEGY_FOR_MIXIN_ORDERS || false,
+  },
 });

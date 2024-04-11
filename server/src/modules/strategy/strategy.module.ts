@@ -14,13 +14,23 @@ import {
   MarketMakingOrder,
   PaymentState,
 } from 'src/common/entities/strategy.entity';
+import { ConfigModule } from '@nestjs/config';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 
 @Module({
   imports: [
     TradeModule,
     PerformanceModule,
     LoggerModule,
-    TypeOrmModule.forFeature([ArbitrageOrder, MarketMakingOrder, PaymentState]),
+    ConfigModule,
+    TypeOrmModule.forFeature([
+      ArbitrageOrder,
+      MarketMakingOrder,
+      PaymentState,
+      ArbitrageHistory,
+      MarketMakingHistory,
+    ]),
   ],
   controllers: [StrategyController],
   providers: [StrategyService, StrategyUserService, StrategyUserRepository],

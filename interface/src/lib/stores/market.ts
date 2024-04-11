@@ -55,8 +55,7 @@ export const CandleActiveIndicators = writable<string[]>(['MA'])
 export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
   marketDataState.set('loading')
   const handleSuccess = (params: never[]) => {
-    if (!params) {
-      console.error('No data received');
+    if (!Array.isArray(params)) {
       marketDataState.set('error');
       return;
     }

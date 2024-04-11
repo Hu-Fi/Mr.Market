@@ -26,7 +26,7 @@ export class ArbitrageListener {
       console.error('Invalid arguments passed to handleArbitrageCreate');
       return;
     }
-    const paymentState = await this.strategyUserService.findPaymentStateById(
+    const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
       details.traceId,
     );
 
@@ -73,6 +73,8 @@ export class ArbitrageListener {
         minProfitability: '0.01',
         exchangeAName: details.exchangeAName,
         exchangeBName: details.exchangeBName,
+        balanceA: paymentState.firstAssetAmount,
+        balanceB: snapshot.amount,
         state: 'created',
         createdAt: getRFC3339Timestamp(),
       });

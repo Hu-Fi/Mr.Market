@@ -27,7 +27,7 @@ export class MarketMakingListener {
       console.error('Invalid arguments passed to handleMarketMakingCreate');
       return;
     }
-    const paymentState = await this.strategyUserService.findPaymentStateById(
+    const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
       details.traceId,
     );
 
@@ -80,6 +80,8 @@ export class MarketMakingListener {
         amountChangeType: 'percentage',
         ceilingPrice: '0',
         floorPrice: '0',
+        balanceA: paymentState.firstAssetAmount,
+        balanceB: snapshot.amount,
         createdAt: getRFC3339Timestamp(),
       });
     }

@@ -15,6 +15,10 @@ export class SnapshotsRepository {
     return this.repository.find({ where: { snapshot_id } });
   }
 
+  async checkSnapshotExist(snapshot_id: string): Promise<boolean> {
+    return this.repository.exists({ where: { snapshot_id } });
+  }
+
   async createSnapshot(transactionData: Partial<Snapshot>): Promise<Snapshot> {
     const transaction = this.repository.create(transactionData);
     return this.repository.save(transaction);

@@ -57,7 +57,7 @@ describe('ArbitrageListener', () => {
     //   targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     // });
 
-    strategyUserService.findPaymentStateById = jest
+    strategyUserService.findPaymentStateByIdRaw = jest
       .fn()
       .mockResolvedValue(null);
     strategyUserService.createPaymentState = jest.fn().mockResolvedValue({
@@ -66,7 +66,7 @@ describe('ArbitrageListener', () => {
 
     await listener.handleArbitrageCreate(mockDetails, mockSnapshot);
 
-    expect(strategyUserService.findPaymentStateById).toHaveBeenCalledWith(
+    expect(strategyUserService.findPaymentStateByIdRaw).toHaveBeenCalledWith(
       '1043e42c-dd12-4260-a443-d1896b64eae4',
     );
     expect(strategyUserService.createPaymentState).toHaveBeenCalledWith(

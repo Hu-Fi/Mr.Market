@@ -8,6 +8,8 @@ import {
   type ArbitrageStates,
   type MarketMakingStates,
 } from 'src/common/types/orders/states';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 jest.mock('./strategy-user.repository');
 jest.mock('../logger/logger.service');
 jest.mock('./strategy.service');
@@ -24,6 +26,8 @@ describe('StrategyUserService', () => {
         StrategyUserRepository,
         CustomLogger,
         StrategyService,
+        ConfigModule,
+        ConfigService,
       ],
     }).compile();
 
@@ -118,10 +122,11 @@ describe('StrategyUserService', () => {
 
       const result = await service.findAllStrategyByUser(mockUserId);
 
-      const expectedResult = [
-        ...mockArbitrageOrders,
-        ...mockMarketMakingOrders,
-      ];
+      const expectedResult = {
+        arbitrage: mockArbitrageOrders,
+        market_making: mockMarketMakingOrders,
+        total: mockMarketMakingOrders.length + mockArbitrageOrders.length,
+      };
 
       expect(result).toEqual(expectedResult);
       expect(strategyUserRepository.findArbitrageByUserId).toHaveBeenCalledWith(

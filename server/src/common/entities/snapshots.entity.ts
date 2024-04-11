@@ -23,21 +23,18 @@ export class Snapshot {
   @Column()
   memo: string;
 
-  @Column()
+  @Column({ nullable: true })
   transaction_hash: string;
 
   @Column()
   created_at: string;
 
-  @Column()
-  trace_id: string;
-
-  @Column()
+  @Column({ nullable: true })
   confirmations: number;
 
-  @Column()
+  @Column({ nullable: true })
   opening_balance: string;
 
-  @Column()
+  @Column({ nullable: true })
   closing_balance: string;
 }

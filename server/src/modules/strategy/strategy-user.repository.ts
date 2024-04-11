@@ -22,6 +22,12 @@ export class StrategyUserRepository {
     private readonly paymentStateRepository: Repository<PaymentState>,
   ) {}
 
+  async findPaymentStateByOrderId(
+    orderId: string,
+  ): Promise<PaymentState | undefined> {
+    return this.paymentStateRepository.findOneBy({ orderId });
+  }
+
   async createArbitrage(
     arbitrageOrder: ArbitrageOrder,
   ): Promise<ArbitrageOrder> {

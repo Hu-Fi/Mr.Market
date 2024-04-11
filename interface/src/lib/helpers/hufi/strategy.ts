@@ -7,6 +7,15 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
+export const getPaymentState = async (orderId: string) => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/strategy/payment_state/${orderId}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching payment state:', error);
+  }
+}
+
 export const getAllStrategyByUser = async (userId: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/strategy/all?userId=${userId}`);

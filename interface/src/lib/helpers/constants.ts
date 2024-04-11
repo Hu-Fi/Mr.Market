@@ -14,6 +14,9 @@ export const HUFI_SOCKET_URL = env.PUBLIC_HUFI_SOCKET_URL || '//mrmarket-product
 export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mrmarket-production.up.railway.app'
 export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
+export const ORDER_STATE_FETCH_INTERVAL = 3000
+export const ORDER_STATE_TIMEOUT_DURATION = 180000
+
 // It must sync with server/pairs.ts
 export const PAIRS_MAP = {
   Z7GC: 'BTC/USDT-ERC20',
