@@ -11,7 +11,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from 'src/common/entities/order.entity';
+import { MMOrder } from 'src/common/entities/mm-order.entity';
 import { ArbitrageOrder } from 'src/common/entities/arbitrage-order.entity';
 
 @Injectable()
@@ -36,8 +36,8 @@ export class StrategyService {
   constructor(
     private tradeService: TradeService,
     private performanceService: PerformanceService,
-    @InjectRepository(Order)
-    private orderRepository: Repository<Order>,
+    @InjectRepository(MMOrder)
+    private orderRepository: Repository<MMOrder>,
     @InjectRepository(ArbitrageOrder)
     private arbitrageOrderRepository: Repository<ArbitrageOrder>,
   ) {
@@ -707,7 +707,7 @@ export class StrategyService {
   }
 
   // Fetch regular orders for a specific user
-  async getUserOrders(userId: string): Promise<Order[]> {
+  async getUserOrders(userId: string): Promise<MMOrder[]> {
     return await this.orderRepository.find({
       where: { userId },
     });

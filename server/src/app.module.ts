@@ -38,7 +38,7 @@ import {
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
-import { Order } from './common/entities/order.entity';
+import { MMOrder } from './common/entities/mm-order.entity';
 import { ArbitrageOrder } from './common/entities/arbitrage-order.entity';
 dotenv.config();
 
@@ -75,7 +75,7 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
-        Order,
+        MMOrder,
         ArbitrageOrder,
       ],
       synchronize: true,

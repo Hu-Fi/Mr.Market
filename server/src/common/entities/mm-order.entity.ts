@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class Order {
+export class MMOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   userId: string;
 
-  @Column()
+  @Column({ nullable: true })
   clientId: string;
 
   @Column()
