@@ -58,6 +58,7 @@ export class MixinListener {
       e.orderId,
       STATE_TEXT_MAP['MIXIN_RELEASED'],
     );
+    await this.exchangeService.updateSpotOrderReceivedAmount(e.orderId, amountReduced);
 
     // Record the release history
     await this.exchangeService.addMixinReleaseHistory({

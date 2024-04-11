@@ -92,8 +92,12 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.update({ orderId }, { updatedAt });
   }
 
-  async updateSpotOrderMarketReceived(orderId: string, limitFilled: string) {
-    return await this.spotOrderRepository.update({ orderId }, { limitFilled, receiveAmount: limitFilled });
+  async updateSpotOrderLimitFilled(orderId: string, limitFilled: string) {
+    return await this.spotOrderRepository.update({ orderId }, { limitFilled });
+  }
+
+  async updateSpotOrderReceivedAmount(orderId: string, receiveAmount: string) {
+    return await this.spotOrderRepository.update({ orderId }, { receiveAmount });
   }
 
   async updateSpotOrderApiKeyId(orderId: string, apiKeyId: string) {
