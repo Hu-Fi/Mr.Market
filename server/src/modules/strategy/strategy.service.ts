@@ -9,6 +9,10 @@ import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PerformanceService } from '../performance/performance.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { MMOrder } from 'src/common/entities/mm-order.entity';
+import { ArbitrageOrder } from 'src/common/entities/arbitrage-order.entity';
 
 @Injectable()
 export class StrategyService {
@@ -32,6 +36,10 @@ export class StrategyService {
   constructor(
     private tradeService: TradeService,
     private performanceService: PerformanceService,
+    @InjectRepository(MMOrder)
+    private orderRepository: Repository<MMOrder>,
+    @InjectRepository(ArbitrageOrder)
+    private arbitrageOrderRepository: Repository<ArbitrageOrder>,
   ) {
     this.initializeExchanges();
     process.on('SIGINT', () => this.handleShutdown());
@@ -356,7 +364,7 @@ export class StrategyService {
           buyPrice,
         );
 
-        await this.tradeService.executeLimitTrade({
+        const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
           exchange: exchangeName,
@@ -365,6 +373,23 @@ export class StrategyService {
           amount: parseFloat(adjustedBuyAmount),
           price: parseFloat(adjustedBuyPrice),
         });
+
+        // Create and save the order entity
+        const orderEntity = this.orderRepository.create({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          pair,
+          side: 'buy',
+          amount: parseFloat(adjustedBuyAmount),
+          price: parseFloat(adjustedBuyPrice),
+          orderId: order.id,
+          executedAt: new Date(), // Assuming immediate execution; adjust as necessary
+          status: order.status,
+          strategy: 'pureMarketMaking',
+        });
+
+        await this.orderRepository.save(orderEntity);
       } else {
         this.logger.log(
           `Skipping buy order for ${pair} as price source ${priceSource} is above the ceiling price ${ceilingPrice}.`,
@@ -383,7 +408,7 @@ export class StrategyService {
           sellPrice,
         );
 
-        await this.tradeService.executeLimitTrade({
+        const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
           exchange: exchangeName,
@@ -392,6 +417,23 @@ export class StrategyService {
           amount: parseFloat(adjustedSellAmount),
           price: parseFloat(adjustedSellPrice),
         });
+
+        // Create and save the order entity
+        const orderEntity = this.orderRepository.create({
+          userId,
+          clientId,
+          exchange: exchangeName,
+          pair,
+          side: 'sell',
+          amount: parseFloat(adjustedSellAmount),
+          price: parseFloat(adjustedSellPrice),
+          orderId: order.id,
+          executedAt: new Date(),
+          status: order.status,
+          strategy: 'pureMarketMaking',
+        });
+
+        await this.orderRepository.save(orderEntity);
       } else {
         this.logger.log(
           `Skipping sell order for ${pair} as price source ${priceSource} is below the floor price ${floorPrice}.`,
@@ -528,13 +570,31 @@ export class StrategyService {
         this.logger.log(
           `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeA.name} at ${vwapA}, sell on ${exchangeB.name} at ${vwapB}`,
         );
-        //  await this.executeArbitrageTradeWithLimitOrders(exchangeA, exchangeB, pair, amountToTrade, userId, clientId, vwapA, vwapB);
+        await this.executeArbitrageTradeWithLimitOrders(
+          exchangeA,
+          exchangeB,
+          pair,
+          amountToTrade,
+          userId,
+          clientId,
+          vwapA,
+          vwapB,
+        );
       } else if ((vwapA - vwapB) / vwapB >= minProfitability) {
         // Execute trades in reverse direction
         this.logger.log(
           `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeB.name} at ${vwapB}, sell on ${exchangeA.name} at ${vwapA}`,
         );
-        // await this.executeArbitrageTradeWithLimitOrders(exchangeB, exchangeA, pair, amountToTrade, userId, clientId, vwapB, vwapA);
+        await this.executeArbitrageTradeWithLimitOrders(
+          exchangeB,
+          exchangeA,
+          pair,
+          amountToTrade,
+          userId,
+          clientId,
+          vwapB,
+          vwapA,
+        );
       }
     } else {
       this.logger.log(
@@ -601,6 +661,21 @@ export class StrategyService {
       const profitLoss =
         sellPrice * amount - sellFee - (buyPrice * amount + buyFee);
 
+      // Save the arbitrage order details
+      const arbitrageOrder = this.arbitrageOrderRepository.create({
+        userId,
+        clientId,
+        pair: symbol,
+        exchangeAName: exchangeA.name,
+        exchangeBName: exchangeB.name,
+        amount,
+        buyPrice,
+        sellPrice,
+        profit: profitLoss,
+        executedAt: new Date(),
+      });
+
+      await this.arbitrageOrderRepository.save(arbitrageOrder);
       // Log and record the trade execution and performance
       this.logger.log(
         `Arbitrage trade executed with limit orders for user ${userId}, client ${clientId}: Buy on ${exchangeA.id} at ${buyPrice}, sell on ${exchangeB.id} at ${sellPrice}, Profit/Loss: ${profitLoss}`,
@@ -629,6 +704,20 @@ export class StrategyService {
         `Failed to execute arbitrage trade with limit orders: ${error.message}`,
       );
     }
+  }
+
+  // Fetch regular orders for a specific user
+  async getUserOrders(userId: string): Promise<MMOrder[]> {
+    return await this.orderRepository.find({
+      where: { userId },
+    });
+  }
+
+  // Fetch arbitrage orders for a specific user
+  async getUserArbitrageOrders(userId: string): Promise<ArbitrageOrder[]> {
+    return await this.arbitrageOrderRepository.find({
+      where: { userId },
+    });
   }
 
   private calculateVWAPForAmount(
