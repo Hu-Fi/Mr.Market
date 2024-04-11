@@ -5,9 +5,11 @@
   import { maskOption } from "$lib/helpers/constants";
   import {
     createArbAmount,
+    createArbConfirmDialog,
     createArbExchange1,
     createArbExchange2,
     createArbPair,
+    editArbitrageDialog,
     selectArbExchange1Dialog,
     selectArbExchange2Dialog,
     selectArbPairDialog,
@@ -23,6 +25,8 @@
     createArbExchange1.set('');
     createArbExchange2.set('');
     createArbPair.set('');
+    createArbConfirmDialog.set(false);
+    editArbitrageDialog.set(false);
   })
 </script>
 

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class MMOrder {
+export class MarketMakingHistory {
   @PrimaryGeneratedColumn()
   id: number;
 

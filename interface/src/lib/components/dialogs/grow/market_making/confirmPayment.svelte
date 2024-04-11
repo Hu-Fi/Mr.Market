@@ -2,10 +2,13 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
   import { v4 as uuidv4 } from "uuid";
+  import { goto } from "$app/navigation";
   import { MarketMakingPay } from "$lib/helpers/mixin";
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
+  import { getPaymentState } from "$lib/helpers/hufi/strategy";
   import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts } from "$lib/stores/grow"
+  import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
   $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
   $: baseAssetAmount = $createMMEasyAmounts[0]
@@ -36,7 +39,6 @@
         assetId: ids.firstAssetID,
         orderId,
       })
-      // Fetch state
     }
     if (type === '2') {
       btn2Loading = true;
@@ -48,10 +50,31 @@
         assetId: ids.secondAssetID,
         orderId,
       })
-      // Fetch state
     }
-    console.log(traceId);
-  }
+    console.log(`traceId${type}:${traceId}`)
+    if (btn1Loading && btn2Loading) {
+      let totalTime = 0;
+      var interval = setInterval(async () => {
+        const state = await getPaymentState(orderId);
+        // console.log(`state: ${JSON.stringify(state)}`)
+        totalTime += ORDER_STATE_FETCH_INTERVAL;
+        if (!state) {
+          return;
+        }
+        if (state.data.firstSnapshotId) {
+          btn1Loading = false;
+          btn1Paid = true;
+        }
+
+        if (state.data.secondSnapshotId) {
+          clearInterval(interval);
+          goto(`/grow/market_making/${orderId}`);
+        } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+          clearInterval(interval);
+          console.log('Timeout reached, stopping execution.');
+        }
+      }, ORDER_STATE_FETCH_INTERVAL);
+    }  }
 </script>
 
 <dialog

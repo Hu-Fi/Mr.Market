@@ -2,7 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class ArbitrageOrder {
+export class ArbitrageHistory {
   @PrimaryGeneratedColumn()
   id: number;
 

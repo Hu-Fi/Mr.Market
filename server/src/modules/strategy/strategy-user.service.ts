@@ -174,6 +174,10 @@ export class StrategyUserService {
     }
   }
 
+  async findPaymentStateByIdRaw(orderId: string) {
+    return await this.strategyUserRepository.findPaymentStateByOrderId(orderId);
+  }
+
   async findPaymentStateByState(state: string): Promise<PaymentState[]> {
     return await this.strategyUserRepository.findPaymentStateByState(state);
   }

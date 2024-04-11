@@ -27,7 +27,7 @@ export class MarketMakingListener {
       console.error('Invalid arguments passed to handleMarketMakingCreate');
       return;
     }
-    const paymentState = await this.strategyUserService.findPaymentStateById(
+    const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
       details.traceId,
     );
 

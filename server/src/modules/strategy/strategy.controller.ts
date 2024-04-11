@@ -10,6 +10,8 @@ import {
 import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
+import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -70,6 +72,20 @@ export class StrategyController {
     return await this.strategyUserSerive.findArbitrageByOrderId(id);
   }
 
+  @Get('/arbitrage/history/:userId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all arbitrage history by user' })
+  @ApiResponse({
+    status: 200,
+    description: 'All arbitrage history of user',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getUserArbitrageOrders(
+    @Param('userId') userId: string,
+  ): Promise<ArbitrageHistory[]> {
+    return await this.strategyService.getUserArbitrageHistorys(userId);
+  }
+
   @Get('/arbitrage/stop')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop arbitrage strategy for a user' })
@@ -115,6 +131,20 @@ export class StrategyController {
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getMarketMakingDetailsById(@Param('id') id: string) {
     return await this.strategyUserSerive.findMarketMakingByOrderId(id);
+  }
+
+  @Get('/market_making/history/:userId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all market making history by user' })
+  @ApiResponse({
+    status: 200,
+    description: 'All market making history of user',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getUserOrders(
+    @Param('userId') userId: string,
+  ): Promise<MarketMakingHistory[]> {
+    return await this.strategyService.getUserOrders(userId);
   }
 
   @Get('/market_making/stop')

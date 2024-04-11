@@ -26,7 +26,7 @@ export class ArbitrageListener {
       console.error('Invalid arguments passed to handleArbitrageCreate');
       return;
     }
-    const paymentState = await this.strategyUserService.findPaymentStateById(
+    const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
       details.traceId,
     );
 

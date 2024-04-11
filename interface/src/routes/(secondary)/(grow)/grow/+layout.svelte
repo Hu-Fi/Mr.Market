@@ -29,7 +29,7 @@
   });
 </script>
 
-<header class="sticky top-0 z-10 bg-base-100">
+<header class="sticky top-0 z-20 bg-base-100">
   <GrowDetails titleLeft={$isArbitragePage} />
 </header>
 

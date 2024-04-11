@@ -56,7 +56,7 @@ describe('MarketMakingListener', () => {
     //   targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     // });
 
-    strategyUserService.findPaymentStateById = jest
+    strategyUserService.findPaymentStateByIdRaw = jest
       .fn()
       .mockResolvedValue(null);
     strategyUserService.createPaymentState = jest.fn().mockResolvedValue({});
@@ -64,7 +64,7 @@ describe('MarketMakingListener', () => {
     await listener.handleMarketMakingCreate(mockDetails, mockSnapshot);
 
     // expect(getAssetIDBySymbol).toHaveBeenCalledWith(mockDetails.symbol);
-    expect(strategyUserService.findPaymentStateById).toHaveBeenCalledWith(
+    expect(strategyUserService.findPaymentStateByIdRaw).toHaveBeenCalledWith(
       mockDetails.traceId,
     );
     expect(strategyUserService.createPaymentState).toHaveBeenCalledWith(

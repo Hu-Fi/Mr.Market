@@ -11,8 +11,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MMOrder } from 'src/common/entities/mm-order.entity';
-import { ArbitrageOrder } from 'src/common/entities/arbitrage-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
 @Injectable()
 export class StrategyService {
@@ -36,10 +36,10 @@ export class StrategyService {
   constructor(
     private tradeService: TradeService,
     private performanceService: PerformanceService,
-    @InjectRepository(MMOrder)
-    private orderRepository: Repository<MMOrder>,
-    @InjectRepository(ArbitrageOrder)
-    private arbitrageOrderRepository: Repository<ArbitrageOrder>,
+    @InjectRepository(MarketMakingHistory)
+    private orderRepository: Repository<MarketMakingHistory>,
+    @InjectRepository(ArbitrageHistory)
+    private arbitrageHistoryRepository: Repository<ArbitrageHistory>,
   ) {
     this.initializeExchanges();
     process.on('SIGINT', () => this.handleShutdown());
@@ -662,7 +662,7 @@ export class StrategyService {
         sellPrice * amount - sellFee - (buyPrice * amount + buyFee);
 
       // Save the arbitrage order details
-      const arbitrageOrder = this.arbitrageOrderRepository.create({
+      const arbitrageOrder = this.arbitrageHistoryRepository.create({
         userId,
         clientId,
         pair: symbol,
@@ -675,7 +675,7 @@ export class StrategyService {
         executedAt: new Date(),
       });
 
-      await this.arbitrageOrderRepository.save(arbitrageOrder);
+      await this.arbitrageHistoryRepository.save(arbitrageOrder);
       // Log and record the trade execution and performance
       this.logger.log(
         `Arbitrage trade executed with limit orders for user ${userId}, client ${clientId}: Buy on ${exchangeA.id} at ${buyPrice}, sell on ${exchangeB.id} at ${sellPrice}, Profit/Loss: ${profitLoss}`,
@@ -707,15 +707,15 @@ export class StrategyService {
   }
 
   // Fetch regular orders for a specific user
-  async getUserOrders(userId: string): Promise<MMOrder[]> {
+  async getUserOrders(userId: string): Promise<MarketMakingHistory[]> {
     return await this.orderRepository.find({
       where: { userId },
     });
   }
 
   // Fetch arbitrage orders for a specific user
-  async getUserArbitrageOrders(userId: string): Promise<ArbitrageOrder[]> {
-    return await this.arbitrageOrderRepository.find({
+  async getUserArbitrageHistorys(userId: string): Promise<ArbitrageHistory[]> {
+    return await this.arbitrageHistoryRepository.find({
       where: { userId },
     });
   }

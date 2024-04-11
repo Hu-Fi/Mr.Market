@@ -11,7 +11,7 @@
   onDestroy(()=>{easyAdvancedMode.set(0)})
 
   const back = () => {
-    if ($page.url.pathname.endsWith('/grow/auto_invest') || $page.url.pathname.endsWith('/grow/arbitrage') || $page.url.pathname.endsWith('/grow/market_making')) {
+    if ($page.url.pathname.includes('/grow/auto_invest') || $page.url.pathname.includes('/grow/arbitrage') || $page.url.pathname.includes('/grow/market_making')) {
       goto('/grow')
     } else {
       history.back()

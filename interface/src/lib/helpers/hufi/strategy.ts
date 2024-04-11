@@ -9,7 +9,7 @@ const handleResponse = async (response: Response) => {
 
 export const getPaymentState = async (orderId: string) => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/payment_state/${orderId}`);
+    const response = await fetch(`${HUFI_BACKEND_URL}/strategy/payment_state/${orderId}`);
     return await handleResponse(response);
   } catch (error) {
     console.error('Error fetching payment state:', error);
