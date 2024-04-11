@@ -186,12 +186,12 @@
   <!-- Price input -->
   <div
     class={clsx(
-      "flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400",
+      "flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-slate-300 focus-within:border-blue-400",
       $orderTypeMarket
         ? $darkTheme
           ? "bg-slate-800"
           : "bg-slate-50"
-        : "bg-base-100",
+        : "bg-slate-50",
     )}
   >
     {#if $orderTypeLimit}
@@ -201,7 +201,7 @@
         bind:value={$limitPrice}
         placeholder={$_("price")}
         class={clsx(
-          "input input-sm text-base bg-base-100 w-full focus:outline-none focus:border-0 px-0",
+          "input input-sm text-base bg-slate-50 w-full focus:outline-none focus:border-0 px-0",
         )}
       />
       <span class="text-xs opacity-60"> {$pair.symbol.split("/")[1]} </span>
@@ -227,7 +227,7 @@
   {#if $orderTypeLimit}
     <!-- Amount input -->
     <div
-      class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
+      class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg bg-slate-50 border-slate-300 focus-within:border-blue-400"
     >
       <input
         type="tel"
@@ -270,7 +270,7 @@
 
   <!-- Total -->
   <div
-    class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
+    class="flex justify-between bg-slate-50 items-center border px-2 py-1 my-1 rounded-lg border-slate-300 focus-within:border-blue-400"
   >
     {#if $orderTypeLimit}
       <input
@@ -279,7 +279,7 @@
         use:cleave={maskOption}
         bind:value={$limitTotal}
         placeholder={$_("total")}
-        class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
+        class="input input-sm bg-slate-50 text-base w-full focus:outline-none focus:border-0 px-0"
       />
     {:else if $orderTypeMarket}
       <input
@@ -288,7 +288,7 @@
         use:cleave={maskOption}
         bind:value={$marketAmount}
         placeholder={$_("total")}
-        class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
+        class="input input-sm bg-slate-50 text-base w-full focus:outline-none focus:border-0 px-0"
       />
     {/if}
     <span class="text-xs opacity-60">

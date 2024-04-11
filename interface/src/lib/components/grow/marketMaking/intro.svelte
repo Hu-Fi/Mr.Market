@@ -4,7 +4,7 @@
 </script>
 
 <div class="flex justify-between my-0 px-8 py-8 mt-4 bg-slate-50">
-  <div class="flex flex-col space-y-4 mt-1">
+  <div class="flex flex-col space-y-5 mt-1">
     <span class="font-normal text-base w-48 pr-2">
       {$_("market_making_intro")}
     </span>
