@@ -21,7 +21,7 @@
     </button>
     
     <div class="px-2 pl-4">
-      <span>
+      <span class="font-bold text-nowrap">
         {$page.url.pathname.includes('/grow/market_making/new/easy/one') ? $_('select_a_pair') : 
          $page.url.pathname.includes('/grow/market_making/new/easy/two') ? $_('confirm'): $_('market_making')}
       </span>

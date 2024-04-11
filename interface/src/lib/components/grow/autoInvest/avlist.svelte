@@ -1,8 +1,8 @@
 <script lang="ts">
-import { _ } from "svelte-i18n"
-import { goto } from "$app/navigation";
+  import { _ } from "svelte-i18n"
+  import { goto } from "$app/navigation";
 
-const list = []
+  const list = []
 </script>
 
 <!-- Zero mm created -->
