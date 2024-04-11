@@ -21,7 +21,8 @@ export const marketQueryFn = async (category: string) =>  {
     const re = await r.json()
     return re
   } catch (e) {
-    throw error('Server error')
+    console.error('Server error')
+    return []
   }
 }
 

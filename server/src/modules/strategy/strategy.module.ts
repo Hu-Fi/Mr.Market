@@ -15,8 +15,8 @@ import {
   PaymentState,
 } from 'src/common/entities/strategy.entity';
 import { ConfigModule } from '@nestjs/config';
-import { MMOrder } from 'src/common/entities/mm-order.entity';
-import { OrdersController } from './orders.controller';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 
 @Module({
   imports: [
@@ -28,10 +28,11 @@ import { OrdersController } from './orders.controller';
       ArbitrageOrder,
       MarketMakingOrder,
       PaymentState,
-      MMOrder,
+      ArbitrageHistory,
+      MarketMakingHistory,
     ]),
   ],
-  controllers: [StrategyController, OrdersController],
+  controllers: [StrategyController],
   providers: [StrategyService, StrategyUserService, StrategyUserRepository],
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],
 })

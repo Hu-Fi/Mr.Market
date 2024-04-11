@@ -315,5 +315,6 @@
   "order_placed": "Order placed",
   "order_partially_filled": "Order partially filled",
   "order_filled": "Order filled",
-  "order_success": "Order success"
+  "order_success": "Order success",
+  "recently_created": "Recently created"
 }

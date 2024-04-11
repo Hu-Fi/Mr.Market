@@ -8,7 +8,7 @@ import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
 import { GenerateSpotMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from "$lib/helpers/memo";
-import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
+import { topAssetsCache, user, userArbitrageOrders, userAssets, userMarketMakingOrders, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -202,7 +202,7 @@ const getUserSpotOrders = async (user_id: string) => {
   }
 }
 
-const getUserStrategyOrders = async (user_id: string) => {
+export const getUserStrategyOrders = async (user_id: string) => {
   try {
     const orders = await getAllStrategyByUser(user_id);
     console.log('getAllStrategyByUser()=>', orders)
@@ -210,6 +210,8 @@ const getUserStrategyOrders = async (user_id: string) => {
       userStrategyOrdersLoaded.set(true);
       return;
     }
+    userArbitrageOrders.set(orders.arbitrage)
+    userMarketMakingOrders.set(orders.market_making)
     userStrategyOrders.set(orders);
     userStrategyOrdersLoaded.set(true);
   } catch (e) {

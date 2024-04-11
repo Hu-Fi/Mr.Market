@@ -1,7 +1,6 @@
 <script lang="ts">
   import SingleHistory from "$lib/components/grow/arbitrage/details/singleHistory.svelte";
 
-  // TODO: Set type when backend is ready
   export let histories: Array<object>;
 </script>
 
@@ -16,7 +15,7 @@
 </div>
 
 <style>
-    .bg-gray-100 {
-        background-color: #F8FAFC;
-    }
+  .bg-gray-100 {
+      background-color: #F8FAFC;
+  }
 </style>

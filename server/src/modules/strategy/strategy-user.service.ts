@@ -10,11 +10,11 @@ import {
   ArbitrageStates,
   MarketMakingStates,
 } from 'src/common/types/orders/states';
+import { ConfigService } from '@nestjs/config';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { StrategyUserRepository } from 'src/modules/strategy/strategy-user.repository';
 import { createStrategyKey } from 'src/common/helpers/strategyKey';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StrategyUserService {
@@ -32,10 +32,14 @@ export class StrategyUserService {
         await this.strategyUserRepository.findArbitrageByUserId(userId);
       const market_makings =
         await this.strategyUserRepository.findMarketMakingByUserId(userId);
-      return [...arbitrages, ...market_makings];
+      return {
+        arbitrage: arbitrages,
+        market_making: market_makings,
+        total: arbitrages.length + market_makings.length,
+      };
     } catch (error) {
       this.logger.error('Error finding all strategy by user', error);
-      return [];
+      return { arbitrage: [], market_making: [], total: 0 };
     }
   }
 
@@ -155,8 +159,23 @@ export class StrategyUserService {
     return await this.strategyUserRepository.createPaymentState(paymentState);
   }
 
-  async findPaymentStateById(orderId: string): Promise<PaymentState> {
-    return await this.strategyUserRepository.findPaymentStateById(orderId);
+  async findPaymentStateById(orderId: string) {
+    try {
+      const result =
+        await this.strategyUserRepository.findPaymentStateByOrderId(orderId);
+      if (!result) {
+        return { code: 404, message: 'Not found', data: {} };
+      } else {
+        return { code: 200, message: 'Found', data: result };
+      }
+    } catch (error) {
+      this.logger.error('Error finding state by id', error);
+      return { code: 404, message: 'Not found', data: {} };
+    }
+  }
+
+  async findPaymentStateByIdRaw(orderId: string) {
+    return await this.strategyUserRepository.findPaymentStateByOrderId(orderId);
   }
 
   async findPaymentStateByState(state: string): Promise<PaymentState[]> {

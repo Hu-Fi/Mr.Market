@@ -39,6 +39,9 @@ export const sortByNumber = (colHeader: string, data: CoingeckoToken[], ascendin
 // Change fields when data change
 export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOrder: boolean) => {
   try {
+    if (!data) {
+      return data;
+    }
     if (colHeader === 'symbol' || colHeader === 'name' || colHeader=== 'market_cap') {
       return sortByString(colHeader, data, ascendingOrder);
     } else if (colHeader === 'price' || colHeader === 'percentage'|| colHeader === 'current_price' ||  colHeader === 'price_change_percentage_24h' || colHeader === 'market_cap_rank') {
@@ -47,6 +50,7 @@ export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOr
     return data;
   } catch (e) {
     console.error(e);
+    return data;
   }
 };
 
