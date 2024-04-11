@@ -122,10 +122,11 @@ describe('StrategyUserService', () => {
 
       const result = await service.findAllStrategyByUser(mockUserId);
 
-      const expectedResult = [
-        ...mockArbitrageOrders,
-        ...mockMarketMakingOrders,
-      ];
+      const expectedResult = {
+        arbitrage: mockArbitrageOrders,
+        market_making: mockMarketMakingOrders,
+        total: mockMarketMakingOrders.length + mockArbitrageOrders.length,
+      };
 
       expect(result).toEqual(expectedResult);
       expect(strategyUserRepository.findArbitrageByUserId).toHaveBeenCalledWith(

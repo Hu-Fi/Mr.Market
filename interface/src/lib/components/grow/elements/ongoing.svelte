@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import ArbCard from "../arbitrage/card.svelte";
   import MMCard from "../marketMaking/card.svelte";
   // import AICard from "../autoInvest/card.svelte";
