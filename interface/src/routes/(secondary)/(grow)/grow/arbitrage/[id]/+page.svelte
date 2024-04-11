@@ -1,7 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import Exchanges from "$lib/components/grow/arbitrage/details/titlebar.svelte";
   import Pairs from "$lib/components/grow/arbitrage/details/pairs.svelte";

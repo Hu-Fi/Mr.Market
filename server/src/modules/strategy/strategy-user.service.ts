@@ -10,11 +10,11 @@ import {
   ArbitrageStates,
   MarketMakingStates,
 } from 'src/common/types/orders/states';
+import { ConfigService } from '@nestjs/config';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { StrategyUserRepository } from 'src/modules/strategy/strategy-user.repository';
 import { createStrategyKey } from 'src/common/helpers/strategyKey';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StrategyUserService {
