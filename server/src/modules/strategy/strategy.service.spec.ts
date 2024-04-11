@@ -8,7 +8,7 @@ import * as ccxt from 'ccxt';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PureMarketMakingStrategyDto } from './strategy.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Order } from 'src/common/entities/order.entity';
+import { MMOrder } from 'src/common/entities/mm-order.entity';
 import { ArbitrageOrder } from 'src/common/entities/arbitrage-order.entity';
 
 // Mocking the TradeService
@@ -45,7 +45,7 @@ describe('StrategyService', () => {
 
         { provide: TradeService, useClass: TradeServiceMock },
         { provide: PerformanceService, useClass: PerformanceServiceMock },
-        { provide: getRepositoryToken(Order), useValue: mockOrderRepository },
+        { provide: getRepositoryToken(MMOrder), useValue: mockOrderRepository },
         {
           provide: getRepositoryToken(ArbitrageOrder),
           useValue: mockArbitrageOrderRepository,

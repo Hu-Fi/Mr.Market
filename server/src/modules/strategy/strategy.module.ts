@@ -15,7 +15,7 @@ import {
   PaymentState,
 } from 'src/common/entities/strategy.entity';
 import { ConfigModule } from '@nestjs/config';
-import { Order } from 'src/common/entities/order.entity';
+import { MMOrder } from 'src/common/entities/mm-order.entity';
 import { OrdersController } from './orders.controller';
 
 @Module({
@@ -28,7 +28,7 @@ import { OrdersController } from './orders.controller';
       ArbitrageOrder,
       MarketMakingOrder,
       PaymentState,
-      Order,
+      MMOrder,
     ]),
   ],
   controllers: [StrategyController, OrdersController],

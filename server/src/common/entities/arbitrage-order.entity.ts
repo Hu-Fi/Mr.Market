@@ -9,7 +9,7 @@ export class ArbitrageOrder {
   @Column()
   userId: string;
 
-  @Column()
+  @Column({ nullable: true })
   clientId: string;
 
   @Column()
