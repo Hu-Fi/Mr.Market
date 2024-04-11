@@ -13,7 +13,7 @@
 <div class="flex flex-col rounded-xl border border-base-200 relative shadow-sm">
   <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/arbitrage/${data.id}`)}>
     <!-- Title -->
-    <div class="flex justify-between">
+    <div class="flex justify-between w-full">
       <div class="flex space-x-2 w-full justify-start">
         <div class="-rotate-45 flex -space-x-1 items-center">
           <div class="avatar">

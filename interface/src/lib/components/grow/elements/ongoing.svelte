@@ -5,8 +5,10 @@
   import AICard from "../autoInvest/card.svelte";
   import Create from "./create.svelte";
   import AddMore from "./addMore.svelte";
+  import { userStrategyOrders } from "$lib/stores/wallet";
 
-  const placeholder = [
+  $: placeholder = //$userStrategyOrders
+  [
     {
       type: "arb",
       name: $_("arbitrage"),

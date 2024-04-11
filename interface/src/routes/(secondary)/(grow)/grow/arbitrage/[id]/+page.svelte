@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
 
   import gate from "$lib/images/exchanges/gate.jpg";
   import binance from "$lib/images/exchanges/binance.jpg";
@@ -9,7 +10,8 @@
   import Infos from "$lib/components/grow/arbitrage/details/infos.svelte";
   import History from "$lib/components/grow/arbitrage/details/history.svelte";
 
-  // const id = $page.params.data
+  const data = $page.data.data
+  console.log(`id:${JSON.stringify(data)}`)
   const placeholder = {
     exchange0: $_("gate"),
     exchange1: $_("binance"),

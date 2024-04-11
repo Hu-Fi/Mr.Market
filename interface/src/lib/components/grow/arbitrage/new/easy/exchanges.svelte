@@ -16,6 +16,14 @@
     findCoinIconBySymbol,
     findExchangeIconByIdentifier,
   } from "$lib/helpers/helpers";
+  import { onDestroy } from "svelte";
+
+  onDestroy(()=>{
+    createArbAmount.set([]);
+    createArbExchange1.set('');
+    createArbExchange2.set('');
+    createArbPair.set('');
+  })
 </script>
 
 <div class="flex flex-col space-y-8">
