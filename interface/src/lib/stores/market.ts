@@ -57,7 +57,6 @@ export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
   marketDataState.set('loading')
   const handleSuccess = (params: never[]) => {
     if (!Array.isArray(params)) {
-      marketDataState.set('error');
       return;
     }
     set(params)
