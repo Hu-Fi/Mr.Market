@@ -38,6 +38,8 @@ import {
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { Order } from './common/entities/order.entity';
+import { ArbitrageOrder } from './common/entities/arbitrage-order.entity';
 dotenv.config();
 
 @Module({
@@ -73,6 +75,8 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
+        Order,
+        ArbitrageOrder,
       ],
       synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
