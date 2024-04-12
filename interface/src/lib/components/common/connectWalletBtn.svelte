@@ -31,7 +31,7 @@
 </script>
 
 <button
-  class={clsx("btn rounded-full no-animation !h-10 min-h-10 bg-slate-800", clazz)}
+  class={clsx("btn rounded-full no-animation text-base-100 !h-10 min-h-10 bg-slate-800", clazz)}
   on:click={async () => {
     await auth();
   }}
