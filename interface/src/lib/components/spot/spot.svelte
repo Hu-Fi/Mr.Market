@@ -14,7 +14,7 @@
 </script>
 
 <!-- Trading -->
-<div class="flex space-x-4 p-4 bg-[#F1F5F9]">
+<div class="flex space-x-4 p-4">
   <div class="flex flex-col space-y-2 w-full">
     <BuyNSell />
     <OrderSelector />

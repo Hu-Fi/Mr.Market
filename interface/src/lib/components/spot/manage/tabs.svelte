@@ -6,7 +6,7 @@
   import { manageMode, openedOrders, orderFilterDialog } from "$lib/stores/spot";
 </script>
 
-<div class="flex px-4 py-3 border-b border-base-200 justify-between bg-slate-50">
+<div class="flex px-4 py-3 border-b border-base-200 justify-between">
   <div class="flex space-x-2">
     <div class="flex items-center">
       <!-- Orders -->
