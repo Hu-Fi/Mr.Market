@@ -1,7 +1,7 @@
 // These endpoints are used for getting spot related data for user
 // TODO: Add jwt auth layer
 
-import {Controller, Get, HttpException, Param, Post} from '@nestjs/common';
+import { Controller, Get, HttpException, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
