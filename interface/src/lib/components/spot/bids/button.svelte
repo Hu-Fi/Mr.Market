@@ -3,16 +3,40 @@
   import { _ } from "svelte-i18n"
   import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
   import { buy, orderConfirmDialog, pair, orderTypeLimit, orderTypeMarket, limitTotal, marketAmount } from "$lib/stores/spot";
+  import { userAssets } from "$lib/stores/wallet";
+  import { formatWalletBalance } from "$lib/helpers/utils";
+  import { mixinConnected } from "$lib/stores/home";
+  import toast from "svelte-french-toast";
+
+  const extractBalance = (symbol: string) => {
+    const extractedData = $userAssets.balances.find((balance: { details: { symbol: string } }) => balance.details.symbol === symbol);
+    if (!extractedData) {
+      return 0;
+    }
+    return formatWalletBalance(extractedData.balance);
+  };
+  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
+  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
 
   const confirm = () => {
     if ($orderTypeLimit) {
       if (!$limitTotal) {
-        console.log('enter limit amount'); return
+        toast.error('Enter total limit');
+        return
+      }
+      if (($buy && $limitTotal > baseBalance) || (!$buy && $limitTotal > targetBalance)) {
+        toast.error('Insufficient funds');
+        return
       }
     }
     if ($orderTypeMarket) {
       if (!$marketAmount) {
-        console.log('enter market amount'); return
+        toast.error('Enter market amount');
+        return
+      }
+      if (($buy && $marketAmount > baseBalance) || (!$buy && $marketAmount > targetBalance)) {
+        toast.error('Insufficient funds');
+        return
       }
     }
     orderConfirmDialog.set(true)
