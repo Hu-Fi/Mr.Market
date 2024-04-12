@@ -62,9 +62,9 @@
     <!-- amount0Start={arbData.balance.startedAmount0}
       amount1Start={arbData.balance.startedAmount1} -->
   </div>
-  <History
+  <!-- <History
     histories={[]}
-  />
+  /> -->
 </div>
 <style>
     .max-w-24rem {
