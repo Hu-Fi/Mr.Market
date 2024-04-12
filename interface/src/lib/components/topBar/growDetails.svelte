@@ -15,6 +15,7 @@
       $page.url.pathname.includes('arbitrage/new/easy')
     ){
       goto('/grow/arbitrage')
+      return;
     }
     
     // Market making
@@ -23,9 +24,11 @@
       $page.url.pathname.includes('market_making/new/easy/one')
     ){
       goto('/grow/market_making')
+      return;
     }
     if ($page.url.pathname.includes('market_making/new/easy/two')){ 
       goto('/grow/market_making/easy/one') 
+      return;
     }
 
     // Base
@@ -33,7 +36,8 @@
       $page.url.pathname.includes('grow/arbitrage') || 
       $page.url.pathname.includes('grow/market_making')
     ){ 
-      goto('/grow') 
+      goto('/grow')
+      return;
     }
   }
   $: pageName = $page.url.pathname.includes('arbitrage/intro') ?  $_('about_arbitrage') :
