@@ -473,6 +473,11 @@ export class SnapshotsService {
     if (exist) {
       return;
     }
+
+    // Don't know why but trace id is placed in request_id field instead of trace_id. Which is not compatible with
+    // current version of mixin library. This is a hacky way to handle this issue.
+    const unsafeExtract: any = JSON.parse(JSON.stringify(snapshot));
+
     if (!snapshot.memo) {
       await this.createSnapshot(snapshot);
       this.logger.log('snapshot no memo, return');
@@ -499,7 +504,7 @@ export class SnapshotsService {
           break;
         }
         let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...spotDetails, snapshot };
+        spotOrderCreateEvent = { ...spotDetails, snapshot, refId: snapshot.trace_id || unsafeExtract.request_id };
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 

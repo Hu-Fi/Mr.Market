@@ -9,7 +9,6 @@
   import copySrc from "$lib/images/order/copy.svg";
   import toast from 'svelte-french-toast';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
-  import { SPOT_ORDER_TYPE_MAP } from "$lib/helpers/memo";
   import clsx from "clsx";
   import { orderDetails, orderDetailsStatus } from "$lib/stores/spot";
   import OrderDetailLoader from "./orderDetailLoader.svelte"
@@ -88,14 +87,14 @@
       <div class="flex justify-between">
         <span class="font-bold"> {$_('type')} </span>
         <span class={clsx("font-bold", (o.type[1] || '') === 'S' ? 'text-red-400' : 'text-green-400')}>
-          {SPOT_ORDER_TYPE_MAP[o.type].replace(' ', '/')}
+          {o.type}
         </span>
       </div>
       <hr/>
       <div class="flex justify-between">
         <span class="font-bold"> {$_('exchange')} </span>
         <span class="opacity-60"> <img src={findExchangeIconByIdentifier(o.exchangeName)} alt={`${findExchangeIconByIdentifier(o.exchangeName)} icon`} class="inline-block w-3 h-3">
-          {o.exchangeName} </span>
+          {o.exchangeName.toUpperCase()} </span>
       </div>
       <hr/>
       <div class="flex justify-between">

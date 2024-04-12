@@ -14,6 +14,7 @@
     orderTypeMarket,
     marketAmount,
     marketTotal,
+    spotCreating,
   } from "$lib/stores/spot";
   import { SpotPay } from "$lib/helpers/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
@@ -52,10 +53,8 @@
     { title: $_("recipient"), value: $_("mixin_wallet") },
   ];
 
-  let loading = false;
-
   const confirmPayment = () => {
-    loading = true;
+    spotCreating.set(true);
     let payAmount: number | '' = 0;
     if ($orderTypeLimit) {
       if ($buy) {
@@ -72,9 +71,6 @@
       }
     }
     const trace = getUuid();
-
-    // Adding fee:
-    payAmount = Number(payAmount) * 1.2;
 
     SpotPay({
       limit: $orderTypeLimit,
@@ -98,6 +94,7 @@
 
       if (found) {
         clearInterval(interval);
+        orderConfirmDialog.set(false);
         goto(`/spot/history/${trace}`);
       } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
         clearInterval(interval);
@@ -107,8 +104,8 @@
     }, ORDER_STATE_FETCH_INTERVAL);
 
     setTimeout(() => {
-      loading = false;
-    }, 30000);
+      spotCreating.set(false);
+    }, 1000 * 60 * 3);
   };
 </script>
 
@@ -195,7 +192,7 @@
           <span
             class={clsx(
               "text-base-100 font-semibold",
-              loading && "loading loading-spinner",
+              $spotCreating && "loading loading-spinner",
             )}
           >
             {$_("confirm_order")}</span

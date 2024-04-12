@@ -70,24 +70,23 @@ export class SpotOrderListener {
       // Sell BTC/USDT, pay BTC, check payment asset is BTC
       return;
     }
-
     // Generate and write order to db
     const timeNow = getRFC3339Timestamp();
-    const orderId = randomUUID();
+    const orderId = event.refId || randomUUID();
     const order: ExchangePlaceSpotEvent = {
       orderId,
       exchangeName: event.exchangeName,
       snapshotId: event.snapshot.snapshot_id,
       userId: event.snapshot.opponent_id,
       type: event.spotOrderType,
-      state: STATE_TEXT_MAP['CREATED'],
+      state: STATE_TEXT_MAP['ORDER_CREATED'],
       symbol: symbol,
       amount: event.snapshot.amount,
       baseAssetId: baseAssetID,
       targetAssetId: targetAssetID,
       createdAt: timeNow,
       updatedAt: timeNow,
-      limitPrice: event.limitPrice,
+      limitPrice: event.limitPrice === 'undefined' ? '' :  event.limitPrice,
       refId: event.refId,
       limitAmount: event.snapshot.amount,
       limitFilled: '',

@@ -44,10 +44,10 @@ export class SpotOrder {
   @Column()
   targetAssetId: string; // Mixin asset UUID
 
-  @Column()
+  @Column({ nullable: true })
   apiKeyId?: string; // API key id used for place order
 
-  @Column()
+  @Column({ nullable: true })
   limitPrice?: string; // Limit price for limit order
 
   @Column()

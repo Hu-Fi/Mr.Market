@@ -66,7 +66,7 @@ export const cancelOrderDone = (o: object) => {
   cancelingOrder.set({})
   cancelOrderDialog.set(false)
 }
-
+export const spotCreating = writable(false);
 export const orderDetailsStatus = writable('loading');
 export const orderDetails = derived(
   page,

@@ -1,12 +1,12 @@
 // These endpoints are used for getting spot related data for user
 // TODO: Add jwt auth layer
 
-import {Controller, Get, HttpException, Param} from '@nestjs/common';
+import {Controller, Get, HttpException, Param, Post} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
 import { SpotOrderDetails } from "src/common/types/orders/details";
-import {STATE_CODE_MAP} from "../../../common/types/orders/states";
+import { STATE_CODE_MAP } from "src/common/types/orders/states";
 import BigNumber from "bignumber.js";
 
 @ApiTags('exchange')
@@ -51,7 +51,7 @@ export class ExchangeUserController {
         avg: price,
         filled: order.type[0] === 'M' ? order.receiveAmount : order.limitFilled,
         pay: order.amount,
-        fee: BigNumber(order.amount).multipliedBy(2).div(1000).toString(),
+        fee: BigNumber(order.amount).multipliedBy(2).div(10).toString(),
         receive: order.receiveAmount
       };
     } catch (e) {
