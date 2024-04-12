@@ -10,6 +10,7 @@
   import { BN, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";
   import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
   import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
+
   import {
     pair,
     buy,
@@ -28,7 +29,7 @@
   let tooltipOpen = false;
 
   const extractBalance = (symbol: string) => {
-    const extractedData = $userAssets.balances.find((balance: any) => balance.details.symbol === symbol);
+    const extractedData = $userAssets.balances.find((balance: { details: { symbol: string } }) => balance.details.symbol === symbol);
     if (!extractedData) {
       return 0;
     }
