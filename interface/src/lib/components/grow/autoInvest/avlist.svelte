@@ -14,7 +14,7 @@
       </span>
     </div>
     <div>
-      <button class="btn btn-md rounded-full bg-base-content no-animation hover:bg-base-content" on:click={()=>goto('/grow/auto_invest/new/one')}>
+      <button class="btn btn-md rounded-full bg-slate-800 no-animation hover:bg-slate-800" on:click={()=>goto('/grow/auto_invest/new/one')}>
         <span class="text-base-100">
           {$_('start_auto_invest')}
         </span>

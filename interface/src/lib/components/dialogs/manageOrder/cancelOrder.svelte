@@ -18,7 +18,7 @@
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-6">
       <!-- Close -->
       <div class="absolute left-[calc(50%-16px)] top-2">
-        <div class="w-8 h-1 bg-base-content/40 rounded-full">
+        <div class="w-8 h-1 bg-slate-800/40 rounded-full">
           <form method="dialog" class="modal-backdrop">
             <button on:click={() => cancelOrderDialog.set(false)}>c</button
             >
@@ -34,7 +34,7 @@
     </div>
 
     <div class="flex items-center justify-center pb-4">
-      <button class="btn btn-md h-[2.5rem] min-h-[2.5rem] rounded-full bg-base-content text-base-100" on:click={cancel}>
+      <button class="btn btn-md h-[2.5rem] min-h-[2.5rem] rounded-full bg-slate-800 text-base-100" on:click={cancel}>
         <span class="text-base-100 text-sm font-semibold"> {$_("confirm")} </span> 
       </button>
     </div>

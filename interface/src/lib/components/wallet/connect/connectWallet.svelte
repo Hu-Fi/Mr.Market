@@ -8,6 +8,6 @@
 
   <div class="flex flex-col space-y-6 items-center">
     <span class="font-medium"> {$_("connect_wallet_intro")} </span>
-    <ConnectWalletBtn clazz="btn btn-md rounded-full text-base-100 bg-base-content hover:bg-base-content no-animation" />
+    <ConnectWalletBtn clazz="rounded-full text-base-100 bg-slate-800 hover:bg-slate-800 no-animation" />
   </div>
 </div>

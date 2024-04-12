@@ -170,7 +170,7 @@
       <div class="w-full py-4 mb-4">
         <button
           class={clsx(
-            "btn btn-md w-full rounded-full bg-base-content hover:bg-base-content focus:bg-base-content no-animation",
+            "btn btn-md w-full rounded-full bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 no-animation",
           )}
           on:click={confirmPayment}
         >

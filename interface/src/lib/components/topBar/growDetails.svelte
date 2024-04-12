@@ -9,10 +9,31 @@
   onDestroy(()=>{easyAdvancedMode.set(0)})
 
   const back = () => {
-    if ($page.url.pathname.includes('/grow/auto_invest') || $page.url.pathname.includes('/grow/arbitrage') || $page.url.pathname.includes('/grow/market_making')) {
-      goto('/grow')
-    } else {
-      history.back()
+    // Arbitrage
+    if (
+      $page.url.pathname.includes('arbitrage/intro') ||
+      $page.url.pathname.includes('arbitrage/new/easy')
+    ){
+      goto('/grow/arbitrage')
+    }
+    
+    // Market making
+    if (
+      $page.url.pathname.includes('market_making/intro') ||
+      $page.url.pathname.includes('market_making/new/easy/one')
+    ){
+      goto('/grow/market_making')
+    }
+    if ($page.url.pathname.includes('market_making/new/easy/two')){ 
+      goto('/grow/market_making/easy/one') 
+    }
+
+    // Base
+    if (
+      $page.url.pathname.includes('grow/arbitrage') || 
+      $page.url.pathname.includes('grow/market_making')
+    ){ 
+      goto('/grow') 
     }
   }
   $: pageName = $page.url.pathname.includes('arbitrage/intro') ?  $_('about_arbitrage') :

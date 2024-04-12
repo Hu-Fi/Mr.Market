@@ -10,8 +10,8 @@
 <div class="flex items-center justify-center !mt-4 px-4">
   <button class={clsx("btn btn-md !h-[2.5rem] rounded-full w-full no-animation",
     $darkTheme ? 
-      active ? 'bg-base-content hover:bg-base-content focus:bg-base-content text-base-100' : 'bg-gray-700 border-none hover:bg-gray-700 hover:border-none' :
-      active ? 'bg-base-content hover:bg-base-content focus:bg-base-content text-base-100' : 'bg-stone-100 border-stone-100 hover:bg-stone-100 hover:border-stone-100')}
+      active ? 'bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 text-base-100' : 'bg-gray-700 border-none hover:bg-gray-700 hover:border-none' :
+      active ? 'bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 text-base-100' : 'bg-stone-100 border-stone-100 hover:bg-stone-100 hover:border-stone-100')}
     on:click={()=>{ if(active)SwapConfirmDialog.set(true)} }
     data-testid="swap-confirm-btn"
   >
