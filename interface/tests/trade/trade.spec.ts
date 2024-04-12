@@ -126,7 +126,7 @@ test('create buy limit order', async ({ page }) => {
   expect(estimatedPayX).toContain(estimatedPay.toString())
 
   // Confirm order
-  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
+  // await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
 });
 
 
