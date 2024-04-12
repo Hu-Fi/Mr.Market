@@ -17,7 +17,7 @@
     </button>
   
     <!-- Spot Button -->
-    <button class="btn hover:bg-base-content border-base-300 no-animation bg-base-content flex border items-center justify-center rounded-full grow" on:click={()=>{goto(`/spot`)}}> <!-- //pair.set({}) -->
+    <button class="btn hover:bg-slate-800 border-base-300 no-animation bg-slate-800 flex border items-center justify-center rounded-full grow" on:click={()=>{goto(`/spot`)}}> <!-- //pair.set({}) -->
       <span class="text-base-100"> {$_('spot_trading')} </span>
     </button>
   </div>

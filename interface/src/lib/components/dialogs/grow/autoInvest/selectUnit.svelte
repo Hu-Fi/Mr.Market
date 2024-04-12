@@ -18,7 +18,7 @@
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-6">
       <!-- Close -->
       <div class="absolute left-[calc(50%-16px)] top-2">
-        <div class="w-8 h-1 bg-base-content/40 rounded-full">
+        <div class="w-8 h-1 bg-slate-800/40 rounded-full">
           <form method="dialog" class="modal-backdrop">
             <button on:click={() => createAISelectUnitDialog.set(false)}>c</button
             >

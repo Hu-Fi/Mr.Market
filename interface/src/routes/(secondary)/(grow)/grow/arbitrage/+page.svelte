@@ -4,5 +4,4 @@
 </script>
 
 <Intro />
-<div class="divider" />
 <Arblist />

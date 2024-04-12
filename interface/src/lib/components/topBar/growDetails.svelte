@@ -6,15 +6,38 @@
   import MixinMenu from "../common/MixinMenu.svelte";
   import { easyAdvancedMode } from "$lib/stores/grow";
 
-  export let titleLeft = false;
-
   onDestroy(()=>{easyAdvancedMode.set(0)})
 
   const back = () => {
-    if ($page.url.pathname.includes('/grow/auto_invest') || $page.url.pathname.includes('/grow/arbitrage') || $page.url.pathname.includes('/grow/market_making')) {
+    // Arbitrage
+    if (
+      $page.url.pathname.includes('arbitrage/intro') ||
+      $page.url.pathname.includes('arbitrage/new/easy')
+    ){
+      goto('/grow/arbitrage')
+      return;
+    }
+    
+    // Market making
+    if (
+      $page.url.pathname.includes('market_making/intro') ||
+      $page.url.pathname.includes('market_making/new/easy/one')
+    ){
+      goto('/grow/market_making')
+      return;
+    }
+    if ($page.url.pathname.includes('market_making/new/easy/two')){ 
+      goto('/grow/market_making/easy/one') 
+      return;
+    }
+
+    // Base
+    if (
+      $page.url.pathname.includes('grow/arbitrage') || 
+      $page.url.pathname.includes('grow/market_making')
+    ){ 
       goto('/grow')
-    } else {
-      history.back()
+      return;
     }
   }
   $: pageName = $page.url.pathname.includes('arbitrage/intro') ?  $_('about_arbitrage') :
@@ -26,19 +49,13 @@
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">
-  <div class="flex items-center px-4 w-[calc(66pt)]">
+  <div class="flex items-center px-4 w-[calc(66pt)] space-x-4">
     <button on:click={()=>{back()}}>
       <!-- Chevron left Icon -->
       <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
     </button>
-    {#if pageName && titleLeft}
-      <span class="font-bold"> {pageName} </span>
-    {/if}
-  </div>
-
-  <div>
-    {#if pageName && !titleLeft}
-      <span> {pageName} </span>
+    {#if pageName}
+      <span class="font-bold text-nowrap"> {pageName} </span>
     {/if}
   </div>
 

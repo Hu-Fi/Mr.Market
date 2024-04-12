@@ -14,7 +14,7 @@
 >
   <div>
     <button
-      class={clsx("btn btn-md min-w-36 !h-[2.5rem] border-none bg-base-content hover:bg-base-content rounded-full text-base-100 no-animation", !inputValid && "btn-disabled")}
+      class={clsx("btn btn-md min-w-36 !h-[2.5rem] border-none bg-slate-800 hover:bg-slate-800 rounded-full text-base-100 no-animation", !inputValid && "btn-disabled")}
       on:click={() => {
         createArbConfirmDialog.set(true);
       }}

@@ -14,7 +14,7 @@
 </script>
 
 <!-- Trading -->
-<div class="flex space-x-4 px-4">
+<div class="flex space-x-4 p-4">
   <div class="flex flex-col space-y-2 w-full">
     <BuyNSell />
     <OrderSelector />
@@ -28,7 +28,7 @@
 <OrderConfirm />
 
 <!-- Orders -->
-<div class={clsx("mt-4 border-t-[12px]", $darkTheme ? "border-slate-900" : "border-slate-100")}>
+<div class={clsx("border-t-[12px]", $darkTheme ? "border-slate-900" : "border-slate-100")}>
   <div class="flex flex-col">
     <Tabs />
     {#if $manageMode === 0}

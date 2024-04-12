@@ -43,7 +43,7 @@
     <div
       class={clsx(
         "join-item flex items-center rounded-full pl-3",
-        "bg-base-200/60",
+        "bg-slate-100",
       )}
     >
       <svg

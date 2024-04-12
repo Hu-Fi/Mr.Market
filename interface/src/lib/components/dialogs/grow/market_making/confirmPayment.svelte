@@ -116,7 +116,7 @@
             </div>
             <div class="flex">
               <button class={
-                clsx("btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem]", "hover:bg-base-content no-animation"
+                clsx("btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem]", "hover:bg-slate-800 no-animation"
               )} on:click={()=>{ payment('1') }}>
                 {#if !btn1Paid}
                   <span class={clsx("mx-2", btn1Loading && "loading loading-sm")}>
@@ -137,7 +137,7 @@
               <span class="font-bold"> {targetAssetAmount} {targetAssetSymbol} </span>
             </div>
             <div class="flex">
-              <button class="btn btn-xs bg-base-content text-base-100 rounded-full !h-[2rem] hover:bg-base-content no-animation"
+              <button class="btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem] hover:bg-slate-800 no-animation"
                 on:click={()=>{ payment('2') }}
               >
                 {#if !btn2Paid}
