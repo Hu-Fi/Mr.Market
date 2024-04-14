@@ -38,7 +38,7 @@
   disabled={$mixinConnectLoading}
 >
   {#if $mixinConnectLoading}
-    <span class="loading loading-xs mx-3" />
+    <span class="loading loading-xs mx-3 text-base-100" />
   {:else}
     <span
       class={clsx(
