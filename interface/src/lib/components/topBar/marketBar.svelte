@@ -9,7 +9,6 @@
 <div class={clsx("flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px] border-b-[0.8px]", $darkTheme ? "border-slate-800" : "border-slate-200")}>
   <Tabs />
 
-  <div class="backdrop-blur-lg w-4 h-full bg-base-100/30" />
   <div class="flex items-center space-x-4">
     <!-- Search -->
     <button on:click={()=>{goto('/search')}}>
