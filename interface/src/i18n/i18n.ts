@@ -9,10 +9,19 @@ export const initi18n = async () => {
   // register('de', () => import('.de/.json'));
   // register('ru', () => import('.ru/.json'));
   // register('ar', () => import('.ar/.json'));
+
+  const normalizeLocale = () => {
+    const locale = getLocaleFromNavigator();
+    if (!locale || locale.startsWith('en-')) {
+      return 'en-US';
+    }
+    return locale;
+  };
+  
   return await Promise.allSettled([
     init({
       fallbackLocale: 'en-US',
-      initialLocale: getLocaleFromNavigator() || 'en-US',
+      initialLocale: normalizeLocale(),
     })
   ])
 }
@@ -28,25 +37,7 @@ export const langs = [
   { name: "اَلْعَرَبِيَّةُ", key: "ar" },  
 ]
 
-export const getNameByKey = (k: string): string => {
-  switch (k) {
-    case "en":
-      return "English"
-    case "zh":
-      return "简体中文"
-    case "zh_hk":
-      return "繁體中文"
-    case "fr":
-      return "français"
-    case "de":
-      return "Deutsch"
-    case "es":
-      return "Español"
-    case "ru":
-      return "ру́сский язы́к"
-    case "ar":
-      return "اَلْعَرَبِيَّةُ"
-    default:
-      return "English"
-  }
-}
+export const getNameByKey = (k: string) => {
+  const lang = langs.find(lang => lang.key === k);
+  return lang ? lang.name : "English";
+};

@@ -126,7 +126,7 @@
   "whats_market_making_answer": "A market maker is an individual participant or member firm of an exchange that buys and sells securities for its own account. Market makers provide the market with liquidity and depth while profiting from the difference in the bid-ask spread.",
   "about_market_making": "About market making",
   "create_market_making": "Create market making",
-  "connect_wallet_intro": "Connect wallet to view balance",
+  "connect_wallet_balance_intro": "Connect wallet to view balance",
   "connect_wallet_order_intro": "Connect wallet to view orders",
   "connect_wallet": "Connect Wallet",
   "connect": "Connect",

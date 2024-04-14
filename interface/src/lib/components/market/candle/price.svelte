@@ -2,7 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { CandlePair } from "$lib/stores/market";
-  import { UpColorText } from "$lib/helpers/constants";
+  import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import {
     formatDecimals,
     formatUSMoney,
@@ -37,7 +37,7 @@
 
       <!-- Change -->
       {#if $CandlePair.change}
-        <span class={clsx(UpColorText)}>
+        <span class={clsx($CandlePair.change > 0 ? UpColorText : DownColorText)}>
           {formatDecimals($CandlePair.change, 2)}%
         </span>
       {/if}

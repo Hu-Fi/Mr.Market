@@ -31,14 +31,14 @@
 </script>
 
 <button
-  class={clsx("btn rounded-full no-animation text-base-100 !h-10 min-h-10 bg-slate-800", clazz)}
+  class={clsx("btn rounded-full no-animation text-base-100 !h-10 min-h-10 bg-slate-800 hover:bg-slate-800 focus:bg-slate-800", clazz)}
   on:click={async () => {
     await auth();
   }}
   disabled={$mixinConnectLoading}
 >
   {#if $mixinConnectLoading}
-    <span class="loading loading-xs mx-3" />
+    <span class="loading loading-xs mx-3 text-base-100" />
   {:else}
     <span
       class={clsx(

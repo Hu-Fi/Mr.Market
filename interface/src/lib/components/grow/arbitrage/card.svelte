@@ -23,7 +23,7 @@
   <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/arbitrage/${data.orderId}`)}>
     <!-- Title -->
     <div class="flex justify-between w-full">
-      <div class="flex space-x-2 w-full justify-start">
+      <div class="flex space-x-2 justify-start">
         <div class="-rotate-45 flex -space-x-1 items-center">
           <div class="avatar">
             <div class="w-5 h-5 rounded-full rotate-45">
