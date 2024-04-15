@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('open/close pair selector', async ({ page }) => {
-  // Open pair selector
+  // Open
   await page.getByTestId('candlestick_pair_selector').click();
   expect(await page.isVisible('//*[@id="candle_select_pair_modal"]/div/div[1]')).toBe(true)
 

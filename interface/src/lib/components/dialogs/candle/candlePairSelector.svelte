@@ -54,7 +54,7 @@
 </script>
 
 <dialog id="candle_select_pair_modal" class="modal modal-bottom sm:modal-middle" class:modal-open={$sd}>
-  <div class="modal-box h-[90vh] pt-0 px-0">
+  <div class="modal-box h-[90vh] pt-0 px-0" data-testid="candlestick_pair_selector_modal_box">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-20 pt-6">
       <!-- Close -->
       <div class="absolute left-[calc(50%-16px)] top-2">

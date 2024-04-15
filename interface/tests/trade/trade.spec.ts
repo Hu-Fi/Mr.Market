@@ -9,12 +9,11 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('open/close pair selector', async ({ page }) => {
-  // Open pair selector
+  // Open
   await page.getByTestId('spot_pair_selector').click();
-  // await expect(page.locator("text=pair_selector")).toBeVisible()
+
   // Close 
-  await page.getByTestId('spot_pair_selector_close').click()
-  console.log(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]'))
+  await page.getByTestId('spot_pair_selector_close').click();
 });
 
 test('goto candlestick', async ({ page }) => {
