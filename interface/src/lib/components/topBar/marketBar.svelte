@@ -6,7 +6,7 @@
   import Tabs from "$lib/components/market/elements/tabs.svelte";
 </script>
 
-<div class={clsx("flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px] border-b-[0.8px]", $darkTheme ? "border-slate-800" : "border-slate-200")}>
+<div class={clsx("flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]", $darkTheme ? "border-slate-800" : "border-slate-200")}>
   <Tabs />
 
   <div class="flex items-center space-x-4">

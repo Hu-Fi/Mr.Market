@@ -10,11 +10,11 @@ test.beforeEach(async ({ page }) => {
 
 test('open/close pair selector', async ({ page }) => {
   // Open pair selector
-  await page.getByTestId('pair_selector').click();
-  expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
-
+  await page.getByTestId('spot_pair_selector').click();
+  // await expect(page.locator("text=pair_selector")).toBeVisible()
   // Close 
-  await page.locator('//*[@id="select_pair_modal"]/div/div[1]/div[1]/div/form').click()
+  await page.getByTestId('spot_pair_selector_close').click()
+  console.log(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]'))
 });
 
 test('goto candlestick', async ({ page }) => {
@@ -51,7 +51,7 @@ test('select limit/market order', async ({ page }) => {
   expect(actionButtonText?.toLocaleLowerCase()).toContain('market')
 });
 
-test.skip('create buy/sell market order', async ({ page }) => {
+test('create buy/sell market order', async ({ page }) => {
   const amount = '1234.2346'
   // Click buy tab
   await page.getByTestId('type_buy').click()

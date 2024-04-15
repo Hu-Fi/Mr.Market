@@ -60,7 +60,7 @@
       <div class="absolute left-[calc(50%-16px)] top-2">
         <div class="w-8 h-1 bg-slate-800/40 rounded-full">
           <form method="dialog" class="modal-backdrop">
-            <button on:click={()=>sd.set(false)}>c</button>
+            <button on:click={()=>sd.set(false)} data-testid="candlestick_pair_selector_close">c</button>
           </form>
         </div>
       </div>
