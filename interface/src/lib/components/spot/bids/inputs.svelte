@@ -46,9 +46,6 @@
   const handleChange = () => {
     tooltipOpen = false;
   };
-
-  $: feeAmount = formatDecimals(BN($orderTypeLimit ? $limitTotal : $marketAmount).multipliedBy(fee).toNumber(), 8);
-
   // Auto calculate Amount after total input
   const getAmount = () => {
     if ($orderTypeLimit) {
@@ -316,14 +313,6 @@
   </div>
 
   <!-- Balance -->
-  <div class="flex items-center justify-between mb-1 py-1">
-    <span class="text-xs opacity-60">{$_("fee")}:</span>
-    <button>
-      <span class="text-xs opacity-90">
-        {feeAmount}
-      </span>
-    </button>
-  </div>
   <div class="flex items-center justify-between mb-1 py-1">
     {#if $mixinConnected}
       <span class="text-xs opacity-60">{$_("balance")}:</span>

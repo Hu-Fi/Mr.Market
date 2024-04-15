@@ -43,18 +43,6 @@
       : ''
     },
     {
-      title: $_("fee"),
-      value: $orderTypeLimit ?
-        $buy
-          ? `${$limitTotal ? BigNumber($limitTotal).multipliedBy(fee).toNumber() : 0} ${$pair.symbol.split("/")[1]}`
-          : `${$limitAmount ? BigNumber($limitAmount).multipliedBy(fee).toNumber() : 0} ${$pair.symbol.split("/")[0]}`
-        : $orderTypeMarket ?
-          $buy
-            ? `${$marketAmount ? BigNumber($marketAmount).multipliedBy(fee).toString() : 0} ${$pair.symbol.split("/")[1]}`
-            : `${$marketAmount ? BigNumber($marketAmount).multipliedBy(fee).toString() : 0} ${$pair.symbol.split("/")[0]}`
-          : ''
-    },
-    {
       title: $_("estimated_price"),
       value: $orderTypeLimit ?
         $buy
