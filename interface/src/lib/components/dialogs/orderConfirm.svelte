@@ -22,11 +22,14 @@
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION} from "$lib/helpers/constants";
   import toast from "svelte-french-toast";
   import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
+  import BigNumber from "bignumber.js";
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
   const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
-  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * 1.2, precisionLimit()) : $limitPrice;
-  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * 1.2, precisionCurrent()) : $current;
+  const fee = 0.2;
+  const feeMultiplier = 1.2;
+  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * fee, precisionLimit()) : $limitPrice;
+  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * fee, precisionCurrent()) : $current;
   $: infos = [
     {
       title: $_("payment_amount"),
@@ -39,6 +42,18 @@
           ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
           : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
       : ''
+    },
+    {
+      title: $_("fee"),
+      value: $orderTypeLimit ?
+        $buy
+          ? `${$limitTotal ? BigNumber($limitTotal).multipliedBy(fee).toNumber() : 0} ${$pair.symbol.split("/")[1]}`
+          : `${$limitAmount ? BigNumber($limitAmount).multipliedBy(fee).toNumber() : 0} ${$pair.symbol.split("/")[0]}`
+        : $orderTypeMarket ?
+          $buy
+            ? `${$marketAmount ? BigNumber($marketAmount).multipliedBy(fee).toString() : 0} ${$pair.symbol.split("/")[1]}`
+            : `${$marketAmount ? BigNumber($marketAmount).multipliedBy(fee).toString() : 0} ${$pair.symbol.split("/")[0]}`
+          : ''
     },
     {
       title: $_("estimated_price"),
@@ -166,7 +181,7 @@
               <span>
                 {info.value}
               </span>
-            {:else if i === 1}
+            {:else if i === 2}
               <!-- Exchange price -->
               <span>
                 1 {$pair.symbol.split("/")[0]} = {info.value}

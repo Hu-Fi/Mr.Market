@@ -20,7 +20,6 @@
   const fee = 1.2;
 
   const confirm = () => {
-    toast.success($marketAmount.toString());
     if ($orderTypeLimit) {
       if (!$limitTotal) {
         toast.error('Enter total limit');
