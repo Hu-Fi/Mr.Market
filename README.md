@@ -75,9 +75,9 @@ npm run test:e2e
 
 ## Deploy to vercel
 
-1. Click on (Deploy)[https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market]
+1. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy on vercel
 
-2. Set the `root directory` to `interface`
+2. Open project settings, set the 'Root directory' to `interface`
 
 3. Restart deployment
 
