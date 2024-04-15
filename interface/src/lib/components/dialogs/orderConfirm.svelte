@@ -78,7 +78,7 @@
       symbol: $pair.symbol,
       exchange: $pair.exchange,
       price: String($limitPrice),
-      amount: String(payAmount),
+      amount: payAmount ? String(payAmount * 1.2) : '',
       trace
     })
 

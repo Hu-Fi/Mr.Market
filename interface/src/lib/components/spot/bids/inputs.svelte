@@ -37,6 +37,7 @@
   };
   $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
   $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
+  const fee = 0.2;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -45,6 +46,9 @@
   const handleChange = () => {
     tooltipOpen = false;
   };
+
+  $: feeAmount = formatDecimals(BN($orderTypeLimit ? $limitTotal : $marketAmount).multipliedBy(fee).toNumber(), 8);
+
   // Auto calculate Amount after total input
   const getAmount = () => {
     if ($orderTypeLimit) {
@@ -312,6 +316,14 @@
   </div>
 
   <!-- Balance -->
+  <div class="flex items-center justify-between mb-1 py-1">
+    <span class="text-xs opacity-60">{$_("fee")}:</span>
+    <button>
+      <span class="text-xs opacity-90">
+        {feeAmount}
+      </span>
+    </button>
+  </div>
   <div class="flex items-center justify-between mb-1 py-1">
     {#if $mixinConnected}
       <span class="text-xs opacity-60">{$_("balance")}:</span>

@@ -17,14 +17,16 @@
   };
   $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
   $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
+  const fee = 1.2;
 
   const confirm = () => {
+    toast.success($marketAmount.toString());
     if ($orderTypeLimit) {
       if (!$limitTotal) {
         toast.error('Enter total limit');
         return
       }
-      if (($buy && $limitTotal > baseBalance) || (!$buy && $limitTotal > targetBalance)) {
+      if (($buy && $limitTotal * fee > baseBalance) || (!$buy && $limitTotal * fee > targetBalance)) {
         toast.error('Insufficient funds');
         return
       }
@@ -34,7 +36,7 @@
         toast.error('Enter market amount');
         return
       }
-      if (($buy && $marketAmount > baseBalance) || (!$buy && $marketAmount > targetBalance)) {
+      if (($buy && $marketAmount * fee > baseBalance) || (!$buy && $marketAmount * fee > targetBalance)) {
         toast.error('Insufficient funds');
         return
       }
