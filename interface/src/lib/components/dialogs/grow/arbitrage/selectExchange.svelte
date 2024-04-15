@@ -53,8 +53,9 @@
 
       <!-- Exchange list -->
       <div class="flex flex-col mt-4 space-y-1">
-        {#each SUPPORTED_EXCHANGES as exchange}
+        {#each SUPPORTED_EXCHANGES as exchange, i}
           <button
+            data-testid={`${type}-exchange-${i}`}
             class={clsx("flex space-x-2 rounded-full p-3 px-4 mx-3 bg-base-100",
               (type === '1' && exchange === $createArbExchange1) && "bg-base-300",
               (type === '2' && exchange === $createArbExchange2) && "bg-base-300",

@@ -18,7 +18,7 @@
       </span>
     </div>
     <div>
-      <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" on:click={()=>goto('/grow/arbitrage/new/easy')}>
+      <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" data-testid="create-new-arbitrage" on:click={()=>goto('/grow/arbitrage/new/easy')}>
         <span class="text-slate-50 text-sm mx-4">
           {$_('create_new_arbitrage')}
         </span>

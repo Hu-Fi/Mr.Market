@@ -18,7 +18,7 @@
       </span>
     </div>
     <div>
-      <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" on:click={()=>goto('/grow/market_making/new/easy/one')}>
+      <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" data-testid="create-new-market-making" on:click={()=>goto('/grow/market_making/new/easy/one')}>
         <span class="text-slate-50 text-sm mx-4">
           {$_('start_market_making')}
         </span>

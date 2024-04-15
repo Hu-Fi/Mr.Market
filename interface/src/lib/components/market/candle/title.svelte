@@ -18,7 +18,7 @@
     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>    
   </button>
 
-  <button class="flex items-center" on:click={()=>sd.set(true)}>
+  <button class="flex items-center" on:click={()=>sd.set(true)} data-testid="candlestick_pair_selector">
     <img src={findExchangeIconByIdentifier($CandlePair.exchange)} alt="icon" loading="lazy" class="w-4 h-4 mr-1" />
     <span class="font-black text-base"> {$CandlePair.symbol.split('/')[0]+"/"+$CandlePair.symbol.split('/')[1]} </span>
     {#if !$sd}

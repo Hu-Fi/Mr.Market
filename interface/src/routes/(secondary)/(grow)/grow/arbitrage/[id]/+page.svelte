@@ -5,7 +5,7 @@
   import Exchanges from "$lib/components/grow/arbitrage/details/titlebar.svelte";
   import Pairs from "$lib/components/grow/arbitrage/details/pairs.svelte";
   import Infos from "$lib/components/grow/arbitrage/details/infos.svelte";
-  import History from "$lib/components/grow/arbitrage/details/history.svelte";
+  // import History from "$lib/components/grow/arbitrage/details/history.svelte";
 
   const pairBase = $page.data.data.pair.split('/')[0]
   const pairTarget = $page.data.data.pair.split('/')[1].replaceAll('-ERC20', '')
