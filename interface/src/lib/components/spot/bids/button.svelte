@@ -25,7 +25,7 @@
         toast.error('Enter total limit');
         return
       }
-      if (($buy && $limitTotal * fee > baseBalance) || (!$buy && $limitTotal * fee > targetBalance)) {
+      if ($mixinConnected && ($buy && $limitTotal * fee > baseBalance) || (!$buy && $limitTotal * fee > targetBalance)) {
         toast.error('Insufficient funds');
         return
       }
@@ -35,7 +35,7 @@
         toast.error('Enter market amount');
         return
       }
-      if (($buy && $marketAmount * fee > baseBalance) || (!$buy && $marketAmount * fee > targetBalance)) {
+      if ($mixinConnected && ($buy && $marketAmount * fee > baseBalance) || (!$buy && $marketAmount * fee > targetBalance)) {
         toast.error('Insufficient funds');
         return
       }

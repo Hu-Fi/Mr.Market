@@ -218,7 +218,6 @@
     {:else if $orderTypeMarket}
       <input
         disabled
-        bind:value={$current}
         placeholder={$_("market_price")}
         class={clsx(
           "h-[2rem] text-base w-full px-0",

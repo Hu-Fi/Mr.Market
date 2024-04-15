@@ -26,7 +26,7 @@
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
   const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
-  const fee = 0.2;
+  const fee = 1.2;
   $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * fee, precisionLimit()) : $limitPrice;
   $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * fee, precisionCurrent()) : $current;
   $: infos = [
