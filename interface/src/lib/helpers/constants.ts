@@ -5,7 +5,7 @@ export const AppName = "Mr.market"
 export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
 
 export const SHOW_BAR = env.PUBLIC_SHOW_BAR || true
-export const BOT_ID = env.PUBLIC_BOT_ID || '51186d7e-d488-417d-a031-b4e34f4fdf86'
+export const BOT_ID = env.PUBLIC_BOT_ID || '73179ddc-3e29-485b-bb13-03f514d4318e'
 export const OAUTH_SCOPE = env.PUBLIC_OAUTH_SCOPE || 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ'
 export const MIXIN_MESSENGER_INSTALL = env.PUBLIC_MIXIN_MESSENGER_INSTALL || 'https://messenger.mixin.one/install'
 export const MIXIN_API_BASE_URL = env.PUBLIC_MIXIN_API_BASE_URL || 'https://api.mixin.one'
