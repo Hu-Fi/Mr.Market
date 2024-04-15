@@ -77,15 +77,13 @@ npm run test:e2e
 
 ## Deployment
 
-1. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel
+1. Click <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="64px"></a> button to deploy server on railway
 
-2. Open project settings, set the 'Root directory' to `interface`
+2. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel
 
-3. Restart deployment
+3. Open project settings, set the 'Root directory' to `interface`, update environment variables get from server deployment
 
-4. Click <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="64px"></a> button to deploy server on railway
-
-5. Update environment variables
+4. Restart deployment
 
 ## Built With
 
