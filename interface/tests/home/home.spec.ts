@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.use({
   viewport: { width: 390, height: 844 },  // iPhone 14 Pro

@@ -118,9 +118,14 @@
               <span class="font-bold"> {baseAssetAmount} {baseAssetSymbol} </span>
             </div>
             <div class="flex">
-              <button class={
-                clsx("btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem]", "hover:bg-slate-800 no-animation"
-              )} on:click={()=>{ payment('1') }}>
+              <button 
+                class={
+                  clsx("btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem]", 
+                  "hover:bg-slate-800 no-animation")
+                } 
+                on:click={()=>{ payment('1') }}
+                data-testid='pay-btn-1'
+              >
                 {#if !btn1Paid}
                   <span class={clsx("mx-2", btn1Loading && "loading loading-sm")}>
                     {$_('pay')}
@@ -142,6 +147,7 @@
             <div class="flex">
               <button class="btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem] hover:bg-slate-800 no-animation"
                 on:click={()=>{ payment('2') }}
+                data-testid='pay-btn-2'
               >
                 {#if !btn2Paid}
                   <span class={clsx("mx-2", btn2Loading && "loading loading-sm")}>
