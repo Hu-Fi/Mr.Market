@@ -9,14 +9,15 @@ export class CoingeckoController {
   constructor(private readonly coingeckoProxy: CoingeckoProxyService) {}
 
   @Get('/coins/:id')
-  async getCoinsById(@Param('id') id: string): Promise<any> {
+  async getCoinsById(@Param('id') id: string): Promise<any> { // TODO: return type
     return this.coingeckoProxy.coinsId(id);
   }
 
   @Get('/coins/markets/:vs_currency')
   async getCoinMarkets(
     @Param('vs_currency') vs_currency = 'usd',
-  ): Promise<any> {
+  ): Promise<any> { // TODO: return type
+    // Why this returns any instead of CoinMarket[]
     return this.coingeckoProxy.coinsMarkets(vs_currency);
   }
 
@@ -36,8 +37,9 @@ export class CoingeckoController {
   async getCoinIdMarketChart(
     @Param('id') id: string,
     @Query('days') days: number | 'max',
+    to: number, // TODO: seems unnecessary
     @Query('vs_currency') vs_currency = 'usd',
-  ) {
+  ) { // TODO: return type
     return this.coingeckoProxy.coinsIdMarketChart(id, days, vs_currency);
   }
 
@@ -47,7 +49,7 @@ export class CoingeckoController {
     @Query('from') from: number,
     @Query('to') to: number,
     @Query('vs_currency') vs_currency = 'usd',
-  ) {
+  ) { // TODO: return type
     return this.coingeckoProxy.coinIdMarketChartRange(
       id,
       from,
