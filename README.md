@@ -75,11 +75,51 @@ E2E testing
 npm run test:e2e
 ```
 
-## Deployment
+## Deployment Guide
 
-1. Click <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="64px"></a> button to deploy server on railway. It's possible that the `Trial Plan` of railway doesn't have enough memory to run the server. We suggest to upgrade.
+This guide will walk you through the process of deploying a server on Railway and an interface on Vercel for our application. By the end of these steps, you will have a fully functional server and interface setup.
 
-2. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel, fill the environment variables from railway deployment and mixin keystore. If you don't have a mixin keystore already, go to [Mixin developer dashboard](https://developers.mixin.one/dashboard) to get one.
+### Preparations
+
+First, ensure you have the following environment variables ready. These are crucial for the configuration of the server and interface.
+
+#### Server Environment Variables (`/server/.env`)
+| Variable                    | Description                           | Source                      |
+|-----------------------------|---------------------------------------|-----------------------------|
+| `ADMIN_PASSWORD`            | Admin page password                   | User-defined                |
+| `JWT_SECRET`                | JWT secret key                        | User-defined                |
+| `COINGECKO_API_KEY`         | Coingecko API key                     | Coingecko                   |
+| `MIXIN_APP_ID`              | Mixin App ID                          | Mixin Developer Dashboard   |
+| `MIXIN_SESSION_ID`          | Mixin Session ID                      | Mixin Developer Dashboard   |
+| `MIXIN_SERVER_PUBLIC_KEY`   | Mixin Server Public key               | Mixin Developer Dashboard   |
+| `MIXIN_SESSION_PRIVATE_KEY` | Mixin Session Private key             | Mixin Developer Dashboard   |
+| `MIXIN_SPEND_PRIVATE_KEY`   | Mixin Spend Private key               | Mixin Developer Dashboard   |
+
+#### Interface Environment Variables (`/interface/.env`)
+| Variable                     | Description                  | Source           |
+|------------------------------|------------------------------|------------------|
+| `PUBLIC_BOT_ID`              | Mixin App ID                 | Mixin Developer Dashboard |
+| `PUBLIC_HUFI_SOCKET_URL`     | Server deployment URL        | Railway Deployment |
+| `PUBLIC_HUFI_BACKEND_URL`    | Server deployment URL        | Railway Deployment |
+
+Variables starting with `MIXIN` are obtained from the Mixin bot keystore, accessible on the [Mixin developer dashboard](https://developers.mixin.one/dashboard) by creating a new bot.
+
+### Deployment Steps
+
+1. **Deploy Server on Railway**  
+   Click the below button to start deployment on Railway. Fill in the environment variables as prompted. Note that the `Trial Plan` on Railway might not suffice due to memory constraints; consider upgrading if necessary.  
+   <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="120px"></a>
+
+2. **Deploy Interface on Vercel**  
+   Use the following button to deploy the interface on Vercel. Ensure you fill in the environment variables as required.  
+   <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="96px"></a>
+
+### Troubleshooting
+
+If you encounter issues during the deployment, check the following:
+- Ensure all environment variables are correctly set.
+- Verify that your Railway and Vercel accounts are active and in good standing.
+- Consult the Railway and Vercel documentation for detailed troubleshooting steps.
 
 ## Built With
 
