@@ -6,7 +6,7 @@ This is highly alpha code. Do not use it or you will lose all your money. We'd l
 ![Lint](https://github.com/Hu-Fi/Mr.Market/actions/workflows/lint.yml/badge.svg)
 [![Railway Deployment Status](https://img.shields.io/badge/deployment-passing-brightgreen)](https://mrmarket-production.up.railway.app/)
 ![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=mr-market-one) 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="72px"></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="72px"></a>
 <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="96px"></a>
 
 [Vercel deployment](https://mr-market-one.vercel.app/home) 
@@ -79,7 +79,7 @@ npm run test:e2e
 
 1. Click <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="64px"></a> button to deploy server on railway
 
-2. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel
+2. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel
 
 3. Open project settings, set the 'Root directory' to `interface`, update environment variables get from server deployment
 
