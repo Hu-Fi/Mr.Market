@@ -197,6 +197,7 @@
     {#if $orderTypeLimit}
       <input
         type="tel"
+        inputmode="decimal"
         use:cleave={maskOption}
         bind:value={$limitPrice}
         placeholder={$_("price")}
@@ -231,6 +232,7 @@
     >
       <input
         type="tel"
+        inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$limitAmount}
@@ -275,6 +277,7 @@
     {#if $orderTypeLimit}
       <input
         type="tel"
+        inputmode="decimal"
         on:keyup={getAmount}
         use:cleave={maskOption}
         bind:value={$limitTotal}
@@ -284,6 +287,7 @@
     {:else if $orderTypeMarket}
       <input
         type="tel"
+        inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$marketAmount}
