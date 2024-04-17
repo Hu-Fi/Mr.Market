@@ -81,7 +81,6 @@
     
     <input
       type="text"
-      inputmode="decimal"
       data-testid="output-amount"
       use:cleave={maskOption}
       bind:value={$Output}

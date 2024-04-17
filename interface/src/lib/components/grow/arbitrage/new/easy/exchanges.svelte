@@ -230,7 +230,7 @@
           <div class="join border rounded-lg items-center w-44">
             <input
               type="text"
-              inputmode="decimal"
+              pattern="\d*\.?\d*"
               use:cleave={maskOption}
               class={clsx(
                 "input focus:border-none focus:outline-none join-item w-full",
