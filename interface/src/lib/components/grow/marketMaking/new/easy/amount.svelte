@@ -32,7 +32,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input inputmode="decimal" pattern="\d*\.?\d*" type="numeric" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createMMEasyAmounts[0]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createMMEasyAmounts[0]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
       <div class="join-item mr-2 w-12 text-end">
         <span class="text-sm opacity-40"> {baseAssetSymbol} </span>
       </div>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input inputmode="decimal" pattern="\d*\.?\d*" type="numeric" use:cleave={maskOption} data-testid="amount-input-1" bind:value={$createMMEasyAmounts[1]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+      <input type="text" use:cleave={maskOption} data-testid="amount-input-1" bind:value={$createMMEasyAmounts[1]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
       <div class="join-item mr-2 w-12 text-end">
         <span class="text-sm opacity-40"> {targetAssetSymbol} </span>
       </div>

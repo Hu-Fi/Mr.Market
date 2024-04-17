@@ -80,8 +80,7 @@
     </button>
     
     <input
-      type="numeric"
-      inputmode="decimal"
+      type="text"
       data-testid="input-amount"
       use:cleave={maskOption}
       bind:value={$Input}
