@@ -80,7 +80,7 @@
     </button>
     
     <input
-      type="tel"
+      type="text"
       inputmode="decimal"
       data-testid="input-amount"
       use:cleave={maskOption}

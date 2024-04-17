@@ -229,7 +229,7 @@
           </div>
           <div class="join border rounded-lg items-center w-44">
             <input
-              type="tel"
+              type="text"
               inputmode="decimal"
               use:cleave={maskOption}
               class={clsx(
