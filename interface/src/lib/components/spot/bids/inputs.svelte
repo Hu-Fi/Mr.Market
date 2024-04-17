@@ -196,7 +196,7 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="text"
+        type="numeric"
         inputmode="decimal"
         use:cleave={maskOption}
         bind:value={$limitPrice}
@@ -231,7 +231,7 @@
       class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
     >
       <input
-        type="text"
+        type="numeric"
         inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
@@ -276,7 +276,7 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="text"
+        type="numeric"
         inputmode="decimal"
         on:keyup={getAmount}
         use:cleave={maskOption}
@@ -286,7 +286,7 @@
       />
     {:else if $orderTypeMarket}
       <input
-        type="text"
+        type="numeric"
         inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
