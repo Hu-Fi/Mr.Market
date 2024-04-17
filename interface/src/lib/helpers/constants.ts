@@ -4,7 +4,7 @@ import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$li
 export const AppName = "Mr.market"
 export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
 
-export const SHOW_BAR = env.PUBLIC_SHOW_BAR || true
+export const SHOW_BAR = env.PUBLIC_SHOW_BAR === "true" ? true : false;
 export const BOT_ID = env.PUBLIC_BOT_ID || '73179ddc-3e29-485b-bb13-03f514d4318e'
 export const OAUTH_SCOPE = env.PUBLIC_OAUTH_SCOPE || 'PROFILE:READ ASSETS:READ SNAPSHOTS:READ'
 export const MIXIN_MESSENGER_INSTALL = env.PUBLIC_MIXIN_MESSENGER_INSTALL || 'https://messenger.mixin.one/install'
