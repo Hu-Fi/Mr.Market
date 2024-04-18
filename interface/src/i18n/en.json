@@ -318,6 +318,7 @@
   "order_filled": "Order filled",
   "order_success": "Order success",
   "order_id": "Order ID",
+  "order_detail": "Order detail",
   "copy_to_clipboard": "Copy to clipboard",
   "order_id_copied_to_clipboard": "Order id copied to clipboard",
   "order_filled_amount": "Filled/Amount",
@@ -327,5 +328,6 @@
   "time_updated": "Time updated",
   "mixin_wallet_icon": "Mixin Wallet Icon",
   "order_not_found": "Order not found",
-  "recently_created": "Recently created"
+  "recently_created": "Recently created",
+  "insufficient_funds": "Insufficient funds",
 }

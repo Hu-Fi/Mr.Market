@@ -11,7 +11,6 @@
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import clsx from "clsx";
   import { orderDetails, orderDetailsStatus } from "$lib/stores/spot";
-  import OrderDetailLoader from "./orderDetailLoader.svelte"
   import type { SpotOrderDetails } from "$lib/types/hufi/spot_details";
 
   $: o = $orderDetails as SpotOrderDetails | undefined;
@@ -36,12 +35,13 @@
   ].find((stateIcon) => stateIcon.forStates.includes(state))
 </script>
 {#if $orderDetailsStatus === 'loading'}
-  <OrderDetailLoader />
-{/if}
-{#if $orderDetailsStatus === 'error'}
+<!-- {#if true} -->
+  <div class="w-full h-full flex grow items-center justify-center"> 
+    <span class="loading" /> 
+  </div>
+{:else if $orderDetailsStatus === 'error'}
   <div class="p-5 m-auto max-w-44">{$_('order_not_found')}</div>
-{/if}
-{#if o && $orderDetailsStatus === 'success'}
+{:else if o && $orderDetailsStatus === 'success'}
 <div class="flex flex-col space-y-4">
   <div class="py-4 my-4 bg-gray-100">
     <!-- Symbol -->

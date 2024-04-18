@@ -19,16 +19,14 @@
   import { SpotPay } from "$lib/helpers/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { getOrderById } from "$lib/helpers/hufi/spot";
-  import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION} from "$lib/helpers/constants";
-  import toast from "svelte-french-toast";
   import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
-  import BigNumber from "bignumber.js";
+  import { HARDCODED_FEE, ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
+  
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
   const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
-  const fee = 1.2;
-  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * fee, precisionLimit()) : $limitPrice;
-  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * fee, precisionCurrent()) : $current;
+  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * HARDCODED_FEE, precisionLimit()) : $limitPrice;
+  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * HARDCODED_FEE, precisionCurrent()) : $current;
   $: infos = [
     {
       title: $_("payment_amount"),
@@ -44,13 +42,7 @@
     },
     {
       title: $_("estimated_price"),
-      value: $orderTypeLimit ?
-        $buy
-          ? limitPriceWithFee : limitPriceWithFee
-      : $orderTypeMarket ?
-        $buy
-          ? currentWithFee : currentWithFee
-      : ''
+      value: $orderTypeLimit ? limitPriceWithFee : currentWithFee
     },
     { title: $_("recipient"), value: $_("mixin_wallet") },
   ];
@@ -80,34 +72,30 @@
       symbol: $pair.symbol,
       exchange: $pair.exchange,
       price: String($limitPrice),
-      amount: payAmount ? String(payAmount * 1.2) : '',
+      amount: payAmount ? String(payAmount * HARDCODED_FEE) : '',
       trace
     })
 
-
-    let found = false;
     let totalTime = 0;
 
     var interval = setInterval(async () => {
-      console.log(`${new Date()} called`);
-      // TODO: TEST IT;
-      found = await getOrderById(trace);
+      const orderDetail = await getOrderById(trace);
       totalTime += ORDER_STATE_FETCH_INTERVAL;
-
-      if (found) {
+      if (orderDetail.statusCode === 500) {
+        return;
+      } else if (orderDetail.orderId) {
         clearInterval(interval);
         orderConfirmDialog.set(false);
         goto(`/spot/history/${trace}`);
       } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
         clearInterval(interval);
-        toast.error('Timeout. Your order was still not created.')
         console.log('Timeout reached, stopping execution.');
       }
     }, ORDER_STATE_FETCH_INTERVAL);
 
     setTimeout(() => {
       spotCreating.set(false);
-    }, 1000 * 60 * 3);
+    }, ORDER_STATE_TIMEOUT_DURATION);
   };
 </script>
 
@@ -168,7 +156,7 @@
               <span>
                 {info.value}
               </span>
-            {:else if i === 2}
+            {:else if i === 1}
               <!-- Exchange price -->
               <span>
                 1 {$pair.symbol.split("/")[0]} = {info.value}

@@ -1,8 +1,8 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
-  import { buy, orderConfirmDialog, pair, orderTypeLimit, orderTypeMarket, limitTotal, marketAmount } from "$lib/stores/spot";
+  import { DownColorBg, HARDCODED_FEE, UpColorBg } from "$lib/helpers/constants";
+  import { buy, orderConfirmDialog, pair, orderTypeLimit, orderTypeMarket, limitTotal, marketAmount, limitAmount, limitPrice } from "$lib/stores/spot";
   import { userAssets } from "$lib/stores/wallet";
   import { formatWalletBalance } from "$lib/helpers/utils";
   import { mixinConnected } from "$lib/stores/home";
@@ -17,26 +17,25 @@
   };
   $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
   $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
-  const fee = 1.2;
 
   const confirm = () => {
     if ($orderTypeLimit) {
-      if (!$limitTotal) {
-        toast.error('Enter total limit');
+      if (!$limitTotal || !limitAmount || !limitPrice) {
+        toast.error($_('enter_amount'));
         return
       }
-      if ($mixinConnected && ($buy && $limitTotal * fee > baseBalance) || (!$buy && $limitTotal * fee > targetBalance)) {
-        toast.error('Insufficient funds');
+      if ($mixinConnected && (($buy && $limitTotal * HARDCODED_FEE > baseBalance) || (!$buy && $limitTotal * HARDCODED_FEE > targetBalance))) {
+        toast.error($_('insufficient_funds'));
         return
       }
     }
     if ($orderTypeMarket) {
       if (!$marketAmount) {
-        toast.error('Enter market amount');
+        toast.error($_('enter_amount'));
         return
       }
-      if ($mixinConnected && ($buy && $marketAmount * fee > baseBalance) || (!$buy && $marketAmount * fee > targetBalance)) {
-        toast.error('Insufficient funds');
+      if ($mixinConnected && (($buy && $marketAmount * HARDCODED_FEE > baseBalance) || (!$buy && $marketAmount * HARDCODED_FEE > targetBalance))) {
+        toast.error($_('insufficient_funds'));
         return
       }
     }
