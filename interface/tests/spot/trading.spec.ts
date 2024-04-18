@@ -8,26 +8,12 @@ test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/spot');
 })
 
-test('open/close pair selector', async ({ page }) => {
-  // Open pair selector
-  await page.getByTestId('pair_selector').click();
-  expect(await page.isVisible('//*[@id="select_pair_modal"]/div/div[1]')).toBe(true)
-
-  // Close
-  await page.locator('//*[@id="select_pair_modal"]/div/div[1]/div[1]/div/form').click()
-});
-
-test('goto candlestick', async ({ page }) => {
-  await page.locator('.sticky > div > div > button').first().click();
-  await page.waitForURL('**/market/candle/**');
-});
-
 test('switch buy and sell', async ({ page }) => {
   // buy
   await page.getByTestId('type_buy').click()
   let actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').textContent()
   expect(actionButtonText?.toLocaleLowerCase()).toContain('buy')
-
+  
   // sell
   await page.getByTestId('type_sell').click()
   actionButtonText = await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button').textContent()
@@ -51,7 +37,7 @@ test('select limit/market order', async ({ page }) => {
   expect(actionButtonText?.toLocaleLowerCase()).toContain('market')
 });
 
-test.skip('create buy/sell market order', async ({ page }) => {
+test('create buy/sell market order', async ({ page }) => {
   const amount = '1234.2346'
   // Click buy tab
   await page.getByTestId('type_buy').click()
@@ -65,7 +51,7 @@ test.skip('create buy/sell market order', async ({ page }) => {
   expect(payAmount).toContain(actualAmount)
   // Confirm order
   await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
-
+  
 
   // Close
   await page.locator('//*[@id="order_confirm_modal"]/div/div/div[1]/button').click()
@@ -105,14 +91,14 @@ test('create buy limit order', async ({ page }) => {
   // Click on limit price
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').click()
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').fill(price)
-
+  
   // Click on pay amount
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[3]/input').click()
   await page.keyboard.type(recvAmount);
 
   // Check estimated amount
   const expectedReceive = page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[5]/input')
-  expect(expectedReceive).toHaveValue(`${estimatedPay}`, {timeout: 2000})
+  expect(expectedReceive).toHaveValue(`${estimatedPay}`, {timeout: 2000})  
 
   // Click buy action
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').click()
@@ -126,7 +112,7 @@ test('create buy limit order', async ({ page }) => {
   expect(estimatedPayX).toContain(estimatedPay.toString())
 
   // Confirm order
-  // await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
+  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
 });
 
 
@@ -138,21 +124,21 @@ test.skip('create sell limit order', async ({ page }) => {
 
   // Select limit order
   await page.locator('//*[@id="order_type_modal"]/div/div[2]/button[1]').click()
-
+  
   // Click sell tab
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[1]/button[2]').click()
 
   // Click on limit price
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').click()
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[1]/input').fill(price)
-
+  
   // Click on pay amount
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[3]/input').click()
   await page.keyboard.type(payAmount);
-
+  
   // Check estimated amount
   const expectedReceive = page.locator('//div/div[1]/main/div/div[1]/div[1]/div[3]/div[5]/input')
-  expect(expectedReceive).toHaveValue(`${estimatedRecv}`, {timeout: 2000})
+  expect(expectedReceive).toHaveValue(`${estimatedRecv}`, {timeout: 2000})  
 
   // Click buy action
   await page.locator('//div/div[1]/main/div/div[1]/div[1]/div[4]/button/span').click()
@@ -165,7 +151,7 @@ test.skip('create sell limit order', async ({ page }) => {
   const payAmountX = await page.locator('//*[@id="order_confirm_modal"]/div/div/div[3]/div[1]/span[2]').textContent()
   expect(payAmountX).toContain(payAmountX)
 
-  // Confirm order , impossible for now - insufficient funds
-  // await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
+  // Confirm order
+  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
 });
 

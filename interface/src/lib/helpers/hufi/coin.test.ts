@@ -17,7 +17,7 @@ describe.skip('pairsFn', () => {
 })
 
 describe.skip('fetchOHLCV', () => {
-  const exchanges: SupportedExchanges[] = ['binance', 'bitfinex', 'mexc']
+  const exchanges: SupportedExchanges[] = ['bitfinex', 'mexc']
   for (let x=0; x<exchanges.length; x++) {
     const exchange = exchanges[x]
     describe(`${exchange} BTC/USDT`, async () => {

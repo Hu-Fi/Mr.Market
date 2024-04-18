@@ -39,7 +39,7 @@
 
     <!-- Add/Remove button -->
     <button 
-      class="btn bg-base-content border-base-300 hover:bg-base-content hover:border-base-300 no-animation flex items-center justify-center rounded-full focus:bg-base-content focus:border-base-300 grow" 
+      class="btn bg-slate-800 border-base-300 hover:bg-slate-800 hover:border-base-300 no-animation flex items-center justify-center rounded-full focus:bg-slate-800 focus:border-base-300 grow" 
       on:click={()=>{editMarketMakingDialog.set(true)}}
     >
       <div class="flex items-center justify-center space-x-2">

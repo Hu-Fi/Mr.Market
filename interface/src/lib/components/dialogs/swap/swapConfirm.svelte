@@ -124,7 +124,7 @@
 
     <!-- Confirm -->
     <div class="w-full pb-4">
-      <button class={clsx("btn btn-md px-0 w-full rounded-full bg-base-content hover:bg-base-content focus:bg-base-content no-animation")} on:click={confirmSwap} data-testid="swap_confirm_order">
+      <button class={clsx("btn btn-md px-0 w-full rounded-full bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 no-animation")} on:click={confirmSwap} data-testid="swap_confirm_order">
         <span class={clsx("text-base-100 font-semibold", swapLoading && "loading loading-spinner")}> {$_('confirm_order')}</span>
       </button>
     </div>

@@ -25,7 +25,7 @@
     </button>
     
     <div class="px-2 pl-4">
-      <span>
+      <span class="font-bold text-nowrap">
         {$page.url.pathname.includes('/grow/arbitrage/new/one') ? $_('select_asset') : 
          $page.url.pathname.includes('/grow/arbitrage/new/two') ? $_('confirm'): $_('arbitrage')}
       </span>

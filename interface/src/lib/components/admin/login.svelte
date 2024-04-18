@@ -66,7 +66,7 @@
     on:click={() => {
       login(password);
     }}
-    class="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-center text-white bg-base-content rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+    class="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-center text-white bg-slate-800 rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
   >
     {#if $loginLoading}
       <span class="loading"> </span>

@@ -41,29 +41,31 @@
   };
 </script>
 
-<div class="flex flex-col space-y-0 mb-20">
+<div class="flex flex-col space-y-10 mb-20">
   <Exchange
     exchange={mmData.exchange}
     exchangeIcon={mmData.exchangeIcon}
   />
-  <Pair
-    exchange={mmData.exchange}
-    exchangeIcon={mmData.exchangeIcon}
-    pairBase={mmData.pairBase}
-    pairTarget={mmData.pairTarget}
-  />
-  <Infos 
-    tokenSymbol0={mmData.balance.tokenSymbol0}
-    tokenSymbol1={mmData.balance.tokenSymbol1}
-    amount0Start={mmData.balance.startedAmount0}
-    amount0Now={mmData.balance.nowAmount0}
-    amount1Start={mmData.balance.startedAmount1}
-    amount1Now={mmData.balance.nowAmount1}
-    apy={mmData.balance.apy}
-    profit={mmData.balance.profit}
-    createdAt={mmData.createAt}
-  />
-  <History
-    histories={mmData.histories}
-  />
+  <div class="max-w-24rem shadow-md flex flex-col rounded-xl border border-base-200 relative">
+    <Pair
+      exchange={mmData.exchange}
+      exchangeIcon={mmData.exchangeIcon}
+      pairBase={mmData.pairBase}
+      pairTarget={mmData.pairTarget}
+    />
+    <Infos 
+      tokenSymbol0={mmData.balance.tokenSymbol0}
+      tokenSymbol1={mmData.balance.tokenSymbol1}
+      amount0Now={mmData.balance.nowAmount0}
+      amount1Now={mmData.balance.nowAmount1}
+      apy={mmData.balance.apy}
+      profit={mmData.balance.profit}
+      createdAt={mmData.createAt}
+    />
+    <!-- amount0Start={arbData.balance.startedAmount0}
+      amount1Start={arbData.balance.startedAmount1} -->
+    <!-- <History
+      histories={mmData.histories}
+    /> -->
+  </div>
 </div>

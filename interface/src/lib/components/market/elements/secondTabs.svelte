@@ -28,7 +28,7 @@
 <!-- Tabs -->
 <!-- Coins -->
 {#if active === 0}
-  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-200")}>
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-y-[0.5px] py-0.5", $darkTheme ? "border-slate-800" : "border-slate-200")}>
     {#each CoinsTypeTabs as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeCoinTab === i && "")} on:click={()=>{activeCoinTab.set(i);}}>
         <span class={clsx("font-medium text-xs text-start", $activeCoinTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{$_(item.name)}</span>
@@ -38,7 +38,7 @@
 
 <!-- Spot -->
 {:else if active === 1}
-  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-b-[0.5px] py-0.5", $darkTheme ? "border-slate-700" : "border-slate-200")}>
+  <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-y-[0.5px] py-0.5", $darkTheme ? "border-slate-800" : "border-slate-200")}>
     {#each spotItems as item, i}
       <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeSpotTab === i && "")} on:click={()=>{activeSpotTab.set(i);}}>
         <span class={clsx("font-medium text-xs text-start capitalize", $activeSpotTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{item.name}</span>

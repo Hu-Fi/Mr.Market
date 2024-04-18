@@ -14,7 +14,7 @@
 <div class="btm-nav btm-nav-md shadow-2xl bg-base-100 visible md:invisible px-4">
   <div class="flex flex-row justify-center items-center space-x-4 mr-2 h-full">
     <!-- Trade button -->
-    <button class="btn btn-outline no-animation border-base-300 bg-base-content flex grow items-center justify-center rounded-full" on:click={()=>{pair.set($CandlePair); goto(`/spot`)}}>
+    <button class="btn btn-outline no-animation border-base-300 bg-slate-800 flex grow items-center justify-center rounded-full" on:click={()=>{pair.set($CandlePair); goto(`/spot`)}}>
       <span class="font-semibold px-6 text-base-100"> {$_('trade')} </span>
     </button>
 

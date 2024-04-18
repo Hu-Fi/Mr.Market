@@ -12,7 +12,7 @@
   export let token: CoingeckoToken;
 </script>
 
-<button class={clsx("flex w-full items-center justfy-between p-4 border-b-[0.1px] first:border-t-[0.1px]", $darkTheme ? "border-slate-700":"border-slate-50")} on:click={()=>{goto('/market/token/'+token.id); currentCoin.set(token)}} >
+<button class={clsx("flex w-full items-center justfy-between p-4 border-b-[0.1px] first:border-t-[0.1px]", $darkTheme ? "border-slate-800":"border-slate-50")} on:click={()=>{goto('/market/token/'+token.id); currentCoin.set(token)}} >
   <div class="flex flex-1 items-center space-x-3 text-left">
     <!-- Icon -->
     <div class="avatar w-9 h-9 p-0.5">
@@ -29,7 +29,7 @@
 
       <div class="flex space-x-1.5 items-center">
         {#if token.market_cap_rank}
-          <div class={clsx("flex rounded-sm badge badge-xs px-0.5", $darkTheme ? "bg-slate-700" : "bg-slate-100")}>
+          <div class={clsx("flex rounded-sm badge badge-xs px-0.5", $darkTheme ? "bg-slate-800" : "bg-slate-100")}>
             <span class="text-xs !text-[10px] opacity-90">
               {token.market_cap_rank}
             </span>

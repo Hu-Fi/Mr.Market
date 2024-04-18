@@ -30,7 +30,7 @@
 </script>
 
 <header class="sticky top-0 z-20 bg-base-100">
-  <GrowDetails titleLeft={$isArbitragePage} />
+  <GrowDetails />
 </header>
 
 <main class={clsx("!px-0 !py-0", {'arbitrage-title': !$isArbitragePage})}>

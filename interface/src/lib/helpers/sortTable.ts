@@ -54,7 +54,7 @@ export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOr
   }
 };
 
-export const sortSpot = (colHeader, data, ascendingOrder) => {
+export const sortSpot = (colHeader: string, data: CoingeckoToken[], ascendingOrder: boolean) => {
   try {
     if (colHeader === 'symbol') {
       return sortByString(colHeader, data, ascendingOrder);

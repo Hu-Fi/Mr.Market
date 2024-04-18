@@ -16,7 +16,7 @@
     {$_('back')}
   </button>
 
-  <button class="btn btn-sm px-4 rounded-3xl no-animation bg-base-content focus:bg-base-content hover:bg-base-content text-base-100" 
+  <button class="btn btn-sm px-4 rounded-3xl no-animation bg-slate-800 focus:bg-slate-800 hover:bg-slate-800 text-base-100" 
     on:click={()=>{mmEasyStep.set(0)}}
   > 
     {$_('confirm')} 

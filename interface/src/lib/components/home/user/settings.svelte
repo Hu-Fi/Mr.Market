@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { _, locale } from "svelte-i18n"
-    import { getNameByKey } from "../../../../i18n/i18n";
-    import { toggleTheme } from "$lib/stores/theme";
-    import { MixinDisconnect } from "$lib/helpers/mixin";
-    import { goto } from "$app/navigation";
-    import { mixinConnected } from "$lib/stores/home";
+  import { _, locale } from "svelte-i18n"
+  import { goto } from "$app/navigation";
+  import { mixinConnected } from "$lib/stores/home";
+  import { toggleTheme } from "$lib/stores/theme";
+  import { getNameByKey } from "../../../../i18n/i18n";
+  import { MixinDisconnect } from "$lib/helpers/mixin";
 
   const items = [
     {key: 'lang', name: $_('language'), value: getNameByKey($locale || 'en-US'), fn: ()=>{goto('/home/user/i18n')}},

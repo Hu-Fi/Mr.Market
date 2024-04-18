@@ -5,20 +5,24 @@
   export let exchangeIcon = '';
 </script>
 
-<div class="flex items-center justify-between p-6 mt-2">
-  <div class="flex flex-col space-y-4">
-    <span class="opacity-60 text-sm">
+<div class="flex items-center w-full justify-between p-6 mt-2 text-center bg-gray-100">
+  <div class="flex flex-col m-auto space-y-2">
+    <span class="text-xl font-bold t">
       {$_("exchange")}
     </span>
-
-    <div class="flex items-center space-x-1 capitalize">
-      <span class="text-xl font-semibold"> 
+    <div class="m-auto">
+      <img src={exchangeIcon} class="w-9 h-9" alt="exchange" />
+    </div>
+    <div class="flex items-center justify-center space-x-1 capitalize">
+      <span class="text-xl font-bold text-center">
         {exchange}
       </span>
     </div>
   </div>
-
-  <div>
-    <img src={exchangeIcon} alt="" class="w-9 h-9" />
-  </div>
 </div>
+
+<style>
+  div.bg-gray-100 {
+      background-color: #F8FAFC;
+  }
+</style>

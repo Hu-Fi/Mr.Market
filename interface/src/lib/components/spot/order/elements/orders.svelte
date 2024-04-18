@@ -113,7 +113,7 @@
     {/if}
   </div>
 {:else}
-  <div class={clsx($orderTypeMarket ? "h-56" : "h-[19rem]", "flex items-center justify-center")}>
+  <div class={clsx($orderTypeMarket ? "h-[14.25rem]" : "h-[19rem]", "flex items-center justify-center")}>
     <span class="loading" />
   </div>
 {/if}

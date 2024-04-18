@@ -30,7 +30,7 @@
   <button class="flex flex-col bg-base-100 rounded-xl p-4 space-y-4" on:click={()=>goto(`/grow/market_making/${data.orderId}`)}>
     <!-- Title -->
     <div class="flex justify-between items-center w-full">
-      <div class="flex space-x-2 w-full justify-start">
+      <div class="flex space-x-2 justify-start">
         <!-- Exchange Icon -->
         <div class="flex avatar items-center">
           <div class="w-6 h-6 rounded-full">

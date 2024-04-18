@@ -19,7 +19,7 @@
 
 <div class="w-full mb-24">
   {#if !resolved}
-    <div class="w-full mx-4 mt-4">
+    <div class="w-full pl-4 mt-4">
       <FilterLoader />
     </div>
     <!-- Loading -->

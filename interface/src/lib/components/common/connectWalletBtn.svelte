@@ -31,18 +31,21 @@
 </script>
 
 <button
-  class={clsx("btn rounded-full no-animation", clazz)}
+  class={clsx("btn rounded-full no-animation text-base-100 !h-10 min-h-10 bg-slate-800 hover:bg-slate-800 focus:bg-slate-800", clazz)}
   on:click={async () => {
     await auth();
   }}
   disabled={$mixinConnectLoading}
 >
-  <span
-    class={clsx(
-      "font-semibold",
-      $mixinConnectLoading && "loading loading-xs mx-3",
-    )}
-  >
-    {$_("connect_wallet")}
-  </span>
+  {#if $mixinConnectLoading}
+    <span class="loading loading-xs mx-3 text-base-100" />
+  {:else}
+    <span
+      class={clsx(
+        "font-semibold",
+      )}
+    >
+      {$_("connect_wallet")}
+    </span>
+  {/if}
 </button>

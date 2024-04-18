@@ -49,7 +49,7 @@
         
         <div class="grid grid-cols-3 join w-full">
           {#each easyTabs as tab}
-            <button class={clsx("btn btn-sm no-animation join-item", $createAIPeriod === tab.value && "bg-base-content border-base-content focus:bg-base-content hover:bg-base-content text-base-100")} on:click={()=>{createAIPeriod.set(tab.value)}}>
+            <button class={clsx("btn btn-sm no-animation join-item", $createAIPeriod === tab.value && "bg-slate-800 border-base-content focus:bg-slate-800 hover:bg-slate-800 text-base-100")} on:click={()=>{createAIPeriod.set(tab.value)}}>
               <span> {tab.name} </span>
             </button>
           {/each}

@@ -6,7 +6,7 @@
   <TradeBar />
 </header>
 
-<main class="!px-0 !py-2">
+<main class="!px-0 !py-0">
   <slot />
 </main>
 
