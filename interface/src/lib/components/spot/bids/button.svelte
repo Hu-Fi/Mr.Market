@@ -24,7 +24,7 @@
         toast.error($_('enter_amount'));
         return
       }
-      if ($mixinConnected && (($buy && $limitTotal * HARDCODED_FEE > baseBalance) || (!$buy && $limitTotal * HARDCODED_FEE > targetBalance))) {
+      if ($mixinConnected && (($buy && $limitTotal > baseBalance) || (!$buy && $limitTotal > targetBalance))) {
         toast.error($_('insufficient_funds'));
         return
       }
@@ -34,7 +34,7 @@
         toast.error($_('enter_amount'));
         return
       }
-      if ($mixinConnected && (($buy && $marketAmount * HARDCODED_FEE > baseBalance) || (!$buy && $marketAmount * HARDCODED_FEE > targetBalance))) {
+      if ($mixinConnected && (($buy && $marketAmount > baseBalance) || (!$buy && $marketAmount > targetBalance))) {
         toast.error($_('insufficient_funds'));
         return
       }
