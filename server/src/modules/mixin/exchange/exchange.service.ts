@@ -492,7 +492,10 @@ export class ExchangeService {
       orderId,
       getRFC3339Timestamp(),
     );
-    return await this.exchangeRepository.updateSpotOrderLimitFilled(orderId, limitFilled);
+    return await this.exchangeRepository.updateSpotOrderLimitFilled(
+      orderId,
+      limitFilled,
+    );
   }
 
   async updateSpotOrderReceivedAmount(orderId: string, receivedAmount: string) {
@@ -500,7 +503,10 @@ export class ExchangeService {
       orderId,
       getRFC3339Timestamp(),
     );
-    return await this.exchangeRepository.updateSpotOrderReceivedAmount(orderId, receivedAmount);
+    return await this.exchangeRepository.updateSpotOrderReceivedAmount(
+      orderId,
+      receivedAmount,
+    );
   }
 
   async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {

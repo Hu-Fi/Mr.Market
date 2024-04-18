@@ -103,7 +103,10 @@ export class ExchangeRepository {
   }
 
   async updateSpotOrderReceivedAmount(orderId: string, receiveAmount: string) {
-    return await this.spotOrderRepository.update({ orderId }, { receiveAmount });
+    return await this.spotOrderRepository.update(
+      { orderId },
+      { receiveAmount },
+    );
   }
 
   async updateSpotOrderApiKeyId(orderId: string, apiKeyId: string) {

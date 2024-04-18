@@ -1,4 +1,4 @@
-import { SpotOrder } from "src/common/entities/spot-order.entity";
+import { SpotOrder } from 'src/common/entities/spot-order.entity';
 
 export class SpotOrderDetails extends SpotOrder {
   amount: string;

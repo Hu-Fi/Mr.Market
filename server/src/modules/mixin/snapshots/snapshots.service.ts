@@ -504,7 +504,11 @@ export class SnapshotsService {
           break;
         }
         let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...spotDetails, snapshot, refId: snapshot.trace_id || unsafeExtract.request_id };
+        spotOrderCreateEvent = {
+          ...spotDetails,
+          snapshot,
+          refId: snapshot.trace_id || unsafeExtract.request_id,
+        };
         this.events.emit('spot.create', spotOrderCreateEvent);
         break;
 

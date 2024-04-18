@@ -86,7 +86,7 @@ export class SpotOrderListener {
       targetAssetId: targetAssetID,
       createdAt: timeNow,
       updatedAt: timeNow,
-      limitPrice: event.limitPrice === 'undefined' ? '' :  event.limitPrice,
+      limitPrice: event.limitPrice === 'undefined' ? '' : event.limitPrice,
       refId: event.refId,
       limitAmount: event.snapshot.amount,
       limitFilled: '',
