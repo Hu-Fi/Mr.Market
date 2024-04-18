@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { DownColorBg, HARDCODED_FEE, UpColorBg } from "$lib/helpers/constants";
+  import { DownColorBg, UpColorBg } from "$lib/helpers/constants";
   import { buy, orderConfirmDialog, pair, orderTypeLimit, orderTypeMarket, limitTotal, marketAmount, limitAmount, limitPrice } from "$lib/stores/spot";
   import { userAssets } from "$lib/stores/wallet";
   import { formatWalletBalance } from "$lib/helpers/utils";
