@@ -55,7 +55,6 @@ export class ExchangeRepository {
   async readOrderByUser(userId: string): Promise<SpotOrder[]> {
     let orders = await this.spotOrderRepository.find({ where: { userId } });
     orders = orders.map((order) => {
-      delete order.apiKeyId;
       return order;
     });
     return orders;
@@ -65,7 +64,6 @@ export class ExchangeRepository {
     const order = await this.spotOrderRepository.findOne({
       where: { orderId },
     });
-    delete order.apiKeyId;
     return order;
   }
 

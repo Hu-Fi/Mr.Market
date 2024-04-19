@@ -151,8 +151,8 @@ export class MarketdataService {
           .then((tickers) => {
             return pairs.map((pair) => ({
               symbol: pair,
-              price: tickers[pair]?.last, // Use optional chaining in case tickers[pair] is undefined
-              change: tickers[pair]?.percentage, // Use optional chaining here as well
+              price: tickers[pair]?.last,
+              change: tickers[pair]?.percentage,
               exchange,
             }));
           })

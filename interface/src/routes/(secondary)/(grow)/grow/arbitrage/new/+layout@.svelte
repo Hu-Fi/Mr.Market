@@ -1,5 +1,4 @@
 <script>
-  import { _ } from "svelte-i18n";
   import GrowNewArbBar from "$lib/components/topBar/growNewArbBar.svelte";
   import GrowNewArbNav from "$lib/components/bottomNav/growNewArbNav.svelte";
   import SelectExchange from "$lib/components/dialogs/grow/arbitrage/selectExchange.svelte";
@@ -15,7 +14,7 @@
   <slot />
 </main>
 
-<GrowNewArbNav btnText={$_('create_arbitrage')} />
+<GrowNewArbNav />
 <SelectExchange type=1 />
 <SelectExchange type=2 />
 <SelectPair />

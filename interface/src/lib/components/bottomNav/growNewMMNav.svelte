@@ -23,7 +23,7 @@
       data-testid="confirm-btn"
     >
       <span>
-        { $_('confirm') }
+        { $_('create') }
       </span>
     </button>
   </div>

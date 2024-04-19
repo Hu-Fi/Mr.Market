@@ -49,7 +49,7 @@
 
   const confirmPayment = () => {
     spotCreating.set(true);
-    let payAmount: number | '' = 0;
+    let payAmount: number | string = 0;
     if ($orderTypeLimit) {
       if ($buy) {
         payAmount = $limitTotal;
@@ -177,6 +177,7 @@
           class={clsx(
             "btn btn-md w-full rounded-full bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 no-animation",
           )}
+          disabled={$spotCreating}
           on:click={confirmPayment}
         >
           <span
