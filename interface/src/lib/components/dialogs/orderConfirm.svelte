@@ -72,7 +72,7 @@
       symbol: $pair.symbol,
       exchange: $pair.exchange,
       price: String($limitPrice),
-      amount: payAmount ? String(payAmount * HARDCODED_FEE) : '',
+      amount: payAmount,
       trace
     })
 
