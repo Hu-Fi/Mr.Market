@@ -111,14 +111,61 @@ export class MarketdataService {
 
     for (const [exchange, pairs] of Object.entries(SUPPORTED_PAIRS)) {
       if (pairs.length > 0) {
+        const exchangeInstance = this.exchanges.get(exchange);
+        if (!exchangeInstance || !exchangeInstance.has.fetchTickers) {
+          this.logger.error(
+            `Exchange ${exchange} does not support fetchTickers or is not configured.`,
+          );
+          promises.push(Promise.resolve([])); // Return an empty array if the exchange is not configured
+          continue;
+        }
+
         const promise = this.getTickers(exchange, pairs)
           .then((tickers) => {
-            return pairs.map((pair) => ({
-              symbol: pair,
-              price: tickers[pair]?.last,
-              change: tickers[pair]?.percentage,
-              exchange,
-            }));
+            const pairPromises = pairs.map(async (pair) => {
+              let limitData = {};
+              try {
+                const marketData = exchangeInstance.market(pair);
+                limitData = {
+                  leverage: {
+                    min: marketData.limits?.leverage?.min ?? null,
+                    max: marketData.limits?.leverage?.max ?? null,
+                  },
+                  amount: {
+                    min: marketData.limits?.amount?.min ?? null,
+                    max: marketData.limits?.amount?.max ?? null,
+                  },
+                  price: {
+                    min: marketData.limits?.price?.min ?? null,
+                    max: marketData.limits?.price?.max ?? null,
+                  },
+                  cost: {
+                    min: marketData.limits?.cost?.min ?? null,
+                    max: marketData.limits?.cost?.max ?? null,
+                  },
+                };
+              } catch (error) {
+                this.logger.error(
+                  `Error fetching limits for ${pair} from ${exchange}: ${error.message}`,
+                );
+                // Fallback to default limit structure
+                limitData = {
+                  leverage: { min: null, max: null },
+                  amount: { min: null, max: null },
+                  price: { min: null, max: null },
+                  cost: { min: null, max: null },
+                };
+              }
+
+              return {
+                symbol: pair,
+                price: tickers[pair]?.last,
+                change: tickers[pair]?.percentage,
+                exchange,
+                limit: limitData,
+              };
+            });
+            return Promise.all(pairPromises);
           })
           .catch((error) => {
             this.logger.error(
@@ -126,6 +173,7 @@ export class MarketdataService {
             );
             return []; // Return an empty array for this exchange in case of error
           });
+
         promises.push(promise);
       } else {
         promises.push(Promise.resolve([])); // Return an empty array if there are no pairs
@@ -133,7 +181,6 @@ export class MarketdataService {
     }
 
     const results = await Promise.all(promises);
-    // Flatten the array of arrays into a single array
     const flattenedResults = results.flat();
     return flattenedResults;
   }
