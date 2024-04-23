@@ -47,7 +47,8 @@ jobs:
 
       - name: Wait for localhost:3000 to become available
         run: |
-          make start-server &
+          cd server
+          npm start &
           cd ../interface
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
