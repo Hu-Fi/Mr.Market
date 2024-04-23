@@ -20,7 +20,7 @@ export const marketQueryFn = async (category: string) =>  {
     const re = await r.json()
     return re
   } catch (e) {
-    throw console.error('Server error')
+    console.error('Server error')
   }
 }
 
@@ -30,7 +30,7 @@ export const pairsFn = async () => {
     const re = await r.json()
     return re
   } catch (e) {
-    throw console.error('pairsFn:', e)
+    console.error('pairsFn:', e)
   }
 }
 
