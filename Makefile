@@ -1,12 +1,12 @@
 install-client:
 	@echo "Installing client dependencies..."
-	@cd interface && yarn install
+	@cd interface && yarn install || exit 1
 	@echo "Client dependencies installed successfully!"
 .PHONY: install-client
 
 install-server:
 	@echo "Installing server dependencies..."
-	@cd server && yarn install
+	@cd server && yarn install || exit 1
 	@echo "Server dependencies installed successfully!"
 .PHONY: install-server
 

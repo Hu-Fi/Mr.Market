@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: '18'
       - name: Install dependencies
-        run: yarn
+        run: yarn@1.22.10
       - name: Execute Unit tests
         run: npm run test:unit
