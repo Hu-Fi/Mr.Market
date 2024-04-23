@@ -73,13 +73,13 @@ npx playwright install
 
 Unit testing
 ```
-npm run test:unit
+yarn test:unit
 ```
 
 E2E testing
 
 ```
-npm run test:e2e
+yarn test:e2e
 ```
 
 ### Server

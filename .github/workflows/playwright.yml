@@ -36,19 +36,12 @@ jobs:
         with:
           node-version: 20
 
-
       - name: Install dependencies
-        run: yarn
-        working-directory: ./server
-
-      - name: Install dependencies
-        run: yarn
-        working-directory: ./interface
+        run: make install
 
       - name: Wait for localhost:3000 to become available
         run: |
-          cd server
-          npm start &
+          make start-server &
           cd ../interface
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
