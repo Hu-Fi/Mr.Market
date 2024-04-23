@@ -38,17 +38,16 @@ jobs:
 
 
       - name: Install dependencies
-        run: npm install
+        run: yarn
         working-directory: ./server
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: yarn
         working-directory: ./interface
 
       - name: Wait for localhost:3000 to become available
         run: |
-          cd server
-          npm start &
+          make start-server &
           cd ../interface
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
