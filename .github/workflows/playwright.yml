@@ -28,6 +28,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.41.1-jammy
     steps:
+      - name: Install Make
+        run: sudo apt-get install make
+
       - name: Checkout code
         uses: actions/checkout@v4
 
