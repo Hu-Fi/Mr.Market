@@ -40,7 +40,6 @@ jobs:
       - name: Wait for localhost:3000 to become available
         run: |
           make start-server &
-          cd ../interface
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
           max_attempts=3
