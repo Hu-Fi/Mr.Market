@@ -66,6 +66,7 @@ jobs:
               echo "Failed to connect to localhost:3000 after $max_attempts attempts."
               exit 1
           fi
+          npx playwright install
           npx playwright test --project='chromium'
         env:
           PUBLIC_HUFI_BACKEND_URL: 'http://localhost:3000'
