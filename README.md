@@ -66,8 +66,7 @@ make start
 #### Install dependencies
 
 ```
-npx playwright install-deps
-npx playwright install msedge
+npx playwright install
 ```
 
 #### Running tests
