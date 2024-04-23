@@ -38,11 +38,11 @@ jobs:
 
 
       - name: Install dependencies
-        run: yarn@1.22.10
+        run: yarn
         working-directory: ./server
 
       - name: Install dependencies
-        run: yarn@1.22.10
+        run: yarn
         working-directory: ./interface
 
       - name: Wait for localhost:3000 to become available
