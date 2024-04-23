@@ -25,12 +25,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    container:
-      image: mcr.microsoft.com/playwright:v1.41.1-jammy
     steps:
-      - name: Install Make
-        run: sudo apt-get install make
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -62,8 +57,14 @@ jobs:
               echo "Failed to connect to localhost:3000 after $max_attempts attempts."
               exit 1
           fi
-          npx playwright install
-          npx playwright test --project='chromium'
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./interface
+        
+      - name: Run Playwright tests
+        run: npx playwright test --project='chromium'
+        working-directory: ./interface
         env:
           PUBLIC_HUFI_BACKEND_URL: 'http://localhost:3000'
           POSTGRES_PORT: 5432

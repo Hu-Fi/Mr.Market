@@ -26,11 +26,9 @@ jobs:
         make install
 
     - name: Lint interface
-      run: |
-        yarn run lint
+      run: yarn lint
       working-directory: ./interface
 
     - name: Lint server
-      run: |
-        yarn run lint
+      run: yarn lint
       working-directory: ./server
