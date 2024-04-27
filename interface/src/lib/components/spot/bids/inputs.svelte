@@ -37,7 +37,6 @@
   };
   $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
   $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
-  const fee = 0.2;
 
   // Auto hide slider after finger left
   const handleInput = () => {

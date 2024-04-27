@@ -22,7 +22,7 @@
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION} from "$lib/helpers/constants";
   import toast from "svelte-french-toast";
   import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
-  import BigNumber from "bignumber.js";
+
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
   const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
