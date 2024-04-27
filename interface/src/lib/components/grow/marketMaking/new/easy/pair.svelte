@@ -43,7 +43,7 @@
     <div
       class={clsx(
         "join-item flex items-center rounded-full pl-3",
-        "bg-base-200/60",
+        "bg-slate-100",
       )}
     >
       <svg
@@ -108,7 +108,7 @@
   <!-- Pairs -->
   <div class="px-2 w-full !mt-6">
     <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
-      {#each marketMakingPairs as item}
+      {#each marketMakingPairs as item, i}
         <button
           class={clsx(
             "flex items-center justify-center shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
@@ -118,6 +118,7 @@
             createMMEasyPair.set(item);
             goto(`/grow/market_making/new/easy/two/`);
           }}
+          data-testid={`market-making-pair-${i}`}
         >
           <PairIcon
             clazz="w-5 h-5"

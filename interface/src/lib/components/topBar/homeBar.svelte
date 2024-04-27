@@ -8,7 +8,7 @@
   import MixinMenu from "$lib/components/common/MixinMenu.svelte";
 
   let disableNews = false;
-  let newsUpdated = true;
+  let newsUpdated = false;
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">

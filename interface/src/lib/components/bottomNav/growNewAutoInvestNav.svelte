@@ -49,7 +49,7 @@
 >
   <div>
     <button
-      class="btn btn-md w-36 !h-[2.5rem] border-none bg-base-content hover:bg-base-content rounded-full text-base-100 no-animation"
+      class="btn btn-md w-36 !h-[2.5rem] border-none bg-slate-800 hover:bg-slate-800 rounded-full text-base-100 no-animation"
       on:click={() => {move()}}
     >
       <span>

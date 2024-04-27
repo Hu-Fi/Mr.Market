@@ -35,13 +35,15 @@
     </div>
 
     <div class="grid grid-cols-3 gap-3 mx-4">
-      {#each SUPPORTED_UNIQUE_ARBITRAGE_PAIRS as pair}
+      {#each SUPPORTED_UNIQUE_ARBITRAGE_PAIRS as pair, i}
         <button class={
           clsx(
             "flex justify-center items-center text-left p-1 bg-base-100 rounded-full border",
             $createArbPair === pair && "bg-base-300"
-        )}
-          on:click={()=>{ createArbPair.set(pair); selectArbPairDialog.set(false); createArbAmount.set([]); }}>
+          )}
+          on:click={()=>{ createArbPair.set(pair); selectArbPairDialog.set(false); createArbAmount.set([]); }}
+          data-testid={`pair-${i}`}
+        >
           <span class="text-sm font-light mx-2">{pair}</span>          
         </button>
       {/each}

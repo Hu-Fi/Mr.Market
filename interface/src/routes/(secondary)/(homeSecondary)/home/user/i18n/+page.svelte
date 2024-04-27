@@ -18,7 +18,3 @@
     </button>
   {/each}
 </div>
-
-<style>
-
-</style>

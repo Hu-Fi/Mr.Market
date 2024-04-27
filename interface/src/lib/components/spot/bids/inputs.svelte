@@ -206,7 +206,7 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="tel"
+        type="text"
         use:cleave={maskOption}
         bind:value={$limitPrice}
         placeholder={$_("price")}
@@ -240,7 +240,7 @@
       class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
     >
       <input
-        type="tel"
+        type="text"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$limitAmount}
@@ -284,7 +284,7 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="tel"
+        type="text"
         on:keyup={getAmount}
         use:cleave={maskOption}
         bind:value={$limitTotal}
@@ -293,7 +293,7 @@
       />
     {:else if $orderTypeMarket}
       <input
-        type="tel"
+        type="text"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$marketAmount}

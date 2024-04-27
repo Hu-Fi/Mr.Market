@@ -78,7 +78,7 @@
     </div>
   </div>
   <!-- Right -->
-  <button class={clsx("btn btn-sm rounded-full no-animation", $darkTheme ? "bg-slate-700 hover:bg-slate-700 hover:border-slate-700 focus:bg-slate-700": "bg-slate-100 hover:bg-slate-100 border border-slate-100 focus:border-slate-100")} on:click={()=>goto("/wallet")}>
+  <button class={clsx("btn btn-sm rounded-full no-animation", $darkTheme ? "bg-slate-800 hover:bg-slate-800 hover:border-slate-800 focus:bg-slate-800": "bg-slate-100 hover:bg-slate-100 border border-slate-100 focus:border-slate-100")} on:click={()=>goto("/wallet")}>
     <span class="mx-3 text-sm text-base-content">{$_('view')}</span>
   </button>
 </div>

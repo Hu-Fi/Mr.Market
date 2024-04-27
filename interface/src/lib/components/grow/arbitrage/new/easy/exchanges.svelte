@@ -20,14 +20,14 @@
   } from "$lib/helpers/helpers";
   import { onDestroy } from "svelte";
 
-  onDestroy(()=>{
+  onDestroy(() => {
     createArbAmount.set([]);
-    createArbExchange1.set('');
-    createArbExchange2.set('');
-    createArbPair.set('');
+    createArbExchange1.set("");
+    createArbExchange2.set("");
+    createArbPair.set("");
     createArbConfirmDialog.set(false);
     editArbitrageDialog.set(false);
-  })
+  });
 </script>
 
 <div class="flex flex-col space-y-8">
@@ -43,6 +43,7 @@
         on:click={() => {
           selectArbExchange1Dialog.set(!$selectArbExchange1Dialog);
         }}
+        data-testid="select-exchange-1"
       >
         <div class="flex items-center space-x-2">
           {#if $createArbExchange1}
@@ -108,6 +109,7 @@
         on:click={() => {
           selectArbExchange2Dialog.set(!$selectArbExchange2Dialog);
         }}
+        data-testid="select-exchange-2"
       >
         <div class="flex items-center space-x-2">
           {#if $createArbExchange2}
@@ -173,6 +175,7 @@
         on:click={() => {
           selectArbPairDialog.set(!$selectArbPairDialog);
         }}
+        data-testid="select-trading-pair"
       >
         <span class={clsx("font-medium", $createArbPair ? "" : "opacity-40")}>
           {$createArbPair ? $createArbPair : $_("select_a_pair")}
@@ -215,18 +218,24 @@
       {#each Array(2) as _, i}
         <div class="flex items-center justify-between space-x-2 mx-2">
           <div class="flex space-x-2">
-            <img src={findCoinIconBySymbol($createArbPair.split("/")[i])} class="w-6 h-6" alt="" />
+            <img
+              src={findCoinIconBySymbol($createArbPair.split("/")[i])}
+              class="w-6 h-6"
+              alt=""
+            />
             <span class="font-semibold">
               {$createArbPair.split("/")[i]}
             </span>
           </div>
           <div class="join border rounded-lg items-center w-44">
             <input
-              type="tel"
+              type="text"
+              pattern="\d*\.?\d*"
               use:cleave={maskOption}
               class={clsx(
                 "input focus:border-none focus:outline-none join-item w-full",
               )}
+              data-testid={`amount-input-${i}`}
               bind:value={$createArbAmount[i]}
             />
             <div class="join-item mr-2">
@@ -241,14 +250,11 @@
   {/if}
 </div>
 
-<!-- 4. Create arbitrage order, confirm payment -->
-
-<!-- 5. Redirect to arbtirage details page -->
 <style>
-    hr {
-        border-top: 1px solid #eeeeee;
-        margin-left: 10px;
-        margin-right: 10px;
-        padding-bottom: 20px;
-    }
+  hr {
+    border-top: 1px solid #eeeeee;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-bottom: 20px;
+  }
 </style>
