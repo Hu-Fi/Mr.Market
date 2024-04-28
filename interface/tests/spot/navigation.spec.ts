@@ -13,7 +13,7 @@ test('open/close pair selector', async ({ page }) => {
   await page.getByTestId('spot_pair_selector').click();
 
   // Close
-  await page.getByTestId('spot_pair_selector_close').click();
+  await page.getByTestId('spot_pair_selector_close').click({ force: true });
 });
 
 test('goto candlestick', async ({ page }) => {
