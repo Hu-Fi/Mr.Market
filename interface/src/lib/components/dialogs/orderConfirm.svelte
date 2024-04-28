@@ -22,24 +22,30 @@
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION} from "$lib/helpers/constants";
   import toast from "svelte-french-toast";
   import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
+  import BigNumber from "bignumber.js";
 
-  const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
-  const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
+  const precision = (price: string | number) => Math.max(1, (`${formatUSNumber(price)}`.split('.')[1] || '').length + 1);
+
+  const priceWithFee = (price: string | number) =>  price ? formatFixedOrderBookPrice(Number(price) * fee, precision(price)) : price;
 
   const fee = 1.2;
-  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * fee, precisionLimit()) : $limitPrice;
-  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * fee, precisionCurrent()) : $current;
+  $: limitPriceWithFee = priceWithFee($limitPrice)
+  $: currentWithFee = priceWithFee($current);
+  $: limitTotalWithFee = priceWithFee($limitTotal);
+  $: limitAmountWithFee = priceWithFee($limitAmount);
+  $: marketAmountWithFee = priceWithFee($marketAmount);
+
   $: infos = [
     {
       title: $_("payment_amount"),
       value: $orderTypeLimit ?
         $buy
-          ? `${$limitTotal} ${$pair.symbol.split("/")[1]}`
-          : `${$limitAmount} ${$pair.symbol.split("/")[0]}`
+          ? `${limitTotalWithFee} ${$pair.symbol.split("/")[1]}`
+          : `${limitAmountWithFee} ${$pair.symbol.split("/")[0]}`
       : $orderTypeMarket ?
         $buy
-          ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
-          : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
+          ? `${marketAmountWithFee} ${$pair.symbol.split("/")[1]}`
+          : `${marketAmountWithFee} ${$pair.symbol.split("/")[0]}`
       : ''
     },
     {
