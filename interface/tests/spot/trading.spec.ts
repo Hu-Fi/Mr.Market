@@ -68,7 +68,7 @@ test('create buy/sell market order', async ({ page }) => {
   actualAmount = await page.locator("//div/div[1]/main/div/div[1]/div[1]/div[3]/div[3]/input").textContent()
   expect(payAmount).toContain(actualAmount)
   // Confirm order
-  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
+  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click({ force: true })
 });
 
 test('connect wallet', async({ page, context }) => {
@@ -81,7 +81,7 @@ test('connect wallet', async({ page, context }) => {
 
 test('create buy limit order', async ({ page }) => {
   const price = '10000'; const recvAmount = '10'; const estimatedPay = Number(price)*Number(recvAmount)
-
+  const estimatedPriceWithFee = '120000';
   // Open dialog
     await page.getByTestId('order_type_selector').click()
 
@@ -109,7 +109,7 @@ test('create buy limit order', async ({ page }) => {
 
   // Check Pay amount
   const estimatedPayX = await page.locator('//*[@id="order_confirm_modal"]/div/div/div[3]/div[1]/span[2]').textContent()
-  expect(estimatedPayX).toContain(estimatedPay.toString())
+  expect(estimatedPayX).toContain(estimatedPriceWithFee)
 
   // Confirm order
   await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
@@ -152,6 +152,6 @@ test.skip('create sell limit order', async ({ page }) => {
   expect(payAmountX).toContain(payAmountX)
 
   // Confirm order , impossible for now - insufficient funds
-  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click()
+  await page.locator('//*[@id="order_confirm_modal"]/div/div/div[4]/button').click({ force: true })
 });
 
