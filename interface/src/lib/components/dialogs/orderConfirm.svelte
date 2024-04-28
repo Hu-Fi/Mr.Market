@@ -94,6 +94,10 @@
     let totalTime = 0;
 
     var interval = setInterval(async () => {
+      if (!$orderConfirmDialog) {
+        clearInterval(interval);
+      }
+
       console.log(`${new Date()} called`);
       // TODO: TEST IT;
       found = await getOrderById(trace);
