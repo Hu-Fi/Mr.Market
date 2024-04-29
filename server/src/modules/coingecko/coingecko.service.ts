@@ -104,7 +104,7 @@ export class CoingeckoProxyService {
     from: number,
     to: number,
     vs_currency: string,
-  ) {
+  ): Promise<CoinMarketChartResponse> {
     try {
       const key = `chart/${id}-${from}-${to}-${vs_currency}`;
       const cachedData = await this.cacheService.get(key);

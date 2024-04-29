@@ -2,6 +2,11 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CoingeckoProxyService } from './coingecko.service';
 import { ApiTags } from '@nestjs/swagger';
+import {
+  CoinFullInfo,
+  CoinMarket,
+  CoinMarketChartResponse,
+} from 'coingecko-api-v3';
 
 @ApiTags('marketdata')
 @Controller('coingecko')
@@ -9,15 +14,14 @@ export class CoingeckoController {
   constructor(private readonly coingeckoProxy: CoingeckoProxyService) {}
 
   @Get('/coins/:id')
-  async getCoinsById(@Param('id') id: string): Promise<any> { // TODO: return type
+  async getCoinsById(@Param('id') id: string): Promise<CoinFullInfo> {
     return this.coingeckoProxy.coinsId(id);
   }
 
   @Get('/coins/markets/:vs_currency')
   async getCoinMarkets(
     @Param('vs_currency') vs_currency = 'usd',
-  ): Promise<any> { // TODO: return type
-    // Why this returns any instead of CoinMarket[]
+  ): Promise<CoinMarket[]> {
     return this.coingeckoProxy.coinsMarkets(vs_currency);
   }
 
@@ -37,9 +41,8 @@ export class CoingeckoController {
   async getCoinIdMarketChart(
     @Param('id') id: string,
     @Query('days') days: number | 'max',
-    to: number, // TODO: seems unnecessary
     @Query('vs_currency') vs_currency = 'usd',
-  ) { // TODO: return type
+  ): Promise<CoinMarketChartResponse> {
     return this.coingeckoProxy.coinsIdMarketChart(id, days, vs_currency);
   }
 
@@ -49,7 +52,7 @@ export class CoingeckoController {
     @Query('from') from: number,
     @Query('to') to: number,
     @Query('vs_currency') vs_currency = 'usd',
-  ) { // TODO: return type
+  ): Promise<CoinMarketChartResponse> {
     return this.coingeckoProxy.coinIdMarketChartRange(
       id,
       from,

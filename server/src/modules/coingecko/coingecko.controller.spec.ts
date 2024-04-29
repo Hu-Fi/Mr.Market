@@ -78,17 +78,11 @@ describe('CoingeckoController', () => {
     const expectedResult = coinMarketChartResponseFixture;
     const id = 'ethereum';
     const days = 59;
-    const to = 1614556800000;
     const currency = 'ethereum';
     (service.coinsIdMarketChart as jest.Mock).mockReturnValueOnce(
       expectedResult,
     );
-    const result = await controller.getCoinIdMarketChart(
-      id,
-      days,
-      to,
-      currency,
-    );
+    const result = await controller.getCoinIdMarketChart(id, days, currency);
     expect(service.coinsIdMarketChart).toHaveBeenCalledWith(id, days, currency);
     expect(result).toEqual(expectedResult);
   });
