@@ -53,7 +53,6 @@ export const CandleNewData = writable<OHLCVData>()
 export const CandleActiveIndicators = writable<string[]>(['MA'])
 
 export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
-  marketDataState.set('loading')
   const handleSuccess = (params: never[]) => {
     if (!Array.isArray(params)) {
       return;

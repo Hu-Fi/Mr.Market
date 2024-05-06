@@ -58,11 +58,7 @@
       }
     }
     if ($orderTypeMarket) {
-      if ($buy) {
-        payAmount = $marketAmount;
-      } else {
-        payAmount = $marketAmount;
-      }
+      payAmount = $marketAmount;
     }
     const trace = getUuid();
 
