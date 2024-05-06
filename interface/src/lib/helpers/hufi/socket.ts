@@ -55,8 +55,6 @@ export const switchSpotPair = (socket: Socket, p: PairsData) => {
   subscribeOrderBook(socket)
 }
 
-
-
 // /market/candle/{EXCHANGE}/{PAIR}
 export const connectCandleStick = (): Socket => {
   const socket = io(`${HUFI_SOCKET_URL}/marketdata`);

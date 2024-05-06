@@ -119,7 +119,7 @@
     {#if $orderBookMode === 0}
       <!-- Ask -->
       <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
-        {#each $asks.slice($orderTypeMarket ? $asks.length-MARKET_ORDERBOOK_HALF_LENGTH : $asks.length-LIMIT_ORDERBOOK_HALF_LENGTH, $asks.length) as a}
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as _}
           <div class="flex justify-between h-4">
             <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
             <div class="text-xs text-end w-9 h-3 skeleton" />
@@ -135,7 +135,7 @@
 
       <!-- Bid -->
       <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
-        {#each $bids.slice(0, $orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as b}
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as _}
           <div class="flex justify-between h-4">
             <div class={clsx("text-xs text-start", "w-11 h-3", "skeleton")} />
             <div class="text-xs text-end w-9 h-3 skeleton" />
@@ -146,7 +146,7 @@
     {:else if $orderBookMode === 1}
       <!-- Show all Ask -->
       <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
-        {#each $asks.slice($orderTypeMarket ? $asks.length-MARKET_ORDERBOOK_LENGTH : $asks.length-LIMIT_ORDERBOOK_LENGTH, $asks.length) as _}
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as _}
           <div class="flex justify-between h-4">
             <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
             <div class="text-xs text-end w-9 h-3 skeleton" />
@@ -169,7 +169,7 @@
 
       <!-- Show all Bid -->
       <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
-        {#each $asks.slice($orderTypeMarket ? $asks.length-MARKET_ORDERBOOK_LENGTH : $asks.length-LIMIT_ORDERBOOK_LENGTH, $asks.length) as _}
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as _}
           <div class="flex justify-between h-4">
             <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
             <div class="text-xs text-end w-9 h-3 skeleton" />

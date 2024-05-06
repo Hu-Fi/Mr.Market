@@ -4,7 +4,7 @@
   import { onDestroy, onMount } from "svelte";
   import Spot from "$lib/components/spot/spot.svelte";
 	import { type PairsData } from '$lib/types/hufi/exchanges';
-  import { connectOrderBook, switchSpotPair } from "$lib/helpers/hufi/socket";
+  import { connectOrderBook, switchSpotPair, unSubscribeOrderBook } from "$lib/helpers/hufi/socket";
 
   const getRoutingParams = async () => {    
     socket.set(connectOrderBook());
@@ -16,7 +16,7 @@
     } as PairsData)
   }
   onDestroy(() => {
-    $socket.disconnect();
+    unSubscribeOrderBook($socket);
   });
   onMount(getRoutingParams)
 </script>
