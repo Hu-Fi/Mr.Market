@@ -50,7 +50,7 @@
 
   const confirmPayment = () => {
     loading = true;
-    let payAmount = 0;
+    let payAmount = '';
     if ($orderTypeLimit) {
       if ($buy) {
         payAmount = $limitTotal;
@@ -59,11 +59,7 @@
       }
     }
     if ($orderTypeMarket) {
-      if ($buy) {
-        payAmount = $marketAmount;
-      } else {
-        payAmount = $marketAmount;
-      }
+      payAmount = $marketAmount;
     }
     const trace = getUuid();
     
