@@ -95,7 +95,6 @@ export class HealthService {
         healthStatus[table] = { status: 'ERROR', error: error.message };
       }
     }
-
     return healthStatus;
   }
 
@@ -115,14 +114,15 @@ export class HealthService {
 
     const responses = await Promise.all(allRequests);
     for (let i = 0; i < responses.length; i++) {
-      if (!responses[i].balance) {
+      if (!responses[i]) { // there is no field like balance in responses[i]
         healthMap.set(allExchanges[i].name, 'dead' as HEALTH_STATE);
         this.logger.error(`Exchange ${allExchanges[i].name} is dead`);
+      } else {
+        healthMap.set(allExchanges[i].name, 'alive' as HEALTH_STATE);
       }
-      healthMap.set(allExchanges[i].name, 'alive' as HEALTH_STATE);
     }
 
-    const result = Object.entries(healthMap);
+    const result = Array.from(healthMap, ([key, value]) => ({ [key]: value }));
     if (result.length === 0) {
       throw new InternalServerErrorException(`Exchanges are all dead`);
     }
