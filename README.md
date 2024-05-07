@@ -10,6 +10,8 @@ This is highly alpha code. Do not use it or you will lose all your money. We'd l
 <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="96px"></a>
 
 [Vercel deployment](https://mr-market-one.vercel.app/home) 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
 
 # What is Mr.Market
 
