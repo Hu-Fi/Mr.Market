@@ -488,7 +488,7 @@ export class ExchangeService {
   }
 
   async updateSpotOrderReceivedAmount(orderId: string, receiveAmount: string) {
-    return await this.exchangeRepository.updateSpotOrderById(orderId, {
+    return await this.exchangeRepository.updateSpotOrderDetails(orderId, {
       receiveAmount,
       updatedAt: getRFC3339Timestamp(),
     });
@@ -604,7 +604,7 @@ export class ExchangeService {
         // TODO: All these states needs to be tested
         // Determine order state and update
         if (order.filled > 0) {
-          await this.exchangeRepository.updateSpotOrderById(o.orderId, {
+          await this.exchangeRepository.updateSpotOrderDetails(o.orderId, {
             limitFilled: String(order.filled),
             updatedAt: getRFC3339Timestamp(),
           });

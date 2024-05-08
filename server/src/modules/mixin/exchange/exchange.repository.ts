@@ -99,7 +99,7 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.update({ orderId }, { updatedAt });
   }
 
-  async updateSpotOrderById(orderId: string, partialEntity: QueryDeepPartialEntity<SpotOrder>) {
+  async updateSpotOrderDetails(orderId: string, partialEntity: QueryDeepPartialEntity<SpotOrder>) {
     return await this.spotOrderRepository.update({ orderId }, partialEntity);
   }
 
