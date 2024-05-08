@@ -97,9 +97,6 @@
       if (!$orderConfirmDialog) {
         clearInterval(interval);
       }
-
-      console.log(`${new Date()} called`);
-      // TODO: TEST IT;
       found = await getOrderById(trace);
       totalTime += ORDER_STATE_FETCH_INTERVAL;
 
