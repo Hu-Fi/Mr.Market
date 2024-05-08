@@ -91,16 +91,16 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.save(transaction);
   }
 
+  async updateSpotOrderDetails(orderId: string, partialEntity: QueryDeepPartialEntity<SpotOrder>) {
+    return await this.spotOrderRepository.update({ orderId }, partialEntity);
+  }
+
   async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {
     return await this.spotOrderRepository.update({ orderId }, { state });
   }
 
   async updateSpotOrderUpdatedAt(orderId: string, updatedAt: string) {
     return await this.spotOrderRepository.update({ orderId }, { updatedAt });
-  }
-
-  async updateSpotOrderDetails(orderId: string, partialEntity: QueryDeepPartialEntity<SpotOrder>) {
-    return await this.spotOrderRepository.update({ orderId }, partialEntity);
   }
 
   async updateSpotOrderApiKeyId(orderId: string, apiKeyId: string) {
