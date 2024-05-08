@@ -1,6 +1,7 @@
 {
   "name": "interface",
   "version": "0.0.1",
+  "license": "MIT",
   "scripts": {
     "dev": "vite dev --host",
     "build": "vite build",
@@ -67,5 +68,13 @@
     "technicalindicators": "^3.1.0",
     "uuid": "^9.0.1",
     "vite-plugin-node-polyfills": "^0.19.0"
+  },
+  "resolutions": {
+    "strip-ansi": "6.0.1"
+  },
+  "exports": {
+    ".": {
+      "svelte": "./dist/index.js"
+    }
   }
 }

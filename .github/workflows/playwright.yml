@@ -25,8 +25,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    container:
-      image: mcr.microsoft.com/playwright:v1.41.1-jammy
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,20 +34,12 @@ jobs:
         with:
           node-version: 20
 
-
       - name: Install dependencies
-        run: npm install
-        working-directory: ./server
-
-      - name: Install dependencies
-        run: npm ci --ignore-scripts
-        working-directory: ./interface
+        run: make install
 
       - name: Wait for localhost:3000 to become available
         run: |
-          cd server
-          npm start &
-          cd ../interface
+          make start-server &
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
           max_attempts=3
@@ -66,16 +56,24 @@ jobs:
               echo "Failed to connect to localhost:3000 after $max_attempts attempts."
               exit 1
           fi
-          npx playwright test --project='chromium'
         env:
-          PUBLIC_HUFI_BACKEND_URL: 'http://localhost:3000'
           POSTGRES_PORT: 5432
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: localhost
           POSTGRES_DATABASE: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           JWT_SECRET: 6b23439e8fee67c5da38b61b8779e9f41a5e3e36efe723c6299dd2111896def6
           ADMIN_PASSWORD: 123123
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./interface
+        
+      - name: Run Playwright tests
+        run: npx playwright test --project='chromium'
+        working-directory: ./interface
+        env:
+          PUBLIC_HUFI_BACKEND_URL: 'http://localhost:3000'
 
       - name: Upload Playwright test artifacts
         if: always()

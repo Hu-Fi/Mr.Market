@@ -1,5 +1,4 @@
 // Hufi backend
-import { error } from "console";
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import type { OHLCVData, SupportedExchanges, SupportedPairs, SupportedTimeFrame, TokenChartTimeFrame } from "$lib/types/hufi/exchanges";
 import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
@@ -21,7 +20,7 @@ export const marketQueryFn = async (category: string) =>  {
     const re = await r.json()
     return re
   } catch (e) {
-    console.error('Server error')
+    console.error('marketQueryFn: ', e)
     return []
   }
 }
@@ -32,11 +31,12 @@ export const pairsFn = async () => {
     const re = await r.json()
     return re
   } catch (e) {
-    throw error('pairsFn:', e)
+    console.error('pairsFn: ', e)
+    return []
   }
 }
 
-export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): OHLCVData[] => {
+export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): Promise<OHLCVData[]> => {
   const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
   if (!r.ok) {
     console.error(`fetchOHLCV failed with status: ${r.status}`)
