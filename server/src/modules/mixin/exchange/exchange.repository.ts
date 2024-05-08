@@ -8,6 +8,7 @@ import {
   MixinReleaseHistory,
   MixinReleaseToken,
 } from 'src/common/entities/mixin-release.entity';
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 @Injectable()
 export class ExchangeRepository {
@@ -98,12 +99,8 @@ export class ExchangeRepository {
     return await this.spotOrderRepository.update({ orderId }, { updatedAt });
   }
 
-  async updateSpotOrderLimitFilled(orderId: string, limitFilled: string) {
-    return await this.spotOrderRepository.update({ orderId }, { limitFilled });
-  }
-
-  async updateSpotOrderReceivedAmount(orderId: string, receiveAmount: string) {
-    return await this.spotOrderRepository.update({ orderId }, { receiveAmount });
+  async updateSpotOrderById(orderId: string, partialEntity: QueryDeepPartialEntity<SpotOrder>) {
+    return await this.spotOrderRepository.update({ orderId }, partialEntity);
   }
 
   async updateSpotOrderApiKeyId(orderId: string, apiKeyId: string) {

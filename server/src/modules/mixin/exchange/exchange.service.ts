@@ -487,20 +487,11 @@ export class ExchangeService {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
-  async updateSpotOrderLimitFilled(orderId: string, limitFilled: string) {
-    await this.exchangeRepository.updateSpotOrderUpdatedAt(
-      orderId,
-      getRFC3339Timestamp(),
-    );
-    return await this.exchangeRepository.updateSpotOrderLimitFilled(orderId, limitFilled);
-  }
-
-  async updateSpotOrderReceivedAmount(orderId: string, receivedAmount: string) {
-    await this.exchangeRepository.updateSpotOrderUpdatedAt(
-      orderId,
-      getRFC3339Timestamp(),
-    );
-    return await this.exchangeRepository.updateSpotOrderReceivedAmount(orderId, receivedAmount);
+  async updateSpotOrderReceivedAmount(orderId: string, receiveAmount: string) {
+    return await this.exchangeRepository.updateSpotOrderById(orderId, {
+      receiveAmount,
+      updatedAt: getRFC3339Timestamp(),
+    });
   }
 
   async updateSpotOrderState(orderId: string, state: SpotOrderStatus) {
@@ -613,10 +604,10 @@ export class ExchangeService {
         // TODO: All these states needs to be tested
         // Determine order state and update
         if (order.filled > 0) {
-          await this.updateSpotOrderLimitFilled(
-            o.orderId,
-            String(order.filled),
-          );
+          await this.exchangeRepository.updateSpotOrderById(o.orderId, {
+            limitFilled: String(order.filled),
+            updatedAt: getRFC3339Timestamp(),
+          });
         }
         if (order.status === 'open') {
           if (order.filled === 0) {
