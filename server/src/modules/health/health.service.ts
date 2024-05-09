@@ -114,7 +114,8 @@ export class HealthService {
 
     const responses = await Promise.all(allRequests);
     for (let i = 0; i < responses.length; i++) {
-      if (!responses[i]) { // there is no field like balance in responses[i]
+      if (!responses[i]) {
+        // there is no field like balance in responses[i]
         healthMap.set(allExchanges[i].name, 'dead' as HEALTH_STATE);
         this.logger.error(`Exchange ${allExchanges[i].name} is dead`);
       } else {

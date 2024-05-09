@@ -1,10 +1,12 @@
 // strategy.controller.ts
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Post,
   Query,
 } from '@nestjs/common';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
@@ -12,6 +14,10 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
+import {
+  ArbitrageStrategyDto,
+  PureMarketMakingStrategyDto,
+} from './strategy.dto';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -86,6 +92,20 @@ export class StrategyController {
     return await this.strategyService.getUserArbitrageHistorys(userId);
   }
 
+  @Post('/execute-arbitrage')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Execute arbitrage strategy for a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The arbitrage strategy has been initiated for the user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async executeArbitrage(@Body() strategyParamsDto: ArbitrageStrategyDto) {
+    return this.strategyService.startArbitrageStrategyForUser(
+      strategyParamsDto,
+    );
+  }
+
   @Get('/arbitrage/stop')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop arbitrage strategy for a user' })
@@ -145,6 +165,24 @@ export class StrategyController {
     @Param('userId') userId: string,
   ): Promise<MarketMakingHistory[]> {
     return await this.strategyService.getUserOrders(userId);
+  }
+
+  @Post('/execute-pure-market-making')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Execute pure market making strategy for a user' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The pure market making strategy has been initiated for the user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async executePureMarketMaking(
+    @Body() strategyParamsDto: PureMarketMakingStrategyDto,
+  ) {
+    // Assuming strategyParamsDto includes all necessary parameters for the market making strategy
+    return this.strategyService.executePureMarketMakingStrategy(
+      strategyParamsDto,
+    );
   }
 
   @Get('/market_making/stop')

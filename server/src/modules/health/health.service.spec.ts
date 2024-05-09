@@ -38,9 +38,7 @@ describe('HealthService', () => {
               .mockResolvedValue({ total: 100 });
             break;
           case 'mexc':
-            exchangeMock.fetchBalance = jest
-              .fn()
-              .mockResolvedValue(undefined );
+            exchangeMock.fetchBalance = jest.fn().mockResolvedValue(undefined);
             break;
           case 'bitfinex':
             exchangeMock.fetchBalance = jest
