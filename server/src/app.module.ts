@@ -38,6 +38,7 @@ import {
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { UserExchangeReward } from './common/entities/user-rewards';
 dotenv.config();
 
 @Module({
@@ -65,6 +66,7 @@ dotenv.config();
         Performance,
         Transaction,
         UserBalance,
+        UserExchangeReward,
         Snapshot,
         SpotOrder,
         APIKeysConfig,
