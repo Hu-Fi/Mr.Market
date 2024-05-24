@@ -1,6 +1,10 @@
 name: Lint Code Base
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   lint:
@@ -17,22 +21,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies for interface
+    - name: Install dependencies
       run: |
-        npm install
-      working-directory: ./interface
+        make install
 
     - name: Lint interface
-      run: |
-        npm run lint:fix
+      run: yarn lint
       working-directory: ./interface
 
-    - name: Install dependencies for server
-      run: |
-        yarn install
-      working-directory: ./server
-
     - name: Lint server
-      run: |
-        yarn run lint
+      run: yarn lint
       working-directory: ./server

@@ -1,4 +1,4 @@
-This is highly alpha code. Do not use it or you will lose all your money. We'd like to thank Little creatures for being the first company to test Mr. Market and for helping with QA.
+**This is highly alpha code. Do not use it or you will lose all your money. We'd like to thank Little creatures for being the first company to test Mr. Market and for helping with QA.**
 
 ![Playwright Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/playwright.yml/badge.svg) 
 ![Unit Tests](https://github.com/Hu-Fi/Mr.Market/actions/workflows/vitest.yml/badge.svg)
@@ -6,12 +6,16 @@ This is highly alpha code. Do not use it or you will lose all your money. We'd l
 ![Lint](https://github.com/Hu-Fi/Mr.Market/actions/workflows/lint.yml/badge.svg)
 [![Railway Deployment Status](https://img.shields.io/badge/deployment-passing-brightgreen)](https://mrmarket-production.up.railway.app/)
 ![Vercel Deployment Status](https://therealsujitk-vercel-badge.vercel.app/?app=mr-market-one) 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="72px"></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface&build-command=npm%20run%20build&install-command=npm%20install"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="72px"></a>
 <a href="https://railway.app/template/hf6uBR?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="96px"></a>
 
 [Vercel deployment](https://mr-market-one.vercel.app/home) 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-# What is Mr.Market
+
+# Introduction
+
+## What is Mr.Market
 
 Mr Market is a CeFi crypto bot and the reference exchange oracle for Hu Fi. Mr Market has three main functions
 
@@ -19,7 +23,7 @@ Mr Market is a CeFi crypto bot and the reference exchange oracle for Hu Fi. Mr M
 - Hu Fi Market Making via the [human protocol](https://github.com/humanprotocol/human-protocol)
 - A front end where users can contribute funds to increase the ability to do Hu Fi market making.
 
-# What is Hu Fi
+## What is Hu Fi
 
 ![image](https://github.com/Hu-Fi/Mr.Market/assets/104921061/9be85875-723f-40c6-96e6-57f2d75924f4)
 
@@ -31,86 +35,76 @@ HuFi utilizes the Human Protocol to ensure fair compensation for market makers. 
 
 The frontend user interface for Mr. Market on Mixin.
 
+# Development
+
 ## Getting Started
 
 ### Prerequisites
 
-Install dependencies with yarn
+Install dependencies
 
 ```
-npm install
+make install
 ```
 
-### Run development server
+### Run DB server
+
+If you don't have Postgres installed, run it simply with docker.
 
 ```
-npm run dev
+make start-server-db
 ```
 
-If you're using bun:
+### Run development servers
 
 ```
-bun dev
+make start
 ```
 
 ## Tests
 
-### Install dependencies
+### Client
+
+#### Install dependencies
 
 ```
-npx playwright install-deps
-npx playwright install msedge
+npx playwright install
 ```
 
-### Running tests
+#### Running tests
 
 Unit testing
 ```
-npm run test:unit
+yarn test:unit
 ```
 
 E2E testing
 
 ```
-npm run test:e2e
+yarn test:e2e
 ```
 
-## Built With
+### Server
 
-* [Svelte](https://svelte.dev/) - Web framework
-* [Daisy UI](https://daisyui.com/) - UI framework
+#### Running tests
 
----
-
-The backend server for Mr.market.
-
-## Getting Started
-
-### Prerequisites
-
-Install dependencies with yarn
-
-```
-yarn
-```
-
-### Run development server
-
-```
-yarn start
-```
-
-## Tests
-
+Unit testing
 ```
 yarn test
 ```
 
-## Built With
+## Deployment
 
+1. Click <a href="https://railway.app/template/bveg2P?referralCode=j8dZGz"><img src="https://railway.app/button.svg" alt="Deploy on Railway" width="64px"></a> button to deploy server on railway. It's possible that the `Trial Plan` of railway doesn't have enough memory to run the server. We suggest to upgrade.
+
+2. Click <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHu-Fi%2FMr.Market&env=PUBLIC_BOT_ID,PUBLIC_HUFI_BACKEND_URL,PUBLIC_HUFI_SOCKET_URL&root-directory=interface"><img src="https://vercel.com/button" alt="Deploy with Vercel" width="52px"></a> button to deploy interface on vercel, fill the environment variables from railway deployment and mixin keystore. If you don't have a mixin keystore already, go to [Mixin developer dashboard](https://developers.mixin.one/dashboard) to get one.
+
+# Built With
+
+* [Svelte](https://svelte.dev/) - Web framework
+* [Daisy UI](https://daisyui.com/) - UI framework
 * [Nest.js](https://nestjs.com/) - Backend API framework
 
----
 
 ## Deployment Guide
 
@@ -159,9 +153,9 @@ If you encounter issues during the deployment, check the following:
 - Consult the Railway and Vercel documentation for detailed troubleshooting steps.
 
 
-## License
+# License
 
-This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](../LICENSE) file for details
+This project is licensed under the GNU Affero General Public License - see the [LICENSE.md](./LICENSE) file for details
 
-## Free Data provided by
+# Free Data provided by
 "Data provided by CoinGecko",

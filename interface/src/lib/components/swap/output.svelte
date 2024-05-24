@@ -80,7 +80,7 @@
     </button>
     
     <input
-      type="tel"
+      type="text"
       data-testid="output-amount"
       use:cleave={maskOption}
       bind:value={$Output}
