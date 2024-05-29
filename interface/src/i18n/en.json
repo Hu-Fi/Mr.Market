@@ -317,5 +317,7 @@
   "order_partially_filled": "Order partially filled",
   "order_filled": "Order filled",
   "order_success": "Order success",
-  "recently_created": "Recently created"
+  "recently_created": "Recently created",
+  "just_grow": "Just grow",
+  "deposit_any_token_and_grow_with_ease": "Deposit any token and grow with ease"
 }
