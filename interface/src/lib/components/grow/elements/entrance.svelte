@@ -15,7 +15,7 @@
   <div class="flex flex-row mx-4 mt-2">
     <button
       class={clsx(
-        "w-full flex flex-col px-4 py-3 space-y-4 rounded-2xl items-start no-animation hover:bg-slate-50 focus:bg-slate-50 bg-slate-50 border border-slate-100",
+        "w-full flex flex-col px-4 py-3 space-y-4 rounded-2xl items-start no-animation hover:bg-blue-50 focus:bg-blue-50 bg-blue-50 border border-slate-100",
       )}
       on:click={() => {
           goto('/grow/just_grow')
@@ -43,8 +43,8 @@
         </div>
         
         <div class="flex items-center justify-center text-end">
-          <span class="opacity-80 badge badge-sm">
-            {$_('recommonded')}
+          <span class="badge badge-sm badge-accent badge-outline">
+            {$_('recommended')}
           </span>
         </div>
       </div>
@@ -52,7 +52,7 @@
       <div class="flex flex-col text-start space-y-1">
         <span
           class={clsx(
-            "font-semibold text-sm opacity-80",
+            "font-semibold text-base opacity-80",
           )}
         >
           {$_('just_grow')}
@@ -70,7 +70,7 @@
     {#each items as item, i}
       <button
         class={clsx(
-          "flex flex-row py-2 px-4 space-x-2 rounded-2xl items-center justify-start no-animation hover:bg-slate-50 focus:bg-slate-50 bg-slate-50 border border-slate-100",
+          "flex flex-row py-2 px-4 space-x-2 rounded-2xl items-center justify-start no-animation hover:bg-slate-50 focus:bg-slate-50 bg-slate-50 border border-slate-100 shadow-sm",
         )}
         on:click={() => {
           item.fn();
