@@ -1,3 +1,6 @@
+import { page } from "$app/stores";
+import { derived } from 'svelte/store';
+import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
 
 // 0 easy, 1 advanced
@@ -44,3 +47,7 @@ export const createAIFiat = writable('USDT')
 export const createAIAutoPay = writable(true)
 export const createAIPeriodDialog = writable(false)
 export const createAISelectUnitDialog = writable(false)
+
+export const isArbitragePage = derived(page, $page => growPathChecker($page, 'arbitrage'));
+export const isMarketMakingPage = derived(page, $page => growPathChecker($page, 'market_making'));
+export const isJustGrow = derived(page, $page => growPathChecker($page, 'just_grow'))
