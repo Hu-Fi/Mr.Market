@@ -34,6 +34,14 @@ export const createMMEasyAmounts = writable([])
 export const createMMSelectPairEasyFilter = writable('')
 export const createMMSelectPairEasySearch = writable('')
 
+// Create new just grow
+export const createJustGrowAsset = writable({ symbol:'BTC', name: 'Bitcoin', icon: 'https://mixin.one' })
+export const createJustGrowAmount = writable()
+export const createJustGrowLockTime = writable()
+export const createJustGrowLockTimeDialog = writable()
+export const createJustGrowConfirmDialog = writable(false)
+export const createJustGrowSearch = writable('')
+
 // Create new auto invest
 export const createAISelectAssetSearch = writable("")
 // 0 = select asset, 1 == amount and period, 2 == name and auto

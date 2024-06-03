@@ -15,7 +15,8 @@
     'market_making/new/easy/one': '/grow/market_making',
     'market_making/new/easy/two': '/grow/market_making/easy/one',
     'just_grow/intro': '/grow/just_grow',
-    'just_grow/new': '/grow/just_grow',
+    'just_grow/new/one': '/grow/just_grow',
+    'just_grow/new/two': '/grow/just_grow/new/one',
     'grow/arbitrage': '/grow',
     'grow/market_making': '/grow',
     'grow/just_grow': '/grow'
@@ -37,7 +38,10 @@
     'market_making': $_('market_making'),
     'auto_invest/intro': $_('about_auto_invest'),
     'auto_invest': $_('auto_invest'),
-    'just_grow': $_('just_grow')
+    'just_grow': $_('just_grow'),
+    'just_grow/new': $_('create_just_grow'),
+    'just_grow/new/one': $_('select_a_token'),
+    'just_grow/new/two': $_('finish_creating'),
   };
 
   $: pageName = Object.keys(pageNameMappings).reduce((acc, key) => {

@@ -7,7 +7,6 @@
   import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
   import CancelOrder from "$lib/components/dialogs/manageOrder/cancelOrder.svelte";
   import OrderFilter from "$lib/components/dialogs/manageOrder/orderFilter.svelte";
-    import clsx from "clsx";
   
   $: filteredOrders = $userSpotOrders.length > 0? $userSpotOrders.filter((item)=>{
     return item.state.includes('EXCHANGE_ORDER_PARTIAL_FILLED') || item.state.includes('ORDER_CREATED')

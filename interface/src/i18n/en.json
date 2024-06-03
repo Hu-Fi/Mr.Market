@@ -321,8 +321,17 @@
   "just_grow": "Just grow",
   "just_grow_entrance_intro": "Enjoy asset growth with ease",
   "recommended": "Recommended",
-  "just_grow_intro": "Grow your asset with ease by letting the bot chooses the most profitable strategy",
+  "just_grow_intro": "letting the bot chooses the most profitable strategy",
   "whats_just_grow": "What's just grow?",
   "whats_just_grow_answer": "With this mode, users can deposit any type of token, and the bot will automatically chooses the most profitable strategy to make money for the user.",
-  "create_just_grow": "Let's just grow"
+  "create_just_grow": "Create an order",
+  "select_a_token": "Select a token",
+  "finish_creating": "Finish creating",
+  "finish_creating_intro_1": "Please make sure filled all the fields",
+  "finish_creating_intro_2": "After the payment is completed, the deposit order will be created",
+  "lock_time": "Lock time",
+  "select_lock_time": "Select lock time",
+  "1_week": "7 days",
+  "2_weeks": "14 days",
+  "1_month": "30 days"
 }

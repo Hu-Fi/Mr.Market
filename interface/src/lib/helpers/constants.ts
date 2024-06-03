@@ -279,10 +279,17 @@ export const SUPPORTED_MARKET_MAKING_PAIRS = [
   {symbol: "HMT/USDT", exchange: "bitfinex",},
   {symbol: "HMT/USDT", exchange: "lbank",}
 ];
+export const SUPPORTED_JUST_GROW_TOKENS = [
+  {symbol: 'BTC', name: 'Bitcoin'},
+  {symbol: 'ETH', name: 'Ethereum'},
+  {symbol: 'USDT', name: 'Tether'},
+  {symbol: 'HMT', name: 'Human Token'},
+  {symbol: 'XIN', name: 'Mixin'},
+]
 
 export const SUPPORTED_UNIQUE_ARBITRAGE_PAIRS = Array.from(new Set(SUPPORTED_ARBITRAGE_PAIRS.map(pair => pair.symbol)));
 
-// Limit needs 12, Market needs 10, use 14 to avoid data loss
+// Limit order needs 12, Market order needs 10, use 14 to avoid data loss
 export const ORDERBOOK_STREAM_LENGTH = 14
 export const LIMIT_ORDERBOOK_LENGTH = 12
 export const MARKET_ORDERBOOK_LENGTH = 10
