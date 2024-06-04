@@ -1,7 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import GrowDetails from "$lib/components/topBar/growDetails.svelte";
-  import { isArbitragePage, isMarketMakingPage } from "$lib/stores/grow";
+  import { isArbitragePage, isJustGrowPage, isMarketMakingPage } from "$lib/stores/grow";
   import ArbitrageStatusNav from "$lib/components/bottomNav/arbitrageStatusNav.svelte";
   import MarketMakingStatusNav from "$lib/components/bottomNav/marketMakingStatusNav.svelte";
   import EditArbitrageDialog from "$lib/components/dialogs/grow/arbitrage/editArbitrage.svelte";
@@ -20,6 +20,8 @@
   <ArbitrageStatusNav />
 {:else if $isMarketMakingPage }
   <MarketMakingStatusNav />
+{:else if $isJustGrowPage}
+  <!--  -->
 {/if}
 
 <EditArbitrageDialog />

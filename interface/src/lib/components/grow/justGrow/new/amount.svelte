@@ -9,7 +9,7 @@
   import { createJustGrowAmount, createJustGrowAsset } from "$lib/stores/grow";
 
   onDestroy(() => {
-    createJustGrowAmount.set([]);
+    createJustGrowAmount.set();
   })
 </script>
 
@@ -29,7 +29,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createJustGrowAmount} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createJustGrowAmount} class={clsx("input focus:border-none focus:outline-none w-36 join-item pr-0 placeholder:text-base-content/40")} placeholder={$_('enter_amount')} />
       <div class="join-item mr-2 w-12 text-end">
         <span class="text-sm opacity-40"> {$createJustGrowAsset.symbol} </span>
       </div>

@@ -32,7 +32,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createMMEasyAmounts[0]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createMMEasyAmounts[0]} class={clsx("input focus:border-none focus:outline-none w-36 join-item", !$createMMEasyAmounts && "text-base-content/40")} placeholder={$_('enter_amount')} />
       <div class="join-item mr-2 w-12 text-end">
         <span class="text-sm opacity-40"> {baseAssetSymbol} </span>
       </div>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input type="text" use:cleave={maskOption} data-testid="amount-input-1" bind:value={$createMMEasyAmounts[1]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+      <input type="text" use:cleave={maskOption} data-testid="amount-input-1" bind:value={$createMMEasyAmounts[1]} class={clsx("input focus:border-none focus:outline-none w-36 join-item", !$createMMEasyAmounts && "text-base-content/40")} placeholder={$_('enter_amount')} />
       <div class="join-item mr-2 w-12 text-end">
         <span class="text-sm opacity-40"> {targetAssetSymbol} </span>
       </div>

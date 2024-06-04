@@ -13,6 +13,7 @@
   import { SUPPORTED_JUST_GROW_TOKENS } from "$lib/helpers/constants";
   import { getSupportedJustGrowTokens } from "$lib/helpers/hufi/grow";
 
+  // TODO: Replace here with API request
   const justGrowTokens = (async ()=>{return await getSupportedJustGrowTokens()})()
   $: tokens = SUPPORTED_JUST_GROW_TOKENS.map((item) => ({ ...item }))
     .filter((item) => {
@@ -75,7 +76,6 @@
             )}
             on:click={() => {
               createJustGrowAsset.set(item);
-              console.log(item)
               goto(`/grow/just_grow/new/two/`);
             }}
             data-testid={`just-grow-token-${i}`}

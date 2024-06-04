@@ -327,7 +327,7 @@
   "create_just_grow": "Create an order",
   "select_a_token": "Select a token",
   "finish_creating": "Finish creating",
-  "finish_creating_intro_1": "Please make sure filled all the fields",
+  "finish_creating_intro_1": "Please make sure fill out all fields",
   "finish_creating_intro_2": "After the payment is completed, the deposit order will be created",
   "lock_time": "Lock time",
   "select_lock_time": "Select lock time",

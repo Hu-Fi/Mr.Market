@@ -58,4 +58,4 @@ export const createAISelectUnitDialog = writable(false)
 
 export const isArbitragePage = derived(page, $page => growPathChecker($page, 'arbitrage'));
 export const isMarketMakingPage = derived(page, $page => growPathChecker($page, 'market_making'));
-export const isJustGrow = derived(page, $page => growPathChecker($page, 'just_grow'))
+export const isJustGrowPage = derived(page, $page => growPathChecker($page, 'just_grow'))

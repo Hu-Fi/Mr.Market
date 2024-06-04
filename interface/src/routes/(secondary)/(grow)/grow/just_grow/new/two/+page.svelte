@@ -11,7 +11,7 @@
     <Amount />
     <LockTime />
   </div>
-  <div class="!mt-12">
+  <div class="!mt-10">
     <Intro />
   </div>
 </div>

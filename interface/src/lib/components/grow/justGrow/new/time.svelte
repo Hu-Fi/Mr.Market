@@ -25,8 +25,8 @@
     </div>
 
     <details class="dropdown dropdown-end" bind:open={$createJustGrowLockTimeDialog}>
-      <summary class="flex justify-between text-end border rounded-lg items-center w-[11.5rem] h-12">
-        <span class={clsx("text-sm mx-3", !$createJustGrowLockTime && "opacity-40")}> 
+      <summary class="flex justify-between text-end border rounded-lg items-center w-[12.5rem] h-12">
+        <span class={clsx("pl-4", !$createJustGrowLockTime && "text-base-content/40")}> 
           {$createJustGrowLockTime ? $createJustGrowLockTime.key : $_('select_lock_time')} 
         </span>
         <div class="mx-2">
@@ -35,7 +35,7 @@
           </svg>
         </div>
       </summary>
-      <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 text-sm">
+      <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-60 text-sm">
         {#each locktimes as time}
           <li>
             <button on:click={()=>{ 

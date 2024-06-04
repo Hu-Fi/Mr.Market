@@ -1,6 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { onDestroy } from "svelte";
   import { cleave } from "svelte-cleavejs";
   import { maskOption } from "$lib/helpers/constants";
   import {
@@ -18,7 +19,6 @@
     findCoinIconBySymbol,
     findExchangeIconByIdentifier,
   } from "$lib/helpers/helpers";
-  import { onDestroy } from "svelte";
 
   onDestroy(() => {
     createArbAmount.set([]);
