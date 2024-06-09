@@ -5,8 +5,8 @@
   import MixinMenu from "../common/MixinMenu.svelte";
 
   const back = () => {
-    if ($page.url.pathname.includes('/grow/market_making/new/easy/two')) {
-      goto('/grow/market_making/new/easy/one')
+    if ($page.url.pathname.includes('/grow/market_making/new/two')) {
+      goto('/grow/market_making/new/one')
       return;
     }
     goto('/grow/market_making/')
@@ -22,8 +22,8 @@
     
     <div class="px-2 pl-4">
       <span class="font-bold text-nowrap">
-        {$page.url.pathname.includes('/grow/market_making/new/easy/one') ? $_('select_a_pair') : 
-         $page.url.pathname.includes('/grow/market_making/new/easy/two') ? $_('confirm'): $_('market_making')}
+        {$page.url.pathname.includes('/grow/market_making/new/one') ? $_('select_a_pair') : 
+         $page.url.pathname.includes('/grow/market_making/new/two') ? $_('confirm'): $_('market_making')}
       </span>
     </div>
   </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow";
 
   $: inputValid = $createArbExchange1 && $createArbExchange2 && $createArbPair && $createArbAmount[0] && $createArbAmount[1];
@@ -10,6 +11,7 @@
 <div
   class={clsx(
     "btm-nav btm-nav-xs h-[3.25rem] visible bg-transparent flex items-center justify-center mb-3",
+    !$page.url.pathname.includes('grow/arbitrage/new/four') && 'hidden'
   )}
 >
   <div>

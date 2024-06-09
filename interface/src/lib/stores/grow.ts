@@ -23,8 +23,12 @@ export const selectArbExchange2Dialog = writable(false)
 export const selectArbPairDialog = writable(false)
 export const createArbExchange1: Writable<string> = writable()
 export const createArbExchange2: Writable<string> = writable()
+export const createArbExchange1Search = writable('')
+export const createArbExchange2Search = writable('')
 export const createArbPair: Writable<string>= writable('')
+export const createArbPairSearch: Writable<string>= writable('')
 export const createArbAmount = writable([])
+
 
 // Create new market making
 export const createMMConfirmDialog = writable(false)

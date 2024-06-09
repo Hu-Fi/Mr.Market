@@ -10,8 +10,8 @@
 
   const pathMappings = {
     'just_grow/intro': '/grow/just_grow',
-    'market_making/new/easy/two': '/grow/market_making/easy/one',
-    'market_making/new/easy/one': '/grow/market_making',
+    'market_making/new/two': '/grow/market_making/new/one',
+    'market_making/new/one': '/grow/market_making',
     'market_making/intro': '/grow/market_making',
     'arbitrage/new/easy': '/grow/arbitrage',
     'arbitrage/intro': '/grow/arbitrage',

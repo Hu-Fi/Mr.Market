@@ -13,6 +13,14 @@
       goto('/grow/arbitrage/new/one')
       return;
     }
+    if ($page.url.pathname.includes('/grow/arbitrage/new/three')) {
+      goto('/grow/arbitrage/new/two')
+      return;
+    }
+    if ($page.url.pathname.includes('/grow/arbitrage/new/four')) {
+      goto('/grow/arbitrage/new/three')
+      return;
+    }
     goto('/grow/arbitrage/')
   }
 </script>
@@ -26,8 +34,13 @@
     
     <div class="px-2 pl-4">
       <span class="font-bold text-nowrap">
-        {$page.url.pathname.includes('/grow/arbitrage/new/one') ? $_('select_asset') : 
-         $page.url.pathname.includes('/grow/arbitrage/new/two') ? $_('confirm'): $_('arbitrage')}
+        {
+          $page.url.pathname.includes('/grow/arbitrage/new/one') ? $_('select_first_exchange') : 
+          $page.url.pathname.includes('/grow/arbitrage/new/two') ? $_('select_second_exchange') : 
+          $page.url.pathname.includes('/grow/arbitrage/new/three') ? $_('select_a_pair') :
+          $page.url.pathname.includes('/grow/arbitrage/new/four') ? $_('confirm'): 
+          $_('arbitrage')
+        }
       </span>
     </div>
   </div>

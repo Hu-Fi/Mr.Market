@@ -1,4 +1,4 @@
-import { HUFI_BACKEND_URL, SUPPORTED_JUST_GROW_TOKENS } from "$lib/helpers/constants";
+import { HUFI_BACKEND_URL, SUPPORTED_ARBITRAGE_PAIRS, SUPPORTED_EXCHANGES, SUPPORTED_JUST_GROW_TOKENS } from "$lib/helpers/constants";
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
@@ -20,17 +20,30 @@ export const getGrowBasicInfo = async () => {
 export const getSupportedJustGrowTokens = async () => {
   try {
     // const response = await fetch(`${HUFI_BACKEND_URL}/grow/just_grow/supported_tokens`);
-    return SUPPORTED_JUST_GROW_TOKENS;
     // return await handleResponse(response);
+    return SUPPORTED_JUST_GROW_TOKENS;
   } catch (error) {
     console.error('Error fetching supported tokens for just grow:', error);
   }
 }
 
-export const getSupportedArbitrageExchanges = async () => {
+export const getSupportedArbitrageExchanges = () => {
+  return SUPPORTED_EXCHANGES;
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/grow/arbitrage/supported_exchanges`);
-    return await handleResponse(response);
+    // const response = await fetch(`${HUFI_BACKEND_URL}/grow/arbitrage/supported_exchanges`);
+    // return await handleResponse(response);
+    // return SUPPORTED_EXCHANGES;
+  } catch (error) {
+    console.error('Error fetching supported exchanges for arbitrage:', error);
+  }
+}
+
+export const getSupportedArbitragePairs = () => {
+  return SUPPORTED_ARBITRAGE_PAIRS;
+  try {
+    // const response = await fetch(`${HUFI_BACKEND_URL}/grow/arbitrage/supported_exchanges`);
+    // return await handleResponse(response);
+    // return SUPPORTED_EXCHANGES;
   } catch (error) {
     console.error('Error fetching supported exchanges for arbitrage:', error);
   }

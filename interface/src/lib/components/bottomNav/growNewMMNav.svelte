@@ -10,7 +10,7 @@
 <div
   class={clsx(
     "btm-nav btm-nav-xs h-[3.25rem] visible bg-transparent flex items-center justify-center mb-3",
-    !$page.url.pathname.includes('grow/market_making/new/easy/two') && 'hidden'
+    !$page.url.pathname.includes('grow/market_making/new/two') && 'hidden'
   )}
 >
   <div>
