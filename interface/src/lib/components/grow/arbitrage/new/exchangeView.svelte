@@ -55,7 +55,7 @@
         </div>
       </div>  
 
-      <div class="flex items-center space-x">
+      <div class="flex items-center space-x text-sm">
         <span class="font-semibold capitalize">
           {$createArbExchange1}
         </span>
