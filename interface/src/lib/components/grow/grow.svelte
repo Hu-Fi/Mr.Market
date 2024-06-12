@@ -7,9 +7,7 @@
   import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
 </script>
 
-<div class="flex flex-col space-y-5">
-  <Entrance />
-</div>
+<Entrance />
 {#if $mixinConnected}
   <Ongoing />
   <GrowAddMore />

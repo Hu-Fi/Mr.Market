@@ -1,51 +1,47 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
+  import { _ } from "svelte-i18n";
   import { onDestroy } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import MixinMenu from "../common/MixinMenu.svelte";
   import { easyAdvancedMode } from "$lib/stores/grow";
 
-  onDestroy(()=>{easyAdvancedMode.set(0)})
+  onDestroy(() => { easyAdvancedMode.set(0) });
+
+  const pathMappings = {
+    'just_grow/intro': '/grow/just_grow',
+    'market_making/new/two': '/grow/market_making/new/one',
+    'market_making/new/one': '/grow/market_making',
+    'market_making/intro': '/grow/market_making',
+    'arbitrage/new/easy': '/grow/arbitrage',
+    'arbitrage/intro': '/grow/arbitrage',
+    'grow/just_grow': '/grow',
+    'grow/market_making': '/grow',
+    'grow/arbitrage': '/grow'
+  };
 
   const back = () => {
-    // Arbitrage
-    if (
-      $page.url.pathname.includes('arbitrage/intro') ||
-      $page.url.pathname.includes('arbitrage/new/easy')
-    ){
-      goto('/grow/arbitrage')
-      return;
+    for (const [key, value] of Object.entries(pathMappings)) {
+      if ($page.url.pathname.includes(key)) {
+        goto(value);
+        return;
+      }
     }
-    
-    // Market making
-    if (
-      $page.url.pathname.includes('market_making/intro') ||
-      $page.url.pathname.includes('market_making/new/easy/one')
-    ){
-      goto('/grow/market_making')
-      return;
-    }
-    if ($page.url.pathname.includes('market_making/new/easy/two')){ 
-      goto('/grow/market_making/easy/one') 
-      return;
-    }
+  };
 
-    // Base
-    if (
-      $page.url.pathname.includes('grow/arbitrage') || 
-      $page.url.pathname.includes('grow/market_making')
-    ){ 
-      goto('/grow')
-      return;
-    }
-  }
-  $: pageName = $page.url.pathname.includes('arbitrage/intro') ?  $_('about_arbitrage') :
-                $page.url.pathname.includes('arbitrage') ?  $_('arbitrage') :
-                $page.url.pathname.includes('market_making/intro') ? $_('about_market_making') :
-                $page.url.pathname.includes('market_making') ? $_('market_making') :
-                $page.url.pathname.includes('auto_invest/intro') ? $_('about_auto_invest') :
-                $page.url.pathname.includes('auto_invest') ? $_('auto_invest') : ''
+  const pageNameMappings = {
+    'arbitrage/intro': $_('about_arbitrage'),
+    'arbitrage': $_('arbitrage'),
+    'market_making/intro': $_('about_market_making'),
+    'market_making': $_('market_making'),
+    'auto_invest/intro': $_('about_auto_invest'),
+    'auto_invest': $_('auto_invest'),
+    'just_grow': $_('just_grow'),
+  };
+
+  $: pageName = Object.keys(pageNameMappings).reduce((acc, key) => {
+    return $page.url.pathname.includes(key) ? pageNameMappings[key] : acc;
+  }, '');
 </script>
 
 <div class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] !h-[36px] !min-h-[36px] mr-[6px]">
