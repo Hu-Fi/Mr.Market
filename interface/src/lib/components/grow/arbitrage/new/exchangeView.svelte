@@ -32,7 +32,7 @@
       </span>
     </div>
 
-    <div class="flex space-x-2">
+    <div class="flex space-x-2 truncate">
       <div class="flex items-center space-x-0.5">
         <div class="avatar">
           <div class="mask mask-squircle w-6 h-6">

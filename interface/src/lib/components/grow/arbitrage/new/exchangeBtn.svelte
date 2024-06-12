@@ -22,7 +22,7 @@
     >
     <img src={findExchangeIconByIdentifier(exchangeName)} class="w-8 h-8 rounded-full" alt="" />
     <div class="flex flex-col grow">
-      <span class="text-base font-semibold capitalize">
+      <span class="text-sm font-semibold capitalize">
         {exchangeName}
       </span>
     </div>
@@ -42,7 +42,7 @@
     >
     <img src={findExchangeIconByIdentifier(exchangeName)} class="w-8 h-8 rounded-full" alt="" />
     <div class="flex flex-col grow">
-      <span class="text-base font-semibold capitalize">
+      <span class="text-sm font-semibold capitalize">
         {exchangeName}
       </span>
     </div>
