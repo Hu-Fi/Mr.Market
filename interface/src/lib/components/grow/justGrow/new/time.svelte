@@ -24,7 +24,7 @@
       </span>
     </div>
 
-    <details class="dropdown dropdown-end" bind:open={$createJustGrowLockTimeDialog}>
+    <details class="dropdown dropdown-end" bind:open={$createJustGrowLockTimeDialog} data-testid="select-lock-time">
       <summary class="flex justify-between text-end border rounded-lg items-center w-[12.5rem] h-12">
         <span class={clsx("pl-4", !$createJustGrowLockTime && "text-base-content/40")}> 
           {$createJustGrowLockTime ? $createJustGrowLockTime.key : $_('select_lock_time')} 
@@ -36,11 +36,13 @@
         </div>
       </summary>
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-60 text-sm">
-        {#each locktimes as time}
+        {#each locktimes as time, i}
           <li>
-            <button on:click={()=>{ 
-              createJustGrowLockTimeDialog.set(false);
-              createJustGrowLockTime.set(time);
+            <button
+              data-testid={`time-${i}`}
+              on:click={()=>{
+                createJustGrowLockTimeDialog.set(false);
+                createJustGrowLockTime.set(time);
             }}>
               {time.key}
             </button>

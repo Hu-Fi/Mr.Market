@@ -54,6 +54,7 @@
           class={clsx(
             "btn btn-md w-full rounded-full bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 no-animation",
           )}
+          data-testid='confirm-order-btn'
           on:click={confirmPayment}
         >
           <span

@@ -42,7 +42,7 @@ export const createMMSelectPairEasySearch = writable('')
 export const createJustGrowAsset = writable({ symbol:'BTC', name: 'Bitcoin', icon: 'https://mixin.one' })
 export const createJustGrowAmount = writable()
 export const createJustGrowLockTime = writable()
-export const createJustGrowLockTimeDialog = writable()
+export const createJustGrowLockTimeDialog = writable(false)
 export const createJustGrowConfirmDialog = writable(false)
 export const createJustGrowSearch = writable('')
 
