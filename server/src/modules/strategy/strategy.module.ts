@@ -17,6 +17,7 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { StrategyRewardsService } from './strategy-rewards.service';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
     ]),
   ],
   controllers: [StrategyController],
-  providers: [StrategyService, StrategyUserService, StrategyUserRepository],
+  providers: [StrategyService, StrategyUserService, StrategyUserRepository, StrategyRewardsService],
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],
 })
 export class StrategyModule {}
