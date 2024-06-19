@@ -19,10 +19,10 @@ import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
 
 @Injectable()
 export class RebalanceService {
-  private readonly configService: ConfigService;
   private readonly logger = new Logger(RebalanceService.name);
 
   constructor(
+    private configService: ConfigService,
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
     private rebalanceRepository: RebalanceRepository,

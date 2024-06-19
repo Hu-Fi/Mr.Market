@@ -29,7 +29,6 @@ describe('HealthService', () => {
 
     ['bitfinex', 'mexc', 'binance'].forEach((exchangeName) => {
       const exchangeMock = service['exchanges'].get(exchangeName);
-      console.log(exchangeMock);
       if (exchangeMock) {
         switch (exchangeMock.id) {
           case 'binance':

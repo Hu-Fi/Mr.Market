@@ -9,10 +9,7 @@ import { UserModule } from 'src/modules/mixin/user/user.module';
 import { MessageController } from 'src/modules/mixin/message/message.controller';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([MixinMessage]),
-    UserModule, // Add the UserModule here
-  ],
+  imports: [TypeOrmModule.forFeature([MixinMessage]), UserModule],
   controllers: [MessageController],
   providers: [MessageService, ConfigService, UserService, MessageRepository],
 })
