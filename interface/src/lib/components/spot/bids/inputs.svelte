@@ -4,11 +4,10 @@
   //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
-  import authorize from "$lib/helpers/mixin-oauth";
-  import { AfterMixinOauth, mixinAuthWrapper } from "$lib/helpers/mixin";
+  import { mixinConnected } from "$lib/stores/home";
+  import { maskOption } from "$lib/helpers/constants";
+  import { mixinAuthWrapper } from "$lib/helpers/mixin";
   import { BN, formatDecimals } from "$lib/helpers/utils";
-  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
-  import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
   import {
     pair,
     buy,
