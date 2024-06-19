@@ -1,3 +1,47 @@
+/**
+ * BigoneService
+ *
+ * This service handles interactions with the BigOne exchange, including generating JWT tokens,
+ * managing withdrawals, and retrieving withdrawal fees. It uses the CCXT library for some exchange operations
+ * and Axios for HTTP requests.
+ *
+ * Dependencies:
+ * - ConfigService: Provides configuration values from environment variables.
+ * - CCXT: Cryptocurrency exchange trading library.
+ * - Axios: HTTP client for making API requests.
+ * - JWT: Library for generating JSON Web Tokens.
+ * - Constants: ASSET_ID_SYMBOL_MAP for managing asset IDs and symbols.
+ * - FeeResponse: Type definition for the fee response from BigOne.
+ * - HttpException: Exception class for handling HTTP errors.
+ *
+ * Methods:
+ *
+ * - constructor: Initializes the service with the injected ConfigService and sets up the CCXT instance.
+ *
+ * - generateJwtToken(): Generates a JWT token for authenticating with the BigOne API.
+ *
+ * - getHeaders(): Returns the headers required for making authenticated requests to the BigOne API.
+ *
+ * - getWithdrawals(pageToken?: string, limit?: string, kind?: string, assetSymbol?: string): Retrieves a list of withdrawals with optional query parameters.
+ *
+ * - getWithdrawalByGuid(guid: string): Retrieves a specific withdrawal by its GUID.
+ *
+ * - createWithdrawal(symbol: string, targetAddress: string, amount: string, memo?: string, guid?: string, gatewayName?: string): Creates a new withdrawal request.
+ *
+ * - cancelWithdrawal(guid: string): Cancels a withdrawal request by its GUID.
+ *
+ * - getFeeBySymbol(symbol: string): Retrieves the withdrawal fee for a specific asset symbol.
+ *
+ * - getBigOneFeeByID(asset_id: string): Retrieves the withdrawal fee for a specific asset ID.
+ *
+ * Notes:
+ * - We use BigOne because we can transfer asset from mixin to it for free and enjoy lower withdrawal fee, makes it more cost effective for rebalance.
+ * - The service uses Axios for making HTTP requests to the BigOne API and handles errors appropriately.
+ * - The generateJwtToken method creates a token required for authenticated API requests.
+ * - The service includes methods for creating, retrieving, and canceling withdrawals, as well as fetching withdrawal fees.
+ * - Error handling is implemented to log and manage errors during API interactions.
+ */
+
 import * as ccxt from 'ccxt';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';

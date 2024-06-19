@@ -1,3 +1,39 @@
+/**
+ * ExchangeListener
+ *
+ * This listener service handles events related to placing spot orders on an exchange.
+ * It processes the 'exchange.spot.place' event, validates event data, checks balances,
+ * and manages the placement of spot orders.
+ *
+ * Dependencies:
+ * - ExchangeService: Service for interacting with exchange-related data and operations.
+ * - SnapshotsService: Service for interacting with Mixin snapshots.
+ * - STATE_TEXT_MAP: Mapping of state text for various order states.
+ * - Events: ExchangePlaceSpotEvent and MixinReleaseTokenEvent for handling spot order and token release events.
+ *
+ * Events:
+ * - 'exchange.spot.place': Event triggered to place spot orders on an exchange.
+ *
+ * Methods:
+ *
+ * - constructor: Initializes the service with the injected ExchangeService and SnapshotsService.
+ *
+ * - handlePlaceSpotOrderEvent(payload: { event: ExchangePlaceSpotEvent; mixinEvent: MixinReleaseTokenEvent }): Handles the 'exchange.spot.place' event.
+ *   Validates event data, checks if the balance is sufficient, places the order, and adds a Mixin release token.
+ *
+ * Notes:
+ * - Spot order execution process (Here is the step 3 and 4)
+ *  1. Loop snapshots on mixin, find incoming transfer
+ *  2. Send create spot order event to spot.listener.ts
+ *  3. If basic checks are passed, send place order event, write to db in exchange.listener.ts
+ *  4. Wait for state update scheduler to update order state, in exchange.service.ts
+ *  5. If the state updated to succeess, send release token event to mixin.listener.ts
+ *
+ * - The service ensures that the event data is valid and the spot order is processed securely.
+ * - Error handling is implemented to manage errors during the spot order process.
+ * - The service updates the order state and manages token releases based on the received event data.
+ */
+
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
