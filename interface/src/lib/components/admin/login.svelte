@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
+  import CryptoJS from 'crypto-js';
   import { goto } from "$app/navigation";
   import { autoCheckPassword, checkPassword } from "$lib/helpers/hufi/admin";
   import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
@@ -9,8 +10,9 @@
 
   const login = async (pass: string) => {
     loginLoading.set(true);
-    // COMMENT FOR DEV
-    const accessToken = await checkPassword(pass);
+    const hashedAdminPassword = CryptoJS.SHA3(pass, { outputLength: 256 }).toString(CryptoJS.enc.Hex);
+    console.log('hashedAdminPassword:', hashedAdminPassword)
+    const accessToken = await checkPassword(hashedAdminPassword);
     if (accessToken) {
       submitted.set(true);
       checked.set(true);

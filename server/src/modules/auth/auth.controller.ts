@@ -1,6 +1,6 @@
 // auth.controller.ts
 import { Throttle } from '@nestjs/throttler';
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { AuthService } from 'src/modules/auth/auth.service';
 
 @Controller('auth')
@@ -14,5 +14,10 @@ export class AuthController {
   ): Promise<{ access_token: string }> {
     const access_token = await this.authService.validateUser(password);
     return { access_token };
+  }
+
+  @Get('oauth')
+  async oauth(@Query('code') code: string) {
+    return this.authService.mixinOauthHandler(code);
   }
 }

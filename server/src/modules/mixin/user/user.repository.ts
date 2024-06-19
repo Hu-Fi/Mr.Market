@@ -10,7 +10,7 @@ export class UserRepository {
     private readonly userRepository: Repository<MixinUser>,
   ) {}
 
-  async addUser(user: MixinUser) {
+  async addUser(user: Partial<MixinUser>) {
     return this.userRepository.save(user);
   }
 
@@ -26,12 +26,16 @@ export class UserRepository {
   }
 
   async checkUserExist(user_id: string) {
-    return await this.userRepository.exist({
+    return await this.userRepository.exists({
       where: { user_id },
     });
   }
 
   async getAllUsers(): Promise<MixinUser[]> {
     return await this.userRepository.find();
+  }
+
+  async updateUser(user_id: string, updateData: Partial<MixinUser>) {
+    return this.userRepository.update({ user_id }, updateData);
   }
 }

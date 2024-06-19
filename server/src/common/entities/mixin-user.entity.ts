@@ -5,7 +5,9 @@ export class MixinUser {
   @PrimaryGeneratedColumn('uuid')
   user_id: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   type: string;
 
   @Column()
@@ -23,6 +25,9 @@ export class MixinUser {
     nullable: true,
   })
   avatar_url: string;
+
+  @Column()
+  jwt_token: string;
 
   @Column()
   created_at: string;

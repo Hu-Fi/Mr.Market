@@ -1,12 +1,14 @@
 // @ts-nocheck
 import axios from "axios";
 import { get } from "svelte/store";
-import { mixinConnected } from "$lib/stores/home";
+import authorize from "$lib/helpers/mixin-oauth";
+import { getOauth } from "$lib/helpers/hufi/auth";
 import { getOrdersByUser } from "$lib/helpers/hufi/spot";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
+import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
-import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
+import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
 import { GenerateSpotMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userArbitrageOrders, userAssets, userMarketMakingOrders, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
@@ -221,24 +223,55 @@ export const getUserStrategyOrders = async (user_id: string) => {
   }
 }
 
+export const mixinAuthWrapper = async (pkce: boolean = false) => {
+  mixinConnectLoading.set(true);
+  authorize(
+    { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce },
+    {
+      onShowUrl: (url: string) => {
+        window.open(url);
+      },
+      onError: (error: Error) => {
+        console.error(error);
+        mixinConnectLoading.set(false);
+        return;
+      },
+      onSuccess: async (token: string) => {
+        if (!pkce) {
+          const result = await getOauth(token);
+          if (result.token) {
+            token = result.token
+          } else {
+            return;
+          }
+        }
+        await AfterMixinOauth(token);
+        mixinConnectLoading.set(false);
+      },
+    },
+  );
+}
+
 export const AfterMixinOauth = async (token: string) => {
-  const data = await mixinUserMe(token)
-  if (!data) {
-    console.log('!UserMe, remove mixin-oauth')
-    localStorage.removeItem('mixin-oauth')
-    return
-  }
-  if (data.full_name === '') {
-    console.log('!UserMeError, remove mixin-oauth')
-    localStorage.removeItem('mixin-oauth')
-    return
-  }
-  user.set(data)
-  mixinConnected.set(true)
-  localStorage.setItem("mixin-oauth", token)
-  getUserBalances(data.user_id, token)
-  getUserSpotOrders(data.user_id)
-  getUserStrategyOrders(data.user_id)
+  // if (pkce) {
+    const data = await mixinUserMe(token)
+    if (!data) {
+      console.log('!UserMe, remove mixin-oauth')
+      localStorage.removeItem('mixin-oauth')
+      return
+    }
+    if (data.full_name === '') {
+      console.log('!UserMeError, remove mixin-oauth')
+      localStorage.removeItem('mixin-oauth')
+      return
+    }
+    user.set(data)
+    mixinConnected.set(true)
+    localStorage.setItem("mixin-oauth", token)
+    getUserBalances(data.user_id, token)
+    getUserSpotOrders(data.user_id)
+    getUserStrategyOrders(data.user_id)
+  // }
 }
 
 export const MixinDisconnect = () => {
