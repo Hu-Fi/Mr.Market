@@ -6,7 +6,6 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from 'src/modules/auth/auth.controller';
 import { UserModule } from '../mixin/user/user.module';
-import { UserService } from '../mixin/user/user.service';
 
 @Module({
   imports: [
@@ -24,6 +23,6 @@ import { UserService } from '../mixin/user/user.service';
   ],
   providers: [AuthService, JwtStrategy, ConfigService],
   controllers: [AuthController],
-  exports: [AuthService, UserService],
+  exports: [AuthService],
 })
 export class AuthModule {}
