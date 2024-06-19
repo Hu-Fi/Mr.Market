@@ -25,6 +25,7 @@ import bigone from "$lib/images/exchanges/bigone.png";
 import tapbit from "$lib/images/exchanges/tapbit.png";
 import emptyToken from "$lib/images/empty-token.svg";
 import mixinIcons from "$lib/constants/mixinIcons.json";
+import type { Page } from "@sveltejs/kit";
 
 // Input identifier from coingecko /coin/:id
 export const findExchangeIconByIdentifier = (identifier: string) => {
@@ -71,3 +72,9 @@ export const findCoinIconBySymbol = (symbol: string) => {
   // @ts-expect-error ingore import from json file
   return mixinIcons[symbol.toUpperCase()];
 }
+
+export const growPathChecker = ($page: Page, type: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const pathSegments = $page.url.pathname.split('/').filter(Boolean);
+    return pathSegments.length === 3 && pathSegments[0] === 'grow' && pathSegments[1] === type && uuidRegex.test(pathSegments[2]);
+};

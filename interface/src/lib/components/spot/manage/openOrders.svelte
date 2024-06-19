@@ -91,7 +91,7 @@
     <span class="text-sm opacity-60">
       {$_("connect_wallet_order_intro")}
     </span>
-    <ConnectWalletBtn clazz="text-slate-800 !bg-base-200" />
+    <ConnectWalletBtn clazz="" />
   </div>
 {/if}
 

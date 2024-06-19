@@ -6,13 +6,13 @@
 <div class="flex justify-between my-0 px-8 py-8 mt-4 bg-slate-50">
   <div class="flex flex-col space-y-4">
     <span class="font-normal text-base w-48">
-      {$_("arbitrage_intro")}
+      {$_("just_grow_intro")}
     </span>
 
     <div>
-      <button class="flex items-center justify-center text-start h-8 p-0 m-0 bg-slate-400 hover:bg-slate-400 hover:text-base-content btn-outline border-none no-animation rounded-full" on:click={()=>goto('/grow/arbitrage/intro')}>
+      <button class="flex items-center justify-center text-start h-8 p-0 m-0 bg-slate-400 hover:bg-slate-400 hover:text-base-content btn-outline border-none no-animation rounded-full" on:click={()=>goto('/grow/just_grow/intro')}>
         <span class="px-4 py-1.5 text-slate-50 text-sm">
-          {$_("whats_arbitrage")}
+          {$_("whats_just_grow")}
         </span>
       </button>
     </div>
