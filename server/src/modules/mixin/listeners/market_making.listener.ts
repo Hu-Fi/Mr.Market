@@ -1,3 +1,31 @@
+/**
+ * MarketMakingListener
+ *
+ * This listener service handles events related to market making. It processes the 'market_making.create' event,
+ * validates event data, updates payment states, and manages market making orders.
+ *
+ * Dependencies:
+ * - SnapshotsService: Service for interacting with Mixin snapshots.
+ * - StrategyUserService: Service for managing strategy-related user data.
+ * - Helper functions: Utilities for managing timestamps and asset IDs.
+ * - PriceSourceType: Enumeration for different types of price sources.
+ *
+ * Events:
+ * - 'market_making.create': Event triggered to create market making orders.
+ *
+ * Methods:
+ *
+ * - constructor: Initializes the service with the injected SnapshotsService and StrategyUserService.
+ *
+ * - handleMarketMakingCreate(details: MarketMakingMemoDetails, snapshot: SafeSnapshot): Handles the 'market_making.create' event.
+ *   Validates the details and snapshot, updates payment states, and manages market making orders.
+ *
+ * Notes:
+ * - The service ensures that the event data is valid and the market making order is processed securely.
+ * - Error handling is implemented to manage errors during the market making process.
+ * - The service updates the payment state and creates market making orders based on the received event data.
+ */
+
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';

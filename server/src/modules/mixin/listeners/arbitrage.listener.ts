@@ -1,3 +1,30 @@
+/**
+ * ArbitrageListener
+ *
+ * This listener service handles events related to arbitrage. It processes the 'arbitrage.create' event,
+ * validates event data, updates payment states, and manages arbitrage orders.
+ *
+ * Dependencies:
+ * - SnapshotsService: Service for interacting with Mixin snapshots.
+ * - StrategyUserService: Service for managing strategy-related user data.
+ * - Helper functions: Utilities for managing timestamps and asset IDs.
+ *
+ * Events:
+ * - 'arbitrage.create': Event triggered to create arbitrage orders.
+ *
+ * Methods:
+ *
+ * - constructor: Initializes the service with the injected SnapshotsService and StrategyUserService.
+ *
+ * - handleArbitrageCreate(details: ArbitrageMemoDetails, snapshot: SafeSnapshot): Handles the 'arbitrage.create' event.
+ *   Validates the details and snapshot, updates payment states, and manages arbitrage orders.
+ *
+ * Notes:
+ * - The service ensures that the event data is valid and the arbitrage order is processed securely.
+ * - Error handling is implemented to manage errors during the arbitrage process.
+ * - The service updates the payment state and creates arbitrage orders based on the received event data.
+ */
+
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
