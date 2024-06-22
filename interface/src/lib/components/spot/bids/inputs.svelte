@@ -4,11 +4,10 @@
   //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
-  import authorize from "$lib/helpers/mixin-oauth";
-  import { AfterMixinOauth } from "$lib/helpers/mixin";
+  import { mixinConnected } from "$lib/stores/home";
+  import { maskOption } from "$lib/helpers/constants";
+  import { mixinAuthWrapper } from "$lib/helpers/mixin";
   import { BN, formatDecimals } from "$lib/helpers/utils";
-  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
-  import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
   import {
     pair,
     buy,
@@ -151,24 +150,7 @@
   };
 
   const auth = async () => {
-    mixinConnectLoading.set(true);
-    authorize(
-      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
-      {
-        onShowUrl: (url: string) => {
-          window.open(url);
-        },
-        onError: (error: Error) => {
-          console.error(error);
-          mixinConnectLoading.set(false);
-          return;
-        },
-        onSuccess: async (token: string) => {
-          await AfterMixinOauth(token);
-          mixinConnectLoading.set(false);
-        },
-      },
-    );
+    mixinAuthWrapper();
   };
 
   // Set total as slider change

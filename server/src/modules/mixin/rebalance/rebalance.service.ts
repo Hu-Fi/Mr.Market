@@ -45,6 +45,7 @@
  */
 
 import { Cron } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
 import { getUuid } from '@mixin.dev/mixin-node-sdk';
 import { Injectable, Logger } from '@nestjs/common';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
@@ -67,6 +68,7 @@ export class RebalanceService {
   private readonly logger = new Logger(RebalanceService.name);
 
   constructor(
+    private configService: ConfigService,
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
     private rebalanceRepository: RebalanceRepository,
@@ -104,6 +106,11 @@ export class RebalanceService {
 
   @Cron('*/60 * * * * *')
   async rebalance() {
+    const enabled = this.configService.get<string>('rebalance.run');
+    if (enabled === 'false') {
+      return;
+    }
+
     try {
       const mixinBalances = await this.snapshotService.getAllAssetBalances();
       if (!mixinBalances) {

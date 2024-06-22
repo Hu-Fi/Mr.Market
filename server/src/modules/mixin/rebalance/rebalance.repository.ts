@@ -7,7 +7,7 @@ import {
   RebalanceTokenExchange,
   RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
-import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/rebalance';
+import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/constants';
 
 @Injectable()
 export class RebalanceRepository {

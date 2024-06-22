@@ -5,12 +5,25 @@ import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service'
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
 import { RebalanceService } from './rebalance.service';
 
+// Mock ConfigService
+const mockConfigService = {
+  get: jest.fn((key: string) => {
+    if (key === 'rebalance.run') return 'true'; // Adjust based on the test case
+  }),
+};
+
 describe.skip('getBestFeeByAssetID', () => {
   let service: RebalanceService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RebalanceService, ConfigService],
+      providers: [
+        RebalanceService,
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
+      ],
     }).compile();
 
     service = module.get<RebalanceService>(RebalanceService);
@@ -98,6 +111,10 @@ describe('Rebalancing from exchange to mixin', () => {
           provide: RebalanceRepository,
           useValue: rebalanceRepositoryMock,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
@@ -106,6 +123,7 @@ describe('Rebalancing from exchange to mixin', () => {
 
   it('should trigger rebalance from exchange to Mixin', async () => {
     await service.rebalance();
+    expect(mockConfigService.get).toHaveBeenCalledWith('rebalance.run');
     expect(exchangeServiceMock.createWithdrawal).toHaveBeenCalled();
   });
 });
@@ -187,6 +205,10 @@ describe('Rebalancing from Mixin to exchange', () => {
           provide: RebalanceRepository,
           useValue: rebalanceRepositoryMock,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
@@ -195,6 +217,7 @@ describe('Rebalancing from Mixin to exchange', () => {
 
   it('should trigger rebalance from Mixin to exchange', async () => {
     await service.rebalance();
+    expect(mockConfigService.get).toHaveBeenCalledWith('rebalance.run');
     expect(snapshotsServiceMock.withdrawal).toHaveBeenCalled();
   });
 });

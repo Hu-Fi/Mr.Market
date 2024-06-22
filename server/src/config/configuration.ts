@@ -39,19 +39,21 @@ export default () => ({
     server_public_key: process.env.MIXIN_SERVER_PUBLIC_KEY,
     session_private_key: process.env.MIXIN_SESSION_PRIVATE_KEY,
     spend_private_key: process.env.MIXIN_SPEND_PRIVATE_KEY,
+    oauth_secret: process.env.MIXIN_OAUTH_SECRET,
   },
   coingecko: {
     api_key: process.env.COINGECKO_API_KEY,
   },
   rebalance: {
+    run: process.env.RUN_REBALANCE || false,
     bigone_api_key: process.env.WITHDRAWAL_BIGONE_API_KEY,
     bigone_api_secret: process.env.WITHDRAWAL_BIGONE_API_SECRET,
+  },
+  strategy: {
+    run: process.env.RUN_STARTEGY_FOR_MIXIN_ORDERS || false,
   },
   constants: {
     mixin_api_base_url:
       process.env.MIXIN_API_BASE_URL || 'https://api.mixin.one',
-  },
-  strategy: {
-    run: process.env.RUN_STARTEGY_FOR_MIXIN_ORDERS || false,
   },
 });

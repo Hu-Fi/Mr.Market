@@ -42,6 +42,7 @@ import {
   Keystore,
   KeystoreClientReturnType,
 } from '@mixin.dev/mixin-node-sdk';
+import { mapApiResponseToMixinUser } from 'src/common/helpers/mixin/user';
 
 @Injectable()
 export class UserService {
@@ -72,7 +73,7 @@ export class UserService {
     });
   }
 
-  async addUser(user: MixinUser) {
+  async addUser(user: Partial<MixinUser>) {
     try {
       const newUser = await this.userRepository.addUser(user);
       return newUser;
@@ -100,7 +101,7 @@ export class UserService {
     }
   }
 
-  async addUserIfNotExist(user: MixinUser, user_id: string) {
+  async addUserIfNotExist(user: Partial<MixinUser>, user_id: string) {
     const exist = await this.checkUserExist(user_id);
     if (!exist) {
       await this.addUser(user);
@@ -113,6 +114,37 @@ export class UserService {
       return await this.userRepository.getAllUsers();
     } catch (error) {
       this.logger.error('Failed to get all users', error);
+      throw error;
+    }
+  }
+
+  async updateUserToken(user_id: string, jwt_token: string): Promise<void> {
+    try {
+      await this.userRepository.updateUser(user_id, { jwt_token });
+    } catch (error) {
+      this.logger.error(`Failed to update user with ID ${user_id}`, error);
+      throw error;
+    }
+  }
+
+  async checkAndUpdateUserToken(
+    user: Partial<MixinUser>,
+    user_id: string,
+    jwt_token: string,
+  ): Promise<void> {
+    const mappedUser = mapApiResponseToMixinUser(user, jwt_token);
+    try {
+      const userExists = await this.checkUserExist(user_id);
+      if (userExists) {
+        await this.updateUserToken(user_id, jwt_token);
+      } else {
+        await this.addUser(mappedUser);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to check and update user with ID ${user_id}`,
+        error,
+      );
       throw error;
     }
   }

@@ -105,13 +105,14 @@ First, ensure you have the following environment variables ready. These are cruc
 | Variable                    | Description                           | Source                      |
 |-----------------------------|---------------------------------------|-----------------------------|
 | `ADMIN_PASSWORD`            | Admin page password                   | User-defined                |
-| `JWT_SECRET`                | JWT secret key                        | User-defined                |
+| `JWT_SECRET`                | JWT secret key (32 bit)               | User-defined                |
 | `COINGECKO_API_KEY`         | Coingecko API key                     | Coingecko                   |
 | `MIXIN_APP_ID`              | Mixin App ID                          | Mixin Developer Dashboard   |
 | `MIXIN_SESSION_ID`          | Mixin Session ID                      | Mixin Developer Dashboard   |
 | `MIXIN_SERVER_PUBLIC_KEY`   | Mixin Server Public key               | Mixin Developer Dashboard   |
 | `MIXIN_SESSION_PRIVATE_KEY` | Mixin Session Private key             | Mixin Developer Dashboard   |
 | `MIXIN_SPEND_PRIVATE_KEY`   | Mixin Spend Private key               | Mixin Developer Dashboard   |
+| `MIXIN_OAUTH_SECRET`        | Mixin Oauth Secret                    | Mixin Developer Dashboard   |
 
 #### Interface Environment Variables (`/interface/.env`)
 | Variable                     | Description                  | Source           |

@@ -11,6 +11,7 @@ import {
   RebalanceTokenExchange,
   RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import {
       RebalanceTokenExchange,
       RebalanceHistory,
     ]),
+    ConfigModule,
     ExchangeModule,
     SnapshotsModule,
   ],
