@@ -1,3 +1,40 @@
+/**
+ * SpotOrderListener
+ *
+ * This listener service handles events related to spot orders. It processes the 'spot.create' event,
+ * validates the event data, and manages the creation of spot orders, including placing the order
+ * on an exchange and handling subsequent events.
+ *
+ * Dependencies:
+ * - ExchangeService: Service for interacting with exchange-related data and operations.
+ * - EventEmitter2: Event emitter for managing custom events.
+ * - Helper functions: Utilities for validating data and managing asset IDs and symbols.
+ *
+ * Events:
+ * - 'spot.create': Event triggered when a spot order is created.
+ * - 'exchange.spot.place': Event triggered to place the order on an exchange.
+ *
+ * Methods:
+ *
+ * - constructor: Initializes the service with the injected ExchangeService and EventEmitter2.
+ *
+ * - handleSpotOrderCreateEvent(event: SpotOrderCreateEvent): Handles the 'spot.create' event.
+ *   Validates event parameters, determines order direction, checks asset correctness, generates
+ *   order data, and emits the 'exchange.spot.place' event.
+ *
+ * Notes:
+ * - Spot order execution process (Here is the step 2)
+ *  1. Loop snapshots on mixin, find incoming transfer
+ *  2. Send create spot order event to spot.listener.ts
+ *  3. If basic checks are passed, send place order event, write to db in exchange.listener.ts
+ *  4. Wait for state update scheduler to update order state, in exchange.service.ts
+ *  5. If the state updated to succeess, send release token event to mixin.listener.ts
+ *
+ * - The service ensures that the event data is valid and the assets are correctly matched.
+ * - Orders are created and stored in the database before being placed on an exchange.
+ * - The mixinEvent object is used to manage token releases related to the order.
+ */
+
 import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';

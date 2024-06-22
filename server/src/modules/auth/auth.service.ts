@@ -1,4 +1,34 @@
-// auth.service.ts
+/**
+ * AuthService
+ *
+ * This service manages authentication processes including validation for admin user and
+ * handling OAuth for normal mixin user. It relies on JWT for token generation and uses
+ * environment variables for configuration.
+ *
+ * Dependencies:
+ * - JwtService: NestJS service for working with JSON Web Tokens.
+ * - ConfigService: Provides configuration values from environment variables.
+ * - UserService: Handles user-related operations.
+ * - createHash: Node.js crypto module for creating hash digests.
+ * - getUserMe: Helper function to fetch the authenticated user's information from Mixin.
+ *
+ * Constants:
+ * - MIXIN_OAUTH_URL: The OAuth URL for Mixin authentication.
+ *
+ * Methods:
+ * - constructor: Initializes the service with necessary configuration and validates critical secrets.
+ * - validateUser(password: string): Validates the admin password and returns a signed JWT.
+ * - mixinOauthHandler(code: string): Handles Mixin OAuth process, retrieves access token, and updates user information.
+ *
+ * Errors:
+ * - Throws UnauthorizedException for missing or invalid password.
+ * - Throws HttpException for invalid OAuth code length or HTTP request failures.
+ *
+ * Notes:
+ * - The service ensures secure handling of JWT secrets and admin passwords.
+ * - It performs user validation by comparing hashed passwords.
+ */
+
 import axios from 'axios';
 import { JwtService } from '@nestjs/jwt';
 import { createHash } from 'crypto';
