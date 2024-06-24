@@ -20,7 +20,7 @@ export class SpotOrder {
   @Column()
   type: SpotOrderType;
 
-  @Column()
+  @Column({ nullable: true })
   state: SpotOrderStatus;
 
   @Column()
