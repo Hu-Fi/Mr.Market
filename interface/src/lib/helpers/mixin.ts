@@ -225,53 +225,71 @@ export const getUserStrategyOrders = async (user_id: string) => {
 
 export const mixinAuthWrapper = async (pkce: boolean = false) => {
   mixinConnectLoading.set(true);
-  authorize(
-    { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce },
-    {
-      onShowUrl: (url: string) => {
-        window.open(url);
-      },
-      onError: (error: Error) => {
-        console.error(error);
-        mixinConnectLoading.set(false);
-        return;
-      },
-      onSuccess: async (token: string) => {
-        if (!pkce) {
-          const result = await getOauth(token);
-          if (result.token) {
-            token = result.token
-          } else {
-            return;
+
+  const handleError = (message: string, error?: Error) => {
+    console.error(message, error);
+    mixinConnectLoading.set(false);
+  };
+
+  try {
+    authorize(
+      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce },
+      {
+        onShowUrl: (url: string) => {
+          window.open(url);
+        },
+        onError: (error: Error) => {
+          handleError('authorize.onError() =>', error);
+        },
+        onSuccess: async (token: string) => {
+          if (!pkce) {
+            try {
+              const result = await getOauth(token);
+              if (!result || !result.token) {
+                handleError('Authorization failed: invalid result or missing token');
+                return;
+              }
+              token = result.token;
+            } catch (error) {
+              handleError('Error during getOauth:', error);
+              return;
+            }
           }
-        }
-        await AfterMixinOauth(token);
-        mixinConnectLoading.set(false);
-      },
-    },
-  );
-}
+
+          try {
+            await AfterMixinOauth(token);
+          } catch (error) {
+            handleError('Error during AfterMixinOauth:', error);
+            return;
+          } finally {
+            mixinConnectLoading.set(false);
+          }
+        },
+      }
+    );
+  } catch (error) {
+    handleError('Error in mixinAuthWrapper:', error);
+  }
+};
 
 export const AfterMixinOauth = async (token: string) => {
-  // if (pkce) {
-    const data = await mixinUserMe(token)
-    if (!data) {
-      console.log('!UserMe, remove mixin-oauth')
-      localStorage.removeItem('mixin-oauth')
-      return
-    }
-    if (data.full_name === '') {
-      console.log('!UserMeError, remove mixin-oauth')
-      localStorage.removeItem('mixin-oauth')
-      return
-    }
-    user.set(data)
-    mixinConnected.set(true)
-    localStorage.setItem("mixin-oauth", token)
-    getUserBalances(data.user_id, token)
-    getUserSpotOrders(data.user_id)
-    getUserStrategyOrders(data.user_id)
-  // }
+  const data = await mixinUserMe(token)
+  if (!data) {
+    console.log('!UserMe, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  if (data.full_name === '') {
+    console.log('!UserMeError, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  user.set(data)
+  mixinConnected.set(true)
+  localStorage.setItem("mixin-oauth", token)
+  getUserBalances(data.user_id, token)
+  getUserSpotOrders(data.user_id)
+  getUserStrategyOrders(data.user_id)
 }
 
 export const MixinDisconnect = () => {

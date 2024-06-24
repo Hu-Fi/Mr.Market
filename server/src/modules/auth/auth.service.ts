@@ -97,7 +97,7 @@ export class AuthService {
           'Content-Type': 'application/json',
         },
       });
-
+      console.log('oauthHandler:', response.data);
       const accessToken = response.data.data.access_token;
 
       const user = await getUserMe(accessToken);
