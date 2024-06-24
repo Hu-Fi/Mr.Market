@@ -90,7 +90,7 @@ export class AuthService {
       code: code,
       client_secret: this.configService.get<string>('mixin.oauth_secret'),
     };
-
+    console.log('mixinOauthHandler.body:', body);
     try {
       const response = await axios.post(MIXIN_OAUTH_URL, body, {
         headers: {
