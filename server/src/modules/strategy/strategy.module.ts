@@ -36,7 +36,12 @@ import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
     ]),
   ],
   controllers: [StrategyController],
-  providers: [StrategyService, StrategyUserService, StrategyUserRepository, ExchangeInitService],
+  providers: [
+    StrategyService,
+    StrategyUserService,
+    StrategyUserRepository,
+    ExchangeInitService,
+  ],
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],
 })
 export class StrategyModule {}
