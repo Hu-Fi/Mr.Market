@@ -38,6 +38,7 @@ import {
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { ExchangeInitService } from './modules/exchangeInit/exchangeInit.service';
 dotenv.config();
 
 @Module({
@@ -91,6 +92,6 @@ dotenv.config();
     AuthModule,
   ],
   controllers: [AppController, AdminController],
-  providers: [CustomLogger, AppService],
+  providers: [CustomLogger, AppService, ExchangeInitService],
 })
 export class AppModule {}

@@ -84,10 +84,11 @@ import { TradeService } from 'src/modules/trade/trade.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PerformanceService } from '../performance/performance.service';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
+import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 
 @Injectable()
 export class StrategyService {
@@ -101,7 +102,6 @@ export class StrategyService {
     string,
     { isRunning: boolean; intervalId: NodeJS.Timeout }
   >();
-  private exchanges = new Map<string, ccxt.Exchange>();
   private activeOrderBookWatches = new Map<string, Set<string>>(); // Tracks active watches for each strategy
   private activeOrders: Map<
     string,
@@ -111,55 +111,19 @@ export class StrategyService {
   constructor(
     private tradeService: TradeService,
     private performanceService: PerformanceService,
+    private ExchangeInitService: ExchangeInitService,
     @InjectRepository(MarketMakingHistory)
     private orderRepository: Repository<MarketMakingHistory>,
     @InjectRepository(ArbitrageHistory)
     private arbitrageHistoryRepository: Repository<ArbitrageHistory>,
   ) {
-    this.initializeExchanges();
     process.on('SIGINT', () => this.handleShutdown());
     process.on('SIGTERM', () => this.handleShutdown());
     process.on('uncaughtException', () => this.handleShutdown());
   }
 
-  private async initializeExchanges() {
-    // Initialize exchanges
-    this.exchanges.set(
-      'okx',
-      new ccxt.pro.okx({
-        apiKey: process.env.OKX_API_KEY,
-        secret: process.env.OKX_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'bitfinex',
-      new ccxt.pro.bitfinex({
-        apiKey: process.env.BITFINEX_API_KEY,
-        secret: process.env.BITFINEX_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'mexc',
-      new ccxt.pro.mexc({
-        apiKey: process.env.MEXC_API_KEY,
-        secret: process.env.MEXC_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'binance',
-      new ccxt.pro.binance({
-        apiKey: process.env.BINANCE_API_KEY,
-        secret: process.env.BINANCE_SECRET,
-      }),
-    );
-  }
-
   async getSupportedExchanges(): Promise<string[]> {
-    const supportedExchanges: string[] = [];
-    this.exchanges.forEach((_, exchangeName) => {
-      supportedExchanges.push(exchangeName);
-    });
-    return supportedExchanges;
+    return this.ExchangeInitService.getSupportedExchanges();
   }
 
   async startArbitrageIfNotStarted(
@@ -188,15 +152,8 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-    const exchangeA: ccxt.Exchange = this.exchanges.get(exchangeAName);
-    const exchangeB: ccxt.Exchange = this.exchanges.get(exchangeBName);
-
-    if (!exchangeA || !exchangeB) {
-      this.logger.error(
-        `Exchanges ${exchangeAName} or ${exchangeBName} are not configured.`,
-      );
-      throw new InternalServerErrorException('Exchange configuration error.');
-    }
+    const exchangeA = this.ExchangeInitService.getExchange(exchangeAName);
+    const exchangeB = this.ExchangeInitService.getExchange(exchangeBName);
 
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.log(
@@ -395,7 +352,7 @@ export class StrategyService {
       pair,
       priceSourceType,
     );
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
 
     // Cancel all existing orders for this strategy
     await this.cancelAllOrders(
@@ -565,10 +522,7 @@ export class StrategyService {
     exchangeName: string,
     pair: string,
   ): Promise<number> {
-    const exchange = this.exchanges.get(exchangeName);
-    if (!exchange) {
-      throw new Error(`Exchange ${exchangeName} is not configured.`);
-    }
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     const ticker = await exchange.fetchTicker(pair);
     return ticker.last; // Using the last trade price as the current price
   }
@@ -578,10 +532,7 @@ export class StrategyService {
     pair: string,
     priceSourceType: PriceSourceType,
   ): Promise<number> {
-    const exchange = this.exchanges.get(exchangeName);
-    if (!exchange) {
-      throw new Error(`Exchange ${exchangeName} is not configured.`);
-    }
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     const orderBook = await exchange.fetchOrderBook(pair);
     switch (priceSourceType) {
       case PriceSourceType.MID_PRICE:
