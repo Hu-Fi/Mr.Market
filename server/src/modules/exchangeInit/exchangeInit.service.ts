@@ -56,11 +56,11 @@ export class ExchangeInitService {
       }),
     );
     this.exchanges.set(
-        'bitmart',
-        new ccxt.pro.bitmart({
-            apiKey: process.env.BITMART_API_KEY,
-            secret: process.env.BITMART_SECRET,
-        })
+      'bitmart',
+      new ccxt.pro.bitmart({
+        apiKey: process.env.BITMART_API_KEY,
+        secret: process.env.BITMART_SECRET,
+      }),
     );
   }
 
