@@ -17,12 +17,15 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
+import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 
 @Module({
   imports: [
     TradeModule,
     PerformanceModule,
     LoggerModule,
+    ExchangeInitModule,
     ConfigModule,
     TypeOrmModule.forFeature([
       ArbitrageOrder,
@@ -33,7 +36,7 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
     ]),
   ],
   controllers: [StrategyController],
-  providers: [StrategyService, StrategyUserService, StrategyUserRepository],
+  providers: [StrategyService, StrategyUserService, StrategyUserRepository, ExchangeInitService],
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],
 })
 export class StrategyModule {}
