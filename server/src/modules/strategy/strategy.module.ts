@@ -42,6 +42,7 @@ import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
     StrategyUserRepository,
     ExchangeInitService,
   ],
+
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],
 })
 export class StrategyModule {}
