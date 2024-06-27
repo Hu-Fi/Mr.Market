@@ -38,6 +38,7 @@ import {
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 dotenv.config();
 
 @Module({
@@ -83,6 +84,7 @@ dotenv.config();
     StrategyModule,
     PerformanceModule,
     MarketdataModule,
+    ExchangeInitModule,
     // TransactionsModule,
     CoingeckoModule,
     HealthModule,
