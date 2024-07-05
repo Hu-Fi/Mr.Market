@@ -68,6 +68,7 @@ import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
 import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
+import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -80,59 +81,19 @@ export class MarketdataService {
 
   private cachingTTL: 10; // 10s
 
+
   // cache supported pairs
-  constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {
-    this.initializeExchange();
+  constructor(@Inject(CACHE_MANAGER) private cacheService: Cache, private ExchangeInitService: ExchangeInitService) {
+
   }
 
-  private initializeExchange() {
-    // Initialize exchanges
-    this.exchanges.set(
-      'bitfinex',
-      new ccxt.pro.bitfinex({
-        apiKey: process.env.BITFINEX_API_KEY,
-        secret: process.env.BITFINEX_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'mexc',
-      new ccxt.pro.mexc({
-        apiKey: process.env.MEXC_API_KEY,
-        secret: process.env.MEXC_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'binance',
-      new ccxt.pro.binance({
-        apiKey: process.env.BINANCE_API_KEY,
-        secret: process.env.BINANCE_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'okx',
-      new ccxt.pro.okx({
-        apiKey: process.env.OKX_API_KEY,
-        secret: process.env.OKX_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'gate',
-      new ccxt.pro.gateio({
-        apiKey: process.env.GATE_API_KEY,
-        secret: process.env.GATE_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'lbank',
-      new ccxt.pro.lbank({
-        apiKey: process.env.LBANK_API_KEY,
-        secret: process.env.LBANK_SECRET,
-      }),
-    );
+
+  async getSupportedExchanges(): Promise<string[]> {
+    return this.ExchangeInitService.getSupportedExchanges();
   }
 
   async getTickers(exchange: string, symbols: string[]) {
-    this.exchange = this.exchanges.get(exchange);
+    this.exchange =  this.ExchangeInitService.getExchange(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchTickers) {
       throw new Error(
@@ -153,7 +114,7 @@ export class MarketdataService {
     since?: number,
     limit = 30,
   ): Promise<any> {
-    this.exchange = this.exchanges.get(exchange);
+    this.exchange =  this.ExchangeInitService.getExchange(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchOHLCV) {
       throw new Error(
@@ -242,7 +203,7 @@ export class MarketdataService {
     onData: (data: any) => void,
     limit = 14,
   ): Promise<void> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange =  this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOrderBook or is not configured.`,
@@ -277,7 +238,7 @@ export class MarketdataService {
     since?: number,
     limit?: number,
   ): Promise<void> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange =  this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchOHLCV) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOHLCV or is not configured.`,
@@ -310,7 +271,7 @@ export class MarketdataService {
     symbol: string,
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -338,7 +299,7 @@ export class MarketdataService {
     symbol: string[],
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -387,7 +348,7 @@ export class MarketdataService {
     exchangeName: string,
     symbol: string,
   ): Promise<any> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.fetchTicker) {
       throw new Error(
         'Exchange does not support fetchTicker or is not configured.',
@@ -422,7 +383,7 @@ export class MarketdataService {
   }
 
   async getSupportedSymbols(exchangeName: string): Promise<string[]> {
-    const exchange = this.exchanges.get(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange) {
       throw new Error(`Exchange ${exchangeName} is not configured.`);
     }
