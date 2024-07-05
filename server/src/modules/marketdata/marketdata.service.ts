@@ -81,19 +81,18 @@ export class MarketdataService {
 
   private cachingTTL: 10; // 10s
 
-
   // cache supported pairs
-  constructor(@Inject(CACHE_MANAGER) private cacheService: Cache, private ExchangeInitService: ExchangeInitService) {
-
-  }
-
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    private ExchangeInitService: ExchangeInitService,
+  ) {}
 
   async getSupportedExchanges(): Promise<string[]> {
     return this.ExchangeInitService.getSupportedExchanges();
   }
 
   async getTickers(exchange: string, symbols: string[]) {
-    this.exchange =  this.ExchangeInitService.getExchange(exchange);
+    this.exchange = this.ExchangeInitService.getExchange(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchTickers) {
       throw new Error(
@@ -114,7 +113,7 @@ export class MarketdataService {
     since?: number,
     limit = 30,
   ): Promise<any> {
-    this.exchange =  this.ExchangeInitService.getExchange(exchange);
+    this.exchange = this.ExchangeInitService.getExchange(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchOHLCV) {
       throw new Error(
@@ -203,7 +202,7 @@ export class MarketdataService {
     onData: (data: any) => void,
     limit = 14,
   ): Promise<void> {
-    const exchange =  this.ExchangeInitService.getExchange(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOrderBook or is not configured.`,
@@ -238,7 +237,7 @@ export class MarketdataService {
     since?: number,
     limit?: number,
   ): Promise<void> {
-    const exchange =  this.ExchangeInitService.getExchange(exchangeName);
+    const exchange = this.ExchangeInitService.getExchange(exchangeName);
     if (!exchange || !exchange.has.watchOHLCV) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOHLCV or is not configured.`,
