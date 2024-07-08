@@ -619,31 +619,31 @@ export class StrategyService {
         this.logger.log(
           `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeA.name} at ${vwapA}, sell on ${exchangeB.name} at ${vwapB}`,
         );
-        // await this.executeArbitrageTradeWithLimitOrders(
-        //   exchangeA,
-        //   exchangeB,
-        //   pair,
-        //   amountToTrade,
-        //   userId,
-        //   clientId,
-        //   vwapA,
-        //   vwapB,
-        // );
+        await this.executeArbitrageTradeWithLimitOrders(
+          exchangeA,
+          exchangeB,
+          pair,
+          amountToTrade,
+          userId,
+          clientId,
+          vwapA,
+          vwapB,
+        );
       } else if ((vwapA - vwapB) / vwapB >= minProfitability) {
         // Execute trades in reverse direction
         this.logger.log(
           `User ${userId}, Client ${clientId}: Arbitrage opportunity for ${pair} (VWAP): Buy on ${exchangeB.name} at ${vwapB}, sell on ${exchangeA.name} at ${vwapA}`,
         );
-        // await this.executeArbitrageTradeWithLimitOrders(
-        //   exchangeB,
-        //   exchangeA,
-        //   pair,
-        //   amountToTrade,
-        //   userId,
-        //   clientId,
-        //   vwapB,
-        //   vwapA,
-        // );
+        await this.executeArbitrageTradeWithLimitOrders(
+          exchangeB,
+          exchangeA,
+          pair,
+          amountToTrade,
+          userId,
+          clientId,
+          vwapB,
+          vwapA,
+        );
       }
     } else {
       this.logger.log(
