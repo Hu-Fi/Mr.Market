@@ -1,8 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StrategyController, ArbitrageController, MarketMakingController } from './strategy.controller';
+import {
+  StrategyController,
+  ArbitrageController,
+  MarketMakingController,
+} from './strategy.controller';
 import { StrategyService } from './strategy.service';
 import { StrategyUserService } from './strategy-user.service';
-import { ArbitrageStrategyDto, PureMarketMakingStrategyDto } from './strategy.dto';
+import {
+  ArbitrageStrategyDto,
+  PureMarketMakingStrategyDto,
+} from './strategy.dto';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 
 const mockStrategyService = {
@@ -35,7 +42,11 @@ describe('StrategyController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [StrategyController, ArbitrageController, MarketMakingController],
+      controllers: [
+        StrategyController,
+        ArbitrageController,
+        MarketMakingController,
+      ],
       providers: [
         {
           provide: StrategyService,
@@ -50,7 +61,9 @@ describe('StrategyController', () => {
 
     strategyController = module.get<StrategyController>(StrategyController);
     arbitrageController = module.get<ArbitrageController>(ArbitrageController);
-    marketMakingController = module.get<MarketMakingController>(MarketMakingController);
+    marketMakingController = module.get<MarketMakingController>(
+      MarketMakingController,
+    );
   });
 
   it('StrategyController should be defined', () => {
@@ -72,7 +85,9 @@ describe('StrategyController', () => {
       mockStrategyUserService.findAllStrategyByUser.mockResolvedValue(result);
 
       expect(await strategyController.getAllStrategy(userId)).toBe(result);
-      expect(mockStrategyUserService.findAllStrategyByUser).toHaveBeenCalledWith(userId);
+      expect(
+        mockStrategyUserService.findAllStrategyByUser,
+      ).toHaveBeenCalledWith(userId);
     });
 
     it('should return payment state by order ID', async () => {
@@ -81,7 +96,9 @@ describe('StrategyController', () => {
       mockStrategyUserService.findPaymentStateById.mockResolvedValue(result);
 
       expect(await strategyController.getPaymentState(orderId)).toBe(result);
-      expect(mockStrategyUserService.findPaymentStateById).toHaveBeenCalledWith(orderId);
+      expect(mockStrategyUserService.findPaymentStateById).toHaveBeenCalledWith(
+        orderId,
+      );
     });
   });
 
@@ -91,8 +108,12 @@ describe('StrategyController', () => {
       const result = [{ id: 1, name: 'Arbitrage1' }];
       mockStrategyUserService.findArbitrageByUserId.mockResolvedValue(result);
 
-      expect(await arbitrageController.getAllArbitrageByUser(userId)).toBe(result);
-      expect(mockStrategyUserService.findArbitrageByUserId).toHaveBeenCalledWith(userId);
+      expect(await arbitrageController.getAllArbitrageByUser(userId)).toBe(
+        result,
+      );
+      expect(
+        mockStrategyUserService.findArbitrageByUserId,
+      ).toHaveBeenCalledWith(userId);
     });
 
     it('should return arbitrage details by ID', async () => {
@@ -100,8 +121,12 @@ describe('StrategyController', () => {
       const result = { id: 1, name: 'Arbitrage1' };
       mockStrategyUserService.findArbitrageByOrderId.mockResolvedValue(result);
 
-      expect(await arbitrageController.getArbitrageDetailsById(id)).toBe(result);
-      expect(mockStrategyUserService.findArbitrageByOrderId).toHaveBeenCalledWith(id);
+      expect(await arbitrageController.getArbitrageDetailsById(id)).toBe(
+        result,
+      );
+      expect(
+        mockStrategyUserService.findArbitrageByOrderId,
+      ).toHaveBeenCalledWith(id);
     });
 
     it('should return all arbitrage history by user', async () => {
@@ -109,8 +134,12 @@ describe('StrategyController', () => {
       const result = [{ id: 1, name: 'Arbitrage1' }];
       mockStrategyService.getUserArbitrageHistorys.mockResolvedValue(result);
 
-      expect(await arbitrageController.getUserArbitrageOrders(userId)).toBe(result);
-      expect(mockStrategyService.getUserArbitrageHistorys).toHaveBeenCalledWith(userId);
+      expect(await arbitrageController.getUserArbitrageOrders(userId)).toBe(
+        result,
+      );
+      expect(mockStrategyService.getUserArbitrageHistorys).toHaveBeenCalledWith(
+        userId,
+      );
     });
 
     it('should execute arbitrage strategy', async () => {
@@ -124,10 +153,14 @@ describe('StrategyController', () => {
         exchangeBName: 'mexc',
       };
       const result = { success: true };
-      mockStrategyService.startArbitrageStrategyForUser.mockResolvedValue(result);
+      mockStrategyService.startArbitrageStrategyForUser.mockResolvedValue(
+        result,
+      );
 
       expect(await arbitrageController.executeArbitrage(dto)).toBe(result);
-      expect(mockStrategyService.startArbitrageStrategyForUser).toHaveBeenCalledWith(dto);
+      expect(
+        mockStrategyService.startArbitrageStrategyForUser,
+      ).toHaveBeenCalledWith(dto);
     });
 
     it('should stop arbitrage strategy', async () => {
@@ -136,8 +169,14 @@ describe('StrategyController', () => {
       const result = { success: true };
       mockStrategyService.stopStrategyForUser.mockResolvedValue(result);
 
-      expect(await arbitrageController.stopArbitrage(userId, clientId)).toBe(result);
-      expect(mockStrategyService.stopStrategyForUser).toHaveBeenCalledWith(userId, clientId, 'arbitrage');
+      expect(await arbitrageController.stopArbitrage(userId, clientId)).toBe(
+        result,
+      );
+      expect(mockStrategyService.stopStrategyForUser).toHaveBeenCalledWith(
+        userId,
+        clientId,
+        'arbitrage',
+      );
     });
   });
 
@@ -145,19 +184,31 @@ describe('StrategyController', () => {
     it('should return all market making by user', async () => {
       const userId = 'user1';
       const result = [{ id: 1, name: 'MarketMaking1' }];
-      mockStrategyUserService.findMarketMakingByUserId.mockResolvedValue(result);
+      mockStrategyUserService.findMarketMakingByUserId.mockResolvedValue(
+        result,
+      );
 
-      expect(await marketMakingController.getAllMarketMakingByUser(userId)).toBe(result);
-      expect(mockStrategyUserService.findMarketMakingByUserId).toHaveBeenCalledWith(userId);
+      expect(
+        await marketMakingController.getAllMarketMakingByUser(userId),
+      ).toBe(result);
+      expect(
+        mockStrategyUserService.findMarketMakingByUserId,
+      ).toHaveBeenCalledWith(userId);
     });
 
     it('should return market making details by ID', async () => {
       const id = 'marketmaking1';
       const result = { id: 1, name: 'MarketMaking1' };
-      mockStrategyUserService.findMarketMakingByOrderId.mockResolvedValue(result);
+      mockStrategyUserService.findMarketMakingByOrderId.mockResolvedValue(
+        result,
+      );
 
-      expect(await marketMakingController.getMarketMakingDetailsById(id)).toBe(result);
-      expect(mockStrategyUserService.findMarketMakingByOrderId).toHaveBeenCalledWith(id);
+      expect(await marketMakingController.getMarketMakingDetailsById(id)).toBe(
+        result,
+      );
+      expect(
+        mockStrategyUserService.findMarketMakingByOrderId,
+      ).toHaveBeenCalledWith(id);
     });
 
     it('should return all market making history by user', async () => {
@@ -187,10 +238,16 @@ describe('StrategyController', () => {
         floorPrice: 0,
       };
       const result = { success: true };
-      mockStrategyService.executePureMarketMakingStrategy.mockResolvedValue(result);
+      mockStrategyService.executePureMarketMakingStrategy.mockResolvedValue(
+        result,
+      );
 
-      expect(await marketMakingController.executePureMarketMaking(dto)).toBe(result);
-      expect(mockStrategyService.executePureMarketMakingStrategy).toHaveBeenCalledWith(dto);
+      expect(await marketMakingController.executePureMarketMaking(dto)).toBe(
+        result,
+      );
+      expect(
+        mockStrategyService.executePureMarketMakingStrategy,
+      ).toHaveBeenCalledWith(dto);
     });
 
     it('should stop market making strategy', async () => {
@@ -199,8 +256,14 @@ describe('StrategyController', () => {
       const result = { success: true };
       mockStrategyService.stopStrategyForUser.mockResolvedValue(result);
 
-      expect(await marketMakingController.stopPureMarketMaking(userId, clientId)).toBe(result);
-      expect(mockStrategyService.stopStrategyForUser).toHaveBeenCalledWith(userId, clientId, 'pureMarketMaking');
+      expect(
+        await marketMakingController.stopPureMarketMaking(userId, clientId),
+      ).toBe(result);
+      expect(mockStrategyService.stopStrategyForUser).toHaveBeenCalledWith(
+        userId,
+        clientId,
+        'pureMarketMaking',
+      );
     });
   });
 });

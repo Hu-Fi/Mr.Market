@@ -9,7 +9,6 @@ import {
   type MarketMakingStates,
 } from 'src/common/types/orders/states';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { createStrategyKey } from 'src/common/helpers/strategyKey';
 
 jest.mock('./strategy-user.repository');
 jest.mock('../logger/logger.service');
@@ -17,7 +16,6 @@ jest.mock('./strategy.service');
 
 describe('StrategyUserService', () => {
   let service: StrategyUserService;
-  let strategyService: StrategyService;
   let strategyUserRepository: StrategyUserRepository;
 
   beforeEach(async () => {
@@ -33,7 +31,6 @@ describe('StrategyUserService', () => {
     }).compile();
 
     service = module.get<StrategyUserService>(StrategyUserService);
-    strategyService = module.get<StrategyService>(StrategyService);
     strategyUserRepository = module.get<StrategyUserRepository>(
       StrategyUserRepository,
     );
@@ -234,8 +231,4 @@ describe('StrategyUserService', () => {
       ).toHaveBeenCalledWith(orderId, newState);
     });
   });
-
-
-
-
 });
