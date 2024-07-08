@@ -30,6 +30,12 @@ export class ExchangeInitService {
         secret: process.env.BITFINEX_SECRET,
       },
       {
+        name: 'gate',
+        class: ccxt.pro.gate,
+        apiKey: process.env.GATE_API_KEY,
+        secret: process.env.GATE_SECRET,
+      },
+      {
         name: 'mexc',
         class: ccxt.pro.mexc,
         apiKey: process.env.MEXC_API_KEY,
@@ -48,16 +54,41 @@ export class ExchangeInitService {
         secret: process.env.LBANK_SECRET,
       },
       {
+        name: 'bitmart',
+        class: ccxt.pro.bitmart,
+        apiKey: process.env.BITMART_API_KEY,
+        secret: process.env.BITMART_SECRET,
+      },
+      {
         name: 'bigone',
         class: ccxt.bigone,
         apiKey: process.env.BIGONE_API_KEY,
         secret: process.env.BIGONE_SECRET,
       },
       {
+        name: 'coinlist',
+        class: ccxt.coinlist,
+        apiKey: process.env.COINLIST_API_KEY,
+        secret: process.env.COINLIST_SECRET,
+      },
+      {
         name: 'bitmart',
         class: ccxt.pro.bitmart,
         apiKey: process.env.BITMART_API_KEY,
         secret: process.env.BITMART_SECRET,
+      },
+      {
+        name: 'p2b',
+        class: ccxt.pro.p2b,
+        apiKey: process.env.P2B_API_KEY,
+        secret: process.env.P2B_SECRET,
+      },
+
+      {
+        name: 'degifinex',
+        class: ccxt.digifinex,
+        apiKey: process.env.DEGIFINEX_API_KEY,
+        secret: process.env.DEGIFINEX_SECRET,
       },
     ];
 
