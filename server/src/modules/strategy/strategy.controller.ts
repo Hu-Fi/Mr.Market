@@ -18,10 +18,12 @@ import {
   ArbitrageStrategyDto,
   PureMarketMakingStrategyDto,
 } from './strategy.dto';
+import { CustomLogger } from '../logger/logger.service';
 
 @ApiTags('strategy')
 @Controller('strategy')
 export class StrategyController {
+  private readonly logger = new CustomLogger(StrategyController.name);
   constructor(
     private readonly strategyService: StrategyService,
     private readonly strategyUserSerive: StrategyUserService,
@@ -40,19 +42,29 @@ export class StrategyController {
     return await this.strategyUserSerive.findAllStrategyByUser(userId);
   }
 
-  @Get('/payment_state/:order_id')
+  @Get('/payment_stat')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get payment state by id' })
+  @ApiQuery({ name: 'order_id', type: String, description: 'Order ID' })
   @ApiResponse({
     status: 200,
     description: 'The payment state of order.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getPaymentState(@Param('order_id') orderId: string) {
+  async getPaymentState(@Query('order_id') orderId: string) {
     return await this.strategyUserSerive.findPaymentStateById(orderId);
   }
+}
 
-  @Get('/arbitrage/all')
+@ApiTags('arbitrage')
+@Controller('strategy/arbitrage')
+export class ArbitrageController {
+  private readonly logger = new CustomLogger(StrategyController.name);
+  constructor(
+    private readonly strategyService: StrategyService,
+    private readonly strategyUserSerive: StrategyUserService,
+  ) {}
+  @Get('/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all arbitrage by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -65,22 +77,23 @@ export class StrategyController {
     return await this.strategyUserSerive.findArbitrageByUserId(userId);
   }
 
-  @Get('/arbitrage/:id')
+  @Get('/arbitrage-by-id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all arbitrage by user' })
-  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiOperation({ summary: 'Get all arbitrage by order id' })
+  @ApiQuery({ name: 'id', type: String, description: 'Order ID' })
   @ApiResponse({
     status: 200,
     description: 'The details of the arbitrage.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getArbitrageDetailsById(@Param('id') id: string) {
+  async getArbitrageDetailsById(@Query('id') id: string) {
     return await this.strategyUserSerive.findArbitrageByOrderId(id);
   }
 
-  @Get('/arbitrage/history/:userId')
+  @Get('/history')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all arbitrage history by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
   @ApiResponse({
     status: 200,
     description: 'All arbitrage history of user',
@@ -106,7 +119,7 @@ export class StrategyController {
     );
   }
 
-  @Get('/arbitrage/stop')
+  @Get('/stop-arbitrage')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop arbitrage strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -120,14 +133,29 @@ export class StrategyController {
     @Query('userId') userId: string,
     @Query('clientId') clientId: string,
   ) {
-    return await this.strategyService.stopStrategyForUser(
+    this.logger.log(
+      `Received request to stop arbitrage strategy for user ${userId}, client ${clientId}`,
+    );
+    const result = await this.strategyService.stopStrategyForUser(
       userId,
       clientId,
       'arbitrage',
     );
+    this.logger.log(`Result of stopArbitrage: ${result}`);
+    return result;
   }
+}
 
-  @Get('/market_making/all')
+@ApiTags('market-making')
+@Controller('strategy/market-making')
+export class MarketMakingController {
+  private readonly logger = new CustomLogger(StrategyController.name);
+  constructor(
+    private readonly strategyService: StrategyService,
+    private readonly strategyUserSerive: StrategyUserService,
+  ) {}
+
+  @Get('/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -140,29 +168,30 @@ export class StrategyController {
     return await this.strategyUserSerive.findMarketMakingByUserId(userId);
   }
 
-  @Get('/market_making/:id')
+  @Get('/market-making-by-id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all market making by user' })
-  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiOperation({ summary: 'Get all market making by orderID' })
+  @ApiQuery({ name: 'id', type: String, description: 'Order ID' })
   @ApiResponse({
     status: 200,
     description: 'The details of the market making.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getMarketMakingDetailsById(@Param('id') id: string) {
+  async getMarketMakingDetailsById(@Query('id') id: string) {
     return await this.strategyUserSerive.findMarketMakingByOrderId(id);
   }
 
-  @Get('/market_making/history/:userId')
+  @Get('/history')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making history by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
   @ApiResponse({
     status: 200,
     description: 'All market making history of user',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getUserOrders(
-    @Param('userId') userId: string,
+    @Query('userId') userId: string,
   ): Promise<MarketMakingHistory[]> {
     return await this.strategyService.getUserOrders(userId);
   }
@@ -185,7 +214,7 @@ export class StrategyController {
     );
   }
 
-  @Get('/market_making/stop')
+  @Get('/stop-market-making')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop pure market making strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -200,11 +229,15 @@ export class StrategyController {
     @Query('userId') userId: string,
     @Query('clientId') clientId: string,
   ) {
-    // This assumes you have a method in StrategyService to stop strategies by type
-    return this.strategyService.stopStrategyForUser(
+    this.logger.log(
+      `Received request to stop pure market making strategy for user ${userId}, client ${clientId}`,
+    );
+    const result = await this.strategyService.stopStrategyForUser(
       userId,
       clientId,
       'pureMarketMaking',
     );
+    this.logger.log(`Result of stopPureMarketMaking: ${result}`);
+    return result;
   }
 }

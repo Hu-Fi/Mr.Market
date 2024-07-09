@@ -18,6 +18,12 @@ export class ExchangeInitService {
   private async initializeExchanges() {
     const exchangeConfigs = [
       {
+        name: 'alpaca',
+        class: ccxt.pro.alpaca,
+        apiKey: process.env.ALPACA_API_KEY,
+        secret: process.env.ALPACA_SECRET,
+      },
+      {
         name: 'okx',
         class: ccxt.pro.okx,
         apiKey: process.env.OKX_API_KEY,

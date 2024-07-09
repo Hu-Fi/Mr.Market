@@ -2,7 +2,11 @@
 
 import { Module } from '@nestjs/common';
 import { StrategyService } from './strategy.service';
-import { StrategyController } from './strategy.controller';
+import {
+  ArbitrageController,
+  MarketMakingController,
+  StrategyController,
+} from './strategy.controller';
 import { TradeModule } from '../trade/trade.module';
 import { PerformanceModule } from '../performance/performance.module';
 import { LoggerModule } from '../logger/logger.module';
@@ -35,7 +39,11 @@ import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
       MarketMakingHistory,
     ]),
   ],
-  controllers: [StrategyController],
+  controllers: [
+    StrategyController,
+    ArbitrageController,
+    MarketMakingController,
+  ],
   providers: [
     StrategyService,
     StrategyUserService,

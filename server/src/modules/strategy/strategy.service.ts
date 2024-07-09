@@ -152,6 +152,8 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
+
+    this.logger.log(`Starting strat ${strategyKey}`);
     const exchangeA = this.ExchangeInitService.getExchange(exchangeAName);
     const exchangeB = this.ExchangeInitService.getExchange(exchangeBName);
 
@@ -186,10 +188,10 @@ export class StrategyService {
   async stopStrategyForUser(
     userId: string,
     clientId: string,
-    strategyType?: string,
+    strategyType: string,
   ) {
     this.logger.log(
-      `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
+      `Entering stopStrategyForUser for user ${userId}, client ${clientId}, strategy type ${strategyType}`,
     );
 
     let strategyKey;
@@ -205,26 +207,47 @@ export class StrategyService {
         user_id: userId,
         client_id: clientId,
       });
+    } else {
+      this.logger.error(`Invalid strategy type: ${strategyType}`);
+      return 'Invalid strategy type';
     }
 
-    // Cancel all orders for this strategy before stopping
-    if (strategyKey) {
+    if (!this.strategyInstances.has(strategyKey)) {
+      this.logger.error(`Strategy ${strategyKey} is not running.`);
+      return 'Strategy not running';
+    }
+
+    try {
+      this.logger.log(`Stopping strategy ${strategyKey}`);
+      // Cancel all orders for this strategy before stopping
       await this.cancelAllStrategyOrders(strategyKey);
-    }
 
-    const strategyInstance = this.strategyInstances.get(strategyKey);
-    this.logger.log(strategyKey);
-    if (strategyInstance) {
-      clearInterval(strategyInstance.intervalId);
-      this.strategyInstances.delete(strategyKey);
-      this.logger.log(
-        `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
+      const strategyInstance = this.strategyInstances.get(strategyKey);
+      if (strategyInstance) {
+        clearInterval(strategyInstance.intervalId);
+        this.strategyInstances.delete(strategyKey);
+        this.logger.log(
+          `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
+        );
+
+        // Remove the pairs from active watches
+        this.activeOrderBookWatches.delete(strategyKey);
+      } else {
+        this.logger.error(
+          `No running instance found for strategy ${strategyKey}`,
+        );
+        return 'No running instance found';
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error stopping strategy ${strategyKey}: ${error.message}`,
       );
-
-      // Remove the pairs from active watches
-      this.activeOrderBookWatches.delete(strategyKey);
+      return `Error stopping strategy: ${error.message}`;
     }
+
+    return 'Strategy stopped successfully';
   }
+
   private async watchSymbols(
     exchangeA,
     exchangeB,
@@ -838,19 +861,30 @@ export class StrategyService {
   }
 
   private async cancelAllStrategyOrders(strategyKey: string) {
-    const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
+    this.logger.log(`Cancelling all orders for strategy ${strategyKey}`);
 
-    for (const orderDetail of activeOrdersForStrategy) {
-      const { exchange, orderId } = orderDetail;
-      try {
-        await exchange.cancelOrder(orderId);
-        this.logger.log(`Order ${orderId} canceled successfully.`);
-      } catch (error) {
-        this.logger.error(`Failed to cancel order ${orderId}: ${error}`);
-      }
-    }
+    const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
+    const cancelOrderPromises = activeOrdersForStrategy.map(
+      async (orderDetail) => {
+        const { exchange, orderId } = orderDetail;
+        try {
+          this.logger.log(
+            `Attempting to cancel order ${orderId} on ${exchange.id}`,
+          );
+          await exchange.cancelOrder(orderId);
+          this.logger.log(`Order ${orderId} canceled successfully.`);
+        } catch (error) {
+          this.logger.error(
+            `Failed to cancel order ${orderId} on ${exchange.id}: ${error.message}`,
+          );
+        }
+      },
+    );
+
+    await Promise.all(cancelOrderPromises);
 
     // Remove strategy from activeOrders map after canceling all orders
     this.activeOrders.delete(strategyKey);
+    this.logger.log(`All orders cancelled for strategy ${strategyKey}`);
   }
 }
