@@ -106,7 +106,7 @@ export class StrategyController {
     );
   }
 
-  @Get('/arbitrage/stop')
+  @Get('/stop-arbitrage')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop arbitrage strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -185,7 +185,7 @@ export class StrategyController {
     );
   }
 
-  @Get('/market_making/stop')
+  @Get('/stop-market-making')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop pure market making strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
