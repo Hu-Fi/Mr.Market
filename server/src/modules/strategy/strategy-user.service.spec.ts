@@ -16,6 +16,7 @@ jest.mock('./strategy.service');
 
 describe('StrategyUserService', () => {
   let service: StrategyUserService;
+  let strategyService: StrategyService;
   let strategyUserRepository: StrategyUserRepository;
 
   beforeEach(async () => {
@@ -31,6 +32,7 @@ describe('StrategyUserService', () => {
     }).compile();
 
     service = module.get<StrategyUserService>(StrategyUserService);
+    strategyService = module.get<StrategyService>(StrategyService);
     strategyUserRepository = module.get<StrategyUserRepository>(
       StrategyUserRepository,
     );
@@ -231,4 +233,121 @@ describe('StrategyUserService', () => {
       ).toHaveBeenCalledWith(orderId, newState);
     });
   });
+
+  it.failing(
+    'should correctly handle both active and paused orders',
+    async () => {
+      // Mock data for running and paused orders
+      const mockActiveArbOrders = [
+        {
+          orderId: 'arb1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          amountToTrade: '0.5',
+          minProfitability: '0.01',
+          exchangeAName: 'ExchangeA',
+          exchangeBName: 'ExchangeB',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'created' as ArbitrageStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockActiveMMOrders = [
+        {
+          orderId: 'mm1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          exchangeName: 'ExchangeA',
+          bidSpread: '0.001',
+          askSpread: '0.001',
+          orderAmount: '0.5',
+          orderRefreshTime: '60', // Seconds
+          numberOfLayers: '1',
+          priceSourceType: PriceSourceType.MID_PRICE,
+          amountChangePerLayer: '0.1',
+          amountChangeType: 'percentage' as 'fixed' | 'percentage',
+          ceilingPrice: '60000',
+          floorPrice: '50000',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'created' as MarketMakingStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockPausedArbOrders = [
+        {
+          orderId: 'arb1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          amountToTrade: '0.5',
+          minProfitability: '0.01',
+          exchangeAName: 'ExchangeA',
+          exchangeBName: 'ExchangeB',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'paused' as ArbitrageStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+      const mockPausedMMOrders = [
+        {
+          orderId: 'mm1',
+          userId: 'user1',
+          pair: 'BTC/USDT',
+          exchangeName: 'ExchangeA',
+          bidSpread: '0.001',
+          askSpread: '0.001',
+          orderAmount: '0.5',
+          orderRefreshTime: '60', // Seconds
+          numberOfLayers: '1',
+          priceSourceType: PriceSourceType.MID_PRICE,
+          amountChangePerLayer: '0.1',
+          amountChangeType: 'percentage' as 'fixed' | 'percentage',
+          ceilingPrice: '60000',
+          floorPrice: '50000',
+          balanceA: '100',
+          balanceB: '1000',
+          state: 'paused' as MarketMakingStates,
+          createdAt: '2021-01-01T00:00:00.000Z',
+        },
+      ];
+
+      jest
+        .spyOn(strategyUserRepository, 'findRunningArbitrageOrders')
+        .mockResolvedValue(mockActiveArbOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findRunningMarketMakingOrders')
+        .mockResolvedValue(mockActiveMMOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findPausedArbitrageOrders')
+        .mockResolvedValue(mockPausedArbOrders);
+      jest
+        .spyOn(strategyUserRepository, 'findPausedMarketMakingOrders')
+        .mockResolvedValue(mockPausedMMOrders);
+
+      // Mock strategy service methods to simulate starting and pausing strategies
+      const startArbitrageSpy = jest
+        .spyOn(strategyService, 'startArbitrageIfNotStarted')
+        .mockImplementation(async () => {});
+      const startMarketMakingSpy = jest
+        .spyOn(strategyService, 'startMarketMakingIfNotStarted')
+        .mockImplementation(async () => {});
+      const pauseArbitrageSpy = jest
+        .spyOn(strategyService, 'pauseStrategyIfNotPaused')
+        .mockImplementation(async () => {});
+
+      // Execute the method under test
+      await service.updateExecutionBasedOnOrders();
+
+      // Verify that strategies are started for the active orders
+      expect(startArbitrageSpy).toHaveBeenCalledWith(expect.anything());
+      expect(startMarketMakingSpy).toHaveBeenCalledWith(expect.anything());
+
+      // Verify that strategies are paused for the paused orders
+      expect(pauseArbitrageSpy).toHaveBeenCalledTimes(
+        mockPausedArbOrders.length + mockPausedMMOrders.length,
+      );
+    },
+  );
 });
