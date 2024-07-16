@@ -40,40 +40,25 @@ import * as ccxt from 'ccxt';
 import { TradeRepository } from './trade.repository';
 import { MarketTradeDto, LimitTradeDto } from './trade.dto';
 import { CustomLogger } from '../logger/logger.service';
+import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 
 @Injectable()
 export class TradeService {
   private exchange: ccxt.Exchange;
-  private exchanges = new Map<string, ccxt.Exchange>();
   private readonly logger = new CustomLogger(TradeService.name);
 
-  constructor(private tradeRepository: TradeRepository) {
-    this.initializeExchange();
-  }
+  constructor(
+    private tradeRepository: TradeRepository,
+    private exchangeInitService: ExchangeInitService,
+  ) {}
 
-  private initializeExchange() {
-    // Initialize exchanges
-    this.exchanges.set(
-      'bitfinex',
-      new ccxt.pro.bitfinex({
-        apiKey: process.env.BITFINEX_API_KEY,
-        secret: process.env.BITFINEX_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'mexc',
-      new ccxt.pro.mexc({
-        apiKey: process.env.MEXC_API_KEY,
-        secret: process.env.MEXC_SECRET,
-      }),
-    );
-    this.exchanges.set(
-      'binance',
-      new ccxt.pro.binance({
-        apiKey: process.env.BINANCE_API_KEY,
-        secret: process.env.BINANCE_SECRET,
-      }),
-    );
+  private getExchange(exchangeName: string): ccxt.Exchange {
+    const exchange = this.exchangeInitService.getExchange(exchangeName);
+    if (!exchange) {
+      this.logger.error(`Exchange: ${exchangeName} is not configured.`);
+      throw new InternalServerErrorException('Exchange configuration error.');
+    }
+    return exchange;
   }
 
   async executeMarketTrade(marketTradeDto: MarketTradeDto) {
@@ -84,12 +69,8 @@ export class TradeService {
         'Missing required parameters for market trade.',
       );
     }
-    this.exchange = this.exchanges.get(exchange);
 
-    if (!this.exchange) {
-      this.logger.error(`Exchange: ${exchange} is not configured.`);
-      throw new InternalServerErrorException('Exchange configuration error.');
-    }
+    this.exchange = this.getExchange(exchange);
 
     try {
       const order = await this.exchange.createOrder(
@@ -111,7 +92,7 @@ export class TradeService {
         orderId: order.id, // Assuming the order object has an id field
       });
 
-      //   return order;
+      // return order;
     } catch (error) {
       this.logger.error(`Failed to execute market trade: ${error.message}`);
       throw new InternalServerErrorException(
@@ -130,12 +111,7 @@ export class TradeService {
       );
     }
 
-    this.exchange = this.exchanges.get(exchange);
-
-    if (!this.exchange) {
-      this.logger.error(`Exchange: ${exchange} is not configured.`);
-      throw new InternalServerErrorException('Exchange configuration error.');
-    }
+    this.exchange = this.getExchange(exchange);
 
     try {
       const order = await this.exchange.createOrder(
@@ -171,7 +147,7 @@ export class TradeService {
   async cancelOrder(orderId: string, symbol: string): Promise<void> {
     try {
       await this.exchange.cancelOrder(orderId, symbol);
-      //  update the transaction status in database
+      // update the transaction status in database
       await this.tradeRepository.updateTradeStatus(orderId, 'cancelled');
     } catch (error) {
       this.logger.error(`Failed to cancel order: ${error.message}`);

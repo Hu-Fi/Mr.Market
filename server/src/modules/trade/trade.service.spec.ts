@@ -1,178 +1,241 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TradeService } from './trade.service';
 import { TradeRepository } from './trade.repository';
+import { CustomLogger } from '../logger/logger.service';
+import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
+import { MarketTradeDto, LimitTradeDto } from './trade.dto';
 import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as ccxt from 'ccxt';
 
-jest.mock('ccxt', () => ({
-  pro: {
-    binance: jest.fn().mockImplementation(() => ({
-      createOrder: jest.fn(),
-      cancelOrder: jest.fn().mockResolvedValue,
-    })),
-    bitfinex: jest.fn().mockImplementation(() => ({})),
-    mexc: jest.fn().mockImplementation(() => ({})),
-  },
-}));
+jest.mock('ccxt');
 
 describe('TradeService', () => {
   let service: TradeService;
-  let mockTradeRepository;
+  let tradeRepository: TradeRepository;
+  let exchangeInitService: ExchangeInitService;
+  let exchangeMock;
 
   beforeEach(async () => {
-    mockTradeRepository = {
-      createTrade: jest.fn(),
-      updateTradeStatus: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TradeService,
         {
           provide: TradeRepository,
-          useValue: mockTradeRepository,
+          useValue: {
+            createTrade: jest.fn(),
+            updateTradeStatus: jest.fn(),
+          },
         },
+        {
+          provide: ExchangeInitService,
+          useValue: {
+            getExchange: jest.fn(),
+          },
+        },
+        CustomLogger,
       ],
     }).compile();
 
     service = module.get<TradeService>(TradeService);
-
-    // Mock initialization of exchanges to ensure the service can find the mocked exchanges
-    service['exchanges'].set('binance', new ccxt.pro.binance());
-  });
-
-  describe('executeLimitTrade', () => {
-    it('should execute a limit trade successfully', async () => {
-      const limitTradeDto = {
-        userId: 'user123',
-        clientId: 'client123',
-        exchange: 'binance',
-        symbol: 'BTC/USD',
-        side: 'sell',
-        amount: 1,
-        price: 50000,
-      };
-
-      const mockOrder = {
-        id: 'order123',
-        status: 'closed',
-        price: 50000,
-      };
-
-      service['exchanges'].get('binance').createOrder = jest
-        .fn()
-        .mockResolvedValue(mockOrder);
-
-      await service.executeLimitTrade(limitTradeDto);
-
-      expect(
-        service['exchanges'].get('binance').createOrder,
-      ).toHaveBeenCalledWith('BTC/USD', 'limit', 'sell', 1, 50000);
-      expect(mockTradeRepository.createTrade).toHaveBeenCalledWith({
-        userId: 'user123',
-        clientId: 'client123',
-        symbol: 'BTC/USD',
-        side: 'sell',
-        type: 'limit',
-        amount: 1,
-        price: 50000,
-        status: 'closed',
-        orderId: 'order123',
-      });
-    });
-    it('should throw BadRequestException for missing parameters', async () => {
-      const limitTradeDto = {
-        // Assuming one or more required fields are missing
-        userId: 'user123',
-        clientId: 'client123',
-        exchange: 'binance',
-        // Missing symbol, side, amount, or price
-      };
-
-      await expect(
-        service.executeLimitTrade(limitTradeDto as any),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw InternalServerErrorException for unconfigured exchange', async () => {
-      const limitTradeDto = {
-        userId: 'user123',
-        clientId: 'client123',
-        exchange: 'nonExistentExchange',
-        symbol: 'BTC/USD',
-        side: 'sell',
-        amount: 1,
-        price: 50000,
-      };
-
-      await expect(service.executeLimitTrade(limitTradeDto)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
-
-    it('should throw InternalServerErrorException on createOrder failure', async () => {
-      const limitTradeDto = {
-        userId: 'user123',
-        clientId: 'client123',
-        exchange: 'binance',
-        symbol: 'BTC/USD',
-        side: 'sell',
-        amount: 1,
-        price: 50000,
-      };
-
-      ccxt.pro.binance.prototype.createOrder = jest
-        .fn()
-        .mockRejectedValue(new Error('API Error'));
-
-      await expect(service.executeLimitTrade(limitTradeDto)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
+    tradeRepository = module.get<TradeRepository>(TradeRepository);
+    exchangeInitService = module.get<ExchangeInitService>(ExchangeInitService);
+    exchangeMock = new ccxt.binance();
   });
 
   describe('executeMarketTrade', () => {
     it('should execute a market trade successfully', async () => {
-      const marketTradeDto = {
-        userId: '1',
-        clientId: '1',
+      const marketTradeDto: MarketTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
         exchange: 'binance',
-        symbol: 'BTC/USD',
+        symbol: 'BTC/USDT',
         side: 'buy',
         amount: 1,
       };
 
-      const mockOrderResponse = {
+      const orderMock = {
         id: 'order123',
         status: 'closed',
-        price: 50000,
+        price: 30000,
       };
 
-      service['exchanges'].get('binance').createOrder = jest
-        .fn()
-        .mockResolvedValue(mockOrderResponse);
+      exchangeInitService.getExchange = jest.fn().mockReturnValue(exchangeMock);
+      exchangeMock.createOrder = jest.fn().mockResolvedValue(orderMock);
 
       await service.executeMarketTrade(marketTradeDto);
 
-      expect(
-        service['exchanges'].get('binance').createOrder,
-      ).toHaveBeenCalledWith('BTC/USD', 'market', 'buy', 1);
-      expect(mockTradeRepository.createTrade).toHaveBeenCalledWith({
-        userId: '1',
-        clientId: '1',
-        symbol: 'BTC/USD',
-        side: 'buy',
+      expect(exchangeInitService.getExchange).toHaveBeenCalledWith('binance');
+      expect(exchangeMock.createOrder).toHaveBeenCalledWith(
+        'BTC/USDT',
+        'market',
+        'buy',
+        1,
+      );
+      expect(tradeRepository.createTrade).toHaveBeenCalledWith({
+        userId: 'user123',
+        clientId: 'client123',
+        symbol: 'BTC/USDT',
         type: 'market',
+        side: 'buy',
         amount: 1,
         status: 'closed',
-        price: 50000,
+        price: 30000,
         orderId: 'order123',
       });
     });
+
+    it('should throw BadRequestException if required parameters are missing', async () => {
+      const marketTradeDto: MarketTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
+        exchange: 'binance',
+        symbol: '',
+        side: 'buy',
+        amount: 1,
+      };
+
+      await expect(service.executeMarketTrade(marketTradeDto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw InternalServerErrorException if trade execution fails', async () => {
+      const marketTradeDto: MarketTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
+        exchange: 'binance',
+        symbol: 'BTC/USDT',
+        side: 'buy',
+        amount: 1,
+      };
+
+      exchangeInitService.getExchange = jest.fn().mockReturnValue(exchangeMock);
+      exchangeMock.createOrder = jest
+        .fn()
+        .mockRejectedValue(new Error('Trade failed'));
+
+      await expect(service.executeMarketTrade(marketTradeDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
   });
 
-  // Other tests...
+  describe('executeLimitTrade', () => {
+    it('should execute a limit trade successfully', async () => {
+      const limitTradeDto: LimitTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
+        exchange: 'binance',
+        symbol: 'BTC/USDT',
+        side: 'buy',
+        amount: 1,
+        price: 30000,
+      };
+
+      const orderMock = {
+        id: 'order123',
+        status: 'open',
+        price: 30000,
+      };
+
+      exchangeInitService.getExchange = jest.fn().mockReturnValue(exchangeMock);
+      exchangeMock.createOrder = jest.fn().mockResolvedValue(orderMock);
+
+      await service.executeLimitTrade(limitTradeDto);
+
+      expect(exchangeInitService.getExchange).toHaveBeenCalledWith('binance');
+      expect(exchangeMock.createOrder).toHaveBeenCalledWith(
+        'BTC/USDT',
+        'limit',
+        'buy',
+        1,
+        30000,
+      );
+      expect(tradeRepository.createTrade).toHaveBeenCalledWith({
+        userId: 'user123',
+        clientId: 'client123',
+        symbol: 'BTC/USDT',
+        side: 'buy',
+        type: 'limit',
+        amount: 1,
+        price: 30000,
+        status: 'open',
+        orderId: 'order123',
+      });
+    });
+
+    it('should throw BadRequestException if required parameters are missing', async () => {
+      const limitTradeDto: LimitTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
+        exchange: 'binance',
+        symbol: 'BTC/USDT',
+        side: 'buy',
+        amount: 1,
+        price: null,
+      };
+
+      await expect(service.executeLimitTrade(limitTradeDto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw InternalServerErrorException if trade execution fails', async () => {
+      const limitTradeDto: LimitTradeDto = {
+        userId: 'user123',
+        clientId: 'client123',
+        exchange: 'binance',
+        symbol: 'BTC/USDT',
+        side: 'buy',
+        amount: 1,
+        price: 30000,
+      };
+
+      exchangeInitService.getExchange = jest.fn().mockReturnValue(exchangeMock);
+      exchangeMock.createOrder = jest
+        .fn()
+        .mockRejectedValue(new Error('Trade failed'));
+
+      await expect(service.executeLimitTrade(limitTradeDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
+
+  describe('cancelOrder', () => {
+    it('should cancel an order successfully', async () => {
+      const orderId = 'order123';
+      const symbol = 'BTC/USDT';
+
+      exchangeMock.cancelOrder = jest.fn().mockResolvedValue({});
+
+      service['exchange'] = exchangeMock;
+
+      await service.cancelOrder(orderId, symbol);
+
+      expect(exchangeMock.cancelOrder).toHaveBeenCalledWith(orderId, symbol);
+      expect(tradeRepository.updateTradeStatus).toHaveBeenCalledWith(
+        orderId,
+        'cancelled',
+      );
+    });
+
+    it('should throw InternalServerErrorException if order cancellation fails', async () => {
+      const orderId = 'order123';
+      const symbol = 'BTC/USDT';
+
+      exchangeMock.cancelOrder = jest
+        .fn()
+        .mockRejectedValue(new Error('Cancellation failed'));
+
+      service['exchange'] = exchangeMock;
+
+      await expect(service.cancelOrder(orderId, symbol)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
 });
