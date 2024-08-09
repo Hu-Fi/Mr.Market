@@ -253,8 +253,9 @@ export class StrategyService {
   async executeVolumeStrategy(
     exchangeName: string,
     symbol: string,
-    incrementPercentage: number,
-    tradeAmount: number,
+    baseIncrementPercentage: number,
+    baseIntervalTime: number,        
+    baseTradeAmount: number,      
     numTrades: number,
     userId: string,
     clientId: string,
@@ -264,12 +265,12 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-
+  
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.warn(`Strategy ${strategyKey} is already running.`);
       return;
     }
-
+  
     try {
       const exchangeAccount1 = this.exchangeInitService.getExchange(
         exchangeName,
@@ -279,88 +280,112 @@ export class StrategyService {
         exchangeName,
         'account2',
       );
-
+  
       let useAccount1 = true;
       let tradesExecuted = 0;
-
-      const intervalId = setInterval(async () => {
+  
+      const executeTrade = async () => {
         if (tradesExecuted >= numTrades) {
-          clearInterval(intervalId);
-          this.strategyInstances.delete(strategyKey);
           this.logger.log(`Volume strategy ${strategyKey} completed.`);
+          this.strategyInstances.delete(strategyKey);
           return;
         }
-
+  
         try {
+          // Randomly decide whether to pause the strategy
+          if (Math.random() > 0.91) { // 9% chance to pause after a trade
+            const pauseDuration = Math.floor(Math.random() * 4) + 1; // Pause for 1 to 4 minutes
+            this.logger.log(`Pausing strategy for ${pauseDuration} minutes.`);
+            await new Promise((resolve) => setTimeout(resolve, pauseDuration * 60000)); // Pause execution
+          }
+  
           // Fetch the order book to calculate the initial price
           const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
           let highestBid = orderBook.bids[0][0];
           let lowestAsk = orderBook.asks[0][0];
-
+  
           this.logger.log(`Initial highest bid for ${symbol} is ${highestBid}`);
           this.logger.log(`Initial lowest ask for ${symbol} is ${lowestAsk}`);
-
+  
           const buyExchange = useAccount1 ? exchangeAccount1 : exchangeAccount2;
           const sellExchange = useAccount1
             ? exchangeAccount2
             : exchangeAccount1;
-
+  
+          // Randomize the price adjustment percentage
+          const variableIncrementPercentage = baseIncrementPercentage * (1 + (Math.random() - 0.5) / 20); // Varies by ±2.5%
+  
           // Determine the start price for the current trade
           let currentPrice;
           if (useAccount1) {
-            currentPrice = highestBid * (1 + incrementPercentage / 100);
+            currentPrice = highestBid * (1 + variableIncrementPercentage / 100);
           } else {
-            currentPrice = lowestAsk * (1 - incrementPercentage / 100);
+            currentPrice = lowestAsk * (1 - variableIncrementPercentage / 100);
           }
-
+  
+          // Randomize the trade amount
+          const variableTradeAmount = baseTradeAmount * (1 + (Math.random() - 0.5) / 10); // Varies by ±5%
+  
           // Place buy order on the selected exchange
           const buyOrder = await buyExchange.createLimitBuyOrder(
             symbol,
-            tradeAmount,
+            variableTradeAmount,
             currentPrice,
           );
           this.logger.log(
-            `Buy order placed on ${buyExchange.id}: ${buyOrder.id} at price ${currentPrice}`,
+            `Buy order placed on ${buyExchange.id}: ${buyOrder.id} at price ${currentPrice} with amount ${variableTradeAmount}`,
           );
-
+  
           // Place sell order on the other exchange
           const sellOrder = await sellExchange.createLimitSellOrder(
             symbol,
-            tradeAmount,
+            variableTradeAmount,
             currentPrice,
           );
           this.logger.log(
-            `Sell order placed on ${sellExchange.id}: ${sellOrder.id} at price ${currentPrice}`,
+            `Sell order placed on ${sellExchange.id}: ${sellOrder.id} at price ${currentPrice} with amount ${variableTradeAmount}`,
           );
-
+  
           // Optionally, wait for orders to be filled or perform additional checks here
           await this.waitForOrderFill(buyExchange, buyOrder.id, symbol);
           await this.waitForOrderFill(sellExchange, sellOrder.id, symbol);
-
-          // Save order details to the database (implementation depends on your database schema)
-          // Example: saveOrder(userId, clientId, exchangeName, symbol, buyOrder, sellOrder);
-
+  
           // Increment the price by the specified percentage for the next trade
           if (useAccount1) {
             highestBid = currentPrice;
           } else {
             lowestAsk = currentPrice;
           }
-
+  
           // Alternate the account usage
           useAccount1 = !useAccount1;
           tradesExecuted++;
+  
+          // Randomize the interval time for the next trade
+          const randomInterval = baseIntervalTime + Math.floor(Math.random() * baseIntervalTime);
+          setTimeout(executeTrade, randomInterval * 1000); // Execute the next trade after a random interval
+  
         } catch (error) {
           this.logger.error(`Error executing trade: ${error.message}`);
+          // Even if there's an error, wait before trying the next trade
+          const randomInterval = baseIntervalTime + Math.floor(Math.random() * baseIntervalTime);
+          setTimeout(executeTrade, randomInterval * 1000);
         }
-      }, 35000); // Adjust the interval as needed
-
-      this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+      };
+  
+      // Start the first trade execution
+      this.strategyInstances.set(strategyKey, { isRunning: true, intervalId: null });
       this.logger.log(`Volume strategy ${strategyKey} started.`);
+      executeTrade(); // Start the execution loop
+  
     } catch (error) {
       this.logger.error(`Failed to execute volume strategy: ${error.message}`);
     }
   }
+  
+  
+  
+  
   private async waitForOrderFill(
     exchange: ccxt.Exchange,
     orderId: string,

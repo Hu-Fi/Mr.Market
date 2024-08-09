@@ -227,6 +227,7 @@ export class StrategyController {
       executeVolumeStrategyDto.exchangeName,
       executeVolumeStrategyDto.symbol,
       executeVolumeStrategyDto.incrementPercentage,
+      executeVolumeStrategyDto.intervalTime,
       executeVolumeStrategyDto.tradeAmount,
       executeVolumeStrategyDto.numTrades,
       executeVolumeStrategyDto.userId,

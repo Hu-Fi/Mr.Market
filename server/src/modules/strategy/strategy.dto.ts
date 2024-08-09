@@ -127,6 +127,9 @@ export class ExecuteVolumeStrategyDto {
   @ApiProperty({ description: 'Percentage increment for each trade' })
   incrementPercentage: number;
 
+  @ApiProperty({description:'Time interval between trade execution'})
+  intervalTime:number;
+
   @ApiProperty({ description: 'Amount to trade per order' })
   tradeAmount: number;
 
