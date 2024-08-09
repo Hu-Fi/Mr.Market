@@ -115,7 +115,7 @@ describe('StrategyService', () => {
         minProfitability: -1,
         amountToTrade: 0.1,
       };
-      await service.startArbitrageStrategyForUser(strategyParamsDto);
+      await service.startArbitrageStrategyForUser(strategyParamsDto, 20, 10);
       expect(
         service['strategyInstances'].has('1-client1-arbitrage'),
       ).toBeTruthy();
@@ -132,7 +132,7 @@ describe('StrategyService', () => {
         amountToTrade: 0.1,
       };
       await expect(
-        service.startArbitrageStrategyForUser(strategyParamsDto),
+        service.startArbitrageStrategyForUser(strategyParamsDto, 30, 1),
       ).rejects.toThrow(InternalServerErrorException);
     });
   });

@@ -5,7 +5,8 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 @Injectable()
 export class ExchangeInitService {
   private readonly logger = new CustomLogger(ExchangeInitService.name);
-  private exchanges = new Map<string, ccxt.Exchange>();
+  private exchanges = new Map<string, Map<string, ccxt.Exchange>>();
+  private defaultAccounts = new Map<string, ccxt.Exchange>();
 
   constructor() {
     this.initializeExchanges()
@@ -19,108 +20,229 @@ export class ExchangeInitService {
     const exchangeConfigs = [
       {
         name: 'okx',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.OKX_API_KEY,
+            secret: process.env.OKX_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.OKX_API_KEY_2,
+            secret: process.env.OKX_SECRET_2,
+          },
+        ],
         class: ccxt.pro.okx,
-        apiKey: process.env.OKX_API_KEY,
-        secret: process.env.OKX_SECRET,
       },
       {
         name: 'bitfinex',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.BITFINEX_API_KEY,
+            secret: process.env.BITFINEX_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.BITFINEX_API_KEY_2,
+            secret: process.env.BITFINEX_SECRET_2,
+          },
+        ],
         class: ccxt.pro.bitfinex,
-        apiKey: process.env.BITFINEX_API_KEY,
-        secret: process.env.BITFINEX_SECRET,
       },
       {
         name: 'gate',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.GATE_API_KEY,
+            secret: process.env.GATE_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.GATE_API_KEY_2,
+            secret: process.env.GATE_SECRET_2,
+          },
+        ],
         class: ccxt.pro.gate,
-        apiKey: process.env.GATE_API_KEY,
-        secret: process.env.GATE_SECRET,
       },
       {
         name: 'mexc',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.MEXC_API_KEY,
+            secret: process.env.MEXC_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.MEXC_API_KEY_2,
+            secret: process.env.MEXC_SECRET_2,
+          },
+        ],
         class: ccxt.pro.mexc,
-        apiKey: process.env.MEXC_API_KEY,
-        secret: process.env.MEXC_SECRET,
       },
       {
         name: 'binance',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.BINANCE_API_KEY,
+            secret: process.env.BINANCE_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.BINANCE_API_KEY_2,
+            secret: process.env.BINANCE_SECRET_2,
+          },
+        ],
         class: ccxt.pro.binance,
-        apiKey: process.env.BINANCE_API_KEY,
-        secret: process.env.BINANCE_SECRET,
       },
       {
         name: 'lbank',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.LBANK_API_KEY,
+            secret: process.env.LBANK_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.LBANK_API_KEY_2,
+            secret: process.env.LBANK_SECRET_2,
+          },
+        ],
         class: ccxt.pro.lbank,
-        apiKey: process.env.LBANK_API_KEY,
-        secret: process.env.LBANK_SECRET,
       },
       {
         name: 'bitmart',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.BITMART_API_KEY,
+            secret: process.env.BITMART_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.BITMART_API_KEY_2,
+            secret: process.env.BITMART_SECRET_2,
+          },
+        ],
         class: ccxt.pro.bitmart,
-        apiKey: process.env.BITMART_API_KEY,
-        secret: process.env.BITMART_SECRET,
       },
       {
         name: 'bigone',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.BIGONE_API_KEY,
+            secret: process.env.BIGONE_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.BIGONE_API_KEY_2,
+            secret: process.env.BIGONE_SECRET_2,
+          },
+        ],
         class: ccxt.bigone,
-        apiKey: process.env.BIGONE_API_KEY,
-        secret: process.env.BIGONE_SECRET,
       },
       {
         name: 'coinlist',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.COINLIST_API_KEY,
+            secret: process.env.COINLIST_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.COINLIST_API_KEY_2,
+            secret: process.env.COINLIST_SECRET_2,
+          },
+        ],
         class: ccxt.coinlist,
-        apiKey: process.env.COINLIST_API_KEY,
-        secret: process.env.COINLIST_SECRET,
-      },
-      {
-        name: 'bitmart',
-        class: ccxt.pro.bitmart,
-        apiKey: process.env.BITMART_API_KEY,
-        secret: process.env.BITMART_SECRET,
       },
       {
         name: 'p2b',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.P2B_API_KEY,
+            secret: process.env.P2B_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.P2B_API_KEY_2,
+            secret: process.env.P2B_SECRET_2,
+          },
+        ],
         class: ccxt.pro.p2b,
-        apiKey: process.env.P2B_API_KEY,
-        secret: process.env.P2B_SECRET,
       },
-
       {
-        name: 'degifinex',
+        name: 'digifinex',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.DIGIFINEX_API_KEY,
+            secret: process.env.DIGIFINEX_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.DIGIFINEX_API_KEY_2,
+            secret: process.env.DIGIFINEX_SECRET_2,
+          },
+        ],
         class: ccxt.digifinex,
-        apiKey: process.env.DEGIFINEX_API_KEY,
-        secret: process.env.DEGIFINEX_SECRET,
       },
     ];
 
     await Promise.all(
       exchangeConfigs.map(async (config) => {
-        try {
-          if (!config.apiKey || !config.secret) {
-            this.logger.warn(
-              `API key or secret for ${config.name} is missing. Skipping initialization.`,
-            );
-            return;
-          }
-          const exchange = new config.class({
-            apiKey: config.apiKey,
-            secret: config.secret,
-          });
-          await exchange.loadMarkets();
-          this.exchanges.set(config.name, exchange);
-          this.logger.log(`${config.name} initialized successfully.`);
-        } catch (error) {
-          this.logger.warn(
-            `Failed to initialize ${config.name}: ${error.message}`,
-          );
-        }
+        const exchangeMap = new Map<string, ccxt.Exchange>();
+        await Promise.all(
+          config.accounts.map(async (account) => {
+            try {
+              if (!account.apiKey || !account.secret) {
+                this.logger.warn(
+                  `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
+                );
+                return;
+              }
+              const exchange = new config.class({
+                apiKey: account.apiKey,
+                secret: account.secret,
+              });
+              await exchange.loadMarkets();
+              exchangeMap.set(account.label, exchange);
+              this.logger.log(
+                `${config.name} ${account.label} initialized successfully.`,
+              );
+              if (account.label === 'default') {
+                this.defaultAccounts.set(config.name, exchange);
+              }
+            } catch (error) {
+              this.logger.warn(
+                `Failed to initialize ${config.name} ${account.label}: ${error.message}`,
+              );
+            }
+          }),
+        );
+        this.exchanges.set(config.name, exchangeMap);
       }),
     );
   }
 
-  getExchange(exchangeName: string): ccxt.Exchange {
-    const exchange = this.exchanges.get(exchangeName);
-    if (!exchange) {
+  getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
+    const exchangeMap = this.exchanges.get(exchangeName);
+    if (!exchangeMap) {
       this.logger.error(`Exchange ${exchangeName} is not configured.`);
+      throw new InternalServerErrorException('Exchange configuration error.');
+    }
+    const exchange = exchangeMap.get(label);
+    if (!exchange) {
+      this.logger.error(
+        `Exchange ${exchangeName} with label ${label} is not configured.`,
+      );
       throw new InternalServerErrorException('Exchange configuration error.');
     }
     return exchange;
@@ -128,5 +250,25 @@ export class ExchangeInitService {
 
   getSupportedExchanges(): string[] {
     return Array.from(this.exchanges.keys());
+  }
+
+  getAccountsForExchange(exchangeName: string): string[] {
+    const exchangeMap = this.exchanges.get(exchangeName);
+    if (!exchangeMap) {
+      this.logger.error(`Exchange ${exchangeName} is not configured.`);
+      throw new InternalServerErrorException('Exchange configuration error.');
+    }
+    return Array.from(exchangeMap.keys());
+  }
+
+  getDefaultExchange(exchangeName: string): ccxt.Exchange {
+    const exchange = this.defaultAccounts.get(exchangeName);
+    if (!exchange) {
+      this.logger.error(`Default exchange ${exchangeName} is not configured.`);
+      throw new InternalServerErrorException(
+        'Default exchange configuration error.',
+      );
+    }
+    return exchange;
   }
 }

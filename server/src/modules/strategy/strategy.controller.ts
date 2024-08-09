@@ -16,7 +16,9 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import {
   ArbitrageStrategyDto,
+  ExecuteVolumeStrategyDto,
   PureMarketMakingStrategyDto,
+  StopVolumeStrategyDto,
 } from './strategy.dto';
 
 @ApiTags('strategy')
@@ -103,6 +105,8 @@ export class StrategyController {
   async executeArbitrage(@Body() strategyParamsDto: ArbitrageStrategyDto) {
     return this.strategyService.startArbitrageStrategyForUser(
       strategyParamsDto,
+      strategyParamsDto.checkIntervalSeconds,
+      strategyParamsDto.maxOpenOrders,
     );
   }
 
@@ -185,7 +189,7 @@ export class StrategyController {
     );
   }
 
-  @Get('/stop-market-making')
+  @Get('/stop-marketmaking')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop pure market making strategy for a user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -205,6 +209,46 @@ export class StrategyController {
       userId,
       clientId,
       'pureMarketMaking',
+    );
+  }
+
+  @Post('/execute-volume-strategy')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Execute volume strategy' })
+  @ApiResponse({
+    status: 200,
+    description: 'The volume strategy has been started.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async executeVolumeStrategy(
+    @Body() executeVolumeStrategyDto: ExecuteVolumeStrategyDto,
+  ) {
+    return this.strategyService.executeVolumeStrategy(
+      executeVolumeStrategyDto.exchangeName,
+      executeVolumeStrategyDto.symbol,
+      executeVolumeStrategyDto.incrementPercentage,
+      executeVolumeStrategyDto.intervalTime,
+      executeVolumeStrategyDto.tradeAmount,
+      executeVolumeStrategyDto.numTrades,
+      executeVolumeStrategyDto.userId,
+      executeVolumeStrategyDto.clientId,
+    );
+  }
+
+  @Post('/stop-volume-strategy')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Stop volume strategy' })
+  @ApiResponse({
+    status: 200,
+    description: 'The volume strategy has been stopped.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async stopVolumeStrategy(
+    @Body() stopVolumeStrategyDto: StopVolumeStrategyDto,
+  ) {
+    return this.strategyService.stopVolumeStrategy(
+      stopVolumeStrategyDto.userId,
+      stopVolumeStrategyDto.clientId,
     );
   }
 }
