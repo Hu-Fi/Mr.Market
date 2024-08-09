@@ -1,5 +1,5 @@
 export interface StrategyKey {
-  type: 'arbitrage' | 'pureMarketMaking';
+  type: 'arbitrage' | 'pureMarketMaking' | 'volume';
   user_id: string;
   client_id: string;
 }

@@ -43,6 +43,10 @@ export class ArbitrageStrategyDto {
 
   @ApiProperty({ example: 'mexc', description: 'Name of the second exchange.' })
   exchangeBName: string;
+  @ApiProperty({ example: 10, description: 'interval to run arbitrage scan' })
+  checkIntervalSeconds?: number;
+  @ApiProperty({ example: 1, description: 'Max number of orders' })
+  maxOpenOrders?: number;
 }
 
 export class PureMarketMakingStrategyDto {
@@ -111,4 +115,35 @@ export class PureMarketMakingStrategyDto {
     example: '0',
   })
   floorPrice?: number;
+}
+
+export class ExecuteVolumeStrategyDto {
+  @ApiProperty({ description: 'Name of the exchange' })
+  exchangeName: string;
+
+  @ApiProperty({ description: 'Symbol to trade' })
+  symbol: string;
+
+  @ApiProperty({ description: 'Percentage increment for each trade' })
+  incrementPercentage: number;
+
+  @ApiProperty({ description: 'Amount to trade per order' })
+  tradeAmount: number;
+
+  @ApiProperty({ description: 'Number of trades to execute' })
+  numTrades: number;
+
+  @ApiProperty({ description: 'User ID' })
+  userId: string;
+
+  @ApiProperty({ description: 'Client ID' })
+  clientId: string;
+}
+
+export class StopVolumeStrategyDto {
+  @ApiProperty({ description: 'User ID' })
+  userId: string;
+
+  @ApiProperty({ description: 'Client ID' })
+  clientId: string;
 }

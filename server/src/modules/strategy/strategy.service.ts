@@ -105,13 +105,13 @@ export class StrategyService {
   private activeOrderBookWatches = new Map<string, Set<string>>(); // Tracks active watches for each strategy
   private activeOrders: Map<
     string,
-    { exchange: ccxt.Exchange; orderId: string }[]
+    { exchange: ccxt.Exchange; orderId: string; symbol: string }[]
   > = new Map();
 
   constructor(
     private tradeService: TradeService,
     private performanceService: PerformanceService,
-    private ExchangeInitService: ExchangeInitService,
+    private exchangeInitService: ExchangeInitService,
     @InjectRepository(MarketMakingHistory)
     private orderRepository: Repository<MarketMakingHistory>,
     @InjectRepository(ArbitrageHistory)
@@ -123,17 +123,23 @@ export class StrategyService {
   }
 
   async getSupportedExchanges(): Promise<string[]> {
-    return this.ExchangeInitService.getSupportedExchanges();
+    return this.exchangeInitService.getSupportedExchanges();
   }
 
   async startArbitrageIfNotStarted(
     strategyKey: string,
     strategyParamsDto: ArbitrageStrategyDto,
+    checkIntervalSeconds: number,
+    maxOpenOrders: number,
   ) {
     if (this.strategyInstances.has(strategyKey)) {
       return;
     }
-    return await this.startArbitrageStrategyForUser(strategyParamsDto);
+    return await this.startArbitrageStrategyForUser(
+      strategyParamsDto,
+      checkIntervalSeconds,
+      maxOpenOrders,
+    );
   }
 
   async pauseStrategyIfNotPaused(key: StrategyKey) {
@@ -144,7 +150,11 @@ export class StrategyService {
     return await this.stopStrategyForUser(key.user_id, key.client_id, key.type);
   }
 
-  async startArbitrageStrategyForUser(strategyParamsDto: ArbitrageStrategyDto) {
+  async startArbitrageStrategyForUser(
+    strategyParamsDto: ArbitrageStrategyDto,
+    checkIntervalSeconds: number,
+    maxOpenOrders: number,
+  ) {
     const { userId, clientId, pair, exchangeAName, exchangeBName } =
       strategyParamsDto;
     const strategyKey = createStrategyKey({
@@ -152,8 +162,8 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-    const exchangeA = this.ExchangeInitService.getExchange(exchangeAName);
-    const exchangeB = this.ExchangeInitService.getExchange(exchangeBName);
+    const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
+    const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.log(
@@ -172,13 +182,22 @@ export class StrategyService {
 
     this.watchSymbols(exchangeA, exchangeB, pair, strategyKey);
 
-    const intervalId = setInterval(() => {
-      this.evaluateArbitrageOpportunityVWAP(
-        exchangeA,
-        exchangeB,
-        strategyParamsDto,
-      );
-    }, 1000); // Run every 1 second
+    const intervalId = setInterval(async () => {
+      const allOrdersFilled = await this.checkAndCleanFilledOrders(strategyKey);
+      const currentOpenOrders = this.activeOrders.get(strategyKey)?.length || 0;
+
+      if (allOrdersFilled && currentOpenOrders < maxOpenOrders) {
+        await this.evaluateArbitrageOpportunityVWAP(
+          exchangeA,
+          exchangeB,
+          strategyParamsDto,
+        );
+      } else {
+        this.logger.log(
+          `Waiting for open orders to fill for ${strategyKey} before evaluating new opportunities.`,
+        );
+      }
+    }, checkIntervalSeconds * 1000); // Run every specified number of seconds
 
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
@@ -205,6 +224,12 @@ export class StrategyService {
         user_id: userId,
         client_id: clientId,
       });
+    } else if (strategyType === 'volume') {
+      strategyKey = createStrategyKey({
+        type: 'volume',
+        user_id: userId,
+        client_id: clientId,
+      });
     }
 
     // Cancel all orders for this strategy before stopping
@@ -213,7 +238,6 @@ export class StrategyService {
     }
 
     const strategyInstance = this.strategyInstances.get(strategyKey);
-    this.logger.log(strategyKey);
     if (strategyInstance) {
       clearInterval(strategyInstance.intervalId);
       this.strategyInstances.delete(strategyKey);
@@ -225,9 +249,151 @@ export class StrategyService {
       this.activeOrderBookWatches.delete(strategyKey);
     }
   }
+
+  async executeVolumeStrategy(
+    exchangeName: string,
+    symbol: string,
+    incrementPercentage: number,
+    tradeAmount: number,
+    numTrades: number,
+    userId: string,
+    clientId: string,
+  ) {
+    const strategyKey = createStrategyKey({
+      type: 'volume',
+      user_id: userId,
+      client_id: clientId,
+    });
+
+    if (this.strategyInstances.has(strategyKey)) {
+      this.logger.warn(`Strategy ${strategyKey} is already running.`);
+      return;
+    }
+
+    try {
+      const exchangeAccount1 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'default',
+      );
+      const exchangeAccount2 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'account2',
+      );
+
+      let useAccount1 = true;
+      let tradesExecuted = 0;
+
+      const intervalId = setInterval(async () => {
+        if (tradesExecuted >= numTrades) {
+          clearInterval(intervalId);
+          this.strategyInstances.delete(strategyKey);
+          this.logger.log(`Volume strategy ${strategyKey} completed.`);
+          return;
+        }
+
+        try {
+          // Fetch the order book to calculate the initial price
+          const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
+          let highestBid = orderBook.bids[0][0];
+          let lowestAsk = orderBook.asks[0][0];
+
+          this.logger.log(`Initial highest bid for ${symbol} is ${highestBid}`);
+          this.logger.log(`Initial lowest ask for ${symbol} is ${lowestAsk}`);
+
+          const buyExchange = useAccount1 ? exchangeAccount1 : exchangeAccount2;
+          const sellExchange = useAccount1
+            ? exchangeAccount2
+            : exchangeAccount1;
+
+          // Determine the start price for the current trade
+          let currentPrice;
+          if (useAccount1) {
+            currentPrice = highestBid * (1 + incrementPercentage / 100);
+          } else {
+            currentPrice = lowestAsk * (1 - incrementPercentage / 100);
+          }
+
+          // Place buy order on the selected exchange
+          const buyOrder = await buyExchange.createLimitBuyOrder(
+            symbol,
+            tradeAmount,
+            currentPrice,
+          );
+          this.logger.log(
+            `Buy order placed on ${buyExchange.id}: ${buyOrder.id} at price ${currentPrice}`,
+          );
+
+          // Place sell order on the other exchange
+          const sellOrder = await sellExchange.createLimitSellOrder(
+            symbol,
+            tradeAmount,
+            currentPrice,
+          );
+          this.logger.log(
+            `Sell order placed on ${sellExchange.id}: ${sellOrder.id} at price ${currentPrice}`,
+          );
+
+          // Optionally, wait for orders to be filled or perform additional checks here
+          await this.waitForOrderFill(buyExchange, buyOrder.id, symbol);
+          await this.waitForOrderFill(sellExchange, sellOrder.id, symbol);
+
+          // Save order details to the database (implementation depends on your database schema)
+          // Example: saveOrder(userId, clientId, exchangeName, symbol, buyOrder, sellOrder);
+
+          // Increment the price by the specified percentage for the next trade
+          if (useAccount1) {
+            highestBid = currentPrice;
+          } else {
+            lowestAsk = currentPrice;
+          }
+
+          // Alternate the account usage
+          useAccount1 = !useAccount1;
+          tradesExecuted++;
+        } catch (error) {
+          this.logger.error(`Error executing trade: ${error.message}`);
+        }
+      }, 35000); // Adjust the interval as needed
+
+      this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+      this.logger.log(`Volume strategy ${strategyKey} started.`);
+    } catch (error) {
+      this.logger.error(`Failed to execute volume strategy: ${error.message}`);
+    }
+  }
+  private async waitForOrderFill(
+    exchange: ccxt.Exchange,
+    orderId: string,
+    symbol: string,
+  ) {
+    // Wait for the order to be filled (implementation can vary based on your requirements)
+    let order = await exchange.fetchOrder(orderId, symbol);
+    while (order.status !== 'closed') {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before checking again
+      order = await exchange.fetchOrder(orderId, symbol);
+    }
+  }
+
+  stopVolumeStrategy(userId: string, clientId: string) {
+    const strategyKey = createStrategyKey({
+      type: 'volume',
+      user_id: userId,
+      client_id: clientId,
+    });
+    const strategyInstance = this.strategyInstances.get(strategyKey);
+
+    if (strategyInstance) {
+      clearInterval(strategyInstance.intervalId);
+      this.strategyInstances.delete(strategyKey);
+      this.logger.log(`Volume strategy ${strategyKey} stopped.`);
+    } else {
+      this.logger.warn(`No active strategy found for ${strategyKey}.`);
+    }
+  }
+
   private async watchSymbols(
-    exchangeA,
-    exchangeB,
+    exchangeA: ccxt.Exchange,
+    exchangeB: ccxt.Exchange,
     pair: string,
     strategyKey: string,
   ) {
@@ -329,8 +495,6 @@ export class StrategyService {
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
 
-  // Add endpoint to keep track of the user id and client id
-  // Track inventory cost,
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
     clientId: string,
@@ -352,7 +516,7 @@ export class StrategyService {
       pair,
       priceSourceType,
     );
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange = this.exchangeInitService.getExchange(exchangeName);
 
     // Cancel all existing orders for this strategy
     await this.cancelAllOrders(
@@ -488,7 +652,7 @@ export class StrategyService {
     // Adjust amount and price to the exchange's precision
     const adjustedAmount = await exchange.amountToPrecision(symbol, amount);
     const adjustedPrice = await exchange.priceToPrecision(symbol, price);
-    this.logger.log(`Adjusted Buy Order: ${adjustedAmount} @ ${adjustedPrice}`);
+    this.logger.log(`Adjusted Order: ${adjustedAmount} @ ${adjustedPrice}`);
     return { adjustedAmount, adjustedPrice };
   }
 
@@ -522,7 +686,7 @@ export class StrategyService {
     exchangeName: string,
     pair: string,
   ): Promise<number> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange = this.exchangeInitService.getExchange(exchangeName);
     const ticker = await exchange.fetchTicker(pair);
     return ticker.last; // Using the last trade price as the current price
   }
@@ -532,7 +696,7 @@ export class StrategyService {
     pair: string,
     priceSourceType: PriceSourceType,
   ): Promise<number> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange = this.exchangeInitService.getExchange(exchangeName);
     const orderBook = await exchange.fetchOrderBook(pair);
     switch (priceSourceType) {
       case PriceSourceType.MID_PRICE:
@@ -548,9 +712,10 @@ export class StrategyService {
         throw new Error(`Invalid price source type: ${priceSourceType}`);
     }
   }
+
   private async evaluateArbitrageOpportunityVWAP(
-    exchangeA,
-    exchangeB,
+    exchangeA: ccxt.Exchange,
+    exchangeB: ccxt.Exchange,
     strategyParamsDto: ArbitrageStrategyDto,
   ) {
     const { userId, clientId, pair, amountToTrade, minProfitability } =
@@ -564,16 +729,7 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-
-    // Check and clean filled orders before evaluating opportunities
-    const allOrdersFilled = await this.checkAndCleanFilledOrders(strategyKey);
-    if (!allOrdersFilled) {
-      this.logger.log(
-        `Waiting for open orders to fill for ${strategyKey} before evaluating new opportunities.`,
-      );
-      return;
-    }
-
+    this.logger.log(strategyKey);
     if (
       cachedOrderBookA &&
       cachedOrderBookB &&
@@ -655,8 +811,12 @@ export class StrategyService {
         amount,
         price: buyPrice,
       });
-      // keep count of open orders
-      const orderADetails = { exchange: exchangeA, orderId: buyOrder.id };
+      // Track the order with the symbol
+      const orderADetails = {
+        exchange: exchangeA,
+        orderId: buyOrder.id,
+        symbol,
+      };
       this.activeOrders.set(strategyKey, [
         ...(this.activeOrders.get(strategyKey) || []),
         orderADetails,
@@ -672,7 +832,12 @@ export class StrategyService {
         amount,
         price: sellPrice,
       });
-      const orderBDetails = { exchange: exchangeB, orderId: sellOrder.id };
+      // Track the order with the symbol
+      const orderBDetails = {
+        exchange: exchangeB,
+        orderId: sellOrder.id,
+        symbol,
+      };
       this.activeOrders.set(strategyKey, [
         ...(this.activeOrders.get(strategyKey) || []),
         orderBDetails,
@@ -783,9 +948,9 @@ export class StrategyService {
     let allOrdersFilled = true; // Assume all orders are filled initially
 
     for (let i = 0; i < activeOrdersForStrategy.length; i++) {
-      const { exchange, orderId } = activeOrdersForStrategy[i];
+      const { exchange, orderId, symbol } = activeOrdersForStrategy[i];
       try {
-        const order = await exchange.fetchOrder(orderId);
+        const order = await exchange.fetchOrder(orderId, symbol);
         if (order.status !== 'closed' && order.status !== 'filled') {
           allOrdersFilled = false; // Found an order that's not filled
           break; // No need to check further
@@ -808,7 +973,7 @@ export class StrategyService {
   }
 
   private isDataFresh(timestamp: number): boolean {
-    const freshnessThreshold = 10000; // 30 seconds
+    const freshnessThreshold = 10000; // 10 seconds
     return Date.now() - timestamp < freshnessThreshold;
   }
 
@@ -841,9 +1006,10 @@ export class StrategyService {
     const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
 
     for (const orderDetail of activeOrdersForStrategy) {
-      const { exchange, orderId } = orderDetail;
+      const { exchange, orderId, symbol } = orderDetail;
+
       try {
-        await exchange.cancelOrder(orderId);
+        await exchange.cancelOrder(orderId, symbol);
         this.logger.log(`Order ${orderId} canceled successfully.`);
       } catch (error) {
         this.logger.error(`Failed to cancel order ${orderId}: ${error}`);
