@@ -226,13 +226,18 @@ export class StrategyUserService {
           type: 'arbitrage',
         });
         // TODO: FIX THIS HARDCODE -ERC20
-        await this.strategyService.startArbitrageIfNotStarted(key, {
-          ...arb,
-          pair: arb.pair.replaceAll('-ERC20', ''),
-          clientId: arb.orderId,
-          amountToTrade: Number(arb.amountToTrade),
-          minProfitability: Number(arb.minProfitability),
-        });
+        await this.strategyService.startArbitrageIfNotStarted(
+          key,
+          {
+            ...arb,
+            pair: arb.pair.replaceAll('-ERC20', ''),
+            clientId: arb.orderId,
+            amountToTrade: Number(arb.amountToTrade),
+            minProfitability: Number(arb.minProfitability),
+          },
+          15, // example value for checkIntervalSeconds
+          1, // example value for maxOpenOrders
+        );
       });
     }
     if (activeMM) {
