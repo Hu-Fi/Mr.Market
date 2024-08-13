@@ -293,7 +293,7 @@ export class StrategyService {
   
         try {
           // Randomly decide whether to pause the strategy
-          if (Math.random() > 0.91) { // 9% chance to pause after a trade
+          if (Math.random() > 0.91 && tradesExecuted > 5) { // 9% chance to pause after a trade
             const pauseDuration = Math.floor(Math.random() * 4) + 1; // Pause for 1 to 4 minutes
             this.logger.log(`Pausing strategy for ${pauseDuration} minutes.`);
             await new Promise((resolve) => setTimeout(resolve, pauseDuration * 60000)); // Pause execution
@@ -409,6 +409,7 @@ export class StrategyService {
 
     if (strategyInstance) {
       clearInterval(strategyInstance.intervalId);
+      this.cancelAllStrategyOrders(strategyKey)
       this.strategyInstances.delete(strategyKey);
       this.logger.log(`Volume strategy ${strategyKey} stopped.`);
     } else {
