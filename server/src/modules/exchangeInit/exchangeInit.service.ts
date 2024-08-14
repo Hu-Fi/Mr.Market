@@ -170,6 +170,22 @@ export class ExchangeInitService {
       class: ccxt.pro.p2b,
     },
     {
+      name: 'probit',
+      accounts: [
+        {
+          label: 'default',
+          apiKey: process.env.PROBIT_API_KEY,
+          secret: process.env.PROBIT_SECRET,
+        },
+        {
+          label: 'account2',
+          apiKey: process.env.PROBIT_API_KEY_2,
+          secret: process.env.PROBIT_SECRET_2,
+        },
+      ],
+      class: ccxt.pro.probit,
+    },
+    {
       name: 'digifinex',
       accounts: [
         {
