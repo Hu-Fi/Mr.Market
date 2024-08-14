@@ -5,55 +5,6 @@
  * It supports fetching and watching market data such as tickers, OHLCV data, and order books.
  * The service also implements caching to reduce API calls and improve performance.
  *
- * Dependencies:
- * - ccxt: Cryptocurrency exchange trading library.
- * - Cache: NestJS cache manager for caching API responses.
- * - CustomLogger: Custom logging service for recording errors and log information.
- * - SUPPORTED_PAIRS: Constant defining supported trading pairs.
- * - createCompositeKey: Helper function to create composite keys for subscription management.
- * - decodeTicker: Helper function to decode ticker data.
- *
- * Configuration:
- * - cachingTTL: Time-to-live for cached data (10 seconds).
- *
- * Methods:
- * - constructor: Initializes the service with the injected Cache and sets up exchanges.
- * - initializeExchange(): Initializes the cryptocurrency exchanges with API keys and secrets.
- *
- * - getTickers(exchange: string, symbols: string[]): Fetches tickers for specified symbols from a given exchange.
- *
- * - getOHLCVData(exchange: string, symbol: string, timeframe: string, since?: number, limit?: number):
- *   Fetches OHLCV data for a specified symbol from a given exchange.
- *
- * - getSupportedPairs(): Fetches supported trading pairs, utilizing caching to reduce API calls.
- * - _getSupportedPairs(): Internal method to fetch supported trading pairs directly from exchanges.
- *
- * - watchOrderBook(exchangeName: string, symbol: string, onData: (data: any) => void, limit?: number):
- *   Subscribes to order book updates for a specified symbol from a given exchange.
- *
- * - watchOHLCV(exchangeName: string, symbol: string, onData: (data: any) => void, timeFrame?: string, since?: number, limit?: number):
- *   Subscribes to OHLCV data updates for a specified symbol from a given exchange.
- *
- * - watchTicker(exchangeName: string, symbol: string, onData: (data: any) => void):
- *   Subscribes to ticker updates for a specified symbol from a given exchange.
- *
- * - watchTickers(exchangeName: string, symbol: string[], onData: (data: any) => void):
- *   Subscribes to ticker updates for multiple symbols from a given exchange.
- *
- * - isSubscribed(type: marketDataType, exchangeName: string, symbol?: string, symbols?: string[], timeFrame?: string):
- *   Checks if a subscription is active for the given parameters.
- *
- * - unsubscribeOrderBook(exchangeName: string, symbol: string): Unsubscribes from order book updates for a specified symbol.
- *
- * - getTickerPrice(exchangeName: string, symbol: string): Fetches the latest ticker price for a specified symbol from a given exchange.
- *
- * - getMultipleTickerPrices(exchangeNames: string[], symbols: string[]): Fetches ticker prices for multiple symbols across multiple exchanges.
- *
- * - getSupportedSymbols(exchangeName: string): Fetches supported symbols from a given exchange.
- *
- * - unsubscribeData(type: marketDataType, exchangeName: string, symbol?: string, symbols?: string[], timeFrame?: string):
- *   Unsubscribes from data updates for the given parameters.
- *
  * Notes:
  * - The service uses activeSubscriptions to manage active data subscriptions.
  * - Error handling is implemented to log and manage errors during API interactions.
@@ -92,7 +43,7 @@ export class MarketdataService {
   }
 
   async getTickers(exchange: string, symbols: string[]) {
-    this.exchange = this.ExchangeInitService.getExchange(exchange);
+    this.exchange = this.ExchangeInitService.getMarketdataInstance(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchTickers) {
       throw new Error(
@@ -113,7 +64,7 @@ export class MarketdataService {
     since?: number,
     limit = 30,
   ): Promise<any> {
-    this.exchange = this.ExchangeInitService.getExchange(exchange);
+    this.exchange = this.ExchangeInitService.getMarketdataInstance(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchOHLCV) {
       throw new Error(
@@ -202,7 +153,8 @@ export class MarketdataService {
     onData: (data: any) => void,
     limit = 14,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOrderBook or is not configured.`,
@@ -237,7 +189,8 @@ export class MarketdataService {
     since?: number,
     limit?: number,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange || !exchange.has.watchOHLCV) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOHLCV or is not configured.`,
@@ -270,7 +223,8 @@ export class MarketdataService {
     symbol: string,
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -298,7 +252,8 @@ export class MarketdataService {
     symbol: string[],
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -347,7 +302,8 @@ export class MarketdataService {
     exchangeName: string,
     symbol: string,
   ): Promise<any> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange || !exchange.has.fetchTicker) {
       throw new Error(
         'Exchange does not support fetchTicker or is not configured.',
@@ -382,7 +338,8 @@ export class MarketdataService {
   }
 
   async getSupportedSymbols(exchangeName: string): Promise<string[]> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getMarketdataInstance(exchangeName);
     if (!exchange) {
       throw new Error(`Exchange ${exchangeName} is not configured.`);
     }

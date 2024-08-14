@@ -1,135 +1,173 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MarketdataService } from './marketdata.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CustomLogger } from '../logger/logger.service';
+import { Cache } from 'cache-manager';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
-
-jest.mock('../logger/logger.service');
-
-const mockCacheManager = () => ({
-  get: jest.fn(),
-  set: jest.fn(),
-});
-
-// Mock setup for ccxt
-const mockFetchTickers = jest.fn();
-const mockFetchOHLCV = jest.fn();
-jest.mock('ccxt', () => ({
-  pro: {
-    binance: jest.fn(() => ({
-      fetchTickers: mockFetchTickers,
-      fetchOHLCV: mockFetchOHLCV,
-      has: { fetchTickers: true, fetchOHLCV: true },
-      name: 'binance',
-    })),
-    mexc: jest.fn(() => ({
-      // Mock other exchanges
-    })),
-    bitfinex: jest.fn(() => ({
-      // ...
-    })),
-    okx: jest.fn(() => ({})),
-    gateio: jest.fn(() => ({})),
-    lbank: jest.fn(() => ({})),
-  },
-}));
-
-const mockExchangeInitService = () => ({
-  getExchange: jest.fn(),
-  getSupportedExchanges: jest.fn(),
-});
+import { CustomLogger } from '../logger/logger.service';
 
 describe('MarketdataService', () => {
   let service: MarketdataService;
-  let cacheManager;
-  let exchangeInitService;
+  let cacheManager: Cache;
+  let exchangeInitService: ExchangeInitService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MarketdataService,
-        { provide: CACHE_MANAGER, useFactory: mockCacheManager },
-        { provide: ExchangeInitService, useFactory: mockExchangeInitService },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+          },
+        },
+        {
+          provide: ExchangeInitService,
+          useValue: {
+            getSupportedExchanges: jest.fn(),
+            getMarketdataInstance: jest.fn(),
+          },
+        },
         CustomLogger,
       ],
     }).compile();
 
     service = module.get<MarketdataService>(MarketdataService);
-    cacheManager = module.get(CACHE_MANAGER);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
     exchangeInitService = module.get<ExchangeInitService>(ExchangeInitService);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('getSupportedExchanges', () => {
+    it('should return supported exchanges', async () => {
+      const mockExchanges = ['binance', 'coinbase', 'kraken'];
+      jest
+        .spyOn(exchangeInitService, 'getSupportedExchanges')
+        .mockResolvedValue(mockExchanges as never);
+
+      const result = await service.getSupportedExchanges();
+      expect(result).toEqual(mockExchanges);
+      expect(exchangeInitService.getSupportedExchanges).toHaveBeenCalled();
+    });
   });
 
   describe('getTickers', () => {
-    it('fetches tickers successfully from a supported exchange', async () => {
-      const expectedTickers = { BTCUSD: { last: 50000 } };
-      mockFetchTickers.mockResolvedValue(expectedTickers);
-      exchangeInitService.getExchange.mockReturnValue({
-        fetchTickers: mockFetchTickers,
+    it('should fetch tickers from exchange', async () => {
+      const exchangeName = 'binance';
+      const symbols = ['BTC/USDT'];
+      const mockExchange = {
         has: { fetchTickers: true },
-        name: 'binance',
-      });
+        fetchTickers: jest
+          .fn()
+          .mockResolvedValue({ 'BTC/USDT': { last: 50000 } }),
+        name: exchangeName,
+      };
+      jest
+        .spyOn(exchangeInitService, 'getMarketdataInstance')
+        .mockReturnValue(mockExchange as any);
 
-      const tickers = await service.getTickers('binance', ['BTCUSD']);
-      expect(tickers).toEqual(expectedTickers);
-      expect(mockFetchTickers).toHaveBeenCalledWith(['BTCUSD']);
+      const result = await service.getTickers(exchangeName, symbols);
+      expect(result).toEqual({ 'BTC/USDT': { last: 50000 } });
+      expect(mockExchange.fetchTickers).toHaveBeenCalledWith(symbols);
     });
 
-    it('throws an error when fetchTickers fails', async () => {
-      mockFetchTickers.mockRejectedValue(new Error('API call failed'));
-      exchangeInitService.getExchange.mockReturnValue({
-        fetchTickers: mockFetchTickers,
-        has: { fetchTickers: true },
-        name: 'binance',
-      });
+    it('should throw an error if exchange does not support fetchTickers', async () => {
+      const exchangeName = 'binance';
+      const symbols = ['BTC/USDT'];
+      const mockExchange = {
+        has: { fetchTickers: false },
+      };
+      jest
+        .spyOn(exchangeInitService, 'getMarketdataInstance')
+        .mockReturnValue(mockExchange as any);
 
-      await expect(service.getTickers('binance', ['BTCUSD'])).rejects.toThrow(
-        'API call failed',
+      await expect(service.getTickers(exchangeName, symbols)).rejects.toThrow(
+        'Exchange does not support fetchTickers or is not configured.',
       );
     });
   });
 
   describe('getOHLCVData', () => {
-    it('fetches OHLCV data successfully', async () => {
-      const expectedOHLCV = [[1609459200000, 29000, 29500, 28500, 29300, 1200]];
-      mockFetchOHLCV.mockResolvedValue(expectedOHLCV);
-      exchangeInitService.getExchange.mockReturnValue({
-        fetchOHLCV: mockFetchOHLCV,
+    it('should fetch OHLCV data from exchange', async () => {
+      const exchangeName = 'binance';
+      const symbol = 'BTC/USDT';
+      const mockExchange = {
         has: { fetchOHLCV: true },
-        name: 'binance',
-      });
+        fetchOHLCV: jest
+          .fn()
+          .mockResolvedValue([
+            [1620000000000, 50000, 51000, 52000, 49000, 100],
+          ]),
+        name: exchangeName,
+      };
+      jest
+        .spyOn(exchangeInitService, 'getMarketdataInstance')
+        .mockReturnValue(mockExchange as any);
 
-      const OHLCV = await service.getOHLCVData('binance', 'BTCUSD');
-      expect(OHLCV).toEqual(
-        expectedOHLCV.map((data) => ({
-          timestamp: data[0],
-          open: data[1],
-          close: data[2],
-          high: data[3],
-          low: data[4],
-          volume: data[5],
-        })),
-      );
-      expect(mockFetchOHLCV).toHaveBeenCalledWith(
-        'BTCUSD',
+      const result = await service.getOHLCVData(exchangeName, symbol);
+      expect(result).toEqual([
+        {
+          timestamp: 1620000000000,
+          open: 50000,
+          close: 51000,
+          high: 52000,
+          low: 49000,
+          volume: 100,
+        },
+      ]);
+      expect(mockExchange.fetchOHLCV).toHaveBeenCalledWith(
+        symbol,
         '1m',
         undefined,
         30,
       );
     });
+
+    it('should throw an error if exchange does not support fetchOHLCV', async () => {
+      const exchangeName = 'binance';
+      const symbol = 'BTC/USDT';
+      const mockExchange = {
+        has: { fetchOHLCV: false },
+      };
+      jest
+        .spyOn(exchangeInitService, 'getMarketdataInstance')
+        .mockReturnValue(mockExchange as any);
+
+      await expect(service.getOHLCVData(exchangeName, symbol)).rejects.toThrow(
+        'Exchange does not support fetchOHLCV or is not configured.',
+      );
+    });
   });
 
   describe('getSupportedPairs', () => {
-    it('returns supported pairs from cache if available', async () => {
-      const cachedPairs = [{ symbol: 'BTCUSD', price: 50000 }];
-      cacheManager.get.mockResolvedValue(JSON.stringify(cachedPairs));
+    it('should return cached supported pairs if available', async () => {
+      const cachedPairs = [{ symbol: 'BTC/USDT', price: 50000 }];
+      jest
+        .spyOn(cacheManager, 'get')
+        .mockResolvedValue(JSON.stringify(cachedPairs));
 
-      const pairs = await service.getSupportedPairs();
-      expect(pairs).toEqual(cachedPairs);
-      expect(cacheManager.get).toHaveBeenCalledWith('supported-pairs');
+      const result = await service.getSupportedPairs();
+      expect(result).toEqual(cachedPairs);
+    });
+
+    it('should fetch and cache supported pairs if not cached', async () => {
+      const pairs = [{ symbol: 'BTC/USDT', price: 50000 }];
+      jest.spyOn(cacheManager, 'get').mockResolvedValue(null);
+      jest.spyOn(service, '_getSupportedPairs').mockResolvedValue(pairs);
+      jest.spyOn(cacheManager, 'set').mockResolvedValue(undefined);
+
+      const result = await service.getSupportedPairs();
+      expect(result).toEqual(pairs);
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        'supported-pairs',
+        JSON.stringify(pairs),
+        undefined,
+      );
     });
   });
+
+  // Add more tests for other methods as needed
 });
