@@ -14,6 +14,7 @@ jest.mock('ccxt', () => ({
     lbank: jest.fn(),
     bitmart: jest.fn(),
     p2b: jest.fn(),
+    probit: jest.fn(),
   },
   bigone: jest.fn(),
   coinlist: jest.fn(),
