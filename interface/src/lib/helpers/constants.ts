@@ -16,6 +16,7 @@ export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || '
 
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
+export const HARDCODED_FEE = 1.002
 
 // It must sync with server/pairs.ts
 export const PAIRS_MAP = {

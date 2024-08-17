@@ -30,14 +30,16 @@ test('create arbitrage', async ({ page }) => {
   expect(page.getByTestId(`confirm-btn`)).toBeEnabled();
   await page.getByTestId(`confirm-btn`).click();
 
-  const pagePromise = page.waitForEvent('popup');
+  const pagePromise1 = page.waitForEvent('popup');
   await page.getByTestId('pay-btn-1').click();
-  const newPage1 = await pagePromise;
+  const newPage1 = await pagePromise1;
   await newPage1.waitForLoadState();
   expect(newPage1.url()).toContain('https://mixin.one/pay');
 
+  const pagePromise2 = page.waitForEvent('popup');
   await page.getByTestId('pay-btn-2').click();
-  const newPage2 = await pagePromise;
+
+  const newPage2 = await pagePromise2;
   await newPage2.waitForLoadState();
   expect(newPage2.url()).toContain('https://mixin.one/pay');
 })

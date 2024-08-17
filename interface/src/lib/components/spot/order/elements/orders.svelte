@@ -83,7 +83,6 @@
         </span>
       </button>
 
-
     {:else if $orderBookMode === 2}
       <!-- Show all Bid -->
       <!-- Current Price -->
@@ -112,8 +111,71 @@
       </div>
     {/if}
   </div>
+
 {:else}
-  <div class={clsx($orderTypeMarket ? "h-[14.25rem]" : "h-[19rem]", "flex items-center justify-center")}>
-    <span class="loading" />
+  <!-- Skeleton loader -->
+  <div class={clsx($orderTypeMarket ? "space-y-1": "space-y-1.5")}>
+    <!-- Default mode -->
+    {#if $orderBookMode === 0}
+      <!-- Ask -->
+      <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as _}
+          <div class="flex justify-between h-4">
+            <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
+            <div class="text-xs text-end w-9 h-3 skeleton" />
+          </div>
+        {/each}
+      </div>
+
+      <!-- Current Price -->
+      <div class="flex flex-col space-y-1.5 h-12">
+        <div class="skeleton h-6 w-20" />
+        <div class="skeleton h-3.5 w-12" />
+      </div>
+
+      <!-- Bid -->
+      <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_HALF_LENGTH : LIMIT_ORDERBOOK_HALF_LENGTH) as _}
+          <div class="flex justify-between h-4">
+            <div class={clsx("text-xs text-start", "w-11 h-3", "skeleton")} />
+            <div class="text-xs text-end w-9 h-3 skeleton" />
+          </div>
+        {/each}
+      </div>
+
+    {:else if $orderBookMode === 1}
+      <!-- Show all Ask -->
+      <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as _}
+          <div class="flex justify-between h-4">
+            <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
+            <div class="text-xs text-end w-9 h-3 skeleton" />
+          </div>
+        {/each}
+      </div>
+      
+      <!-- Current Price -->
+      <div class="flex flex-col space-y-1.5 h-12 !mt-1.5">
+        <div class="skeleton h-6 w-20" />
+        <div class="skeleton h-3.5 w-12" />
+      </div>
+
+    {:else if $orderBookMode === 2}
+      <!-- Current Price -->
+      <div class="flex flex-col space-y-1.5 h-12 !mt-0.5">
+        <div class="skeleton h-6 w-20" />
+        <div class="skeleton h-3.5 w-12" />
+      </div>
+
+      <!-- Show all Bid -->
+      <div class="{clsx("flex flex-col", $orderTypeMarket ? "space-y-0.5":"space-y-1.5")}">
+        {#each Array($orderTypeMarket ? MARKET_ORDERBOOK_LENGTH : LIMIT_ORDERBOOK_LENGTH) as _}
+          <div class="flex justify-between h-4">
+            <div class={clsx("text-xs text-start","w-11 h-3", "skeleton")} />
+            <div class="text-xs text-end w-9 h-3 skeleton" />
+          </div>
+        {/each}
+      </div>
+    {/if}
   </div>
 {/if}
