@@ -61,18 +61,14 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if password is invalid', async () => {
-      const password = createHash('sha3-256')
-        .update('wrong-pass')
-        .digest('hex');
+      const password = createHash('sha256').update('wrong-pass').digest('hex');
       await expect(authService.validateUser(password)).rejects.toThrow(
         UnauthorizedException,
       );
     });
 
     it('should return signed JWT token if password is valid', async () => {
-      const password = createHash('sha3-256')
-        .update('admin-pass')
-        .digest('hex');
+      const password = createHash('sha256').update('admin-pass').digest('hex');
       const token = await authService.validateUser(password);
       expect(token).toBe('signed-token');
     });
