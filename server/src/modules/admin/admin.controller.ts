@@ -1,8 +1,13 @@
-
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  /*Param,*/ UseGuards,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Ensure authentication
-import { StartStrategyDto,StopStrategyDto } from './admin-strategy.dto';
+import { StartStrategyDto, StopStrategyDto } from './admin-strategy.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard) // Secures the endpoints with JWT

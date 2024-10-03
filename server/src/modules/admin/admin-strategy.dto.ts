@@ -20,7 +20,8 @@ export class StartStrategyDto {
   arbitrageParams?: ArbitrageStrategyDto;
 
   @ApiPropertyOptional({
-    description: 'Parameters for market making strategy (required for market making)',
+    description:
+      'Parameters for market making strategy (required for market making)',
     type: PureMarketMakingStrategyDto,
   })
   marketMakingParams?: PureMarketMakingStrategyDto;
@@ -46,21 +47,21 @@ export class StartStrategyDto {
 
 // Stop Strategy DTO for stopping a strategy
 export class StopStrategyDto {
-    @ApiProperty({
-      description: 'User ID associated with the strategy',
-      example: '123',
-    })
-    userId: string;
-  
-    @ApiProperty({
-      description: 'Client ID associated with the strategy',
-      example: '456',
-    })
-    clientId: string;
-  
-    @ApiProperty({
-      description: 'Type of strategy to stop',
-      example: 'arbitrage',
-    })
-    strategyType: 'arbitrage' | 'marketMaking' | 'volume';
-  }
+  @ApiProperty({
+    description: 'User ID associated with the strategy',
+    example: '123',
+  })
+  userId: string;
+
+  @ApiProperty({
+    description: 'Client ID associated with the strategy',
+    example: '456',
+  })
+  clientId: string;
+
+  @ApiProperty({
+    description: 'Type of strategy to stop',
+    example: 'arbitrage',
+  })
+  strategyType: 'arbitrage' | 'marketMaking' | 'volume';
+}

@@ -1,8 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { StrategyService } from '../strategy/strategy.service';
 import { PerformanceService } from '../performance/performance.service';
-import { StartStrategyDto,StopStrategyDto } from './admin-strategy.dto';
-
+import { StartStrategyDto, StopStrategyDto } from './admin-strategy.dto';
 
 @Injectable()
 export class AdminService {
@@ -12,7 +11,8 @@ export class AdminService {
   ) {}
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
-    const { strategyType, arbitrageParams, marketMakingParams, volumeParams } = startStrategyDto;
+    const { strategyType, arbitrageParams, marketMakingParams, volumeParams } =
+      startStrategyDto;
 
     if (strategyType === 'arbitrage' && arbitrageParams) {
       return this.strategyService.startArbitrageStrategyForUser(
@@ -33,7 +33,7 @@ export class AdminService {
         volumeParams.tradeAmount,
         volumeParams.numTrades,
         volumeParams.userId,
-        volumeParams.clientId
+        volumeParams.clientId,
       );
     } else {
       throw new BadRequestException('Invalid strategy parameters');
@@ -42,14 +42,18 @@ export class AdminService {
 
   async stopStrategy(stopStrategyDto: StopStrategyDto) {
     const { strategyType, userId, clientId } = stopStrategyDto;
-    return this.strategyService.stopStrategyForUser(userId, clientId, strategyType);
+    return this.strategyService.stopStrategyForUser(
+      userId,
+      clientId,
+      strategyType,
+    );
   }
 
-//   async getRunningStrategies() {
-//     return this.strategyService.getRunningStrategies();
-//   }
+  //   async getRunningStrategies() {
+  //     return this.strategyService.getRunningStrategies();
+  //   }
 
-//   async getStrategyPerformance(strategyKey: string) {
-//     return this.performanceService.getPerformanceByStrategy(strategyKey);
-//   }
+  //   async getStrategyPerformance(strategyKey: string) {
+  //     return this.performanceService.getPerformanceByStrategy(strategyKey);
+  //   }
 }
