@@ -39,6 +39,12 @@ jobs:
 
       - name: Run DB Migration
         run: make run-migrations
+        env:
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          POSTGRES_DATABASE: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
 
       - name: Wait for localhost:3000 to become available
         run: |
