@@ -32,7 +32,7 @@ stop-server-db:
 
 start-server:
 	@echo "Starting server..."
-	@cd server && yarn start
+	@cd server && yarn start:dev
 .PHONY: start-server
 
 start:
