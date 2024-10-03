@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -37,6 +37,15 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      - name: Run DB Migration
+        run: make run-migrations
+        env:
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          POSTGRES_DATABASE: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
       - name: Wait for localhost:3000 to become available
         run: |
           make start-server &
@@ -68,12 +77,12 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
         working-directory: ./interface
-        
+
       - name: Run Playwright tests
         run: npx playwright test --project='chromium'
         working-directory: ./interface
         env:
-          PUBLIC_HUFI_BACKEND_URL: 'http://localhost:3000'
+          PUBLIC_HUFI_BACKEND_URL: "http://localhost:3000"
 
       - name: Upload Playwright test artifacts
         if: always()

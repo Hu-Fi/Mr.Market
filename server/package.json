@@ -20,7 +20,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pr:check": "yarn run test && yarn run lint",
     "start:db": "docker-compose -f docker-compose-dev.yaml up -d",
-    "stop:db": "docker-compose -f docker-compose-dev.yaml down"
+    "stop:db": "docker-compose -f docker-compose-dev.yaml down",
+    "migration:create": "yarn build && typeorm-ts-node-commonjs migration:create",
+    "migration:generate": "yarn build && typeorm-ts-node-commonjs migration:generate -p -d typeorm.config.ts",
+    "migration:revert": "yarn build && typeorm-ts-node-commonjs migration:revert -d typeorm.config.ts",
+    "migration:run": "yarn build && typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
+    "migration:show": "yarn build && typeorm-ts-node-commonjs migration:show -d typeorm.config.ts"
   },
   "dependencies": {
     "@mixin.dev/mixin-node-sdk": "^7.0.8",

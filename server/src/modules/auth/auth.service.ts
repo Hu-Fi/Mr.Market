@@ -68,7 +68,7 @@ export class AuthService {
       throw new UnauthorizedException('Password is required');
     }
 
-    const hashedAdminPassword = createHash('sha3-256')
+    const hashedAdminPassword = createHash('sha256')
       .update(this.adminPassword)
       .digest('hex');
 
