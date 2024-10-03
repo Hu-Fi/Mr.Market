@@ -39,6 +39,7 @@ jobs:
 
       - name: Wait for localhost:3000 to become available
         run: |
+          make run-migrations &
           make start-server &
           echo "Waiting for localhost:3000 to become available..."
           attempt=1
