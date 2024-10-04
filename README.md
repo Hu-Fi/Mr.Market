@@ -46,7 +46,7 @@ make start-server-db
 ### Run development servers
 
 ```
-make start
+make start-dev
 ```
 
 ## Tests

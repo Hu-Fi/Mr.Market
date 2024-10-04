@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --config jest.config.js",
     "test:watch": "jest --watch --config jest.config.js",
@@ -21,11 +21,11 @@
     "pr:check": "yarn run test && yarn run lint",
     "start:db": "docker-compose -f docker-compose-dev.yaml up -d",
     "stop:db": "docker-compose -f docker-compose-dev.yaml down",
-    "migration:create": "yarn build && typeorm-ts-node-commonjs migration:create",
-    "migration:generate": "yarn build && typeorm-ts-node-commonjs migration:generate -p -d typeorm.config.ts",
-    "migration:revert": "yarn build && typeorm-ts-node-commonjs migration:revert -d typeorm.config.ts",
-    "migration:run": "yarn build && typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
-    "migration:show": "yarn build && typeorm-ts-node-commonjs migration:show -d typeorm.config.ts"
+    "migration:create": "typeorm-ts-node-commonjs migration:create",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -p -d typeorm.config.ts",
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d typeorm.config.ts",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
+    "migration:show": "typeorm-ts-node-commonjs migration:show -d typeorm.config.ts"
   },
   "dependencies": {
     "@mixin.dev/mixin-node-sdk": "^7.0.8",
