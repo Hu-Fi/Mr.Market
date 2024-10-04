@@ -27,7 +27,7 @@ start-server-db:
 
 run-migrations:
 	@echo "Running migrations..."
-	@cd server && yarn run migration:run
+	@cd server && yarn build && yarn run migration:run
 .PHONY: run-migrations
 
 stop-server-db:
