@@ -1,0 +1,47 @@
+# Docker compose file to run postgres and server
+# This file is used to run the server in production
+version: '3.8'
+name: mr-market
+
+services:
+  mr-market-db:
+    image: postgres:latest
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    logging:
+      options:
+        max-size: 10m
+        max-file: '3'
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - mr-merket-network
+
+  mr-market-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - POSTGRES_HOST=mr-market-db
+    depends_on:
+      - mr-market-db
+    networks:
+      - mr-merket-network
+
+networks:
+  mr-merket-network:

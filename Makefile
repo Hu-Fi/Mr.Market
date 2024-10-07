@@ -27,7 +27,7 @@ start-server-db:
 
 run-migrations:
 	@echo "Running migrations..."
-	@cd server && yarn run migration:run
+	@cd server && yarn build && yarn run migration:run
 .PHONY: run-migrations
 
 stop-server-db:
@@ -40,6 +40,11 @@ start-server:
 	@cd server && yarn start:dev
 .PHONY: start-server
 
-start:
+start-dev:
 	$(MAKE) -j 2 start-client start-server
-.PHONY: start
+.PHONY: start-dev
+
+start-server-docker:
+	@echo "Starting server in docker..."
+	@cd server && docker-compose up
+.PHONY: start-server-docker

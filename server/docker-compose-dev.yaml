@@ -10,10 +10,11 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DATABASE}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_SYNC=${POSTGRES_SYNC}
     logging:
       options:
         max-size: 10m
         max-file: '3'
     ports:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - ./db:/var/lib/postgresql/data
