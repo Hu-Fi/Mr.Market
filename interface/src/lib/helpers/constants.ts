@@ -2,7 +2,7 @@ import { env } from "$env/dynamic/public";
 import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
 
 export const AppName = "Mr.market"
-export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-one.vercel.app"
+export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-app.onrender.com"
 
 export const SHOW_BAR = env.PUBLIC_SHOW_BAR === "true" ? true : false;
 export const BOT_ID = env.PUBLIC_BOT_ID || '73179ddc-3e29-485b-bb13-03f514d4318e'
