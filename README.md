@@ -137,7 +137,7 @@ By the end of these steps, you will have a fully functional server and interface
 
    Setup Redirect & Rewrite Rules as follows.
    | Source | Destination | Action |
-   | -- | -- |
+   | --- | --- | --- |
    | /(.\*) | /app.html | Redirect |
 
 ### Deploy with Docker
