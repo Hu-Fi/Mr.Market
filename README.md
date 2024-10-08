@@ -120,25 +120,31 @@ Variables starting with `MIXIN` are obtained from the Mixin bot keystore, access
 This guide will walk you through the process of deploying a server, and an interface on Render for our application. We highly recommend using Postgres DB instance from Render since this guide is basically using Render as hosting service, but it's totally up to you if you pick another Postgres DB server.
 By the end of these steps, you will have a fully functional server and interface setup.
 
-1. **Deploy Server on Render**  
-   Login to the [Render](https://dashboard.render.com/), and create a new web service. Connect the github repo, and adjust the environment variables. Use
+1. **Deploy Server on Render**
 
-   - `./server` for Root Directory
-   - `yarn install; yarn build;` for Build Command
-   - `yarn migration:run` for Pre-Deploy Command (Available in advanced settings)
-   - `yarn start:prod` for Start Command
+   - Login to the [Render](https://dashboard.render.com/), and create a new web service. Connect the github repo, and adjust the environment variables.
 
-2. **Deploy Interface on Render**  
-   Login to the [Render](https://dashboard.render.com), and create a new static site. Connect the github repo, and adjust the environment variables. Use
+   - Use
+     - `./server` for Root Directory
+     - `yarn install; yarn build;` for Build Command
+     - `yarn migration:run` for Pre-Deploy Command (Available in advanced settings)
+     - `yarn start:prod` for Start Command
 
-   - `./interface` for Root Directory
-   - `yarn --frozen-lockfile install; yarn build` for Build Command
-   - `build` for Publish Directory
+2. **Deploy Interface on Render**
 
-   Setup Redirect & Rewrite Rules as follows.
-   | Source | Destination | Action |
-   | -- | -- |
-   | /(.\*) | /app.html | Redirect |
+   - Login to the [Render](https://dashboard.render.com), and create a new static site. Connect the github repo, and adjust the environment variables.
+
+   - Use
+
+     - `./interface` for Root Directory
+     - `yarn --frozen-lockfile install; yarn build` for Build Command
+     - `build` for Publish Directory
+
+   - Setup Redirect & Rewrite Rules as follows.
+
+     | Source | Destination | Action   |
+     | ------ | ----------- | -------- |
+     | /(.\*) | /app.html   | Redirect |
 
 ### Deploy with Docker
 
