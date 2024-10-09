@@ -6,27 +6,27 @@
  * environment variables for configuration.
  *
  * Dependencies:
- * - JwtService: NestJS service for working with JSON Web Tokens.
- * - ConfigService: Provides configuration values from environment variables.
- * - UserService: Handles user-related operations.
- * - createHash: Node.js crypto module for creating hash digests.
- * - getUserMe: Helper function to fetch the authenticated user's information from Mixin.
+ *  JwtService: NestJS service for working with JSON Web Tokens.
+ *  ConfigService: Provides configuration values from environment variables.
+ *  UserService: Handles userrelated operations.
+ *  createHash: Node.js crypto module for creating hash digests.
+ *  getUserMe: Helper function to fetch the authenticated user's information from Mixin.
  *
  * Constants:
- * - MIXIN_OAUTH_URL: The OAuth URL for Mixin authentication.
+ *  MIXIN_OAUTH_URL: The OAuth URL for Mixin authentication.
  *
  * Methods:
- * - constructor: Initializes the service with necessary configuration and validates critical secrets.
- * - validateUser(password: string): Validates the admin password and returns a signed JWT.
- * - mixinOauthHandler(code: string): Handles Mixin OAuth process, retrieves access token, and updates user information.
+ *  constructor: Initializes the service with necessary configuration and validates critical secrets.
+ *  validateUser(password: string): Validates the admin password and returns a signed JWT.
+ *  mixinOauthHandler(code: string): Handles Mixin OAuth process, retrieves access token, and updates user information.
  *
  * Errors:
- * - Throws UnauthorizedException for missing or invalid password.
- * - Throws HttpException for invalid OAuth code length or HTTP request failures.
+ *  Throws UnauthorizedException for missing or invalid password.
+ *  Throws HttpException for invalid OAuth code length or HTTP request failures.
  *
  * Notes:
- * - The service ensures secure handling of JWT secrets and admin passwords.
- * - It performs user validation by comparing hashed passwords.
+ *  The service ensures secure handling of JWT secrets and admin passwords.
+ *  It performs user validation by comparing hashed passwords.
  */
 
 import axios from 'axios';
@@ -45,8 +45,9 @@ import { UserService } from '../mixin/user/user.service';
 
 @Injectable()
 export class AuthService {
-  secret: string;
-  adminPassword: string;
+  private secret: string;
+  private adminPassword: string;
+
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -56,15 +57,25 @@ export class AuthService {
     this.adminPassword = this.configService.get<string>('admin.pass');
 
     if (!this.secret) {
-      throw `AuthService initalization failed: Invalid jwt secret in .env`;
+      throw new Error(
+        'AuthService initialization failed: JWT secret not found in environment variables',
+      );
     }
     if (!this.adminPassword) {
-      throw `AuthService initalization failed: Invalid admin password in .env`;
+      throw new Error(
+        'AuthService initialization failed: Admin password not found in environment variables',
+      );
     }
   }
 
+  /**
+   * Validates the admin password and returns a signed JWT token.
+   * @param password - The password to validate.
+   * @returns A signed JWT token.
+   * @throws UnauthorizedException - If the password is invalid or missing.
+   */
   async validateUser(password: string): Promise<string> {
-    if (!this.adminPassword || !password) {
+    if (!password) {
       throw new UnauthorizedException('Password is required');
     }
 
@@ -72,14 +83,24 @@ export class AuthService {
       .update(this.adminPassword)
       .digest('hex');
 
-    if (hashedAdminPassword !== password) {
+    const hashIncomingPass = createHash('sha256')
+      .update(password)
+      .digest('hex');
+
+    if (hashedAdminPassword !== hashIncomingPass) {
       throw new UnauthorizedException('Invalid password');
     }
 
     const payload = { username: 'admin' };
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, { expiresIn: '120m' });
   }
 
+  /**
+   * Handles the Mixin OAuth process, retrieves the access token, and updates the user information.
+   * @param code - The OAuth code.
+   * @returns The access token.
+   * @throws HttpException - If the code length is invalid or an HTTP request fails.
+   */
   async mixinOauthHandler(code: string) {
     if (code.length !== 64) {
       throw new HttpException('Invalid code length', HttpStatus.BAD_REQUEST);
@@ -102,7 +123,7 @@ export class AuthService {
 
       const user = await getUserMe(accessToken);
       if (user) {
-        this.userService.checkAndUpdateUserToken(
+        await this.userService.checkAndUpdateUserToken(
           user,
           user.user_id,
           accessToken,
@@ -110,7 +131,10 @@ export class AuthService {
       }
       return { token: accessToken };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        error.response?.data?.message || 'Failed to fetch Mixin OAuth token',
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
