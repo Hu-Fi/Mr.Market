@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AlpacaStratService } from './alpacaStrat.service';
+import { AlpacaStratService } from 'src/modules/strategy/alpacastrat.service';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 import { StrategyService } from './strategy.service';
 import { Repository } from 'typeorm';

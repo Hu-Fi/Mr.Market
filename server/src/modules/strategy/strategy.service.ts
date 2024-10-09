@@ -103,7 +103,7 @@ export class StrategyService {
     { isRunning: boolean; intervalId: NodeJS.Timeout }
   >();
   private activeOrderBookWatches = new Map<string, Set<string>>(); // Tracks active watches for each strategy
-  private activeOrders: Map<
+  public activeOrders: Map<
     string,
     { exchange: ccxt.Exchange; orderId: string; symbol: string }[]
   > = new Map();
@@ -744,7 +744,7 @@ export class StrategyService {
     }
   }
 
-  private async evaluateArbitrageOpportunityVWAP(
+  public async evaluateArbitrageOpportunityVWAP(
     exchangeA: ccxt.Exchange,
     exchangeB: ccxt.Exchange,
     strategyParamsDto: ArbitrageStrategyDto,
@@ -972,7 +972,7 @@ export class StrategyService {
       : 0;
   }
 
-  private async checkAndCleanFilledOrders(
+  public async checkAndCleanFilledOrders(
     strategyKey: string,
   ): Promise<boolean> {
     const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
