@@ -35,6 +35,22 @@ export class ExchangeInitService {
         class: ccxt.pro.okx,
       },
       {
+        name: 'alpaca',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.ALPACA_KEY,
+            secret: process.env.ALPACA_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.ALPACA_KEY_2,
+            secret: process.env.ALPACA_SECRET_2,
+          },
+        ],
+        class: ccxt.pro.alpaca,
+      },
+      {
         name: 'bitfinex',
         accounts: [
           {

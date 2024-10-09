@@ -106,8 +106,8 @@ export class RebalanceService {
 
   @Cron('*/60 * * * * *')
   async rebalance() {
-    const enabled = this.configService.get<string>('rebalance.run');
-    if (enabled === 'false') {
+    const enabled = this.configService.get<string>('rebalance.run') === 'true';
+    if (enabled === false) {
       return;
     }
 
