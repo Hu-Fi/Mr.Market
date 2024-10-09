@@ -1,13 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { StrategyService } from '../strategy/strategy.service';
 import { PerformanceService } from '../performance/performance.service';
-import { StartStrategyDto, StopStrategyDto } from './admin-strategy.dto';
+import {
+  GetDepositAddressDto,
+  StartStrategyDto,
+  StopStrategyDto,
+} from './admin-strategy.dto';
+import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly performanceService: PerformanceService,
+    private readonly exchangeInitService: ExchangeInitService,
   ) {}
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
@@ -46,6 +52,16 @@ export class AdminService {
       userId,
       clientId,
       strategyType,
+    );
+  }
+  async getDepositAddress(getDepositAddressDto: GetDepositAddressDto) {
+    const { exchangeName, tokenSymbol, network, accountLabel } =
+      getDepositAddressDto;
+    return this.exchangeInitService.getDepositAddress(
+      exchangeName,
+      tokenSymbol,
+      network,
+      accountLabel,
     );
   }
 

@@ -7,10 +7,16 @@ import {
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Ensure authentication
-import { StartStrategyDto, StopStrategyDto } from './admin-strategy.dto';
+import {
+  GetDepositAddressDto,
+  StartStrategyDto,
+  StopStrategyDto,
+} from './admin-strategy.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard) // Secures the endpoints with JWT
+@ApiBearerAuth()
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
@@ -35,6 +41,11 @@ export class AdminController {
   //   return this.adminService.getStrategyPerformance(strategyKey);
   // }
 
+  // New endpoint to get deposit address
+  @Post('exchange/deposit-address')
+  async getDepositAddress(@Body() getDepositAddressDto: GetDepositAddressDto) {
+    return this.adminService.getDepositAddress(getDepositAddressDto);
+  }
   @Get('/admin')
   getAdminData() {
     return 'This is admin data';

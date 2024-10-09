@@ -18,6 +18,11 @@ async function bootstrap() {
     .setTitle('Mixin Doc backend API')
     .setDescription('Mixin Doc backend to execute trades and strategies')
     .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT', // Optional, but helps with proper documentation
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

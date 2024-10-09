@@ -65,3 +65,26 @@ export class StopStrategyDto {
   })
   strategyType: 'arbitrage' | 'marketMaking' | 'volume';
 }
+
+export class GetDepositAddressDto {
+  @ApiProperty({
+    description: 'exchangeName',
+    example: 'binance',
+  })
+  exchangeName: string;
+  @ApiProperty({
+    description: 'The token to be deposited',
+    example: 'USDT',
+  })
+  tokenSymbol: string;
+  @ApiProperty({
+    description: 'The network to deposit on',
+    example: 'ERC20',
+  })
+  network: string;
+  @ApiPropertyOptional({
+    description: 'default or account2',
+    example: 'default',
+  })
+  accountLabel?: string; // Optional label for the account
+}

@@ -303,4 +303,48 @@ export class ExchangeInitService {
     }
     return exchange;
   }
+  /**
+   * Function to get the deposit address for a specific token on a specific network
+   * @param exchangeName - The name of the exchange
+   * @param tokenSymbol - The symbol of the token (e.g., 'USDT')
+   * @param network - The network (e.g., 'ERC20', 'BSC')
+   * @param label - Optional account label
+   */
+  async getDepositAddress(
+    exchangeName: string,
+    tokenSymbol: string,
+    network: string,
+    label: string = 'default',
+  ): Promise<string> {
+    try {
+      const exchange = this.getExchange(exchangeName, label);
+      if (!exchange.has['fetchDepositAddress']) {
+        throw new InternalServerErrorException(
+          `Exchange ${exchangeName} does not support fetching deposit addresses.`,
+        );
+      }
+
+      const params = network ? { network } : {};
+      const addressInfo = await exchange.fetchDepositAddress(
+        tokenSymbol,
+        params,
+      );
+
+      if (!addressInfo || !addressInfo.address) {
+        throw new InternalServerErrorException(
+          `Unable to fetch deposit address for ${tokenSymbol} on ${network} network from ${exchangeName}.`,
+        );
+      }
+
+      this.logger.log(
+        `Fetched deposit address for ${tokenSymbol} on ${network}: ${addressInfo.address}`,
+      );
+      return addressInfo.address;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error.message}`,
+      );
+      throw new InternalServerErrorException('Failed to get deposit address.');
+    }
+  }
 }

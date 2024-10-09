@@ -5,6 +5,7 @@ import { PerformanceService } from '../performance/performance.service';
 import { BadRequestException } from '@nestjs/common';
 import { StartStrategyDto, StopStrategyDto } from './admin-strategy.dto';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
+import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -28,6 +29,12 @@ describe('AdminService', () => {
           provide: PerformanceService,
           useValue: {
             getPerformanceByStrategy: jest.fn(),
+          },
+        },
+        {
+          provide: ExchangeInitService,
+          useValue: {
+            getDepositAdress: jest.fn(),
           },
         },
       ],
