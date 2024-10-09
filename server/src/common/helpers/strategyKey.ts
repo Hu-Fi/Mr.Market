@@ -1,5 +1,11 @@
 export interface StrategyKey {
-  type: 'arbitrage' | 'pureMarketMaking' | 'volume';
+  type:
+    | 'arbitrage'
+    | 'pureMarketMaking'
+    | 'volume'
+    | 'alpaca-arbitrage'
+    | 'alpaca-futures-arbitrage'
+    | 'alpaca-options-arbitrage';
   user_id: string;
   client_id: string;
 }

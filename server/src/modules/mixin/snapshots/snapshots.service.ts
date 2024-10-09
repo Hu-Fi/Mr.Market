@@ -90,6 +90,7 @@ export class SnapshotsService {
   private spendKey: string;
   private client: KeystoreClientReturnType;
   private readonly logger = new CustomLogger(SnapshotsService.name);
+  private readonly enableCron: boolean;
 
   constructor(
     private configService: ConfigService,
@@ -111,6 +112,9 @@ export class SnapshotsService {
       keystore: this.keystore,
     });
     this.events = this.eventEmitter;
+
+    this.enableCron = this.configService.get<string>('strategy.run') === 'true';
+    this.logger.log(this.enableCron);
   }
 
   async createSnapshot(snapshot: SafeSnapshot) {
@@ -578,6 +582,11 @@ export class SnapshotsService {
 
   @Cron('*/5 * * * * *') // Every 5 seconds
   async handleSnapshots(): Promise<void> {
-    await this.fetchAndProcessSnapshots();
+    // Check if the cron is enabled
+    if (this.enableCron) {
+      await this.fetchAndProcessSnapshots();
+    } else {
+      return;
+    }
   }
 }
