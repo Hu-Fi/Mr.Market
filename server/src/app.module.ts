@@ -40,6 +40,7 @@ import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { PaymentState } from './common/entities/strategy.entity';
 
 dotenv.config();
 
@@ -68,6 +69,7 @@ dotenv.config();
         Performance,
         Transaction,
         UserBalance,
+        PaymentState,
         Snapshot,
         SpotOrder,
         APIKeysConfig,
