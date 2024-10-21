@@ -88,3 +88,41 @@ export class GetDepositAddressDto {
   })
   accountLabel?: string; // Optional label for the account
 }
+
+// DTO to define the expected body structure
+export class GetTokenSymbolDto {
+  @ApiProperty({
+    description: 'The contract address of the token (ERC-20)',
+    example: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  })
+  contractAddress: string;
+
+  @ApiProperty({
+    description:
+      'The chain ID of the blockchain (e.g., 1 for Ethereum Mainnet, 56 for Binance Smart Chain)',
+    example: 1,
+  })
+  chainId: number;
+}
+
+export class GetSupportedNetworksDto {
+  @ApiProperty({
+    description: 'The name of the exchange (e.g., binance, kraken, etc.)',
+    example: 'binance',
+  })
+  exchangeName: string;
+
+  @ApiProperty({
+    description: 'The symbol of the token (e.g., BTC, ETH, USDT, etc.)',
+    example: 'USDT',
+  })
+  tokenSymbol: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Optional account label, if there are multiple accounts on the exchange',
+    example: 'default',
+    required: false,
+  })
+  accountLabel?: string;
+}
