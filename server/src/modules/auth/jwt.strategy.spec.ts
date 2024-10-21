@@ -1,26 +1,21 @@
-// jwt.strategy.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtStrategy } from './jwt.strategy';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          load: [
-            () => ({
-              admin: {
-                jwt_secret: 'mock_jwt_secret',
-              },
-            }),
-          ],
-        }),
+      providers: [
+        JwtStrategy,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('mock_jwt_secret'), // Mocking the get method
+          },
+        },
       ],
-      providers: [JwtStrategy, ConfigService], // Simplified provider registration
     }).compile();
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
