@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { CampaignDataDto } from './campaign.dto';
 import axios, { AxiosInstance } from 'axios';
 import { CustomLogger } from '../logger/logger.service';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Web3Service } from '../web3/web3.service';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 
@@ -52,9 +52,9 @@ export class CampaignService {
   }
 
   /**
-   * Every 5 minutes, check if there are any new campaigns to join
+   * Every hour, check if there are any new campaigns to join
    */
-  @Cron('*/5 * * * * *')
+  @Cron(CronExpression.EVERY_HOUR)
   async joinCampaigns() {
     const campaigns = await this.getCampaigns();
 
