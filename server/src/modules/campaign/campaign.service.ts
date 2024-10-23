@@ -37,12 +37,10 @@ export class CampaignService {
     this.logger.log('Getting HuFi campaigns');
 
     try {
-      const { data } = await this.hufiCampaignLauncherAPI
-        .get<CampaignDataDto[]>('/campaign?chainId=-1')
-        .catch((error) => {
-          console.log(error);
-          throw error;
-        });
+      const { data } = await this.hufiCampaignLauncherAPI.get<
+        CampaignDataDto[]
+      >('/campaign?chainId=-1');
+
       this.logger.log('Finished getting HuFi campaigns');
       return data;
     } catch (error) {
