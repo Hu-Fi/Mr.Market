@@ -77,8 +77,13 @@ export class CustomLogger extends Logger {
   }
 
   error(message: any, trace?: string, context?: string) {
-    super.error(message, trace, context); // NestJS's internal error logging
-    this.logger.error(`${message}, Trace: ${trace}`, { context }); // winston log into file
+    if (context) {
+      super.error(message, trace, context); // NestJS's internal error logging
+      this.logger.error(`${message}, Trace: ${trace}`, { context }); // winston log into file
+      return;
+    }
+    super.error(message, trace);
+    this.logger.error(`${message}, Trace: ${trace}`);
   }
 
   // Implement warn, debug, verbose similarly...
