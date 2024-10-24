@@ -57,4 +57,37 @@ export default () => ({
     mixin_api_base_url:
       process.env.MIXIN_API_BASE_URL || 'https://api.mixin.one',
   },
+  web3: {
+    network: {
+      mainnet: {
+        rpc_url: process.env.WEB3_MAINNET_RPC_URL,
+      },
+      sepolia: {
+        rpc_url: process.env.WEB3_SEPOLIA_RPC_URL,
+      },
+      polygon: {
+        rpc_url: process.env.WEB3_POLYGON_RPC_URL,
+      },
+      polygon_amoy: {
+        rpc_url: process.env.WEB3_POLYGON_AMOY_RPC_URL,
+      },
+      bsc: {
+        rpc_url: process.env.WEB3_BSC_MAINNET_RPC_URL,
+      },
+      bsc_testnet: {
+        rpc_url: process.env.WEB3_BSC_TESTNET_RPC_URL,
+      },
+    },
+    private_key: process.env.WEB3_PRIVATE_KEY,
+    gas_multiplier: +process.env.WEB3_GAS_MULTIPLIER || 1,
+  },
+  hufi: {
+    campaign_launcher: {
+      api_url: process.env.HUFI_CAMPAIGN_LAUNCHER_API_URL,
+    },
+    recording_oracle: {
+      api_url: process.env.HUFI_RECORDING_ORACLE_API_URL,
+      api_key: process.env.HUFI_RECORDING_ORACLE_API_KEY,
+    },
+  },
 });

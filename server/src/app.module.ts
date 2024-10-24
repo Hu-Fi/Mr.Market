@@ -37,10 +37,12 @@ import {
 } from './common/entities/mixin-release.entity';
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import { PaymentState } from './common/entities/strategy.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { PaymentState } from './common/entities/strategy.entity';
+import { CampaignModule } from './modules/campaign/campaign.module';
+import { Web3Module } from './modules/web3/web3.module';
 
 dotenv.config();
 
@@ -78,6 +80,7 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
+        PaymentState,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
@@ -95,6 +98,8 @@ dotenv.config();
     EventListenersModule,
     AuthModule,
     AdminModule,
+    CampaignModule,
+    Web3Module,
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger, AppService],
