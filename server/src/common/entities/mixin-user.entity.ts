@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn /* OneToMany*/ } from 'typeorm';
+// import { Contribution } from './contribution.entity';
 
 @Entity()
 export class MixinUser {
@@ -28,6 +29,9 @@ export class MixinUser {
 
   @Column()
   jwt_token: string;
+
+  // @OneToMany(() => Contribution, (contribution) => contribution.mixinUser)
+  // contributions: Contribution[];
 
   @Column()
   created_at: string;

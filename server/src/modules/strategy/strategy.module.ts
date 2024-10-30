@@ -20,6 +20,7 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { AlpacaStratService } from './alpacastrat.service';
+import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AlpacaStratService } from './alpacastrat.service';
     TypeOrmModule.forFeature([
       ArbitrageOrder,
       MarketMakingOrder,
+      StrategyInstance,
       PaymentState,
       ArbitrageHistory,
       MarketMakingHistory,

@@ -10,7 +10,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
@@ -20,6 +26,7 @@ import {
   PureMarketMakingStrategyDto,
   StopVolumeStrategyDto,
 } from './strategy.dto';
+import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -40,6 +47,28 @@ export class StrategyController {
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getAllStrategy(@Query('userId') userId: string) {
     return await this.strategyUserSerive.findAllStrategyByUser(userId);
+  }
+
+  @Get('running')
+  @ApiOperation({ summary: 'Get all running strategies' })
+  @ApiResponse({
+    status: 200,
+    description: 'A list of all currently running strategies',
+    type: [StrategyInstance],
+  })
+  async getRunningStrategies(): Promise<StrategyInstance[]> {
+    return await this.strategyService.getRunningStrategies();
+  }
+
+  @Get('all-strategies')
+  @ApiOperation({ summary: 'Get all strategies' })
+  @ApiResponse({
+    status: 200,
+    description: 'A list of all strategies, including running and stopped ones',
+    type: [StrategyInstance],
+  })
+  async getAllStrategies(): Promise<StrategyInstance[]> {
+    return await this.strategyService.getAllStrategies();
   }
 
   @Get('/payment_state/:order_id')
@@ -250,5 +279,24 @@ export class StrategyController {
       stopVolumeStrategyDto.userId,
       stopVolumeStrategyDto.clientId,
     );
+  }
+
+  @Post('rerun')
+  @ApiOperation({ summary: 'Rerun a saved strategy instance' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        strategyKey: {
+          type: 'string',
+          description: 'The unique key of the strategy instance to rerun',
+          example: 'user123-client123-pureMarketMaking',
+        },
+      },
+      required: ['strategyKey'],
+    },
+  })
+  async rerunStrategy(@Body('strategyKey') strategyKey: string) {
+    return await this.strategyService.rerunStrategy(strategyKey);
   }
 }

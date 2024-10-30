@@ -9,12 +9,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { TradeModule } from '../trade/trade.module';
+import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
+import { Contribution } from 'src/common/entities/contribution.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       MarketMakingHistory,
       ArbitrageHistory,
+      StrategyInstance,
+      Contribution,
       Performance,
     ]),
     TradeModule,

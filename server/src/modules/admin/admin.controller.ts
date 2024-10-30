@@ -13,6 +13,7 @@ import {
   GetDepositAddressDto,
   GetSupportedNetworksDto,
   GetTokenSymbolDto,
+  // JoinStrategyDto,
   StartStrategyDto,
   StopStrategyDto,
 } from './admin-strategy.dto';
@@ -75,6 +76,13 @@ export class AdminController {
   async stopStrategy(@Body() stopStrategyDto: StopStrategyDto) {
     return this.adminService.stopStrategy(stopStrategyDto);
   }
+
+  // @Post('strategy/join')
+  // @ApiOperation({ summary: 'Join a strategy by contributing funds' })
+  // async joinStrategy(@Body() joinStrategyDto: JoinStrategyDto) {
+  //   const { userId, strategyId, amount } = joinStrategyDto;
+  //   return this.adminService.joinStrategy(userId, strategyId, amount);
+  // }
 
   @Post('exchange/deposit-address')
   @ApiOperation({
@@ -211,10 +219,10 @@ export class AdminController {
   }
 
   //TODO: Implement returning strategies to be dispalyed.
-  // @Get('strategies')
-  // async getRunningStrategies() {
-  //   return this.adminService.getRunningStrategies();
-  // }
+  @Get('strategies')
+  async getRunningStrategies() {
+    return this.adminService.getRunningStrategies();
+  }
 
   // @Get('strategy/performance/:strategyKey')
   // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {

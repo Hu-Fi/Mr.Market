@@ -11,13 +11,16 @@ import {
   getInfoFromChainId,
   getTokenSymbolByContractAddress,
 } from 'src/common/helpers/blockchain-utils';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Contribution } from 'src/common/entities/contribution.entity';
+// import { Repository } from 'typeorm';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly performanceService: PerformanceService,
-    private readonly exchangeInitService: ExchangeInitService,
+    private readonly exchangeInitService: ExchangeInitService, // @InjectRepository(Contribution) private contributionRepository: Repository<Contribution>,
   ) {}
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
@@ -117,6 +120,25 @@ export class AdminService {
     }
   }
 
+  // async joinStrategy(userId: string, strategyId: string, amount: number) {
+  //   const strategy = await this.strategyService.getStrategyInstanceById(strategyId);
+  //   if (!strategy) {
+  //     throw new BadRequestException(`Strategy ${strategyId} does not exist`);
+  //   }
+
+  //   // Create a new contribution
+  //   const contribution = this.contributionRepository.create({
+  //     amount,
+  //     user: { id: userId }, // Assuming you have a User entity linked to your auth system
+  //     strategy,
+  //   });
+
+  //   await this.contributionRepository.save(contribution);
+
+  //   // Optional: Update the total funds of the strategy or any other related values
+  //   return { message: `User ${userId} has joined the strategy with ${amount} funds` };
+  // }
+
   async getTokenSymbolByContract(
     contractAddress: string,
     chainId: number,
@@ -131,9 +153,9 @@ export class AdminService {
     }
   }
 
-  //   async getRunningStrategies() {
-  //     return this.strategyService.getRunningStrategies();
-  //   }
+  async getRunningStrategies() {
+    return this.strategyService.getRunningStrategies();
+  }
 
   //   async getStrategyPerformance(strategyKey: string) {
   //     return this.performanceService.getPerformanceByStrategy(strategyKey);

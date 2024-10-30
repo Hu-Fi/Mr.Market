@@ -89,6 +89,7 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
+import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 
 @Injectable()
 export class StrategyService {
@@ -116,6 +117,8 @@ export class StrategyService {
     private orderRepository: Repository<MarketMakingHistory>,
     @InjectRepository(ArbitrageHistory)
     private arbitrageHistoryRepository: Repository<ArbitrageHistory>,
+    @InjectRepository(StrategyInstance)
+    private strategyInstanceRepository: Repository<StrategyInstance>,
   ) {
     process.on('SIGINT', () => this.handleShutdown());
     process.on('SIGTERM', () => this.handleShutdown());
@@ -124,6 +127,66 @@ export class StrategyService {
 
   async getSupportedExchanges(): Promise<string[]> {
     return this.exchangeInitService.getSupportedExchanges();
+  }
+
+  async getRunningStrategies(): Promise<StrategyInstance[]> {
+    return await this.strategyInstanceRepository.find({
+      where: { status: 'running' },
+    });
+  }
+  async getAllStrategies(): Promise<StrategyInstance[]> {
+    return await this.strategyInstanceRepository.find();
+  }
+
+  async rerunStrategy(strategyKey: string): Promise<void> {
+    // Fetch the strategy instance from the database by its unique key
+    const strategyInstance = await this.strategyInstanceRepository.findOne({
+      where: { strategyKey },
+    });
+
+    if (!strategyInstance) {
+      throw new Error(`Strategy with key ${strategyKey} not found.`);
+    }
+
+    // Check if the strategy is already running
+    if (this.strategyInstances.has(strategyKey)) {
+      this.logger.warn(`Strategy ${strategyKey} is already running.`);
+      return;
+    }
+
+    // Extract the parameters and run the strategy based on its type
+    const { parameters, strategyType } = strategyInstance;
+    console.log(parameters);
+    switch (strategyType) {
+      case 'arbitrage':
+        await this.startArbitrageStrategyForUser(
+          parameters as ArbitrageStrategyDto, // Use the saved parameters
+          parameters.checkIntervalSeconds,
+          parameters.maxOpenOrders,
+        );
+        break;
+      case 'pureMarketMaking':
+        await this.executePureMarketMakingStrategy(
+          parameters as PureMarketMakingStrategyDto,
+        );
+        break;
+      case 'volume':
+        await this.executeVolumeStrategy(
+          parameters.exchangeName,
+          parameters.symbol,
+          parameters.baseIncrementPercentage,
+          parameters.baseIntervalTime,
+          parameters.baseTradeAmount,
+          parameters.numTrades,
+          parameters.userId,
+          parameters.clientId,
+        );
+        break;
+      default:
+        throw new Error(`Unknown strategy type: ${strategyType}`);
+    }
+
+    this.logger.log(`Strategy ${strategyKey} rerun successfully.`);
   }
 
   async startArbitrageIfNotStarted(
@@ -162,6 +225,17 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
+
+    const newStrategyInstance = this.strategyInstanceRepository.create({
+      strategyKey,
+      userId,
+      clientId,
+      strategyType: 'arbitrage',
+      parameters: strategyParamsDto,
+      status: 'running',
+    });
+    await this.strategyInstanceRepository.save(newStrategyInstance);
+
     const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
     const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
@@ -232,6 +306,11 @@ export class StrategyService {
       });
     }
 
+    await this.strategyInstanceRepository.update(
+      { strategyKey },
+      { status: 'stopped', updatedAt: new Date() },
+    );
+
     // Cancel all orders for this strategy before stopping
     if (strategyKey) {
       await this.cancelAllStrategyOrders(strategyKey);
@@ -270,6 +349,25 @@ export class StrategyService {
       this.logger.warn(`Strategy ${strategyKey} is already running.`);
       return;
     }
+
+    const newStrategyInstance = this.strategyInstanceRepository.create({
+      strategyKey,
+      userId,
+      clientId,
+      strategyType: 'volume',
+      parameters: {
+        exchangeName,
+        symbol,
+        baseIncrementPercentage,
+        baseIntervalTime,
+        baseTradeAmount,
+        numTrades,
+        userId,
+        clientId,
+      },
+      status: 'running',
+    });
+    await this.strategyInstanceRepository.save(newStrategyInstance);
 
     try {
       const exchangeAccount1 = this.exchangeInitService.getExchange(
@@ -494,6 +592,16 @@ export class StrategyService {
       this.logger.error(`Strategy ${strategyKey} is already running.`);
       return;
     }
+
+    const newStrategyInstance = this.strategyInstanceRepository.create({
+      strategyKey,
+      userId,
+      clientId,
+      strategyType: 'pureMarketMaking',
+      parameters: strategyParamsDto,
+      status: 'running',
+    });
+    await this.strategyInstanceRepository.save(newStrategyInstance);
 
     // Start the strategy
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
