@@ -43,6 +43,11 @@ import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { CampaignModule } from './modules/campaign/campaign.module';
 import { Web3Module } from './modules/web3/web3.module';
+import { StrategyInstance } from './common/entities/strategy-instances.entity';
+import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
+import { MarketMakingHistory } from './common/entities/mm-order.entity';
+// import { Contribution } from './common/entities/contribution.entity';
+
 
 dotenv.config();
 
@@ -68,6 +73,9 @@ dotenv.config();
       database: process.env.POSTGRES_DATABASE,
       entities: [
         Trade,
+        ArbitrageHistory,
+        MarketMakingHistory,
+        StrategyInstance,
         Performance,
         Transaction,
         UserBalance,
@@ -76,6 +84,7 @@ dotenv.config();
         SpotOrder,
         APIKeysConfig,
         CustomConfigEntity,
+        // Contribution,
         MixinReleaseToken,
         MixinReleaseHistory,
         MixinMessage,

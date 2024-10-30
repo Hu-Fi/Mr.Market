@@ -4,6 +4,7 @@ import {
   PureMarketMakingStrategyDto,
   ExecuteVolumeStrategyDto,
 } from '../strategy/strategy.dto';
+import { IsUUID, IsDecimal } from 'class-validator';
 
 // Unified DTO for starting strategies that handles all types
 export class StartStrategyDto {
@@ -125,4 +126,15 @@ export class GetSupportedNetworksDto {
     required: false,
   })
   accountLabel?: string;
+}
+
+export class JoinStrategyDto {
+  @IsUUID()
+  userId: string;
+
+  @IsUUID()
+  strategyId: string;
+
+  @IsDecimal()
+  amount: number;
 }

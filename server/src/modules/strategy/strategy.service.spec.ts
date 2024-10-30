@@ -11,6 +11,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
+import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 
 // Mocking the TradeService
 class TradeServiceMock {
@@ -60,6 +61,14 @@ describe('StrategyService', () => {
     // Add other repository methods as needed
   };
 
+  const mockStrategyInstanceRepository = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    // Add other repository methods as needed
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -74,6 +83,10 @@ describe('StrategyService', () => {
         {
           provide: getRepositoryToken(ArbitrageHistory),
           useValue: mockArbitrageOrderRepository,
+        },
+        {
+          provide: getRepositoryToken(StrategyInstance),
+          useValue: mockStrategyInstanceRepository,
         },
         {
           provide: CustomLogger,
