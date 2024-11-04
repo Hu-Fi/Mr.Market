@@ -6,11 +6,6 @@ vi.mock('$env/dynamic/public', () => {
   return {
     env: {
       AppURL: '',
-      SHOW_BAR: '',
-      BOT_ID: '',
-      OAUTH_SCOPE: '',
-      MIXIN_MESSENGER_INSTALL: '',
-      MIXIN_API_BASE_URL: '',
     }
   }
 });
