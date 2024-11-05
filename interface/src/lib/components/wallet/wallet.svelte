@@ -18,7 +18,7 @@
     <Percentage />
   </div>
 
-  <div class={clsx("mt-6 border-t-[10px] mb-36", $darkTheme ? "border-slate-900" : "border-slate-100")}>
+  <div class={clsx("mt-6 border-t mb-36", $darkTheme ? "border-slate-900" : "border-base-200")}>
     <Assets />
   </div>
 <!-- Zero balance -->
