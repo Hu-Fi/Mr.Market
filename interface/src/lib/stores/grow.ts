@@ -45,6 +45,8 @@ export const createJustGrowLockTime = writable()
 export const createJustGrowLockTimeDialog = writable(false)
 export const createJustGrowConfirmDialog = writable(false)
 export const createJustGrowSearch = writable('')
+export const createJustGrowRewardAddressDialog = writable(false)
+export const createJustGrowRewardAddress = writable('')
 
 // Create new auto invest
 export const createAISelectAssetSearch = writable("")

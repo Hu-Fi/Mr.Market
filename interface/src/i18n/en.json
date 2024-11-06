@@ -334,5 +334,12 @@
   "2_weeks": "14 days",
   "1_month": "30 days",
   "select_first_exchange": "Select first exchange",
-  "select_second_exchange": "Select second exchange"
+  "select_second_exchange": "Select second exchange",
+  "enter_reward_address": "Enter reward address",
+  "reward_address": "Reward address",
+  "reward_address_intro": "The EVM wallet address for receiving HuFi campaign rewards, the reward will be distributed to this address onchain as campaign runs.",
+  "read_deposit_address_from_mixin": "Read deposit address from Mixin",
+  "validating_address": "Validating address...",
+  "valid_address": "Address valid",
+  "invalid_address": "Invalid address"
 }
