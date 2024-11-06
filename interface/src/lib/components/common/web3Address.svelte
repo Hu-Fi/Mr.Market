@@ -2,6 +2,7 @@
     import clsx from "clsx";
     import { _ } from "svelte-i18n";
     import { onDestroy } from "svelte";
+    import mixinIcon from "$lib/images/mixin.png";
     import { mixinConnected } from "$lib/stores/home";
     import { isValidEvmAddress } from "$lib/helpers/validateAddress";
     import { createJustGrowRewardAddressDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
@@ -74,10 +75,11 @@
                     dialogOpen = false
                 }}>
                     <div class="flex flex-col space-y-2">
-                        
                         <div class="flex items-center space-x-3">
-                            <div class="flex items-center justify-center rounded-full size-8 bg-base-200">
-                                
+                            <div class="avatar">
+                                <div class="ring-primary ring-offset-base-100 w-6 rounded-full border border-base-300">
+                                    <img src={mixinIcon} alt="mixin" class="size-6" />
+                                </div>
                             </div>
                             <span>
                                 {$_('read_deposit_address_from_mixin')}
