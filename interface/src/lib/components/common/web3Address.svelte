@@ -13,6 +13,7 @@
     })
 
     let closeTooltip = true;
+    let closeTooltipTimeout = 4000;
     let validatingAddress = false;
     let validAddress = false;
     let addressTooltip = false;
@@ -37,7 +38,7 @@
                 if (closeTooltip) {
                     setTimeout(()=>{
                         addressTooltip = false;
-                    }, 3000)
+                    }, closeTooltipTimeout)
                 }
             }}
             class={
@@ -58,7 +59,6 @@
                 bind:value={rewardAddress}
                 on:keyup={()=>{
                     validAddress = isValidEvmAddress(rewardAddress)
-                    console.log(validAddress)
                 }}
                 class="input input-ghost focus:outline-none focus:border-base-300 focus:border-r-0 z-10 absolute w-4/5 join-item pr-0" 
             />
@@ -96,7 +96,6 @@
                 bind:value={rewardAddress}
                 on:keyup={()=>{
                     validAddress = isValidEvmAddress(rewardAddress)
-                    console.log(validAddress)
                 }}
                 class="input input-bordered focus:outline-none w-full z-10" 
             />
