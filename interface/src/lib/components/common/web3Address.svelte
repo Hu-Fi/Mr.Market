@@ -2,9 +2,9 @@
     import clsx from "clsx";
     import { _ } from "svelte-i18n";
     import { onDestroy } from "svelte";
-    import { user } from "$lib/stores/wallet";
+    // import { user } from "$lib/stores/wallet";
     import mixinIcon from "$lib/images/mixin.png";
-    import { ETH_UUID } from "$lib/helpers/constants";
+    // import { ETH_UUID } from "$lib/helpers/constants";
     import { mixinConnected } from "$lib/stores/home";
     import { isValidEvmAddress } from "$lib/helpers/validateAddress";
     import { createJustGrowRewardAddressDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
@@ -19,8 +19,8 @@
     let validatingAddress = false;
     let validAddress = false;
     let addressTooltip = false;
-    let mixinAddressesLoaded = false;
-    let mixinAddressesLoading = false;
+    // let mixinAddressesLoaded = false;
+    // let mixinAddressesLoading = false;
 
     export let rewardAddress = $createJustGrowRewardAddress;
     export let dialogOpen = $createJustGrowRewardAddressDialog;

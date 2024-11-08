@@ -16,8 +16,6 @@ test('create just grow order', async ({ page }) => {
   await page.getByTestId('just-grow-token-0').click();
   await page.getByTestId('amount-input-0').click();
   await page.getByTestId('amount-input-0').fill('0.000001');
-  await page.locator('summary').click();
-  await page.getByTestId('time-0').click();
   await page.getByTestId('confirm-btn').click();
   await page.getByTestId('confirm-order-btn').click();
 
