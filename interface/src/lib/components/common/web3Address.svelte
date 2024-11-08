@@ -2,7 +2,9 @@
     import clsx from "clsx";
     import { _ } from "svelte-i18n";
     import { onDestroy } from "svelte";
+    import { user } from "$lib/stores/wallet";
     import mixinIcon from "$lib/images/mixin.png";
+    import { ETH_UUID } from "$lib/helpers/constants";
     import { mixinConnected } from "$lib/stores/home";
     import { isValidEvmAddress } from "$lib/helpers/validateAddress";
     import { createJustGrowRewardAddressDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
@@ -51,8 +53,8 @@
         </button>
     </div>
     
-    <div class={clsx("flex flex-col w-full px-1", $mixinConnected ? "join" : "")}>
-        {#if !$mixinConnected}
+    <div class={clsx("flex flex-col w-full px-2", $mixinConnected ? "join" : "")}>
+        {#if $mixinConnected}
             <input 
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
@@ -60,7 +62,7 @@
                 on:keyup={()=>{
                     validAddress = isValidEvmAddress(rewardAddress)
                 }}
-                class="input input-ghost focus:outline-none focus:border-base-300 focus:border-r-0 z-10 absolute w-4/5 join-item pr-0" 
+                class="input input-ghost focus:outline-none focus:border-r-0 z-10 absolute w-4/5 join-item pr-0" 
             />
             <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={dialogOpen} data-testid="select-reward-address">
                 <summary class="flex justify-between text-end border rounded-lg items-center h-12">
@@ -71,8 +73,12 @@
                 </div>
                 </summary>
                 <ul class="p-4 shadow menu dropdown-content z-[1] rounded-box bg-white text-sm w-full" >
-                <button on:click={()=>{
-                    dialogOpen = false
+                <button on:click={async ()=>{
+                    // dialogOpen = false
+                    const token = localStorage.getItem('mixin-oauth') || '';
+                    if (!token) {
+                        return;
+                    }
                 }}>
                     <div class="flex flex-col space-y-2">
                         <div class="flex items-center space-x-3">
@@ -97,7 +103,7 @@
                 on:keyup={()=>{
                     validAddress = isValidEvmAddress(rewardAddress)
                 }}
-                class="input input-bordered focus:outline-none w-full z-10" 
+                class="input input-bordered border-base-300 focus:outline-none w-full z-10" 
             />
         {/if}
         {#if rewardAddress.length > 0}

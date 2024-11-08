@@ -9,7 +9,7 @@
   import { createJustGrowAmount, createJustGrowAsset } from "$lib/stores/grow";
 
   onDestroy(() => {
-    createJustGrowAmount.set();
+    createJustGrowAmount.set({ key: '', value: '' });
   })
 </script>
 
