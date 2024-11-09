@@ -20,9 +20,7 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 const webSocketPort = process.env.WS_PORT || '0';
 @WebSocketGateway(parseInt(webSocketPort, 10), {
   namespace: '/marketdata',
-  cors: {
-    origin: '*', // Allow all origins, Temporary to be changed and restricted.
-  },
+  cors: true,
 })
 export class MarketDataGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect

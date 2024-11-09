@@ -28,7 +28,7 @@
 <OrderConfirm />
 
 <!-- Orders -->
-<div class={clsx("border-t-[12px]", $darkTheme ? "border-slate-900" : "border-slate-100")}>
+<div class={clsx("border-t", $darkTheme ? "border-slate-900" : "border-base-200")}>
   <div class="flex flex-col">
     <Tabs />
     {#if $manageMode === 0}

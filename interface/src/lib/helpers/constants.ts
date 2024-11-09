@@ -10,8 +10,8 @@ export const OAUTH_SCOPE = env.PUBLIC_OAUTH_SCOPE || 'PROFILE:READ ASSETS:READ S
 export const MIXIN_MESSENGER_INSTALL = env.PUBLIC_MIXIN_MESSENGER_INSTALL || 'https://messenger.mixin.one/install'
 export const MIXIN_API_BASE_URL = env.PUBLIC_MIXIN_API_BASE_URL || 'https://api.mixin.one'
 
-export const HUFI_SOCKET_URL = env.PUBLIC_HUFI_SOCKET_URL || '//mrmarket-production.up.railway.app'
-export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mrmarket-production.up.railway.app'
+export const HUFI_SOCKET_URL = env.PUBLIC_HUFI_SOCKET_URL || '//mr-market-server.onrender.com'
+export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mr-market-server.onrender.com'
 export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const ORDER_STATE_FETCH_INTERVAL = 3000
@@ -295,6 +295,7 @@ export const LIMIT_ORDERBOOK_HALF_LENGTH = LIMIT_ORDERBOOK_LENGTH / 2
 export const MARKET_ORDERBOOK_HALF_LENGTH = MARKET_ORDERBOOK_LENGTH / 2
 
 export const BTC_UUID = 'c6d0c728-2624-429b-8e0d-d9d19b6592fa'
+export const ETH_UUID = '43d61dcd-e413-450d-80b8-101d5e903357'
 
 export const UpColorBg = "bg-green-500"
 export const UpColorText = "text-green-600"

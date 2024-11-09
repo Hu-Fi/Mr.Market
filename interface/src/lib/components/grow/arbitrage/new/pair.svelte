@@ -49,11 +49,11 @@
     </div>
 
     <!-- Pairs -->
-    <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
+    <div class="grid grid-cols-1 gap-2 w-full overflow-y-auto">
       {#each arbitragePairs as item, i}
         <button
           class={clsx(
-            "flex items-center justify-start px-4 shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
+            "flex items-center justify-start px-4 shadow-none space-x-4 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
             "",
           )}
           on:click={() => {
