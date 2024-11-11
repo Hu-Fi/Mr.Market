@@ -1,96 +1,52 @@
-import { describe, expect, it, vi } from 'vitest'
-import { formatRequestPairs, parseUSDFiatRate, parseUSDTUSDRate } from './currency';
-import { BALANCE_CURRENCIES } from '../constants';
-import type { ChainLinkResponseData } from '$lib/types/currency/currency';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getCurrencyRate } from './currency';
 
 vi.mock('$env/dynamic/public', () => {
-    return {
-      env: {
-        AppURL: '',
-      }
-    }
+  return {
+    env: {}
+  };
+});
+
+beforeEach(() => {
+  vi.fn(() =>
+    Promise.resolve({
+      json: () => Promise.resolve({
+        usd: {
+          AED: 3.6725,
+          AFN: 67.98694366,
+          USD: 1,
+          EUR: 0.93252508,
+        }
+      }),
+    })
+  );
+});
+
+describe('getCurrencyRate', () => {
+  it('should return filtered currency rates', async () => {
+    const currencies = ['AED', 'EUR'];
+    const result = await getCurrencyRate(currencies);
+
+    expect(result).toEqual({
+      AED: 3.6725,
+      EUR: 0.93252508,
+    });
   });
 
-global.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    json: async () => {}
+  it('should return an empty object if no currencies match', async () => {
+    const currencies = ['SB', 'XD'];
+    const result = await getCurrencyRate(currencies);
+
+    expect(result).toEqual({});
+  });
+
+  it('should handle case insensitivity', async () => {
+    const currencies = ['aed', 'eur', 'afn'];
+    const result = await getCurrencyRate(currencies);
+    expect(result).toEqual({
+      AED: 3.6725,
+      EUR: 0.93252508,
+      AFN: 67.98694366,
+    });
+  });
 });
-
-describe('formatRequestPairs', () => {
-    it('should filter out "USDT" and map "USD" to each remaining currency', () => {
-        const expectedOutput = 'USDEUR,USDGBP,USDAED,USDCNY,USDHKD,USDJPY';
-        const result = formatRequestPairs(BALANCE_CURRENCIES)
-        expect(result).toBe(expectedOutput);
-    });
-
-    it('should return an empty string if all currencies are "USDT"', () => {
-        const input = ['USDT', 'USDT'];
-        const expectedOutput = '';
-        expect(formatRequestPairs(input)).toBe(expectedOutput);
-    });
-
-    it('should return an empty string if all currencies are "USD"', () => {
-        const input = ['USD', 'USD'];
-        const expectedOutput = '';
-        expect(formatRequestPairs(input)).toBe(expectedOutput);
-    });
-
-    it('should handle an empty array', () => {
-        const input: string[] = [];
-        const expectedOutput = '';
-        expect(formatRequestPairs(input)).toBe(expectedOutput);
-    });
-
-    it('should handle an array with no "USDT"', () => {
-        const input = ['EUR', 'JPY', 'GBP'];
-        const expectedOutput = 'USDEUR,USDJPY,USDGBP';
-        expect(formatRequestPairs(input)).toBe(expectedOutput);
-    });
-});
-
-// Test for parseUSDFiatRate
-describe('parseUSDFiatRate', () => {
-    it('should parse and return the USD fiat rates', () => {
-        const input = [
-            {
-                ccyPair: "USDJPY",
-                latest: {
-                    open: 151.6
-                }
-            }
-        ];
-        const result = parseUSDFiatRate(input);
-        expect(result).toEqual({ JPY: 151.6 });
-    });
-});
-
-// Test for parseUSDTUSDRate
-describe('parseUSDTUSDRate', () => {
-    it('should parse and return the USDT/USD rate', () => {
-        const input = {
-            data: {
-                chainData: {
-                    nodes: [{ inputs: { answer: 99921000 } }]
-                }
-            }
-        }
-        const result = parseUSDTUSDRate(input);
-        expect(result).toEqual(0.99921);
-    });
-
-    it('should return null for invalid data format', () => {
-        const input = {
-            data: {
-                error: '500 Internal Server Error'
-            }
-        }
-        const result = parseUSDTUSDRate(input);
-        expect(result).toBeNull();
-    });
-
-    it('should return null for missing data', () => {
-        const input = {};
-        const result = parseUSDTUSDRate(input as ChainLinkResponseData);
-        expect(result).toBeNull();
-    });
-})
