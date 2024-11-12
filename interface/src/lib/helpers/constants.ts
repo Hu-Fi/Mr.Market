@@ -15,7 +15,7 @@ export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mr-marke
 export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const BALANCE_CURRENCIES = ["USDT", "USD", "EUR", "GBP", "AED", "CNY", "HKD", "JPY"]
-export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usd.json"
+export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usdt.json"
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
 export const HARDCODED_FEE = 1.002

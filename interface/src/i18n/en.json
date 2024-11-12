@@ -103,6 +103,7 @@
   "earn": "Earn",
   "arbitrage": "Arbitrage",
   "arbitrage_intro": "Leveraging hidden opportunities across markets",
+  "arbitrage_intro_carousel": "Leveraging hidden opportunities across markets",
   "whats_arbitrage": "What's arbitrage?",
   "whats_arbitrage_answer": "Arbitrage is the simultaneous purchase and sale of an asset in different markets to exploit tiny differences in their prices.",
   "what_re_benefits": "What are the benefits?",
@@ -123,6 +124,7 @@
   "leverage": "Leverage",
   "market_making": "Market making",
   "market_making_intro": "Grow your asset by market making on exchanges",
+  "market_making_intro_carousel": "Earn HuFi campaign rewards by market making on exchanges",
   "whats_market_making": "What's market making?",
   "whats_market_making_answer": "A market maker is an individual participant or member firm of an exchange that buys and sells securities for its own account. Market makers provide the market with liquidity and depth while profiting from the difference in the bid-ask spread.",
   "about_market_making": "About market making",
@@ -321,6 +323,7 @@
   "just_grow_entrance_intro": "Enjoy asset growth with ease",
   "recommended": "Recommended",
   "just_grow_intro": "Letting the bot to choose the most profitable strategy",
+  "just_grow_intro_carousel": "Let the bot choose the most profitable strategy",
   "whats_just_grow": "What's simply grow?",
   "whats_just_grow_answer": "With this mode, users can deposit any type of token, and the bot will automatically chooses the most profitable strategy to make money for the user.",
   "create_just_grow": "Create an order",
@@ -341,5 +344,6 @@
   "read_deposit_address_from_mixin": "Read deposit address from Mixin",
   "validating_address": "Validating address...",
   "valid_address": "Address valid",
-  "invalid_address": "Invalid address"
+  "invalid_address": "Invalid address",
+  "start_now": "Start now!"
 }

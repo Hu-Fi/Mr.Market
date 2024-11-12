@@ -3,7 +3,8 @@
   import Balance from "$lib/components/home/walletBalance/balance.svelte";
   import Tabs from "$lib/components/home/markets/tabs.svelte";
   import Coins from "$lib/components/home/markets/coins.svelte";
-  import ConnectMixin from "./oauth/connectMixin.svelte";
+  import Carousel from "$lib/components/home/carousel/carousel.svelte";
+  import ConnectMixin from "$lib/components/home/oauth/connectMixin.svelte";
   import { mixinConnected } from "$lib/stores/home";
 </script>
 
@@ -14,6 +15,7 @@
     <ConnectMixin />
   {/if}
   <Apps />
+  <Carousel />
   <Tabs/>
   <Coins />
 </div>
