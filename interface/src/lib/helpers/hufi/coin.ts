@@ -16,7 +16,7 @@ export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> => 
 export const marketQueryFn = async (category: string) =>  {
   try {
     const pathCategory = category ? `/category/${category}` : ''
-    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?limit`)
+    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}`)
     const re = await r.json()
     return re
   } catch (e) {
