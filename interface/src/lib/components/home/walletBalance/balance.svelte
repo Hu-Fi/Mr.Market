@@ -1,27 +1,39 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { darkTheme } from "$lib/stores/theme";
   import { hideBalance } from "$lib/stores/home";
   import { userAssets } from "$lib/stores/wallet";
+  import { getCurrencyRate } from "$lib/helpers/currency/currency";
   import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import HideBalance from "$lib/components/home/walletBalance/hideBalance.svelte";
 	import BalanceNumberLoader from '$lib/components/skeleton/home/balanceNumberLoader.svelte';
 
   let open = false;
   let currency = "USDT"
-  let currencyRate = 1.0
-  let currencies = [
-    { name: "USDT", fn: (name: string)=>{currency=name, currencyRate = 1}},
-    { name: "USD", fn: (name: string)=>{currency=name, currencyRate = 1.01}},
-    { name: "EUR", fn: (name: string)=>{currency=name, currencyRate = 1.2}},
-    { name: "AED", fn: (name: string)=>{currency=name, currencyRate = 0.4}},
-    { name: "CNY", fn: (name: string)=>{currency=name, currencyRate = 0.2}},
-  ]
-  
+  let currencyRates = {};
+  let currencyRateLoaded = false
+  const updateCurrencyRates = (async ()=>{
+    currencyRates = await getCurrencyRate()
+    currencyRateLoaded = true
+    return currencyRates
+  })()
+  $: currencies = currencyList.map(c => ({ 
+    name: c, 
+    fn: (name: string)=>{
+      currency=name, 
+      currencyRate = currencyRates[name as keyof typeof currencyRates]
+    },
+  }))
+  $: currencyList = Object.keys(currencyRates)
+  $: currencyRate = currencyRates[currency as keyof typeof currencyRates] || 1.0
   $: coinBalance = $userAssets ? formatDecimals($userAssets.totalUSDBalance, 3) : 0
-  $: balance = BN(coinBalance).dividedBy(currencyRate).toNumber()
+  $: balance = BN(coinBalance).multipliedBy(currencyRate).toNumber()
+  onMount(async ()=>{
+    updateCurrencyRates
+  })
 </script>
 
 <div class="flex items-center justify-between p-4 rounded-2xl">
@@ -50,21 +62,28 @@
                 <span class="text-sm font-medium">
                   {currency}
                 </span>
-                <div>
-                  {#if open}
-                    <!-- Caret Up Icon -->
+                {#if currencyRateLoaded}
+                  <div>
+                    {#if open}
+                      <!-- Caret Up Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M7 14L12 8L17 14L7 14Z" fill={"currentColor"}></path></svg>
-                  {:else}
-                    <!-- Caret Down Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill={"currentColor"}></path></svg>
-                  {/if}      
-                </div>
+                    {:else}
+                      <!-- Caret Down Icon -->
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill={"currentColor"}></path></svg>
+                    {/if}      
+                  </div>
+                {/if}
               </summary>
-              <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32">
-                {#each currencies as c}
-                  <li><button class="text-start text-sm" on:click={()=>{open=false; c.fn(c.name)}}>{c.name}</button></li>
-                {/each}
-              </ul>
+              {#if currencyRateLoaded}  
+                <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32">
+                  {#each currencies as c}
+                  <li><button class="text-start text-sm" on:click={()=>{
+                      open=false; 
+                      c.fn(c.name)
+                    }}>{c.name}</button></li>
+                  {/each}
+                </ul>
+              {/if}
             </details>
           {:else}
             <BalanceNumberLoader />

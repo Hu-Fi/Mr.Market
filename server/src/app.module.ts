@@ -48,7 +48,6 @@ import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from './common/entities/mm-order.entity';
 // import { Contribution } from './common/entities/contribution.entity';
 
-
 dotenv.config();
 
 @Module({
@@ -91,7 +90,7 @@ dotenv.config();
         MixinUser,
         PaymentState,
       ],
-      synchronize: false,
+      synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),

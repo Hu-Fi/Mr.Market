@@ -37,7 +37,7 @@ export const sortByNumber = (colHeader: string, data: CoingeckoToken[], ascendin
 };
 
 // Change fields when data change
-export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOrder: boolean) => {
+export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOrder: boolean): CoingeckoToken[] => {
   try {
     if (!data) {
       return data;

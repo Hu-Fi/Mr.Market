@@ -3,9 +3,10 @@ import { writable, type Writable } from "svelte/store";
 import { AfterMixinOauth } from "$lib/helpers/mixin";
 import { mixinConnected } from "./home";
 import type { SpotOrder } from "$lib/types/hufi/spot";
+import type { UserAssets } from "$lib/types/hufi/wallet";
 
 export const user = writable()
-export const userAssets = writable()
+export const userAssets:Writable<UserAssets> = writable()
 export const userSpotOrders:Writable<SpotOrder[]> = writable([])
 export const userSpotOrdersLoaded = writable(false)
 export const userStrategyOrders: Writable<unknown> = writable({})
