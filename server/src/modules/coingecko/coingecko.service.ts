@@ -76,7 +76,7 @@ export class CoingeckoProxyService {
   async coinsMarkets(
     vs_currency = 'usd',
     category?: 'decentralized_finance_defi' | 'stablecoins',
-    per_page = 500,
+    per_page = 250,
   ): Promise<CoinMarket[]> {
     try {
       const key = `markets/${vs_currency}${category ? `/${category}` : ''}`;
