@@ -1,7 +1,6 @@
 <script lang="ts">
   import Apps from "$lib/components/home/applications/apps.svelte";
   import Balance from "$lib/components/home/walletBalance/balance.svelte";
-  import Tabs from "$lib/components/home/markets/tabs.svelte";
   import Coins from "$lib/components/home/markets/coins.svelte";
   import Carousel from "$lib/components/home/carousel/carousel.svelte";
   import ConnectMixin from "$lib/components/home/oauth/connectMixin.svelte";
@@ -16,6 +15,5 @@
   {/if}
   <Apps />
   <Carousel />
-  <Tabs/>
   <Coins />
 </div>
