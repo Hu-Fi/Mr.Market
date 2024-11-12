@@ -16,6 +16,7 @@ export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || '
 
 export const BALANCE_CURRENCIES = ["USDT", "USD", "EUR", "GBP", "AED", "CNY", "HKD", "JPY"]
 export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usdt.json"
+export const MARKET_TOKEN_EXCHANGES = ["binance", "huobi", "okex", "bybit", "bitget", "bitmex", "bitfinex", "kraken", "coinbase", "bigone"]
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
 export const HARDCODED_FEE = 1.002
