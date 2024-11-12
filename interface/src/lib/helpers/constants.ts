@@ -18,6 +18,7 @@ export const BALANCE_CURRENCIES = ["USDT", "USD", "EUR", "GBP", "AED", "CNY", "H
 export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usd.json"
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
+export const HARDCODED_FEE = 1.002
 
 // It must sync with server/pairs.ts
 export const PAIRS_MAP = {

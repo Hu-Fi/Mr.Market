@@ -4,10 +4,13 @@
   //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
-  import { mixinConnected } from "$lib/stores/home";
-  import { maskOption } from "$lib/helpers/constants";
-  import { mixinAuthWrapper } from "$lib/helpers/mixin";
-  import { BN, formatDecimals } from "$lib/helpers/utils";
+  import { userAssets } from "$lib/stores/wallet";
+  import authorize from "$lib/helpers/mixin-oauth";
+  import { AfterMixinOauth } from "$lib/helpers/mixin";
+  import { BN, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";
+  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
+  import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
+
   import {
     pair,
     buy,
@@ -21,12 +24,19 @@
     marketTotal,
     marketPrice,
   } from "$lib/stores/spot";
-
   let usdValue = 1;
   let slider = 0;
   let tooltipOpen = false;
-  let baseBalance = 6543.223;
-  let targetBalance = 12.231;
+
+  const extractBalance = (symbol: string) => {
+    const extractedData = $userAssets.balances.find((balance: { details: { symbol: string } }) => balance.details.symbol === symbol);
+    if (!extractedData) {
+      return 0;
+    }
+    return formatWalletBalance(extractedData.balance);
+  };
+  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
+  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -150,7 +160,24 @@
   };
 
   const auth = async () => {
-    mixinAuthWrapper();
+    mixinConnectLoading.set(true);
+    authorize(
+      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
+      {
+        onShowUrl: (url: string) => {
+          window.open(url);
+        },
+        onError: (error: Error) => {
+          console.error(error);
+          mixinConnectLoading.set(false);
+          return;
+        },
+        onSuccess: async (token: string) => {
+          await AfterMixinOauth(token);
+          mixinConnectLoading.set(false);
+        },
+      },
+    );
   };
 
   // Set total as slider change
@@ -178,10 +205,11 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="text"
+        type="tel"
         use:cleave={maskOption}
         bind:value={$limitPrice}
         placeholder={$_("price")}
+        data-testid="limit_price_input"
         class={clsx(
           "input input-sm text-base bg-base-100 w-full focus:outline-none focus:border-0 px-0",
         )}
@@ -212,11 +240,12 @@
       class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
     >
       <input
-        type="text"
+        type="tel"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$limitAmount}
         placeholder={$_("amount")}
+        data-testid="amount_input"
         class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
       />
       <span class="text-xs opacity-60"> {$pair.symbol.split("/")[0]} </span>
@@ -256,7 +285,7 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="text"
+        type="tel"
         on:keyup={getAmount}
         use:cleave={maskOption}
         bind:value={$limitTotal}
@@ -265,11 +294,12 @@
       />
     {:else if $orderTypeMarket}
       <input
-        type="text"
+        type="tel"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$marketAmount}
         placeholder={$_("total")}
+        data-testid="total_input"
         class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
       />
     {/if}

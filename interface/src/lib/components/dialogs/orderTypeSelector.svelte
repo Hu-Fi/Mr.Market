@@ -4,8 +4,8 @@
   import { orderType, orderTypeDialog } from "$lib/stores/spot";
 
   let items = [
-    {index: 0, name: $_("limit_order"), fn: ()=>{}},
-    {index: 1, name: $_("market_order"), fn: ()=>{}},
+    {index: 0, name: $_("limit_order"), testid: 'limit_order_btn'},
+    {index: 1, name: $_("market_order"), testid: 'market-order-btn'},
   ]
   onMount(()=>orderType.set(items[1]))
 </script>
@@ -26,8 +26,8 @@
   <!-- Order types -->
   <div class="flex flex-col overflow-y-auto">
     {#each items as item, i}
-      <button class="flex justify-between py-4 w-full text-start" on:click={()=>{orderType.set(item);orderTypeDialog.set(false)}}>
-        <span class="font-medium">{item.name}</span>
+      <button class="flex justify-between py-4 w-full text-start" data-testid={item.testid} on:click={()=>{orderType.set(item);orderTypeDialog.set(false)}}>
+        <span class="font-medium" data-testid={`${item.testid}-text`}>{item.name}</span>
         {#if i === $orderType.index}
           <div>
             <!-- Circle check Icon -->

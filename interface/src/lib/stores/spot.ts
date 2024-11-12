@@ -1,5 +1,8 @@
+import  { page } from "$app/stores";
 import type { Socket } from "socket.io-client";
+import { getOrderById } from "$lib/helpers/hufi/spot";
 import { derived, writable, type Writable } from "svelte/store";
+import { ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
 
 export const bottomTradeDialog = writable(false)
@@ -16,24 +19,24 @@ export const pairSelectorDialog = writable(false)
 export const pairSelectorLoaded = writable(false)
 export const pairExchangeFilter = writable("all")
 // 0 limit, 1 market, ...
-export const orderType = writable({index: 0, name: "Limit order", fn: ()=>{}})
+export const orderType = writable({index: 0, name: "Limit order"})
 export const orderTypeLimit = derived(orderType, ($orderType)=>{return $orderType.index===0})
 export const orderTypeMarket = derived(orderType, ($orderType)=>{return $orderType.index===1})
 export const orderTypeDialog = writable(false)
 export const orderConfirmDialog = writable(false)
 
 export const buy = writable(true)
-export const limitPrice: Writable<number | ''> = writable()
-export const limitAmount: Writable<number | ''> = writable()
-export const limitTotal: Writable<number | ''> = writable()
-export const marketPrice: Writable<number | ''> = writable()
-export const marketAmount: Writable<number | ''> = writable()
-export const marketTotal: Writable<number | ''> = writable()
+export const limitPrice: Writable<number | string> = writable()
+export const limitAmount: Writable<number | string> = writable()
+export const limitTotal: Writable<number | string> = writable()
+export const marketPrice: Writable<number | string> = writable()
+export const marketAmount: Writable<number | string> = writable()
+export const marketTotal: Writable<number | string> = writable()
 
 export const asks = writable<OrderBookPriceFormat[]>()
 export const bids = writable<OrderBookPriceFormat[]>()
-export const current: Writable<number | ''> = writable()
-export const usdValue: Writable<number | ''> = writable()
+export const current: Writable<number | string> = writable()
+export const usdValue: Writable<number | string> = writable()
 
 // 0 default, 1 ask, 2 bid
 export const orderBookMode = writable(0)
@@ -64,3 +67,26 @@ export const cancelOrderDone = (o: object) => {
   cancelingOrder.set({})
   cancelOrderDialog.set(false)
 }
+export const spotCreating = writable(false);
+export const orderDetailsStatus = writable('loading');
+export const orderDetails = derived(
+  page,
+  ($page, set) => {
+    const handleSuccess = (params: unknown) => {
+      set(params);
+      orderDetailsStatus.set('success');
+    }
+    const handleError = () => {
+      orderDetailsStatus.set('error');
+    }
+    const interval = setInterval(() => {
+      if ($page.data.orderId) {
+        getOrderById($page.data.orderId).then(handleSuccess).catch(handleError);
+      }
+    }, ORDER_STATE_TIMEOUT_DURATION);
+
+    return () => {
+      clearInterval(interval);
+    };
+  },
+);
