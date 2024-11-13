@@ -17,7 +17,6 @@ export const marketQueryFn = async (category: string = 'all', page: number = 1) 
   try {
     const pathCategory = category ? `/category/${category}` : ''
     const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
-    console.log (`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
     const re = await r.json()
     return re
   } catch (e) {
