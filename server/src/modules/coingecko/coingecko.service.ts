@@ -77,6 +77,7 @@ export class CoingeckoProxyService {
     vs_currency = 'usd',
     category?: 'decentralized_finance_defi' | 'stablecoins',
     per_page = 250,
+    page = 1,
   ): Promise<CoinMarket[]> {
     try {
       const key = `markets/${vs_currency}${category ? `/${category}` : ''}`;
@@ -87,9 +88,10 @@ export class CoingeckoProxyService {
             ? {
                 vs_currency: vs_currency,
                 per_page,
+                page,
                 category,
               }
-            : { vs_currency: vs_currency, per_page },
+            : { vs_currency: vs_currency, per_page, page },
         );
         await this.cacheService.set(key, data, this.cachingTTL);
         return data;
@@ -135,7 +137,7 @@ export class CoingeckoProxyService {
     id: string,
     from: number,
     to: number,
-    vs_currency: string,
+    vs_currency: string = 'usd',
   ): Promise<CoinMarketChartResponse> {
     try {
       const key = `chart/${id}-${from}-${to}-${vs_currency}`;
