@@ -103,5 +103,3 @@
     <CoinInfoLoader />
 {/await}
 
-<style>
-</style>

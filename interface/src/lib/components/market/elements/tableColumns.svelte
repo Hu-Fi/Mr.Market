@@ -9,6 +9,7 @@
     selectedField,
     spotSelectedField,
     spotKeys,
+    stopMarketQuery,
   } from "$lib/stores/market";
 
   let tableHeaders = [$_("name"), $_("price"), $_("24chg")];
@@ -25,6 +26,7 @@
     <th
       class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
       on:click={() => {
+        stopMarketQuery.set(false);
         if ($selectedField == keys[0]) {
           return;
         }

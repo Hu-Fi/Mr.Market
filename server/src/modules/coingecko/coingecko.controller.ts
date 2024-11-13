@@ -55,7 +55,7 @@ export class CoingeckoController {
   })
   async getCoinMarketsByCategory(
     @Param('vs_currency') vs_currency = 'usd',
-    @Query('category')
+    @Param('category')
     category: 'decentralized_finance_defi' | 'stablecoins' | 'all',
     @Query('per_page') per_page: number,
     @Query('page') page: number,

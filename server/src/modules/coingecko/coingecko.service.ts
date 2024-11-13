@@ -75,7 +75,7 @@ export class CoingeckoProxyService {
   // /coins/markets
   async coinsMarkets(
     vs_currency = 'usd',
-    category?: 'decentralized_finance_defi' | 'stablecoins',
+    category?: 'decentralized_finance_defi' | 'stablecoins' | undefined,
     per_page = 250,
     page = 1,
   ): Promise<CoinMarket[]> {
@@ -93,7 +93,7 @@ export class CoingeckoProxyService {
                 page,
                 category,
               }
-            : { vs_currency: vs_currency, per_page, page },
+            : { vs_currency, per_page, page },
         );
         await this.cacheService.set(key, data, this.cachingTTL);
         return data;

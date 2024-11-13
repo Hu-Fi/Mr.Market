@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { activeCoinTab } from "$lib/stores/home";
   import { sortCoins } from "$lib/helpers/sortTable";
   import InfiniteLoading from 'svelte-infinite-loading';
   import { marketQueryFn } from "$lib/helpers/hufi/coin";
@@ -8,11 +9,11 @@
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SingleTokenLoader from "$lib/components/skeleton/market/singleTokenLoader.svelte";
   import FilterLoader from "$lib/components/skeleton/market/filterLoader.svelte";
+  import NoResult from "$lib/components/common/NoResult.svelte";
   
   let infiniteId = Symbol();
 	
   function infiniteHandler({ detail: { loaded, complete } }: { detail: { loaded: () => void, complete: () => void } }) {
-    console.log('Fetching page:', $marketDataPage+1);
     marketQueryFn('', $marketDataPage+1)
       .then(data => {
         stopMarketQuery.set(true);
@@ -22,7 +23,6 @@
           marketDataExtened.update(prev => [...prev, ...sortedData]);
           loaded();
         } else {
-          console.log('No more data to load');
           complete();
         }
       })
@@ -32,10 +32,10 @@
       });
   }
 
-  $: if (!$stopMarketQuery) marketDataExtened.set($marketData)
   $: sortedTokens = $stopMarketQuery ? 
     sortCoins($selectedField, $marketDataExtened, $asc) : 
     sortCoins($selectedField, !$marketData || $marketDataState === 'loading' ? [] : $marketData, $asc)
+  $: if (!$stopMarketQuery) marketDataExtened.set($marketData)
   $: resolved = $marketDataState !== 'loading';
   $: failed = $marketDataState === 'error'
 </script>
@@ -55,10 +55,16 @@
         <table class="table w-full infinite-wrapper">
           <TableColumns />
           <tbody>
+          {#if sortedTokens.length > 0}
             {#each sortedTokens as token}
               <SingleToken token={token} />
             {/each}
-            <InfiniteLoading on:infinite={infiniteHandler} spinner='spiral' identifier={infiniteId} />
+            {#if $activeCoinTab === 0}
+              <InfiniteLoading on:infinite={infiniteHandler} spinner='spiral' identifier={infiniteId} />
+            {/if}
+          {:else}
+            <NoResult />
+          {/if}
           </tbody>
         </table>
       {:else}
