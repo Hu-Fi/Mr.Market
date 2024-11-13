@@ -226,25 +226,44 @@ export class StrategyService {
       client_id: clientId,
     });
 
-    const newStrategyInstance = this.strategyInstanceRepository.create({
-      strategyKey,
-      userId,
-      clientId,
-      strategyType: 'arbitrage',
-      parameters: strategyParamsDto,
-      status: 'running',
-    });
-    await this.strategyInstanceRepository.save(newStrategyInstance);
-
-    const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
-    const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
-
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.log(
         `Strategy already running for user ${userId} and client ${clientId}`,
       );
       return;
     }
+    // Check if a running instance already exists
+    let strategyInstance = await this.strategyInstanceRepository.findOne({
+      where: { strategyKey, status: 'running' },
+    });
+
+    // If not running, either find a stopped instance to reuse or create a new one
+    if (!strategyInstance) {
+      strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
+
+      // If instance exists but was stopped, update its status
+      if (strategyInstance) {
+        await this.strategyInstanceRepository.update(
+          { strategyKey },
+          { status: 'running', updatedAt: new Date() },
+        );
+      } else {
+        // Otherwise, create a new instance
+        strategyInstance = this.strategyInstanceRepository.create({
+          strategyKey,
+          userId,
+          clientId,
+          strategyType: 'arbitrage',
+          parameters: strategyParamsDto,
+          status: 'running',
+        });
+        await this.strategyInstanceRepository.save(strategyInstance);
+      }
+    }
+    const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
+    const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
     this.logger.log(
       `Starting arbitrage strategy for user ${userId}, client ${clientId}`,
@@ -350,25 +369,43 @@ export class StrategyService {
       return;
     }
 
-    const newStrategyInstance = this.strategyInstanceRepository.create({
-      strategyKey,
-      userId,
-      clientId,
-      strategyType: 'volume',
-      parameters: {
-        exchangeName,
-        symbol,
-        baseIncrementPercentage,
-        baseIntervalTime,
-        baseTradeAmount,
-        numTrades,
-        userId,
-        clientId,
-      },
-      status: 'running',
+    // Check if a running instance already exists
+    let strategyInstance = await this.strategyInstanceRepository.findOne({
+      where: { strategyKey, status: 'running' },
     });
-    await this.strategyInstanceRepository.save(newStrategyInstance);
 
+    if (!strategyInstance) {
+      strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
+
+      if (strategyInstance) {
+        await this.strategyInstanceRepository.update(
+          { strategyKey },
+          { status: 'running', updatedAt: new Date() },
+        );
+      } else {
+        // Create a new instance if none exists
+        strategyInstance = this.strategyInstanceRepository.create({
+          strategyKey,
+          userId,
+          clientId,
+          strategyType: 'volume',
+          parameters: {
+            exchangeName,
+            symbol,
+            baseIncrementPercentage,
+            baseIntervalTime,
+            baseTradeAmount,
+            numTrades,
+            userId,
+            clientId,
+          },
+          status: 'running',
+        });
+        await this.strategyInstanceRepository.save(strategyInstance);
+      }
+    }
     try {
       const exchangeAccount1 = this.exchangeInitService.getExchange(
         exchangeName,
@@ -593,16 +630,34 @@ export class StrategyService {
       return;
     }
 
-    const newStrategyInstance = this.strategyInstanceRepository.create({
-      strategyKey,
-      userId,
-      clientId,
-      strategyType: 'pureMarketMaking',
-      parameters: strategyParamsDto,
-      status: 'running',
+    // Check if a running instance already exists
+    let strategyInstance = await this.strategyInstanceRepository.findOne({
+      where: { strategyKey, status: 'running' },
     });
-    await this.strategyInstanceRepository.save(newStrategyInstance);
 
+    if (!strategyInstance) {
+      strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
+
+      if (strategyInstance) {
+        await this.strategyInstanceRepository.update(
+          { strategyKey },
+          { status: 'running', updatedAt: new Date() },
+        );
+      } else {
+        // Create a new instance if none exists
+        strategyInstance = this.strategyInstanceRepository.create({
+          strategyKey,
+          userId,
+          clientId,
+          strategyType: 'pureMarketMaking',
+          parameters: strategyParamsDto,
+          status: 'running',
+        });
+        await this.strategyInstanceRepository.save(strategyInstance);
+      }
+    }
     // Start the strategy
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
     const intervalId = setInterval(async () => {
@@ -1116,10 +1171,16 @@ export class StrategyService {
     return Date.now() - timestamp < freshnessThreshold;
   }
 
-  private handleShutdown() {
+  private async handleShutdown() {
     this.logger.log('Shutting down strategy service...');
 
-    // Cancel all orders before shutting down strategies
+    // Update all currently running strategies in the database to "stopped"
+    await this.strategyInstanceRepository.update(
+      { status: 'running' },
+      { status: 'stopped', updatedAt: new Date() },
+    );
+
+    // Cancel all orders and clear intervals for each strategy
     this.strategyInstances.forEach((_, strategyKey) => {
       this.cancelAllStrategyOrders(strategyKey)
         .then(() => {
@@ -1142,20 +1203,68 @@ export class StrategyService {
   }
 
   private async cancelAllStrategyOrders(strategyKey: string) {
-    const activeOrdersForStrategy = this.activeOrders.get(strategyKey) || [];
+    try {
+      // Retrieve the strategy instance from the database based on the strategyKey
+      const strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
 
-    for (const orderDetail of activeOrdersForStrategy) {
-      const { exchange, orderId, symbol } = orderDetail;
-
-      try {
-        await exchange.cancelOrder(orderId, symbol);
-        this.logger.log(`Order ${orderId} canceled successfully.`);
-      } catch (error) {
-        this.logger.error(`Failed to cancel order ${orderId}: ${error}`);
+      if (!strategyInstance) {
+        this.logger.warn(`Strategy with key ${strategyKey} not found.`);
+        return;
       }
-    }
 
-    // Remove strategy from activeOrders map after canceling all orders
-    this.activeOrders.delete(strategyKey);
+      // Extract relevant parameters based on strategy type
+      const { strategyType, parameters } = strategyInstance;
+
+      const exchanges: { exchangeName: string; pair: string }[] = [];
+
+      switch (strategyType) {
+        case 'arbitrage':
+          // Arbitrage has two exchanges, so we add both
+          exchanges.push({
+            exchangeName: parameters.exchangeAName,
+            pair: parameters.pair,
+          });
+          exchanges.push({
+            exchangeName: parameters.exchangeBName,
+            pair: parameters.pair,
+          });
+          break;
+        case 'pureMarketMaking':
+          exchanges.push({
+            exchangeName: parameters.exchangeName,
+            pair: parameters.pair,
+          });
+          break;
+        case 'volume':
+          exchanges.push({
+            exchangeName: parameters.exchangeName,
+            pair: parameters.symbol,
+          });
+          break;
+        default:
+          throw new Error(`Unknown strategy type: ${strategyType}`);
+      }
+
+      // Loop through each exchange and call cancelAllOrders
+      for (const { exchangeName, pair } of exchanges) {
+        const exchange = this.exchangeInitService.getExchange(exchangeName);
+        if (exchange && pair) {
+          await this.cancelAllOrders(exchange, pair, strategyKey);
+          this.logger.log(
+            `Cancelled all orders for ${strategyKey} on ${exchangeName} (${pair})`,
+          );
+        } else {
+          this.logger.warn(
+            `Exchange or pair not found for strategy ${strategyKey} on ${exchangeName}.`,
+          );
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to cancel orders for strategy ${strategyKey}: ${error.message}`,
+      );
+    }
   }
 }
