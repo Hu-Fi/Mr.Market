@@ -4687,6 +4687,11 @@ svelte-i18n@^4.0.0:
     sade "^1.8.1"
     tiny-glob "^0.2.9"
 
+svelte-infinite-loading@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/svelte-infinite-loading/-/svelte-infinite-loading-1.4.0.tgz#26990cf18746e2354c43dc62cd42966dda496c12"
+  integrity sha512-Jo+f/yr/HmZQuIiiKKzAHVFXdAUWHW2RBbrcQTil8JVk1sCm/riy7KTJVzjBgQvHasrFQYKF84zvtc9/Y4lFYg==
+
 svelte-lightweight-charts@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/svelte-lightweight-charts/-/svelte-lightweight-charts-2.2.0.tgz#7e1ebedab7fa27443d678ce42e9e2ced31ed914d"

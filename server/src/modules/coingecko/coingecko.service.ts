@@ -80,7 +80,9 @@ export class CoingeckoProxyService {
     page = 1,
   ): Promise<CoinMarket[]> {
     try {
-      const key = `markets/${vs_currency}${category ? `/${category}` : ''}`;
+      const key = `markets/${vs_currency}/${
+        category ? `/${category}` : ''
+      }/${per_page}/${page}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
       if (!cachedData) {
         const data = await this.coingecko.coinMarket(

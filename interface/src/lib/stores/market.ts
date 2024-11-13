@@ -5,6 +5,7 @@ import type { OHLCVData, OrderBookPriceFormat, SupportedTimeFrame, TickerData } 
 import { activeCoinTab } from "$lib/stores/home";
 import { marketQueryFn } from "$lib/helpers/hufi/coin";
 import { CoinsTypeTabs } from "$lib/helpers/constants";
+import type { CoingeckoToken } from "$lib/types/coingecko/token";
 
 // Coin
 export const activeSpotTab: Writable<number> = writable(0);
@@ -14,8 +15,8 @@ export const showCoinPrice = writable(true)
 export const ChartPrice = writable([])
 export const ChartActiveTab = writable(0)
 export const ChartLineOption = writable(lineOptions)
-//export const marketData = writable()
 export const searchValue = writable('')
+export const stopMarketQuery = writable(false)
 
 // For list sorting (change keys and 'sortCoins()' when data change)
 export const asc = writable(true);
@@ -53,7 +54,7 @@ export const CandleAsks = writable<OrderBookPriceFormat[]>([])
 export const CandleNewData = writable<OHLCVData>()
 export const CandleActiveIndicators = writable<string[]>(['MA'])
 
-export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
+export const marketData = derived([activeCoinTab, stopMarketQuery], ([$activeCoinTab, $stopMarketQuery], set) => {
   const handleSuccess = (params: never[]) => {
     if (!Array.isArray(params)) {
       return;
@@ -64,6 +65,10 @@ export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
   const handleError = () => marketDataState.set('error');
   marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
   const interval = setInterval(() => {
+    if ($stopMarketQuery) {
+      clearInterval(interval);
+      return;
+    }
     marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
   }, 10000)
   return () => {
@@ -71,3 +76,5 @@ export const marketData = derived([activeCoinTab], ([$activeCoinTab], set) => {
   };
 }, [])
 export const marketDataState = writable('loading');
+export const marketDataExtened = writable<CoingeckoToken[]>([])
+export const marketDataPage = writable(1)

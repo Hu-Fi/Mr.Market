@@ -64,6 +64,7 @@
     "svelte-cleavejs": "^1.0.3",
     "svelte-french-toast": "^1.2.0",
     "svelte-i18n": "^4.0.0",
+    "svelte-infinite-loading": "^1.4.0",
     "svelte-lightweight-charts": "^2.2.0",
     "tailwindcss": "^3.4.0",
     "technicalindicators": "^3.1.0",

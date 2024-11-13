@@ -22,7 +22,6 @@
   ]
 
   $: showItems=10
-  $: console.log($page.data)
 </script>
 
 {#await $page.data.coin}
