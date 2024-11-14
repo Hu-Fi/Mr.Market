@@ -26,7 +26,7 @@
     <th
       class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
       on:click={() => {
-        stopMarketQuery.set(false);
+        stopMarketQuery.set(true);
         if ($selectedField == keys[0]) {
           return;
         }
@@ -84,6 +84,7 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
+          stopMarketQuery.set(true);
           if ($selectedField == keys[1]) {
             return;
           }
@@ -140,6 +141,7 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
+          stopMarketQuery.set(true);
           if ($selectedField == keys[2]) {
             return;
           }

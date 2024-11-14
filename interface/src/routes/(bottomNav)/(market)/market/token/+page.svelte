@@ -34,7 +34,7 @@
 
   $: sortedTokens = $stopMarketQuery ? 
     sortCoins($selectedField, $marketDataExtened, $asc) : 
-    sortCoins($selectedField, !$marketData || $marketDataState === 'loading' ? [] : $marketData, $asc)
+    sortCoins($selectedField, $marketData, $asc)
   $: if (!$stopMarketQuery) marketDataExtened.set($marketData)
   $: resolved = $marketDataState !== 'loading';
   $: failed = $marketDataState === 'error'
