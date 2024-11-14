@@ -1,4 +1,5 @@
-import { writable } from "svelte/store";
+import { writable, readable } from "svelte/store";
+import { isIOS, isMixin } from "$lib/helpers/mixin";
 
 export const mixinConnectLoading = writable(false)
 export const mixinConnected = writable(false)
@@ -9,3 +10,8 @@ export const activeCoinTab = writable(0);
 export const asc = writable(true);
 export const keys = ["market_cap_rank", "current_price", "price_change_percentage_24h"];
 export const selectedField = writable(keys[0]);
+
+// In iOS, the bottom navigation bar is higher
+export const isMixinIOS = readable(false, set => {
+  set(isIOS() && isMixin());
+});
