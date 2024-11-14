@@ -12,6 +12,7 @@ import { TradeModule } from '../trade/trade.module';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { Contribution } from 'src/common/entities/contribution.entity';
 import { Web3Module } from '../web3/web3.module';
+import { MixinUser } from 'src/common/entities/mixin-user.entity';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Web3Module } from '../web3/web3.module';
       MarketMakingHistory,
       ArbitrageHistory,
       StrategyInstance,
+      MixinUser,
       Contribution,
       Performance,
     ]),
