@@ -30,52 +30,45 @@ export const formatUSMoney = (x: string | number) => {
 export const formatUSMoneyUnit = (x: string | number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact' }).format(Number(x))
 }
-export const formatDecimals = (s: string | number, n: number) => {
-  if (isNaN(Number(s)) || Number(s) == null || Number(s) == 0) return 0
+export const formatDecimals = (s: string | number, n: number): string => {
+  const numValue = new BigNumber(s);
 
-  const strValue = Number(s).toString();
-  if (strValue.includes('.')) {
-    const [integerPart, decimalPart] = strValue.split('.');
-    if (decimalPart.length > n) {
-      return parseFloat(`${integerPart}.${decimalPart.slice(0, n)}`);
-    }
-    if (n === 0) {
-      return parseFloat(integerPart)
-    }
-  }
-  const final = Math.floor(Math.abs(Number(s)) * 10 ** n) / 10 ** n
-  if (final === 0) return 0
-  return Number(s) > 0 ? final : -final
+  if (numValue.isNaN() || numValue.isZero()) return '0';
+
+  // Use BigNumber to handle the precision and convert to a fixed-point string
+  const fixedValue = numValue.toFixed(n, BigNumber.ROUND_DOWN);
+
+  return fixedValue;
 }
 export const formatChartPrice = (s: string | number) => {
-  const numValue = Number(s);
-  const strValue = numValue.toString();
+  const numValue = new BigNumber(s);
 
-  // Handle the case when there is no decimal point
-  if (!strValue.includes('.')) {
-    return numValue;
+  // Handle the case when the number is zero or very small
+  if (numValue.isZero() || numValue.isLessThan(0.0001)) {
+    return numValue.toNumber();
   }
 
-  if (numValue < 0.0001) return numValue;
-  const [integerPart, decimalPart] = strValue.split('.');
+  const integerPart = numValue.integerValue(BigNumber.ROUND_DOWN).toString();
+  const decimalPart = numValue.minus(integerPart).toFixed().split('.')[1] || '';
   let finalDecimalLength = 0;
 
   // s >= 100, 2 decimals
   if (integerPart.length > 2) finalDecimalLength = 2;
 
   // 10 <= s < 100, 3 decimals
-  else if (integerPart.length == 2) finalDecimalLength = 3;
+  else if (integerPart.length === 2) finalDecimalLength = 3;
 
   // 1 <= s < 10, 8 decimals
-  else if (integerPart.length == 1) finalDecimalLength = 8;
+  else if (integerPart.length === 1) finalDecimalLength = 8;
 
   // 0.0001 <= s < 1, 8 decimals
-  else if (numValue >= 0.0001 && numValue < 1) finalDecimalLength = 8;
+  else if (numValue.isGreaterThanOrEqualTo(0.0001) && numValue.isLessThan(1)) finalDecimalLength = 8;
 
   // s < 0.0001, all decimals
-  else if (numValue < 0.0001) finalDecimalLength = decimalPart.length;
+  else if (numValue.isLessThan(0.0001)) finalDecimalLength = decimalPart.length;
 
-  return parseFloat(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`);
+  const formattedValue = new BigNumber(`${integerPart}.${decimalPart.slice(0, finalDecimalLength)}`);
+  return formattedValue.toNumber();
 }
 
 export const formatWalletBalance = (num: number, lang: string = 'en') => {
