@@ -12,6 +12,7 @@ import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
+import { AdminService } from '../admin/admin.service';
 
 // Mocking the TradeService
 class TradeServiceMock {
@@ -45,6 +46,7 @@ class ExchangeInitServiceMock {
 
 describe('StrategyService', () => {
   let service: StrategyService;
+  let adminService: AdminService
 
   // Example mock repository implementation
   const mockOrderRepository = {
@@ -77,6 +79,13 @@ describe('StrategyService', () => {
         { provide: PerformanceService, useClass: PerformanceServiceMock },
         { provide: ExchangeInitService, useClass: ExchangeInitServiceMock },
         {
+          provide: AdminService,
+          useValue:{
+            joinstrategy:jest.fn()
+          }
+
+         },
+        {
           provide: getRepositoryToken(MarketMakingHistory),
           useValue: mockOrderRepository,
         },
@@ -96,7 +105,7 @@ describe('StrategyService', () => {
     }).compile();
 
     service = module.get<StrategyService>(StrategyService);
-
+    adminService = module.get<AdminService>(AdminService);
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
       '1-client1-arbitrage',

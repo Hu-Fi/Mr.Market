@@ -3,6 +3,38 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 
+export class JoinStrategyDto {
+  @ApiProperty({ description: 'User ID', example: 'user123' })
+  userId: string;
+
+  @ApiProperty({ description: 'Client ID', example: 'client123' })
+  clientId: string;
+
+  @ApiProperty({
+    description: 'Strategy Key',
+    example: 'user123-client123-arbitrage',
+  })
+  strategyKey: string;
+
+  @ApiProperty({ description: 'Amount contributed', example: 100.0 })
+  amount: number;
+
+  @ApiProperty({ description: 'Transaction Hash', example: '0xabc123...' })
+  transactionHash: string;
+
+  @ApiProperty({ description: 'Token Symbol', example: 'USDT' })
+  tokenSymbol: string;
+
+  @ApiProperty({ description: 'Chain ID', example: 1 })
+  chainId: number;
+
+  @ApiProperty({
+    description: 'Token Contract Address',
+    example: '0xabc123...',
+  })
+  tokenAddress: string;
+}
+
 export class ArbitrageStrategyDto {
   @ApiProperty({
     example: '123',

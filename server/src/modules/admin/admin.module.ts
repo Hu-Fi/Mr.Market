@@ -11,6 +11,7 @@ import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { TradeModule } from '../trade/trade.module';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { Contribution } from 'src/common/entities/contribution.entity';
+import { Web3Module } from '../web3/web3.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Contribution } from 'src/common/entities/contribution.entity';
       Performance,
     ]),
     TradeModule,
+    Web3Module,
   ],
   controllers: [AdminController],
   providers: [

@@ -11,16 +11,24 @@ import {
   getInfoFromChainId,
   getTokenSymbolByContractAddress,
 } from 'src/common/helpers/blockchain-utils';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Contribution } from 'src/common/entities/contribution.entity';
-// import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Contribution } from 'src/common/entities/contribution.entity';
+import { Repository } from 'typeorm';
+import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import { Web3Service } from '../web3/web3.service';
+import { ethers } from 'ethers';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly performanceService: PerformanceService,
-    private readonly exchangeInitService: ExchangeInitService, // @InjectRepository(Contribution) private contributionRepository: Repository<Contribution>,
+    private readonly exchangeInitService: ExchangeInitService,
+    private readonly web3Service: Web3Service,
+    @InjectRepository(Contribution)
+    private contributionRepository: Repository<Contribution>,
+    @InjectRepository(MixinUser)
+    private mixinuserrepository: Repository<MixinUser>,
   ) {}
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
@@ -120,24 +128,92 @@ export class AdminService {
     }
   }
 
-  // async joinStrategy(userId: string, strategyId: string, amount: number) {
-  //   const strategy = await this.strategyService.getStrategyInstanceById(strategyId);
-  //   if (!strategy) {
-  //     throw new BadRequestException(`Strategy ${strategyId} does not exist`);
-  //   }
+  async joinStrategy(
+    userId: string,
+    clientId: string,
+    strategyKey: string,
+    amount: number,
+    transactionHash: string,
+    tokenSymbol: string,
+    chainId: number,
+    tokenAddress: string,
+  ) {
+    const strategy = await this.strategyService.getStrategyInstanceKey(
+      strategyKey,
+    );
+    if (!strategy || strategy.status !== 'running') {
+      throw new BadRequestException(`Strategy ${strategyKey} is not active`);
+    }
 
-  //   // Create a new contribution
-  //   const contribution = this.contributionRepository.create({
-  //     amount,
-  //     user: { id: userId }, // Assuming you have a User entity linked to your auth system
-  //     strategy,
-  //   });
+    // Fetch the user entity
+    const mixinUser = await this.mixinuserrepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!mixinUser) {
+      throw new BadRequestException(`User ${userId} does not exist`);
+    }
 
-  //   await this.contributionRepository.save(contribution);
+    const contribution = this.contributionRepository.create({
+      userId,
+      clientId,
+      mixinUser,
+      strategy,
+      amount,
+      transactionHash,
+      status: 'pending', // Set status as pending until verification
+      tokenSymbol,
+      chainId,
+      tokenAddress,
+    });
 
-  //   // Optional: Update the total funds of the strategy or any other related values
-  //   return { message: `User ${userId} has joined the strategy with ${amount} funds` };
-  // }
+    await this.contributionRepository.save(contribution);
+
+    return {
+      message: `User ${userId} has joined the strategy with ${amount} funds`,
+    };
+  }
+
+  async verifyContribution(contributionId: string): Promise<boolean> {
+    const contribution = await this.contributionRepository.findOne({
+      where: { id: contributionId },
+    });
+    if (!contribution) {
+      throw new BadRequestException(
+        `Contribution ${contributionId} does not exist`,
+      );
+    }
+
+    const { transactionHash, amount, userId, chainId, tokenAddress } =
+      contribution;
+
+    // Fetch the user associated with the contribution
+    const user = await this.mixinuserrepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!user) {
+      throw new BadRequestException(
+        `User associated with contribution does not exist`,
+      );
+    }
+
+    // Verify the transaction details on the blockchain
+    const isVerified = await this.web3Service.verifyTransactionDetails(
+      chainId,
+      transactionHash,
+      tokenAddress,
+      user.walletAddress, // Using the `walletAddress` field from the user entity
+      ethers.BigNumber.from(amount),
+    );
+
+    if (isVerified) {
+      // Update the contribution status to confirmed
+      contribution.status = 'confirmed';
+      await this.contributionRepository.save(contribution);
+      return true;
+    }
+
+    return false;
+  }
 
   async getTokenSymbolByContract(
     contractAddress: string,
