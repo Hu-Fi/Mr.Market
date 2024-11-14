@@ -11,7 +11,7 @@ const mockStrategyUserService = {};
 
 describe('StrategyController', () => {
   let controller: StrategyController;
-  let adminService: AdminService
+  let adminService: AdminService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,9 +19,8 @@ describe('StrategyController', () => {
       providers: [
         {
           provide: AdminService,
-          useValue:
-          {
-            joinStrategy:jest.fn(),
+          useValue: {
+            joinStrategy: jest.fn(),
           }, // Use the mock admin here
         },
         {
@@ -37,6 +36,7 @@ describe('StrategyController', () => {
 
     controller = module.get<StrategyController>(StrategyController);
     adminService = module.get<AdminService>(AdminService);
+    console.log(adminService);
   });
 
   it('should be defined', () => {

@@ -46,7 +46,7 @@ class ExchangeInitServiceMock {
 
 describe('StrategyService', () => {
   let service: StrategyService;
-  let adminService: AdminService
+  let adminService: AdminService;
 
   // Example mock repository implementation
   const mockOrderRepository = {
@@ -80,11 +80,10 @@ describe('StrategyService', () => {
         { provide: ExchangeInitService, useClass: ExchangeInitServiceMock },
         {
           provide: AdminService,
-          useValue:{
-            joinstrategy:jest.fn()
-          }
-
-         },
+          useValue: {
+            joinstrategy: jest.fn(),
+          },
+        },
         {
           provide: getRepositoryToken(MarketMakingHistory),
           useValue: mockOrderRepository,
@@ -106,6 +105,7 @@ describe('StrategyService', () => {
 
     service = module.get<StrategyService>(StrategyService);
     adminService = module.get<AdminService>(AdminService);
+    console.log(adminService);
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
       '1-client1-arbitrage',

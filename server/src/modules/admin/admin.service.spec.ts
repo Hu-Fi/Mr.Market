@@ -3,7 +3,11 @@ import { AdminService } from './admin.service';
 import { StrategyService } from '../strategy/strategy.service';
 import { PerformanceService } from '../performance/performance.service';
 import { BadRequestException } from '@nestjs/common';
-import { StartStrategyDto, StopStrategyDto, GetDepositAddressDto } from './admin-strategy.dto';
+import {
+  StartStrategyDto,
+  StopStrategyDto,
+  GetDepositAddressDto,
+} from './admin-strategy.dto';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { Web3Service } from '../web3/web3.service';
@@ -15,7 +19,7 @@ describe('AdminService', () => {
   let service: AdminService;
   let web3Service: Web3Service;
   let strategyService: StrategyService;
-  let performanceService:PerformanceService;
+  let performanceService: PerformanceService;
 
   const mockContributionRepository = {
     findOne: jest.fn(),
@@ -44,7 +48,9 @@ describe('AdminService', () => {
             executePureMarketMakingStrategy: jest.fn(),
             executeVolumeStrategy: jest.fn(),
             stopStrategyForUser: jest.fn(),
-            getStrategyInstanceKey: jest.fn().mockResolvedValue({ status: 'running' }),
+            getStrategyInstanceKey: jest
+              .fn()
+              .mockResolvedValue({ status: 'running' }),
           },
         },
         {
@@ -78,7 +84,7 @@ describe('AdminService', () => {
     strategyService = module.get<StrategyService>(StrategyService);
     web3Service = module.get<Web3Service>(Web3Service);
     performanceService = module.get<PerformanceService>(PerformanceService);
-
+    console.log(performanceService);
   });
 
   describe('startStrategy', () => {
@@ -207,7 +213,7 @@ describe('AdminService', () => {
         chainId: 1,
         tokenAddress: '0xabc',
       };
-      
+
       mockMixinUserRepository.findOne.mockResolvedValue({ user_id: 'user123' });
       mockContributionRepository.create.mockReturnValue(joinData);
       mockContributionRepository.save.mockResolvedValue(joinData);
@@ -223,7 +229,9 @@ describe('AdminService', () => {
         joinData.tokenAddress,
       );
 
-      expect(result).toEqual({ message: `User ${joinData.userId} has joined the strategy with ${joinData.amount} funds` });
+      expect(result).toEqual({
+        message: `User ${joinData.userId} has joined the strategy with ${joinData.amount} funds`,
+      });
       expect(mockContributionRepository.save).toHaveBeenCalledWith(joinData);
     });
 
@@ -272,7 +280,9 @@ describe('AdminService', () => {
 
       mockContributionRepository.findOne.mockResolvedValue(contribution);
       mockMixinUserRepository.findOne.mockResolvedValue(user);
-      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(true);
+      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(
+        true,
+      );
 
       const result = await service.verifyContribution(contribution.id);
 
@@ -298,7 +308,9 @@ describe('AdminService', () => {
 
       mockContributionRepository.findOne.mockResolvedValue(contribution);
       mockMixinUserRepository.findOne.mockResolvedValue(user);
-      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(false);
+      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(
+        false,
+      );
 
       const result = await service.verifyContribution(contribution.id);
 
@@ -353,9 +365,7 @@ describe('AdminService', () => {
   describe('getChainInfo', () => {
     it('should return chain info', async () => {
       const chainInfoMock = { name: 'Ethereum', chainId: 1 };
-      jest
-        .spyOn(service, 'getChainInfo')
-        .mockResolvedValue(chainInfoMock);
+      jest.spyOn(service, 'getChainInfo').mockResolvedValue(chainInfoMock);
 
       const result = await service.getChainInfo(1);
 
@@ -365,9 +375,7 @@ describe('AdminService', () => {
 
   describe('getTokenSymbolByContract', () => {
     it('should return token symbol by contract address and chain ID', async () => {
-      jest
-        .spyOn(service, 'getTokenSymbolByContract')
-        .mockResolvedValue('USDT');
+      jest.spyOn(service, 'getTokenSymbolByContract').mockResolvedValue('USDT');
 
       const result = await service.getTokenSymbolByContract('0xabc', 1);
 
