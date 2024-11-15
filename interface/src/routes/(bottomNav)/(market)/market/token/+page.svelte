@@ -14,7 +14,12 @@
   let infiniteId = Symbol();
 	
   function infiniteHandler({ detail: { loaded, complete } }: { detail: { loaded: () => void, complete: () => void } }) {
-    marketQueryFn('', $marketDataPage+1)
+    // Set max page to 8, limit 2000 tokens
+    if ($marketDataPage === 8) {
+      complete();
+      return;
+    }
+    marketQueryFn('all', $marketDataPage+1)
       .then(data => {
         stopMarketQuery.set(true);
         if (data && data.length) {
@@ -60,7 +65,10 @@
               <SingleToken token={token} />
             {/each}
             {#if $activeCoinTab === 0}
-              <InfiniteLoading on:infinite={infiniteHandler} spinner='spiral' identifier={infiniteId} />
+              <InfiniteLoading on:infinite={infiniteHandler} spinner='spiral' identifier={infiniteId}>
+                <span slot="noResults" class="text-sm opacity-80">{$_('no_result_found')}</span>
+                <span slot="noMore" class="text-sm opacity-80" />
+              </InfiniteLoading>
             {/if}
           {:else}
             <NoResult />
