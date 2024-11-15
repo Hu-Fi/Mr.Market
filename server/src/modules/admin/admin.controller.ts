@@ -77,13 +77,6 @@ export class AdminController {
     return this.adminService.stopStrategy(stopStrategyDto);
   }
 
-  // @Post('strategy/join')
-  // @ApiOperation({ summary: 'Join a strategy by contributing funds' })
-  // async joinStrategy(@Body() joinStrategyDto: JoinStrategyDto) {
-  //   const { userId, strategyId, amount } = joinStrategyDto;
-  //   return this.adminService.joinStrategy(userId, strategyId, amount);
-  // }
-
   @Post('exchange/deposit-address')
   @ApiOperation({
     summary: 'Get a deposit address for an exchange',
@@ -206,6 +199,31 @@ export class AdminController {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Post('contribution/verify')
+  @ApiOperation({
+    summary: 'Verify a contribution by contribution ID',
+    description:
+      'Verify the contribution details such as amount, token, and transaction status',
+  })
+  @ApiQuery({
+    name: 'contributionId',
+    description: 'The ID of the contribution to verify',
+    example: 'uuid-of-contribution',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully verified the contribution',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid contribution ID or verification failure',
+  })
+  async verifyContribution(
+    @Query('contributionId') contributionId: string,
+  ): Promise<boolean> {
+    return await this.adminService.verifyContribution(contributionId);
   }
 
   @Get('/admin')

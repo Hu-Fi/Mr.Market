@@ -21,6 +21,7 @@ import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { AlpacaStratService } from './alpacastrat.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StrategyInstance } from 'src/common/entities/strategy-instances.entity'
     LoggerModule,
     ExchangeInitModule,
     ConfigModule,
+    AdminModule,
     TypeOrmModule.forFeature([
       ArbitrageOrder,
       MarketMakingOrder,
