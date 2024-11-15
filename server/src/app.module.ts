@@ -90,7 +90,7 @@ dotenv.config();
         MixinUser,
         PaymentState,
       ],
-      synchronize: true,
+      synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),
