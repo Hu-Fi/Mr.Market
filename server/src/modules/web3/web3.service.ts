@@ -70,4 +70,42 @@ export class Web3Service {
   public getOperatorAddress(): string {
     return Object.values(this.signers)[0].address;
   }
+
+  async verifyTransactionDetails(
+    chainId: number,
+    transactionHash: string,
+    expectedTokenAddress: string,
+    expectedToAddress: string,
+    expectedAmount: ethers.BigNumber,
+  ): Promise<boolean> {
+    const signer = this.getSigner(chainId);
+    const transaction = await signer.provider?.getTransaction(transactionHash);
+    const receipt = await signer.provider?.getTransactionReceipt(
+      transactionHash,
+    );
+
+    if (!transaction || receipt?.status !== 1) {
+      return false; // Transaction failed or not found
+    }
+
+    // Verify the transaction is to the correct token contract
+    if (transaction.to?.toLowerCase() !== expectedTokenAddress.toLowerCase()) {
+      return false;
+    }
+
+    // Decode transaction data for ERC-20 transfer
+    const iface = new ethers.utils.Interface([
+      'function transfer(address to, uint256 value)',
+    ]);
+    const decodedData = iface.decodeFunctionData('transfer', transaction.data);
+
+    const toAddress = decodedData[0];
+    const amount = decodedData[1];
+
+    // Verify the recipient and amount
+    return (
+      toAddress.toLowerCase() === expectedToAddress.toLowerCase() &&
+      amount.eq(expectedAmount)
+    );
+  }
 }

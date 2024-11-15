@@ -23,10 +23,12 @@ import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import {
   ArbitrageStrategyDto,
   ExecuteVolumeStrategyDto,
+  JoinStrategyDto,
   PureMarketMakingStrategyDto,
   StopVolumeStrategyDto,
 } from './strategy.dto';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
+import { AdminService } from '../admin/admin.service';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -34,6 +36,7 @@ export class StrategyController {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly strategyUserSerive: StrategyUserService,
+    private readonly adminService: AdminService,
   ) {}
 
   @Get('/all')
@@ -121,6 +124,44 @@ export class StrategyController {
     @Param('userId') userId: string,
   ): Promise<ArbitrageHistory[]> {
     return await this.strategyService.getUserArbitrageHistorys(userId);
+  }
+
+  @Post('join')
+  @ApiOperation({ summary: 'Join a strategy with a contribution' })
+  @ApiBody({
+    description: 'Data required to join a strategy',
+    type: JoinStrategyDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully joined the strategy',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request or strategy parameters',
+  })
+  async joinStrategy(@Body() joinStrategyDto: JoinStrategyDto) {
+    const {
+      userId,
+      clientId,
+      strategyKey,
+      amount,
+      transactionHash,
+      tokenSymbol,
+      chainId,
+      tokenAddress,
+    } = joinStrategyDto;
+
+    return this.adminService.joinStrategy(
+      userId,
+      clientId,
+      strategyKey,
+      amount,
+      transactionHash,
+      tokenSymbol,
+      chainId,
+      tokenAddress,
+    );
   }
 
   @Post('/execute-arbitrage')

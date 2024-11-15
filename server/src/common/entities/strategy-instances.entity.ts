@@ -4,9 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  //   OneToMany,
+  OneToMany,
 } from 'typeorm';
-// import { Contribution } from './contribution.entity';
+import { Contribution } from './contribution.entity';
 
 @Entity('strategy_instances')
 export class StrategyInstance {
@@ -31,8 +31,8 @@ export class StrategyInstance {
   @Column()
   status: string; // "running", "stopped", etc.
 
-  //   @OneToMany(() => Contribution, (contribution) => contribution.strategy)
-  //   contributions: Contribution[];
+  @OneToMany(() => Contribution, (contribution) => contribution.strategy)
+  contributions: Contribution[];
 
   @CreateDateColumn()
   createdAt: Date;

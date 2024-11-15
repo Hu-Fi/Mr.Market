@@ -46,7 +46,7 @@ import { Web3Module } from './modules/web3/web3.module';
 import { StrategyInstance } from './common/entities/strategy-instances.entity';
 import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from './common/entities/mm-order.entity';
-// import { Contribution } from './common/entities/contribution.entity';
+import { Contribution } from './common/entities/contribution.entity';
 
 dotenv.config();
 
@@ -83,7 +83,7 @@ dotenv.config();
         SpotOrder,
         APIKeysConfig,
         CustomConfigEntity,
-        // Contribution,
+        Contribution,
         MixinReleaseToken,
         MixinReleaseHistory,
         MixinMessage,

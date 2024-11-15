@@ -138,6 +138,12 @@ export class StrategyService {
     return await this.strategyInstanceRepository.find();
   }
 
+  async getStrategyInstanceKey(strategyKey: string): Promise<StrategyInstance> {
+    return await this.strategyInstanceRepository.findOne({
+      where: { strategyKey },
+    });
+  }
+
   async rerunStrategy(strategyKey: string): Promise<void> {
     // Fetch the strategy instance from the database by its unique key
     const strategyInstance = await this.strategyInstanceRepository.findOne({
