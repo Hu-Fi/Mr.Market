@@ -33,6 +33,7 @@ import {
 export class AdminController {
   constructor(private readonly adminStrategyService: AdminStrategyService) {}
 
+  // Admin strategy endpoints
   @Post('strategy/start')
   @ApiOperation({
     summary: 'Start a trading strategy',
@@ -237,13 +238,5 @@ export class AdminController {
   //   return this.adminService.getStrategyPerformance(strategyKey);
   // }
 
-  @Get('/admin')
-  getAdminData() {
-    return 'This is admin data';
-  }
-
-  @Get('/config')
-  getConfigData() {
-    return 'This is config data';
-  }
+  // Admin growdata endpoints
 }

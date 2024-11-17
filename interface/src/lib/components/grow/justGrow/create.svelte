@@ -16,9 +16,9 @@
     </span>
   </div>
   <div>
-    <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" data-testid="create-new-just-grow" on:click={()=>goto('/grow/just_grow/new/one')}>
+    <button class="h-[40px] bg-slate-800 rounded-full no-animation hover:bg-slate-800" data-testid="create-new-just-grow" on:click={()=>goto('/grow/simply_grow/new/one')}>
       <span class="text-slate-50 text-sm mx-4">
-        {$_('create_just_grow')}
+        {$_('create_simply_grow')}
       </span>
     </button>
   </div>

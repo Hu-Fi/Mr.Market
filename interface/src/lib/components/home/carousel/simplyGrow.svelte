@@ -4,7 +4,7 @@
 </script>
 
 <div class="carousel-item w-full flex h-36 space-x-0" aria-hidden="true" on:click={() => {
-    goto("/grow/just_grow");
+    goto("/grow/simply_grow");
 }}>
     <div class="flex items-center avatar px-6 pl-8">
         <div class="w-12 rounded-xl opacity-60">
@@ -16,10 +16,10 @@
     <div class="flex flex-col justify-between px-2">
         <div class="flex flex-col space-y-2 mt-2">
             <span class="text-xs mt-2 opacity-40">
-                {$_("just_grow")}
+                {$_("simply_grow")}
             </span>
             <span class="text-sm text-base-content/80 font-bold">
-                {$_("just_grow_intro_carousel")}
+                {$_("simply_grow_intro_carousel")}
             </span>
         </div>
         <button

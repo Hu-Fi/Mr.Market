@@ -19,7 +19,7 @@
       )}
        data-testid="just-grow"
       on:click={() => {
-          goto('/grow/just_grow')
+          goto('/grow/simply_grow')
         }
       }
     >
@@ -59,11 +59,11 @@
             "font-semibold text-base opacity-80",
           )}
         >
-          {$_('just_grow')}
+          {$_('simply_grow')}
         </span>
 
         <span class="opacity-50 text-xs">
-          {$_("just_grow_entrance_intro")}
+          {$_("simply_grow_entrance_intro")}
         </span>
       </div>
     </button>

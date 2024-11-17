@@ -5,11 +5,11 @@
   import MixinMenu from "../common/MixinMenu.svelte";
 
   const back = () => {
-    if ($page.url.pathname.includes('/grow/just_grow/new/two')) {
-      goto('/grow/just_grow/new/one')
+    if ($page.url.pathname.includes('/grow/simply_grow/new/two')) {
+      goto('/grow/simply_grow/new/one')
       return;
     }
-    goto('/grow/just_grow/')
+    goto('/grow/simply_grow/')
   }
 </script>
 
@@ -22,8 +22,8 @@
     
     <div class="px-2 pl-4">
       <span class="font-bold text-nowrap">
-        {$page.url.pathname.includes('/grow/just_grow/new/one') ? $_('select_a_token') : 
-         $page.url.pathname.includes('/grow/just_grow/new/two') ? $_('confirm'): $_('just_grow')}
+        {$page.url.pathname.includes('/grow/simply_grow/new/one') ? $_('select_a_token') : 
+         $page.url.pathname.includes('/grow/simply_grow/new/two') ? $_('confirm'): $_('simply_grow')}
       </span>
     </div>
   </div>

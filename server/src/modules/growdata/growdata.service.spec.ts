@@ -3,6 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { GrowdataService } from './growdata.service';
 import { GrowdataRepository } from './growdata.repository';
 import { Cache } from 'cache-manager';
+import { CustomLogger } from '../logger/logger.service';
 
 describe('GrowdataService', () => {
   let service: GrowdataService;
@@ -41,6 +42,13 @@ describe('GrowdataService', () => {
             set: jest.fn(),
           },
         },
+        {
+          provide: CustomLogger,
+          useValue: {
+            log: jest.fn(),
+            error: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -73,25 +81,25 @@ describe('GrowdataService', () => {
   describe('fetchExternalPriceData', () => {
     it('should fetch and cache external price data when cache is empty', async () => {
       const assetId = 'test-asset-id';
-      const priceData = { base_price: '100', target_price: '200' };
+      const price_usd = '100';
       jest.spyOn(global, 'fetch').mockResolvedValue({
-        json: jest.fn().mockResolvedValue({ data: { price_usd: priceData } }),
+        json: jest.fn().mockResolvedValue({ data: { price_usd } }),
       } as any);
       jest.spyOn(cacheService, 'get').mockResolvedValue(null);
       jest.spyOn(cacheService, 'set').mockResolvedValue(null);
 
       const result = await service['fetchExternalPriceData'](assetId);
-      expect(result).toEqual(priceData);
+      expect(result).toEqual(price_usd);
       expect(cacheService.set).toHaveBeenCalledWith(
         `growdata-${assetId}-price`,
-        priceData,
-        600,
+        price_usd,
+        service['cachingTTL'],
       );
     });
 
     it('should return cached price data when cache has value', async () => {
       const assetId = 'test-asset-id';
-      const cachedPriceData = { base_price: '100', target_price: '200' };
+      const cachedPriceData = '100';
       jest.spyOn(cacheService, 'get').mockResolvedValue(cachedPriceData);
 
       const result = await service['fetchExternalPriceData'](assetId);

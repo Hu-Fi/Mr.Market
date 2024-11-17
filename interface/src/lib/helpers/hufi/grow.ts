@@ -19,7 +19,7 @@ export const getGrowBasicInfo = async () => {
 
 export const getSupportedJustGrowTokens = async () => {
   try {
-    // const response = await fetch(`${HUFI_BACKEND_URL}/grow/just_grow/supported_tokens`);
+    // const response = await fetch(`${HUFI_BACKEND_URL}/grow/simply_grow/supported_tokens`);
     // return await handleResponse(response);
     return SUPPORTED_JUST_GROW_TOKENS;
   } catch (error) {

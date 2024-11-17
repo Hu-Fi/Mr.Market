@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test('create just grow order', async ({ page }) => {
   await page.getByTestId('just-grow').click();
-  await page.waitForURL('**/grow/just_grow');
+  await page.waitForURL('**/grow/simply_grow');
 
   await page.getByTestId('create-new-just-grow').click();
   await page.getByTestId('just-grow-token-0').click();

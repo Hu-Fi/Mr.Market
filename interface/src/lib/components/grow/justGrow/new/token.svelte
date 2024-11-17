@@ -76,7 +76,7 @@
             )}
             on:click={() => {
               createJustGrowAsset.set(item);
-              goto(`/grow/just_grow/new/two/`);
+              goto(`/grow/simply_grow/new/two/`);
             }}
             data-testid={`just-grow-token-${i}`}
           >

@@ -46,6 +46,13 @@ export class GrowdataRepository {
     await this.exchangeRepository.remove(exchange);
   }
 
+  async updateExchange(
+    exchange_id: string,
+    updateData: Partial<GrowdataExchange>,
+  ) {
+    return this.exchangeRepository.update({ exchange_id }, updateData);
+  }
+
   // SimplyGrowToken Methods
   async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {
     return this.simplyGrowTokenRepository.save(token);
@@ -71,6 +78,13 @@ export class GrowdataRepository {
     await this.simplyGrowTokenRepository.remove(token);
   }
 
+  async updateSimplyGrowToken(
+    asset_id: string,
+    updateData: Partial<GrowdataSimplyGrowToken>,
+  ) {
+    return this.simplyGrowTokenRepository.update({ asset_id }, updateData);
+  }
+
   // ArbitragePair Methods
   async addArbitragePair(pair: GrowdataArbitragePair) {
     return this.arbitragePairRepository.save(pair);
@@ -80,20 +94,27 @@ export class GrowdataRepository {
     return this.arbitragePairRepository.find();
   }
 
-  async findArbitragePairById(symbol: string) {
+  async findArbitragePairById(id: string) {
     return this.arbitragePairRepository.findOne({
-      where: { symbol },
+      where: { id },
     });
   }
 
-  async removeArbitragePair(symbol: string) {
+  async removeArbitragePair(id: string) {
     const pair = await this.arbitragePairRepository.findOne({
-      where: { symbol },
+      where: { id },
     });
     if (!pair) {
       return;
     }
     await this.arbitragePairRepository.remove(pair);
+  }
+
+  async updateArbitragePair(
+    id: string,
+    updateData: Partial<GrowdataArbitragePair>,
+  ) {
+    return this.arbitragePairRepository.update({ id }, updateData);
   }
 
   // MarketMakingPair Methods
@@ -105,19 +126,26 @@ export class GrowdataRepository {
     return this.marketMakingPairRepository.find();
   }
 
-  async findMarketMakingPairById(symbol: string) {
+  async findMarketMakingPairById(id: string) {
     return this.marketMakingPairRepository.findOne({
-      where: { symbol },
+      where: { id },
     });
   }
 
-  async removeMarketMakingPair(symbol: string) {
+  async removeMarketMakingPair(id: string) {
     const pair = await this.marketMakingPairRepository.findOne({
-      where: { symbol },
+      where: { id },
     });
     if (!pair) {
       return;
     }
     await this.marketMakingPairRepository.remove(pair);
+  }
+
+  async updateMarketMakingPair(
+    id: string,
+    updateData: Partial<GrowdataMarketMakingPair>,
+  ) {
+    return this.marketMakingPairRepository.update({ id }, updateData);
   }
 }

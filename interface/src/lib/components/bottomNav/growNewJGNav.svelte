@@ -11,7 +11,7 @@
 <div
   class={clsx(
     "btm-nav btm-nav-xs h-[3.25rem] visible bg-transparent flex items-center justify-center mb-3",
-    !$page.url.pathname.includes('grow/just_grow/new/two') && 'hidden'
+    !$page.url.pathname.includes('grow/simply_grow/new/two') && 'hidden'
   )}
 >
   <div>

@@ -5,10 +5,10 @@
 <div class="flex flex-col space-y-10 mt-4">
   <div class="flex flex-col space-y-4">
     <div class="px-4 text-lg font-bold">
-      <span> {$_('whats_just_grow')} </span>
+      <span> {$_('whats_simply_grow')} </span>
     </div>
     <div class="px-4 text-sm text-[10px] text-base-content/60">
-      <span> {$_('whats_just_grow_answer')} </span>
+      <span> {$_('whats_simply_grow_answer')} </span>
     </div>
   </div>
   

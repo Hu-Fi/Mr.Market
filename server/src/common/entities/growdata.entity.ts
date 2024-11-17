@@ -9,15 +9,18 @@ import {
 @Entity('growdata_exchanges')
 export class GrowdataExchange {
   @PrimaryGeneratedColumn()
-  exchange_id: string;
+  exchange_id: string; // like binance, bitget, etc.
 
   @Column()
   name: string;
+
+  @Column({ default: true })
+  enable: boolean;
 }
 
 @Entity('growdata_simply_grow_tokens')
 export class GrowdataSimplyGrowToken {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   asset_id: string;
 
   @Column()
@@ -31,11 +34,17 @@ export class GrowdataSimplyGrowToken {
 
   @Column({ nullable: true })
   apy: string;
+
+  @Column({ default: true })
+  enable: boolean;
 }
 
 @Entity('growdata_arbitrage_pairs')
 export class GrowdataArbitragePair {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   symbol: string;
 
   @Column()
@@ -65,11 +74,17 @@ export class GrowdataArbitragePair {
   @ManyToOne(() => GrowdataExchange)
   @JoinColumn({ name: 'exchange_id' })
   exchange: GrowdataExchange;
+
+  @Column({ default: true })
+  enable: boolean;
 }
 
 @Entity('growdata_market_making_pairs')
 export class GrowdataMarketMakingPair {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   symbol: string;
 
   @Column()
@@ -99,4 +114,7 @@ export class GrowdataMarketMakingPair {
   @ManyToOne(() => GrowdataExchange)
   @JoinColumn({ name: 'exchange_id' })
   exchange: GrowdataExchange;
+
+  @Column({ default: true })
+  enable: boolean;
 }
