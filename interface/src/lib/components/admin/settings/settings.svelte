@@ -2,18 +2,22 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
+  import { growInfo } from "$lib/stores/grow";
   import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
   import Config from "$lib/components/admin/settings/config/config.svelte";
+  import Exchanges from "$lib/components/admin/settings/exchanges/exchanges.svelte";
   import Arbitrage from "$lib/components/admin/settings/arbitrage/arbitrage.svelte";
-  import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
   import SimplyGrow from "$lib/components/admin/settings/simplyGrow/simplyGrow.svelte";
+  import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
 
-  let modes = ["config", "arbitrage", "market_making", "simply_grow"];
-  let mode = "all";
+  let modes = ["config", "exchanges", "arbitrage", "market_making", "simply_grow"];
+  let mode = "config";
 
   onMount(async () => {
-    const growInfo = await getGrowBasicInfo();
-    console.log(growInfo);
+    const info = await getGrowBasicInfo();
+    if (info) {
+      growInfo.set(info);
+    }
   });
 </script>
 
@@ -40,6 +44,8 @@
 
 {#if mode === "config"}
   <Config />
+{:else if mode === "exchanges"}
+  <Exchanges />
 {:else if mode === "arbitrage"}
   <Arbitrage />
 {:else if mode === "market_making"}

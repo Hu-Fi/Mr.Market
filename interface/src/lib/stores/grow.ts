@@ -2,6 +2,7 @@ import { page } from "$app/stores";
 import { derived } from 'svelte/store';
 import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
+import type { GrowInfo } from "$lib/types/hufi/grow";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -65,3 +66,5 @@ export const createAISelectUnitDialog = writable(false)
 export const isArbitragePage = derived(page, $page => growPathChecker($page, 'arbitrage'));
 export const isMarketMakingPage = derived(page, $page => growPathChecker($page, 'market_making'));
 export const isJustGrowPage = derived(page, $page => growPathChecker($page, 'simply_grow'))
+
+export const growInfo = writable<GrowInfo>({} as GrowInfo)
