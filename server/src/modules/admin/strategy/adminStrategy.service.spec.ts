@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AdminService } from './admin.service';
-import { StrategyService } from '../strategy/strategy.service';
-import { PerformanceService } from '../performance/performance.service';
+import { AdminStrategyService } from './adminStrategy.service';
+import { StrategyService } from '../../strategy/strategy.service';
+import { PerformanceService } from '../../performance/performance.service';
 import { BadRequestException } from '@nestjs/common';
 import {
   StartStrategyDto,
@@ -9,14 +9,14 @@ import {
   GetDepositAddressDto,
 } from './admin-strategy.dto';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
-import { Web3Service } from '../web3/web3.service';
+import { ExchangeInitService } from '../../exchangeInit/exchangeInit.service';
+import { Web3Service } from '../../web3/web3.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Contribution } from 'src/common/entities/contribution.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 
-describe('AdminService', () => {
-  let service: AdminService;
+describe('AdminStrategyService', () => {
+  let service: AdminStrategyService;
   let web3Service: Web3Service;
   let strategyService: StrategyService;
   let performanceService: PerformanceService;
@@ -40,7 +40,7 @@ describe('AdminService', () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AdminService,
+        AdminStrategyService,
         {
           provide: StrategyService,
           useValue: {
@@ -80,7 +80,7 @@ describe('AdminService', () => {
       ],
     }).compile();
 
-    service = module.get<AdminService>(AdminService);
+    service = module.get<AdminStrategyService>(AdminStrategyService);
     strategyService = module.get<StrategyService>(StrategyService);
     web3Service = module.get<Web3Service>(Web3Service);
     performanceService = module.get<PerformanceService>(PerformanceService);

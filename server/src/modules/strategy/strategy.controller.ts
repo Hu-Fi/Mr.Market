@@ -28,7 +28,7 @@ import {
   StopVolumeStrategyDto,
 } from './strategy.dto';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
-import { AdminService } from '../admin/admin.service';
+import { AdminStrategyService } from '../admin/strategy/adminStrategy.service';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -36,7 +36,7 @@ export class StrategyController {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly strategyUserSerive: StrategyUserService,
-    private readonly adminService: AdminService,
+    private readonly adminService: AdminStrategyService,
   ) {}
 
   @Get('/all')

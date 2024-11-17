@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { AdminController } from './admin.controller';
 import { StrategyService } from '../strategy/strategy.service';
 import { PerformanceService } from '../performance/performance.service';
@@ -29,12 +29,12 @@ import { MixinUser } from 'src/common/entities/mixin-user.entity';
   ],
   controllers: [AdminController],
   providers: [
-    AdminService,
+    AdminStrategyService,
     StrategyService,
     PerformanceService,
     TradeService,
     ExchangeInitService,
   ],
-  exports: [AdminService],
+  exports: [AdminStrategyService],
 })
 export class AdminModule {}

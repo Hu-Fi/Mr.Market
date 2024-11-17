@@ -7,7 +7,7 @@ import {
   BadRequestException,
   Query,
 } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   GetDepositAddressDto,
@@ -16,7 +16,7 @@ import {
   // JoinStrategyDto,
   StartStrategyDto,
   StopStrategyDto,
-} from './admin-strategy.dto';
+} from './strategy/admin-strategy.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -28,10 +28,10 @@ import {
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth() // Secures endpoints with JWT
+@ApiBearerAuth()
 @ApiTags('Admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminStrategyService: AdminStrategyService) {}
 
   @Post('strategy/start')
   @ApiOperation({
@@ -52,7 +52,7 @@ export class AdminController {
     description: 'Invalid strategy parameters',
   })
   async startStrategy(@Body() startStrategyDto: StartStrategyDto) {
-    return this.adminService.startStrategy(startStrategyDto);
+    return this.adminStrategyService.startStrategy(startStrategyDto);
   }
 
   @Post('strategy/stop')
@@ -74,7 +74,7 @@ export class AdminController {
     description: 'Invalid strategy parameters',
   })
   async stopStrategy(@Body() stopStrategyDto: StopStrategyDto) {
-    return this.adminService.stopStrategy(stopStrategyDto);
+    return this.adminStrategyService.stopStrategy(stopStrategyDto);
   }
 
   @Post('exchange/deposit-address')
@@ -98,7 +98,7 @@ export class AdminController {
     description: 'Invalid request or unsupported token/network.',
   })
   async getDepositAddress(@Body() getDepositAddressDto: GetDepositAddressDto) {
-    return this.adminService.getDepositAddress(getDepositAddressDto);
+    return this.adminStrategyService.getDepositAddress(getDepositAddressDto);
   }
 
   @Post('exchange/supported-deposit-networks')
@@ -127,7 +127,7 @@ export class AdminController {
     const { exchangeName, tokenSymbol, accountLabel } = getSupportedNetworksDto;
 
     try {
-      return await this.adminService.getSupportedNetworks(
+      return await this.adminStrategyService.getSupportedNetworks(
         exchangeName,
         tokenSymbol,
         accountLabel,
@@ -160,7 +160,7 @@ export class AdminController {
   })
   async getChainInfo(@Query('chainId') chainId: number) {
     try {
-      return await this.adminService.getChainInfo(chainId);
+      return await this.adminStrategyService.getChainInfo(chainId);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -192,7 +192,7 @@ export class AdminController {
   async getTokenSymbol(@Body() body: GetTokenSymbolDto) {
     const { contractAddress, chainId } = body;
     try {
-      return await this.adminService.getTokenSymbolByContract(
+      return await this.adminStrategyService.getTokenSymbolByContract(
         contractAddress,
         chainId,
       );
@@ -223,8 +223,19 @@ export class AdminController {
   async verifyContribution(
     @Query('contributionId') contributionId: string,
   ): Promise<boolean> {
-    return await this.adminService.verifyContribution(contributionId);
+    return await this.adminStrategyService.verifyContribution(contributionId);
   }
+
+  //TODO: Implement returning strategies to be dispalyed.
+  @Get('strategies')
+  async getRunningStrategies() {
+    return this.adminStrategyService.getRunningStrategies();
+  }
+
+  // @Get('strategy/performance/:strategyKey')
+  // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {
+  //   return this.adminService.getStrategyPerformance(strategyKey);
+  // }
 
   @Get('/admin')
   getAdminData() {
@@ -235,15 +246,4 @@ export class AdminController {
   getConfigData() {
     return 'This is config data';
   }
-
-  //TODO: Implement returning strategies to be dispalyed.
-  @Get('strategies')
-  async getRunningStrategies() {
-    return this.adminService.getRunningStrategies();
-  }
-
-  // @Get('strategy/performance/:strategyKey')
-  // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {
-  //   return this.adminService.getStrategyPerformance(strategyKey);
-  // }
 }

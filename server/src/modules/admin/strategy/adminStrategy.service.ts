@@ -1,12 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { StrategyService } from '../strategy/strategy.service';
-import { PerformanceService } from '../performance/performance.service';
+import { StrategyService } from '../../strategy/strategy.service';
+import { PerformanceService } from '../../performance/performance.service';
 import {
   GetDepositAddressDto,
   StartStrategyDto,
   StopStrategyDto,
 } from './admin-strategy.dto';
-import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
+import { ExchangeInitService } from '../../exchangeInit/exchangeInit.service';
 import {
   getInfoFromChainId,
   getTokenSymbolByContractAddress,
@@ -15,11 +15,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Contribution } from 'src/common/entities/contribution.entity';
 import { Repository } from 'typeorm';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
-import { Web3Service } from '../web3/web3.service';
+import { Web3Service } from '../../web3/web3.service';
 import { ethers } from 'ethers';
 
 @Injectable()
-export class AdminService {
+export class AdminStrategyService {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly performanceService: PerformanceService,
