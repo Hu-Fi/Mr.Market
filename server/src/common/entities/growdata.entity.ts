@@ -6,8 +6,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-@Entity('exchanges')
-export class Exchange {
+@Entity('growdata_exchanges')
+export class GrowdataExchange {
   @PrimaryGeneratedColumn()
   exchange_id: string;
 
@@ -15,8 +15,8 @@ export class Exchange {
   name: string;
 }
 
-@Entity('simply_grow_tokens')
-export class SimplyGrowToken {
+@Entity('growdata_simply_grow_tokens')
+export class GrowdataSimplyGrowToken {
   @PrimaryGeneratedColumn()
   asset_id: string;
 
@@ -33,8 +33,8 @@ export class SimplyGrowToken {
   apy: string;
 }
 
-@Entity('arbitrage_pairs')
-export class ArbitragePair {
+@Entity('growdata_arbitrage_pairs')
+export class GrowdataArbitragePair {
   @PrimaryGeneratedColumn()
   symbol: string;
 
@@ -62,13 +62,13 @@ export class ArbitragePair {
   @Column({ nullable: true })
   target_price: string;
 
-  @ManyToOne(() => Exchange)
+  @ManyToOne(() => GrowdataExchange)
   @JoinColumn({ name: 'exchange_id' })
-  exchange: Exchange;
+  exchange: GrowdataExchange;
 }
 
-@Entity('market_making_pairs')
-export class MarketMakingPair {
+@Entity('growdata_market_making_pairs')
+export class GrowdataMarketMakingPair {
   @PrimaryGeneratedColumn()
   symbol: string;
 
@@ -96,7 +96,7 @@ export class MarketMakingPair {
   @Column({ nullable: true })
   target_price: string;
 
-  @ManyToOne(() => Exchange)
+  @ManyToOne(() => GrowdataExchange)
   @JoinColumn({ name: 'exchange_id' })
-  exchange: Exchange;
+  exchange: GrowdataExchange;
 }

@@ -2,10 +2,10 @@ import { Cache } from 'cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
 import {
-  Exchange,
-  SimplyGrowToken,
-  ArbitragePair,
-  MarketMakingPair,
+  GrowdataExchange,
+  GrowdataSimplyGrowToken,
+  GrowdataArbitragePair,
+  GrowdataMarketMakingPair,
 } from 'src/common/entities/growdata.entity';
 import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -35,7 +35,7 @@ export class GrowdataService {
   }
 
   // Exchange Methods
-  async addExchange(exchange: Exchange) {
+  async addExchange(exchange: GrowdataExchange) {
     return this.growdataRepository.addExchange(exchange);
   }
 
@@ -52,7 +52,7 @@ export class GrowdataService {
   }
 
   // SimplyGrowToken Methods
-  async addSimplyGrowToken(token: SimplyGrowToken) {
+  async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {
     return this.growdataRepository.addSimplyGrowToken(token);
   }
 
@@ -69,7 +69,7 @@ export class GrowdataService {
   }
 
   // ArbitragePair Methods
-  async addArbitragePair(pair: ArbitragePair) {
+  async addArbitragePair(pair: GrowdataArbitragePair) {
     return this.growdataRepository.addArbitragePair(pair);
   }
 
@@ -92,7 +92,7 @@ export class GrowdataService {
   }
 
   // MarketMakingPair Methods
-  async addMarketMakingPair(pair: MarketMakingPair) {
+  async addMarketMakingPair(pair: GrowdataMarketMakingPair) {
     return this.growdataRepository.addMarketMakingPair(pair);
   }
 
@@ -115,7 +115,7 @@ export class GrowdataService {
   }
 
   private async fetchExternalPriceData(asset_id: string) {
-    const cacheKey = `${asset_id}_price`;
+    const cacheKey = `growdata-${asset_id}-price`;
     const cachedData = await this.cacheService.get(cacheKey);
     if (cachedData) {
       return cachedData;

@@ -2,27 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  Exchange,
-  SimplyGrowToken,
-  ArbitragePair,
-  MarketMakingPair,
+  GrowdataExchange,
+  GrowdataSimplyGrowToken,
+  GrowdataArbitragePair,
+  GrowdataMarketMakingPair,
 } from 'src/common/entities/growdata.entity';
 
 @Injectable()
 export class GrowdataRepository {
   constructor(
-    @InjectRepository(Exchange)
-    private readonly exchangeRepository: Repository<Exchange>,
-    @InjectRepository(SimplyGrowToken)
-    private readonly simplyGrowTokenRepository: Repository<SimplyGrowToken>,
-    @InjectRepository(ArbitragePair)
-    private readonly arbitragePairRepository: Repository<ArbitragePair>,
-    @InjectRepository(MarketMakingPair)
-    private readonly marketMakingPairRepository: Repository<MarketMakingPair>,
+    @InjectRepository(GrowdataExchange)
+    private readonly exchangeRepository: Repository<GrowdataExchange>,
+    @InjectRepository(GrowdataSimplyGrowToken)
+    private readonly simplyGrowTokenRepository: Repository<GrowdataSimplyGrowToken>,
+    @InjectRepository(GrowdataArbitragePair)
+    private readonly arbitragePairRepository: Repository<GrowdataArbitragePair>,
+    @InjectRepository(GrowdataMarketMakingPair)
+    private readonly marketMakingPairRepository: Repository<GrowdataMarketMakingPair>,
   ) {}
 
   // Exchange Methods
-  async addExchange(exchange: Exchange) {
+  async addExchange(exchange: GrowdataExchange) {
     return this.exchangeRepository.save(exchange);
   }
 
@@ -47,7 +47,7 @@ export class GrowdataRepository {
   }
 
   // SimplyGrowToken Methods
-  async addSimplyGrowToken(token: SimplyGrowToken) {
+  async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {
     return this.simplyGrowTokenRepository.save(token);
   }
 
@@ -72,7 +72,7 @@ export class GrowdataRepository {
   }
 
   // ArbitragePair Methods
-  async addArbitragePair(pair: ArbitragePair) {
+  async addArbitragePair(pair: GrowdataArbitragePair) {
     return this.arbitragePairRepository.save(pair);
   }
 
@@ -97,7 +97,7 @@ export class GrowdataRepository {
   }
 
   // MarketMakingPair Methods
-  async addMarketMakingPair(pair: MarketMakingPair) {
+  async addMarketMakingPair(pair: GrowdataMarketMakingPair) {
     return this.marketMakingPairRepository.save(pair);
   }
 

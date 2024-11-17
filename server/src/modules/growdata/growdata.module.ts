@@ -5,20 +5,20 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { GrowdataRepository } from './growdata.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  Exchange,
-  SimplyGrowToken,
-  ArbitragePair,
-  MarketMakingPair,
+  GrowdataExchange,
+  GrowdataSimplyGrowToken,
+  GrowdataArbitragePair,
+  GrowdataMarketMakingPair,
 } from 'src/common/entities/growdata.entity';
 
 @Module({
   imports: [
     CacheModule.register(),
     TypeOrmModule.forFeature([
-      Exchange,
-      SimplyGrowToken,
-      ArbitragePair,
-      MarketMakingPair,
+      GrowdataExchange,
+      GrowdataSimplyGrowToken,
+      GrowdataArbitragePair,
+      GrowdataMarketMakingPair,
     ]),
   ],
   controllers: [GrowdataController],

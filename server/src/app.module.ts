@@ -48,6 +48,12 @@ import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from './common/entities/mm-order.entity';
 import { Contribution } from './common/entities/contribution.entity';
 import { GrowdataModule } from './modules/growdata/growdata.module';
+import {
+  GrowdataArbitragePair,
+  GrowdataExchange,
+  GrowdataMarketMakingPair,
+  GrowdataSimplyGrowToken,
+} from './common/entities/growdata.entity';
 
 dotenv.config();
 
@@ -90,6 +96,10 @@ dotenv.config();
         MixinMessage,
         MixinUser,
         PaymentState,
+        GrowdataExchange,
+        GrowdataSimplyGrowToken,
+        GrowdataArbitragePair,
+        GrowdataMarketMakingPair,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
