@@ -54,6 +54,12 @@ import {
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from './common/entities/growdata.entity';
+import {
+  RebalanceExchange,
+  RebalanceHistory,
+  RebalanceToken,
+  RebalanceTokenExchange,
+} from './common/entities/rebalance-asset.entity';
 
 dotenv.config();
 
@@ -96,6 +102,10 @@ dotenv.config();
         MixinMessage,
         MixinUser,
         PaymentState,
+        RebalanceToken,
+        RebalanceExchange,
+        RebalanceHistory,
+        RebalanceTokenExchange,
         GrowdataExchange,
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
