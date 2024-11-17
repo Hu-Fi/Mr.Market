@@ -3,6 +3,11 @@ import { HUFI_BACKEND_URL } from "../constants"
 import type { AdminPasswordResp } from "$lib/types/hufi/admin"
 import { submitted, checked, correct } from "$lib/stores/admin";
 
+// export const Admin = async (): Promise<any> => {
+//   const response = await fetch(`${HUFI_BACKEND_URL}/admin/info`)
+//   return response.json()
+// }
+
 export const AdminPassword = async (password: string): Promise<AdminPasswordResp> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/auth/login`, {

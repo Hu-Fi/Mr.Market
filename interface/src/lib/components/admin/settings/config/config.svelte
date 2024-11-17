@@ -20,11 +20,7 @@
   }
 </script>
 
-<div class="flex flex-col space-y-8">
-    <div>
-      <span class="text-2xl font-semibold capitalize"> {$_('settings')} </span>
-    </div>  
-  
+<div class="flex flex-col space-y-8 mt-8">
     <div id="amount" class="flex flex-col space-y-2">
       <span>
         {$_('max_amount_to_keep_in_bot')}

@@ -1,29 +1,45 @@
 <script>
+  import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import Constants from "$lib/components/admin/settings/constants/constants.svelte";
+  import { onMount } from "svelte";
+  import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
+  import Config from "$lib/components/admin/settings/config/config.svelte";
   import Arbitrage from "$lib/components/admin/settings/arbitrage/arbitrage.svelte";
   import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
   import SimplyGrow from "$lib/components/admin/settings/simplyGrow/simplyGrow.svelte";
 
-  let modes = ["constants", "arbitrage", "market_making", "simply_grow"];
+  let modes = ["config", "arbitrage", "market_making", "simply_grow"];
   let mode = "all";
+
+  onMount(async () => {
+    const growInfo = await getGrowBasicInfo();
+    console.log(growInfo);
+  });
 </script>
 
-{#if mode != "all"}
-  <div class="space-y-8">
-    <button class="btn btn-sm rounded-2xl" on:click={() => mode = "all"}> {$_("back")} </button>
+<div class="flex flex-col space-y-4 items-start">
+  <div>
+    <span class="font-bold text-2xl">
+      {$_("settings")}
+    </span>
   </div>
-{/if}
-{#if mode === "all"}
-  <div class="flex flex-col space-y-8">
-    <div class="flex flex-row space-x-4">
+  <div class="flex flex-row space-x-8">
+    <ul class="menu menu-vertical lg:menu-horizontal lg:w-full outline outline-1 outline-base-content/20 rounded-box gap-2">
       {#each modes as m}
-        <button class="btn btn-sm rounded-2xl" on:click={() => mode = m}> {$_(m)} </button>
+        <li>
+          <button class={clsx("btn btn-sm btn-ghost", mode === m && "bg-gray-100")} on:click={() => mode = m}>
+            <span class="text-base">
+              {$_(m)}
+            </span>
+          </button>
+        </li>
       {/each}
-    </div>
+    </ul>
   </div>
-{:else if mode === "constants"}
-  <Constants />
+</div>
+
+{#if mode === "config"}
+  <Config />
 {:else if mode === "arbitrage"}
   <Arbitrage />
 {:else if mode === "market_making"}
