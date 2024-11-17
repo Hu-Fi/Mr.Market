@@ -90,19 +90,19 @@ describe('AuthService', () => {
 
     it('should return a signed JWT if password is correct', async () => {
       const password = 'admin_pass';
-      const hashedAdminPassword = createHash('sha256')
-        .update(password)
-        .digest('hex');
       const hashIncomingPass = createHash('sha256')
         .update(password)
         .digest('hex');
 
+      const hashedAdminPassword = createHash('sha256')
+        .update(password)
+        .digest('hex');
       expect(hashedAdminPassword).toEqual(hashIncomingPass);
 
       const signSpy = jest
         .spyOn(jwtService, 'sign')
         .mockReturnValue('signed_token');
-      const result = await authService.validateUser(password);
+      const result = await authService.validateUser(hashedAdminPassword);
 
       expect(signSpy).toHaveBeenCalledWith(
         { username: 'admin' },
