@@ -1,15 +1,10 @@
 import { Cache } from 'cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
-import {
-  GrowdataExchange,
-  GrowdataSimplyGrowToken,
-  GrowdataArbitragePair,
-  GrowdataMarketMakingPair,
-} from 'src/common/entities/growdata.entity';
+import { GrowdataMarketMakingPair } from 'src/common/entities/growdata.entity';
 import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CustomLogger } from '../logger/logger.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class GrowdataService {
@@ -38,10 +33,6 @@ export class GrowdataService {
   }
 
   // Exchange Methods
-  async addExchange(exchange: GrowdataExchange) {
-    return this.growdataRepository.addExchange(exchange);
-  }
-
   async getAllExchanges() {
     return this.growdataRepository.findAllExchanges();
   }
@@ -50,30 +41,7 @@ export class GrowdataService {
     return this.growdataRepository.findExchangeById(exchange_id);
   }
 
-  async removeExchange(exchange_id: string) {
-    return this.growdataRepository.removeExchange(exchange_id);
-  }
-
-  async updateExchange(
-    exchange_id: string,
-    modifications: Partial<GrowdataExchange>,
-  ) {
-    try {
-      await this.growdataRepository.updateExchange(exchange_id, modifications);
-    } catch (error) {
-      this.logger.error(
-        `Failed to modify exchange with ID ${exchange_id}`,
-        error,
-      );
-      throw error;
-    }
-  }
-
   // SimplyGrowToken Methods
-  async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {
-    return this.growdataRepository.addSimplyGrowToken(token);
-  }
-
   async getAllSimplyGrowTokens() {
     return this.growdataRepository.findAllSimplyGrowTokens();
   }
@@ -82,32 +50,7 @@ export class GrowdataService {
     return this.growdataRepository.findSimplyGrowTokenById(asset_id);
   }
 
-  async removeSimplyGrowToken(asset_id: string) {
-    return this.growdataRepository.removeSimplyGrowToken(asset_id);
-  }
-
-  async updateSimplyGrowToken(
-    asset_id: string,
-    modifications: Partial<GrowdataSimplyGrowToken>,
-  ) {
-    try {
-      await this.growdataRepository.updateSimplyGrowToken(
-        asset_id,
-        modifications,
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to modify simply grow token with ID ${asset_id}`,
-        error,
-      );
-    }
-  }
-
   // ArbitragePair Methods
-  async addArbitragePair(pair: GrowdataArbitragePair) {
-    return this.growdataRepository.addArbitragePair(pair);
-  }
-
   async getAllArbitragePairs() {
     const pairs = await this.growdataRepository.findAllArbitragePairs();
     for (const pair of pairs) {
@@ -122,26 +65,7 @@ export class GrowdataService {
     return this.growdataRepository.findArbitragePairById(id);
   }
 
-  async removeArbitragePair(id: string) {
-    return this.growdataRepository.removeArbitragePair(id);
-  }
-
-  async updateArbitragePair(
-    id: string,
-    modifications: Partial<GrowdataArbitragePair>,
-  ) {
-    try {
-      await this.growdataRepository.updateArbitragePair(id, modifications);
-    } catch (error) {
-      this.logger.error(`Failed to modify arbitrage pair with ID ${id}`, error);
-    }
-  }
-
   // MarketMakingPair Methods
-  async addMarketMakingPair(pair: GrowdataMarketMakingPair) {
-    return this.growdataRepository.addMarketMakingPair(pair);
-  }
-
   async getAllMarketMakingPairs() {
     const pairs = await this.growdataRepository.findAllMarketMakingPairs();
     for (const pair of pairs) {

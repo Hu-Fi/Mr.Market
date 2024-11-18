@@ -3,20 +3,19 @@ import { IsString, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 // DTO for GrowdataExchange
 export class GrowdataExchangeDto {
   @IsString()
-  exchange_id?: string;
+  exchange_id: string;
 
   @IsString()
   name: string;
 
   @IsBoolean()
-  @IsOptional()
-  enable?: boolean;
+  enable: boolean;
 }
 
 // DTO for GrowdataSimplyGrowToken
 export class GrowdataSimplyGrowTokenDto {
   @IsUUID()
-  asset_id?: string;
+  asset_id: string;
 
   @IsString()
   name: string;
@@ -29,11 +28,10 @@ export class GrowdataSimplyGrowTokenDto {
 
   @IsString()
   @IsOptional()
-  apy?: string;
+  apy: string;
 
   @IsBoolean()
-  @IsOptional()
-  enable?: boolean;
+  enable: boolean;
 }
 
 // DTO for GrowdataArbitragePair
@@ -64,15 +62,17 @@ export class GrowdataArbitragePairDto {
 
   @IsString()
   @IsOptional()
-  base_price?: string;
+  base_price: string;
 
   @IsString()
   @IsOptional()
-  target_price?: string;
+  target_price: string;
+
+  @IsString()
+  exchange_id: string;
 
   @IsBoolean()
-  @IsOptional()
-  enable?: boolean;
+  enable: boolean;
 }
 
 // DTO for GrowdataMarketMakingPair
@@ -103,13 +103,15 @@ export class GrowdataMarketMakingPairDto {
 
   @IsString()
   @IsOptional()
-  base_price?: string;
+  base_price: string;
 
   @IsString()
   @IsOptional()
-  target_price?: string;
+  target_price: string;
+
+  @IsString()
+  exchange_id: string;
 
   @IsBoolean()
-  @IsOptional()
-  enable?: boolean;
+  enable: boolean;
 }

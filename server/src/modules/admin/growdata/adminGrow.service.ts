@@ -6,140 +6,160 @@ import {
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
 } from 'src/common/entities/growdata.entity';
+import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
+import { CustomLogger } from 'src/modules/logger/logger.service';
+import {
+  GrowdataArbitragePairDto,
+  GrowdataMarketMakingPairDto,
+} from 'src/modules/admin/growdata/adminGrow.dto';
 
 @Injectable()
 export class AdminGrowService {
-  constructor(private readonly growDataService: GrowdataService) {}
+  private readonly logger = new CustomLogger(AdminGrowService.name);
+
+  constructor(
+    private readonly growDataService: GrowdataService,
+    private readonly growdataRepository: GrowdataRepository,
+  ) {}
 
   // Exchange
-
-  // Add exchange
   async addExchange(exchange: GrowdataExchange) {
-    return this.growDataService.addExchange(exchange);
+    return this.growdataRepository.addExchange(exchange);
   }
 
-  // Remove exchange
   async removeExchange(exchange_id: string) {
-    return this.growDataService.removeExchange(exchange_id);
+    return this.growdataRepository.removeExchange(exchange_id);
   }
 
-  // Remove all exchanges
   async removeAllExchanges() {
     const exchanges = await this.growDataService.getAllExchanges();
     for (const exchange of exchanges) {
-      await this.growDataService.removeExchange(exchange.exchange_id);
+      await this.growdataRepository.removeExchange(exchange.exchange_id);
     }
   }
 
-  // Modify exchange (pause/resume/modify)
   async updateExchange(
     exchange_id: string,
     modifications: Partial<GrowdataExchange>,
   ) {
-    const exchange = await this.growDataService.getExchangeById(exchange_id);
-    if (exchange) {
-      Object.assign(exchange, modifications);
-      // Assuming there's a method to update the token
-      return this.growDataService.addExchange(exchange);
+    try {
+      await this.growdataRepository.updateExchange(exchange_id, modifications);
+    } catch (error) {
+      this.logger.error(
+        `Failed to modify exchange with ID ${exchange_id}`,
+        error,
+      );
+      throw error;
     }
   }
 
   // SimplyGrow token
-
-  // Add simplyGrow token
   async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {
-    return this.growDataService.addSimplyGrowToken(token);
+    return this.growdataRepository.addSimplyGrowToken(token);
   }
 
-  // Remove simplyGrow token
   async removeSimplyGrowToken(asset_id: string) {
-    return this.growDataService.removeSimplyGrowToken(asset_id);
+    return this.growdataRepository.removeSimplyGrowToken(asset_id);
   }
 
-  // Remove all simplyGrow tokens
   async removeAllSimplyGrowTokens() {
     const tokens = await this.growDataService.getAllSimplyGrowTokens();
     for (const token of tokens) {
-      await this.growDataService.removeSimplyGrowToken(token.asset_id);
+      await this.growdataRepository.removeSimplyGrowToken(token.asset_id);
     }
   }
 
-  // Modify simplyGrow token (pause/resume/modify)
   async updateSimplyGrowToken(
     asset_id: string,
     modifications: Partial<GrowdataSimplyGrowToken>,
   ) {
-    const token = await this.growDataService.getSimplyGrowTokenById(asset_id);
-    if (token) {
-      Object.assign(token, modifications);
-      // Assuming there's a method to update the token
-      return this.growDataService.addSimplyGrowToken(token);
+    try {
+      await this.growdataRepository.updateSimplyGrowToken(
+        asset_id,
+        modifications,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to modify simply grow token with ID ${asset_id}`,
+        error,
+      );
     }
   }
 
   // Market making
-
-  // Add market making trading pair
-  async addMarketMakingPair(pair: GrowdataMarketMakingPair) {
-    return this.growDataService.addMarketMakingPair(pair);
+  async addMarketMakingPair(
+    pairDto: GrowdataMarketMakingPairDto,
+    exchange_id: string,
+  ) {
+    const exchange = await this.growDataService.getExchangeById(exchange_id);
+    if (!exchange) {
+      throw new Error('Exchange not found');
+    }
+    const pair: GrowdataMarketMakingPair = {
+      ...pairDto,
+      exchange,
+    };
+    return this.growdataRepository.addMarketMakingPair(pair);
   }
 
-  // Remove market making trading pair
-  async removeMarketMakingPair(symbol: string) {
-    return this.growDataService.removeMarketMakingPair(symbol);
+  async removeMarketMakingPair(id: string) {
+    return this.growdataRepository.removeMarketMakingPair(id);
   }
 
-  // Remove all market making trading pairs
   async removeAllMarketMakingPairs() {
     const pairs = await this.growDataService.getAllMarketMakingPairs();
     for (const pair of pairs) {
-      await this.growDataService.removeMarketMakingPair(pair.symbol);
+      await this.growDataService.removeMarketMakingPair(pair.id);
     }
   }
 
-  // Modify market making trading pair (pause/resume/modify)
   async updateMarketMakingPair(
-    symbol: string,
+    id: string,
     modifications: Partial<GrowdataMarketMakingPair>,
   ) {
-    const pair = await this.growDataService.getMarketMakingPairById(symbol);
+    const pair = await this.growDataService.getMarketMakingPairById(id);
     if (pair) {
       Object.assign(pair, modifications);
       // Assuming there's a method to update the pair
-      return this.growDataService.addMarketMakingPair(pair);
+      return this.growdataRepository.addMarketMakingPair(pair);
     }
   }
 
   // Arbitrage
-
-  // Add arbitrage trading pair
-  async addArbitragePair(pair: GrowdataArbitragePair) {
-    return this.growDataService.addArbitragePair(pair);
+  async addArbitragePair(
+    pairDto: GrowdataArbitragePairDto,
+    exchange_id: string,
+  ) {
+    const exchange = await this.growDataService.getExchangeById(exchange_id);
+    if (!exchange) {
+      throw new Error('Exchange not found');
+    }
+    const pair: GrowdataArbitragePair = {
+      ...pairDto,
+      exchange,
+    };
+    return this.growdataRepository.addArbitragePair(pair);
   }
 
-  // Remove arbitrage trading pair
-  async removeArbitragePair(symbol: string) {
-    return this.growDataService.removeArbitragePair(symbol);
+  async removeArbitragePair(id: string) {
+    return this.growdataRepository.removeArbitragePair(id);
   }
 
-  // Remove all arbitrage trading pairs
   async removeAllArbitragePairs() {
     const pairs = await this.growDataService.getAllArbitragePairs();
     for (const pair of pairs) {
-      await this.growDataService.removeArbitragePair(pair.symbol);
+      await this.growdataRepository.removeArbitragePair(pair.id);
     }
   }
 
-  // Modify arbitrage trading pair (pause/resume/modify)
   async updateArbitragePair(
-    symbol: string,
+    id: string,
     modifications: Partial<GrowdataArbitragePair>,
   ) {
-    const pair = await this.growDataService.getArbitragePairById(symbol);
-    if (pair) {
-      Object.assign(pair, modifications);
-      // Assuming there's a method to update the pair
-      return this.growDataService.addArbitragePair(pair);
+    try {
+      await this.growdataRepository.updateArbitragePair(id, modifications);
+    } catch (error) {
+      this.logger.error(`Failed to modify arbitrage pair with ID ${id}`, error);
     }
   }
 }

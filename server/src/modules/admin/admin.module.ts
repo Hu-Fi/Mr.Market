@@ -13,9 +13,14 @@ import { StrategyInstance } from 'src/common/entities/strategy-instances.entity'
 import { Contribution } from 'src/common/entities/contribution.entity';
 import { Web3Module } from '../web3/web3.module';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import { AdminGrowService } from './growdata/adminGrow.service';
+import { GrowdataService } from '../growdata/growdata.service';
+import { GrowdataRepository } from '../growdata/growdata.repository';
+import { GrowdataModule } from '../growdata/growdata.module';
 
 @Module({
   imports: [
+    GrowdataModule,
     TypeOrmModule.forFeature([
       MarketMakingHistory,
       ArbitrageHistory,
@@ -34,7 +39,8 @@ import { MixinUser } from 'src/common/entities/mixin-user.entity';
     PerformanceService,
     TradeService,
     ExchangeInitService,
+    AdminGrowService,
   ],
-  exports: [AdminStrategyService],
+  exports: [AdminStrategyService, AdminGrowService],
 })
 export class AdminModule {}

@@ -131,7 +131,7 @@ dotenv.config();
     CampaignModule,
     Web3Module,
   ],
-  controllers: [AppController, AdminController],
+  controllers: [AppController],
   providers: [CustomLogger, AppService],
 })
 export class AppModule {}
