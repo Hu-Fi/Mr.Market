@@ -11,7 +11,6 @@
   const login = async (pass: string) => {
     loginLoading.set(true);
     const hashedAdminPassword = createHash("sha256").update(pass).digest("hex");
-    console.log("hashedAdminPassword:", hashedAdminPassword);
     const accessToken = await checkPassword(hashedAdminPassword);
     if (accessToken) {
       submitted.set(true);

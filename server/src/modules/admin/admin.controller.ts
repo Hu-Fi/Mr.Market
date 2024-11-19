@@ -7,7 +7,6 @@ import {
   BadRequestException,
   Query,
   Delete,
-  Put,
   Param,
 } from '@nestjs/common';
 import { AdminStrategyService } from './strategy/adminStrategy.service';
@@ -266,7 +265,7 @@ export class AdminController {
     return this.adminGrowService.removeExchange(exchange_id);
   }
 
-  @Delete('grow/exchange/all')
+  @Delete('grow/exchange/remove-all')
   @ApiOperation({ summary: 'Remove all exchanges' })
   async removeAllExchanges() {
     return this.adminGrowService.removeAllExchanges();
@@ -283,7 +282,7 @@ export class AdminController {
   }
 
   // SimplyGrow token endpoints
-  @Post('grow/simply-grow/add-token')
+  @Post('grow/simply-grow/add')
   @ApiOperation({ summary: 'Add a new SimplyGrow token' })
   @ApiBody({ type: GrowdataSimplyGrowTokenDto })
   async addSimplyGrowToken(@Body() tokenDto: GrowdataSimplyGrowTokenDto) {
@@ -313,7 +312,7 @@ export class AdminController {
   }
 
   // Market making pair endpoints
-  @Post('grow/market-making/add-pair')
+  @Post('grow/market-making/add')
   @ApiOperation({ summary: 'Add a new market making pair' })
   @ApiBody({ type: GrowdataMarketMakingPairDto })
   async addMarketMakingPair(
@@ -323,10 +322,10 @@ export class AdminController {
     return this.adminGrowService.addMarketMakingPair(pairDto, exchange_id);
   }
 
-  @Delete('grow/market-making/remove/:symbol')
+  @Delete('grow/market-making/remove/:id')
   @ApiOperation({ summary: 'Remove a market making pair' })
-  async removeMarketMakingPair(@Param('symbol') symbol: string) {
-    return this.adminGrowService.removeMarketMakingPair(symbol);
+  async removeMarketMakingPair(@Param('id') id: string) {
+    return this.adminGrowService.removeMarketMakingPair(id);
   }
 
   @Delete('grow/market-making/remove-all')
@@ -335,18 +334,18 @@ export class AdminController {
     return this.adminGrowService.removeAllMarketMakingPairs();
   }
 
-  @Post('grow/market-making/update/:symbol')
+  @Post('grow/market-making/update/:id')
   @ApiOperation({ summary: 'Update a market making pair' })
   @ApiBody({ type: GrowdataMarketMakingPairDto })
   async updateMarketMakingPair(
-    @Param('symbol') symbol: string,
+    @Param('id') id: string,
     @Body() modifications: Partial<GrowdataMarketMakingPairDto>,
   ) {
-    return this.adminGrowService.updateMarketMakingPair(symbol, modifications);
+    return this.adminGrowService.updateMarketMakingPair(id, modifications);
   }
 
   // Arbitrage pair endpoints
-  @Post('grow/arbitrage/add-pair')
+  @Post('grow/arbitrage/add')
   @ApiOperation({ summary: 'Add a new arbitrage pair' })
   @ApiBody({ type: GrowdataArbitragePairDto })
   async addArbitragePair(
@@ -356,10 +355,10 @@ export class AdminController {
     return this.adminGrowService.addArbitragePair(pairDto, exchange_id);
   }
 
-  @Delete('grow/arbitrage/remove/:symbol')
+  @Delete('grow/arbitrage/remove/:id')
   @ApiOperation({ summary: 'Remove an arbitrage pair' })
-  async removeArbitragePair(@Param('symbol') symbol: string) {
-    return this.adminGrowService.removeArbitragePair(symbol);
+  async removeArbitragePair(@Param('id') id: string) {
+    return this.adminGrowService.removeArbitragePair(id);
   }
 
   @Delete('grow/arbitrage/remove-all')
@@ -368,13 +367,13 @@ export class AdminController {
     return this.adminGrowService.removeAllArbitragePairs();
   }
 
-  @Post('grow/arbitrage/update/:symbol')
+  @Post('grow/arbitrage/update/:id')
   @ApiOperation({ summary: 'Update an arbitrage pair' })
   @ApiBody({ type: GrowdataArbitragePairDto })
   async updateArbitragePair(
-    @Param('symbol') symbol: string,
+    @Param('id') id: string,
     @Body() modifications: Partial<GrowdataArbitragePairDto>,
   ) {
-    return this.adminGrowService.updateArbitragePair(symbol, modifications);
+    return this.adminGrowService.updateArbitragePair(id, modifications);
   }
 }

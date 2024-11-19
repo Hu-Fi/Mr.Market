@@ -346,5 +346,10 @@
   "validating_address": "Validating address...",
   "valid_address": "Address valid",
   "invalid_address": "Invalid address",
-  "start_now": "Start now"
+  "start_now": "Start now",
+  "exchange_id": "Exchange id",
+  "add": "Add",
+  "refresh": "Refresh",
+  "id": "ID",
+  "display_name": "Display name"
 }

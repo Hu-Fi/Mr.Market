@@ -43,7 +43,7 @@ export class GrowdataRepository {
     if (!exchange) {
       return;
     }
-    await this.exchangeRepository.remove(exchange);
+    return await this.exchangeRepository.remove(exchange);
   }
 
   async updateExchange(
@@ -75,7 +75,7 @@ export class GrowdataRepository {
     if (!token) {
       return;
     }
-    await this.simplyGrowTokenRepository.remove(token);
+    return await this.simplyGrowTokenRepository.remove(token);
   }
 
   async updateSimplyGrowToken(
@@ -107,7 +107,7 @@ export class GrowdataRepository {
     if (!pair) {
       return;
     }
-    await this.arbitragePairRepository.remove(pair);
+    return await this.arbitragePairRepository.remove(pair);
   }
 
   async updateArbitragePair(
@@ -139,7 +139,7 @@ export class GrowdataRepository {
     if (!pair) {
       return;
     }
-    await this.marketMakingPairRepository.remove(pair);
+    return await this.marketMakingPairRepository.remove(pair);
   }
 
   async updateMarketMakingPair(

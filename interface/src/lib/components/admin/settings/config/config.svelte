@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="flex flex-col space-y-8 mt-8">
+<div class="flex flex-col space-y-8">
     <div id="amount" class="flex flex-col space-y-2">
       <span>
         {$_('max_amount_to_keep_in_bot')}
@@ -41,7 +41,7 @@
   
     <div>
       <button class="btn btn-sm rounded-2xl w-16" on:click={()=> { saveSettings() }}>
-        <span class={clsx(save_loading && "loading")}>
+        <span class={clsx(save_loading && "loading loading-sm")}>
           {$_('save')}
         </span>
       </button>

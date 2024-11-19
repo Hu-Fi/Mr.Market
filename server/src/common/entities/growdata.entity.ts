@@ -1,15 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 
 @Entity('growdata_exchanges')
 export class GrowdataExchange {
-  @PrimaryGeneratedColumn()
-  exchange_id: string; // like binance, bitget, etc.
+  @PrimaryColumn('')
+  exchange_id: string;
 
   @Column()
   name: string;
@@ -20,7 +14,7 @@ export class GrowdataExchange {
 
 @Entity('growdata_simply_grow_tokens')
 export class GrowdataSimplyGrowToken {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   asset_id: string;
 
   @Column()
@@ -41,7 +35,7 @@ export class GrowdataSimplyGrowToken {
 
 @Entity('growdata_arbitrage_pairs')
 export class GrowdataArbitragePair {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column()
@@ -81,7 +75,7 @@ export class GrowdataArbitragePair {
 
 @Entity('growdata_market_making_pairs')
 export class GrowdataMarketMakingPair {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @Column()
