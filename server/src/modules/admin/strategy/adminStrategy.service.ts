@@ -116,6 +116,10 @@ export class AdminStrategyService {
     return supportedNetworks;
   }
 
+  async getSupportedExchanges() {
+    return this.exchangeInitService.getSupportedExchanges();
+  }
+
   async getChainInfo(chainId: number): Promise<any> {
     try {
       // Call the utility function to get chain info from chainId

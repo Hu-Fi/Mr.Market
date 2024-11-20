@@ -230,6 +230,7 @@
   "swap_to": "Swap to",
   "pay_from_account": "Pay from account",
   "receive_to_account": "Receive to account",
+  "supported": "Supported",
   "supported_exchanges": "Supported exchanges",
   "supported_exchanges_info": "We support leading exchanges to provide best liquidity for trading",
   "exchange": "Exchange",
@@ -350,6 +351,11 @@
   "exchange_id": "Exchange id",
   "add": "Add",
   "refresh": "Refresh",
-  "id": "ID",
-  "display_name": "Display name"
+  "enabled": "Enabled",
+  "admin_exchange_enable_info": "Enable or disable an exchange by clicking the button, disabled exchange won't be shown in user interface.",
+  "admin_exchange_supported_info": "If the exchange api key credentials is in .env and is initialized, this exchange will be supported. And can be enable/disabled.",
+  "display_name": "Display name",
+  "click_to_enable": "Click to enable",
+  "click_to_disable": "Click to disable",
+  "updating": "Updating..."
 }

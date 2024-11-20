@@ -28,6 +28,19 @@ export const addExchange = async (exchangeDto: any, token: string): Promise<any>
   }
 };
 
+export const getSupportedExchanges = async (token: string): Promise<any> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/supported`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting supported exchanges:', error);
+    throw error;
+  }
+};
+
 export const removeExchange = async (exchangeId: string, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove/${exchangeId}`, {
@@ -61,7 +74,11 @@ export const updateExchange = async (exchangeId: string, modifications: any, tok
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
     });
-    return handleApiResponse(response);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${errorText}`);
+    }
+    return 'ok';
   } catch (error) {
     console.error('Error updating exchange:', error);
     throw error;
@@ -116,7 +133,11 @@ export const updateSimplyGrowToken = async (assetId: string, modifications: any,
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
     });
-    return handleApiResponse(response);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${errorText}`);
+    }
+    return 'ok';
   } catch (error) {
     console.error('Error updating SimplyGrow token:', error);
     throw error;
@@ -171,7 +192,11 @@ export const updateMarketMakingPair = async (id: string, modifications: any, tok
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
     });
-    return handleApiResponse(response);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${errorText}`);
+    }
+    return 'ok';
   } catch (error) {
     console.error('Error updating market making pair:', error);
     throw error;
@@ -226,7 +251,11 @@ export const updateArbitragePair = async (id: string, modifications: any, token:
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
     });
-    return handleApiResponse(response);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${errorText}`);
+    }
+    return 'ok';
   } catch (error) {
     console.error('Error updating arbitrage pair:', error);
     throw error;

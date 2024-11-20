@@ -259,6 +259,12 @@ export class AdminController {
     return this.adminGrowService.addExchange(exchangeDto);
   }
 
+  @Get('grow/exchange/supported')
+  @ApiOperation({ summary: 'Get supported exchanges by backend' })
+  async getSupportedExchanges() {
+    return this.adminStrategyService.getSupportedExchanges();
+  }
+
   @Delete('grow/exchange/remove/:exchange_id')
   @ApiOperation({ summary: 'Remove an exchange' })
   async removeExchange(@Param('exchange_id') exchange_id: string) {

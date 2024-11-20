@@ -1,16 +1,24 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import { invalidate, invalidateAll } from "$app/navigation";
+  import { invalidate } from "$app/navigation";
+  import { getSupportedExchanges, updateExchange } from "$lib/helpers/hufi/admin/growdata";
   import { addExchange, removeExchange } from "$lib/helpers/hufi/admin/growdata";
-  $: exchanges = $page.data.growInfo.exchanges;
-
+  $: supportedExchanges = [];
+  $: exchanges = $page.data.growInfo.exchanges as {
+    exchange_id: string;
+    name: string;
+    enable: boolean;
+  }[];
+  
   let AddNewName = "";
   let AddNewExchangeId = "";
 
   let addDialog = false;
   let isAdding = false;
+  let isUpdating = '';
   let isRefreshing = false;
   let isDeleting = '';
   async function AddExchange(name: string, exchangeId: string) {
@@ -20,11 +28,25 @@
     if (!token) return;
     await addExchange({name, exchange_id: exchangeId}, token);
     setTimeout(() => {
-      invalidate('admin:settings');
-      isAdding = false;
-      addDialog = false;
-      AddNewName = '';
-      AddNewExchangeId = '';
+      invalidate('admin:settings').finally(() => {
+        isAdding = false;
+        addDialog = false;
+        AddNewName = '';
+        AddNewExchangeId = '';
+      });
+    }, getRandomDelay());
+  }
+
+  async function UpdateExchange(exchange_id: string, name: string, enable: boolean) {
+    if (!exchange_id) return;
+    isUpdating = exchange_id;
+    const token = localStorage.getItem('admin-access-token');
+    if (!token) return;
+    await updateExchange(exchange_id, {exchange_id, name, enable}, token);
+    setTimeout(() => {
+      invalidate('admin:settings').finally(() => {
+        isUpdating = '';
+      });
     }, getRandomDelay());
   }
 
@@ -35,22 +57,33 @@
     if (!token) return;
     await removeExchange(exchange_id, token);
     setTimeout(() => {
-      invalidate('admin:settings');
-      isDeleting = '';
+      invalidate('admin:settings').finally(() => {
+        isDeleting = '';
+      });
     }, getRandomDelay());
   }
 
   async function RefreshExchanges() {
     isRefreshing = true;
     setTimeout(() => {
-      invalidate('admin:settings');
-      isRefreshing = false;
+      invalidate('admin:settings').finally(() => {
+        isRefreshing = false;
+        isUpdating = '';
+        isDeleting = '';
+        isAdding = false;
+      });
     }, getRandomDelay());
   }
 
   function getRandomDelay() {
     return Math.floor(Math.random() * (3000 - 2000 + 1)) + 2000;
   }
+
+  onMount(async () => {
+    const token = localStorage.getItem('admin-access-token');
+    if (!token) return;
+    supportedExchanges = await getSupportedExchanges(token);
+  });
 </script>
 
 {#if !exchanges}
@@ -72,7 +105,31 @@
         <tr>
           <th></th>
           <th>{$_("display_name")}</th>
-          <th>{$_("id")}</th>
+          <th>{$_("exchange_id")}</th>
+          <th>
+            <div class="flex items-center gap-2">
+              <span>
+              {$_("supported")}
+            </span>
+            <div class="tooltip tooltip-bottom" data-tip={$_("admin_exchange_supported_info")}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+              </div>
+            </div>
+          </th>
+          <th>
+            <div class="flex items-center gap-2">
+              <span>
+                {$_("enabled")}
+              </span>
+              <div class="tooltip tooltip-bottom" data-tip={$_("admin_exchange_enable_info")}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+              </div>
+            </div>
+          </th>
           <th>{$_("actions")}</th>
         </tr>
       </thead>
@@ -83,11 +140,24 @@
           </tr>
         {/if}
         
-        {#each exchanges as exchange, i}
+        {#each exchanges as exchange}
           <tr>
             <td />
             <td>{exchange.name}</td>
             <td>{exchange.exchange_id}</td>
+            <td>{supportedExchanges.includes(exchange.exchange_id) ? '✅' : '❌'}</td>
+            <td>
+              <div class="tooltip" data-tip={!isUpdating ? exchange.enable ? $_("click_to_disable") : $_("click_to_enable") : $_("updating")}>
+                <button on:click={async () => {
+                  const newEnable = !exchange.enable;
+                  await UpdateExchange(exchange.exchange_id, exchange.name, newEnable);
+                }}>
+                  <span class={clsx(isUpdating === exchange.exchange_id && "loading loading-spinner loading-xs disabled")}>
+                    {exchange.enable ? '✅' : '❌'}
+                  </span>
+                </button>
+              </div>
+            </td>
             <td>
               <button class="btn btn-ghost rounded-2xl btn-xs px-2" on:click={async () => { 
                 await DeleteExchange(exchange.exchange_id); 
