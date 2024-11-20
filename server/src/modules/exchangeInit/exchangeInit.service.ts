@@ -368,10 +368,9 @@ export class ExchangeInitService {
           for (const [label, exchange] of accounts) {
             try {
               if (exchange.has['signIn']) {
-                await exchange.signIn().then((resp) => {
-                  this.logger.log(resp);
+                await exchange.signIn().then(() => {
+                  this.logger.log(`ProBit ${label} re-signed in successfully.`);
                 }); // Explicitly refresh the session
-                this.logger.log(`ProBit ${label} re-signed in successfully.`);
               } else {
                 this.logger.warn(
                   `ProBit ${label} does not support signIn. Skipping.`,
