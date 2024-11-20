@@ -1,8 +1,12 @@
 import * as ccxt from 'ccxt';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Scope,
+} from '@nestjs/common';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
-@Injectable()
+@Injectable({ scope: Scope.DEFAULT })
 export class ExchangeInitService {
   private readonly logger = new CustomLogger(ExchangeInitService.name);
   private exchanges = new Map<string, Map<string, ccxt.Exchange>>();
@@ -10,7 +14,10 @@ export class ExchangeInitService {
 
   constructor() {
     this.initializeExchanges()
-      .then(() => this.logger.log('Exchanges initialized successfully.'))
+      .then(() => {
+        this.logger.log('Exchanges initialized successfully.');
+        this.startKeepAlive();
+      })
       .catch((error) =>
         this.logger.error('Error during exchanges initialization', error),
       );
@@ -305,15 +312,36 @@ export class ExchangeInitService {
                 );
                 return;
               }
+
               const exchange = new config.class({
                 apiKey: account.apiKey,
                 secret: account.secret,
               });
+
+              // Load markets
               await exchange.loadMarkets();
+
+              // Call signIn only for ProBit accounts
+              if (config.name === 'probit' && exchange.has['signIn']) {
+                try {
+                  await exchange.signIn();
+                  this.logger.log(
+                    `${config.name} ${account.label} signed in successfully.`,
+                  );
+                } catch (error) {
+                  this.logger.warn(
+                    `ProBit ${account.label} sign-in failed: ${error.message}`,
+                  );
+                }
+              }
+
+              // Save the initialized exchange
               exchangeMap.set(account.label, exchange);
               this.logger.log(
                 `${config.name} ${account.label} initialized successfully.`,
               );
+
+              // Save the default account reference
               if (account.label === 'default') {
                 this.defaultAccounts.set(config.name, exchange);
               }
@@ -324,9 +352,39 @@ export class ExchangeInitService {
             }
           }),
         );
+
         this.exchanges.set(config.name, exchangeMap);
       }),
     );
+  }
+
+  private startKeepAlive() {
+    const intervalMs = 5 * 60 * 1000; // 5 minutes
+
+    setInterval(async () => {
+      this.logger.log('Running keep-alive checks for all exchanges...');
+      for (const [exchangeName, accounts] of this.exchanges) {
+        if (exchangeName === 'probit') {
+          for (const [label, exchange] of accounts) {
+            try {
+              if (exchange.has['signIn']) {
+                await exchange.signIn().then(() => {
+                  this.logger.log(`ProBit ${label} re-signed in successfully.`);
+                }); // Explicitly refresh the session
+              } else {
+                this.logger.warn(
+                  `ProBit ${label} does not support signIn. Skipping.`,
+                );
+              }
+            } catch (error) {
+              this.logger.warn(
+                `ProBit ${label} keep-alive signIn failed: ${error.message}`,
+              );
+            }
+          }
+        }
+      }
+    }, intervalMs);
   }
 
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
