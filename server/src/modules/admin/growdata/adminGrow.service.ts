@@ -87,11 +87,10 @@ export class AdminGrowService {
   }
 
   // Market making
-  async addMarketMakingPair(
-    pairDto: GrowdataMarketMakingPairDto,
-    exchange_id: string,
-  ) {
-    const exchange = await this.growDataService.getExchangeById(exchange_id);
+  async addMarketMakingPair(pairDto: GrowdataMarketMakingPairDto) {
+    const exchange = await this.growDataService.getExchangeById(
+      pairDto.exchange_id,
+    );
     if (!exchange) {
       throw new Error('Exchange not found');
     }
@@ -126,17 +125,20 @@ export class AdminGrowService {
   }
 
   // Arbitrage
-  async addArbitragePair(
-    pairDto: GrowdataArbitragePairDto,
-    exchange_id: string,
-  ) {
-    const exchange = await this.growDataService.getExchangeById(exchange_id);
-    if (!exchange) {
+  async addArbitragePair(pairDto: GrowdataArbitragePairDto) {
+    const base_exchange = await this.growDataService.getExchangeById(
+      pairDto.base_exchange_id,
+    );
+    const target_exchange = await this.growDataService.getExchangeById(
+      pairDto.target_exchange_id,
+    );
+    if (!base_exchange || !target_exchange) {
       throw new Error('Exchange not found');
     }
     const pair: GrowdataArbitragePair = {
       ...pairDto,
-      exchange,
+      base_exchange,
+      target_exchange,
     };
     return this.growdataRepository.addArbitragePair(pair);
   }

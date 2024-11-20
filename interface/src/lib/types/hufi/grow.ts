@@ -24,8 +24,14 @@ export interface ArbitragePair {
   target_icon_url: string;
   base_price?: string;
   target_price?: string;
-  exchange: Exchange;
+  base_exchange: Exchange;
+  target_exchange: Exchange;
   enable: boolean;
+}
+
+export interface ArbitragePairDto extends Omit<ArbitragePair, 'base_exchange' | 'target_exchange'> {
+  base_exchange_id: string;
+  target_exchange_id: string;
 }
 
 export interface MarketMakingPair {
@@ -41,6 +47,10 @@ export interface MarketMakingPair {
   target_price?: string;
   exchange: Exchange;
   enable: boolean;
+}
+
+export interface MarketMakingPairDto extends Omit<MarketMakingPair, 'exchange'> {
+  exchange_id: string;
 }
 
 export interface GrowInfo {

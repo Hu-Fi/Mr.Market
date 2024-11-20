@@ -321,11 +321,8 @@ export class AdminController {
   @Post('grow/market-making/add')
   @ApiOperation({ summary: 'Add a new market making pair' })
   @ApiBody({ type: GrowdataMarketMakingPairDto })
-  async addMarketMakingPair(
-    @Body() pairDto: GrowdataMarketMakingPairDto,
-    @Query('exchange_id') exchange_id: string,
-  ) {
-    return this.adminGrowService.addMarketMakingPair(pairDto, exchange_id);
+  async addMarketMakingPair(@Body() pairDto: GrowdataMarketMakingPairDto) {
+    return this.adminGrowService.addMarketMakingPair(pairDto);
   }
 
   @Delete('grow/market-making/remove/:id')
@@ -354,11 +351,8 @@ export class AdminController {
   @Post('grow/arbitrage/add')
   @ApiOperation({ summary: 'Add a new arbitrage pair' })
   @ApiBody({ type: GrowdataArbitragePairDto })
-  async addArbitragePair(
-    @Body() pairDto: GrowdataArbitragePairDto,
-    @Query('exchange_id') exchange_id: string,
-  ) {
-    return this.adminGrowService.addArbitragePair(pairDto, exchange_id);
+  async addArbitragePair(@Body() pairDto: GrowdataArbitragePairDto) {
+    return this.adminGrowService.addArbitragePair(pairDto);
   }
 
   @Delete('grow/arbitrage/remove/:id')

@@ -69,7 +69,10 @@ export class GrowdataArbitragePairDto {
   target_price: string;
 
   @IsString()
-  exchange_id: string;
+  base_exchange_id: string;
+
+  @IsString()
+  target_exchange_id: string;
 
   @IsBoolean()
   enable: boolean;

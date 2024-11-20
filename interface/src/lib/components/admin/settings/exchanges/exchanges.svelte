@@ -89,7 +89,7 @@
 {#if !exchanges}
   <div class="w-full h-full flex justify-center items-center">
     <button
-      class="btn btn-primary"
+      class="btn btn-base-300 no-animation"
       on:click={() => {
         window.location.reload();
       }}
@@ -136,7 +136,7 @@
       <tbody>
         {#if exchanges.length === 0}
           <tr>
-            <td colspan="3" class="text-center">{$_("no_result_found")}</td>
+            <td colspan="5" class="text-center">{$_("no_result_found")}</td>
           </tr>
         {/if}
         
@@ -187,7 +187,10 @@
             <input type="text" class="input input-bordered focus:outline-none" bind:value={AddNewName} />
           </div>
           <div class="flex flex-col gap-2">
-            <span class="label"> {$_("exchange_id")} </span>
+            <div class="flex items-center">
+              <span class="label"> {$_("exchange_id")} </span> 
+              <span class="text-xs text-base-content/60"> {'(ccxt id e.g. binance)'} </span>
+            </div>
             <input type="text" class="input input-bordered focus:outline-none" bind:value={AddNewExchangeId} />
           </div>
           <button class="btn bg-base-200 hover:bg-base-200 border-none no-animation" on:click={async () => {

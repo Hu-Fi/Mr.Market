@@ -1,4 +1,5 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import type { ArbitragePairDto, MarketMakingPairDto } from "$lib/types/hufi/grow";
 
 const getHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
@@ -145,7 +146,7 @@ export const updateSimplyGrowToken = async (assetId: string, modifications: any,
 };
 
 // Market Making Pair Methods
-export const addMarketMakingPair = async (pairDto: any, token: string): Promise<any> => {
+export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/add`, {
       method: 'POST',
@@ -185,7 +186,7 @@ export const removeAllMarketMakingPairs = async (token: string): Promise<any> =>
   }
 };
 
-export const updateMarketMakingPair = async (id: string, modifications: any, token: string): Promise<any> => {
+export const updateMarketMakingPair = async (id: string, modifications: MarketMakingPairDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
       method: 'POST',
@@ -204,7 +205,7 @@ export const updateMarketMakingPair = async (id: string, modifications: any, tok
 };
 
 // Arbitrage Pair Methods
-export const addArbitragePair = async (pairDto: any, token: string): Promise<any> => {
+export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/add`, {
       method: 'POST',
@@ -244,7 +245,7 @@ export const removeAllArbitragePairs = async (token: string): Promise<any> => {
   }
 };
 
-export const updateArbitragePair = async (id: string, modifications: any, token: string): Promise<any> => {
+export const updateArbitragePair = async (id: string, modifications: ArbitragePairDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/update/${id}`, {
       method: 'POST',

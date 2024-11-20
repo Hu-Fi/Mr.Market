@@ -54,9 +54,14 @@ export class GrowdataService {
   async getAllArbitragePairs() {
     const pairs = await this.growdataRepository.findAllArbitragePairs();
     for (const pair of pairs) {
-      const externalData = await this.fetchExternalPriceData(pair.symbol);
-      pair.base_price = externalData.base_price;
-      pair.target_price = externalData.target_price;
+      const baseAssetPrice = await this.fetchExternalPriceData(
+        pair.base_asset_id,
+      );
+      pair.base_price = baseAssetPrice;
+      const targetAssetPrice = await this.fetchExternalPriceData(
+        pair.target_asset_id,
+      );
+      pair.target_price = targetAssetPrice;
     }
     return pairs;
   }
@@ -69,9 +74,14 @@ export class GrowdataService {
   async getAllMarketMakingPairs() {
     const pairs = await this.growdataRepository.findAllMarketMakingPairs();
     for (const pair of pairs) {
-      const externalData = await this.fetchExternalPriceData(pair.symbol);
-      pair.base_price = externalData.base_price;
-      pair.target_price = externalData.target_price;
+      const baseAssetPrice = await this.fetchExternalPriceData(
+        pair.base_asset_id,
+      );
+      pair.base_price = baseAssetPrice;
+      const targetAssetPrice = await this.fetchExternalPriceData(
+        pair.target_asset_id,
+      );
+      pair.target_price = targetAssetPrice;
     }
     return pairs;
   }

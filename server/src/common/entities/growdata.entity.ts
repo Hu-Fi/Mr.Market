@@ -67,7 +67,11 @@ export class GrowdataArbitragePair {
 
   @ManyToOne(() => GrowdataExchange)
   @JoinColumn({ name: 'exchange_id' })
-  exchange: GrowdataExchange;
+  base_exchange: GrowdataExchange;
+
+  @ManyToOne(() => GrowdataExchange)
+  @JoinColumn({ name: 'exchange_id' })
+  target_exchange: GrowdataExchange;
 
   @Column({ default: true })
   enable: boolean;
