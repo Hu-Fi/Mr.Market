@@ -2,10 +2,10 @@
   import clsx from "clsx";
   import { validate } from "uuid";
   import { _ } from "svelte-i18n";
-  import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
   import { mixinAsset } from "$lib/helpers/mixin";
+  import { getRandomDelay } from "$lib/helpers/utils";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import type { ArbitragePair, ArbitragePairDto } from "$lib/types/hufi/grow";
   import { addArbitragePair, updateArbitragePair, removeArbitragePair } from "$lib/helpers/hufi/admin/growdata";
@@ -66,7 +66,10 @@
     isUpdating = id;
     const token = localStorage.getItem('admin-access-token');
     if (!token) return;
-    await updateArbitragePair(id, {enable}, token);
+    await updateArbitragePair(id, {enable}, token).catch((error) => {
+      console.error(error);
+    });
+    
     setTimeout(() => {
       invalidate('admin:settings').finally(() => {
         isUpdating = '';
@@ -96,15 +99,7 @@
     });
   }
 
-  function getRandomDelay() {
-    return Math.floor(Math.random() * (3000 - 2000 + 1)) + 2000;
-  }
-
-  onMount(async () => {
-    const token = localStorage.getItem('admin-access-token');
-    if (!token) return;
-    // Fetch any necessary data here
-  });
+  console.log($page.data.growInfo);
 </script>
 
 {#if !arbitragePairs}
@@ -127,9 +122,11 @@
           <th></th>
           <th>{"symbol"}</th>
           <th>{"base_symbol"}</th>
-          <th>{"base_asset_id"}</th>
           <th>{"target_symbol"}</th>
+          <th>{"base_asset_id"}</th>
           <th>{"target_asset_id"}</th>
+          <th>{"base_exchange_id"}</th>
+          <th>{"target_exchange_id"}</th>
           <th>{"base_icon_url"}</th>
           <th>{"target_icon_url"}</th>
           <th>{$_("enabled")}</th>
@@ -153,13 +150,19 @@
               <span class="text-xs select-text"> {pair.base_symbol} </span>
             </td>
             <td>
-              <span class="text-xs select-text"> {pair.base_asset_id} </span>
-            </td>
-            <td>
               <span class="text-xs select-text"> {pair.target_symbol} </span>
             </td>
             <td>
+              <span class="text-xs select-text"> {pair.base_asset_id} </span>
+            </td>
+            <td>
               <span class="text-xs select-text"> {pair.target_asset_id} </span>
+            </td>
+            <td>
+              <span class="text-xs select-text"> {pair.base_exchange_id} </span>
+            </td> 
+            <td>
+              <span class="text-xs select-text"> {pair.target_exchange_id} </span>
             </td>
             <td class="cursor-pointer" on:click={() => {
               window.open(pair.base_icon_url, '_blank');
@@ -176,7 +179,7 @@
               </div>
             </td>
             <td>
-              <div class="tooltip" data-tip={!isUpdating ? pair.enable ? $_("click_to_disable") : $_("click_to_enable") : $_("updating")}>
+              <div class="tooltip" data-tip={isUpdating === pair.id ? $_("updating") : pair.enable ? $_("click_to_disable") : $_("click_to_enable")}>
                 <button on:click={async () => {
                   const newEnable = !pair.enable;
                   await UpdateArbitragePair(pair.id, newEnable);

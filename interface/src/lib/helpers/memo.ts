@@ -6,6 +6,7 @@ import { PAIRS_MAP_REVERSED } from "./constants";
 export const TARDING_TYPE_MAP: Record<string, string> = {
   SP: 'Spot',
   SW: 'Swap',
+  SG: 'Simply Grow',
   MM: 'Market Making',
   AR: 'Arbitrage',
   LE: 'Leverage',

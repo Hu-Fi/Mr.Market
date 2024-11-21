@@ -353,7 +353,7 @@
   "refresh": "Refresh",
   "enabled": "Enabled",
   "admin_exchange_enable_info": "Enable or disable an exchange by clicking the button, disabled exchange won't be shown in user interface.",
-  "admin_exchange_supported_info": "If the exchange api key credentials is in .env and is initialized, this exchange will be supported. And can be enable/disabled.",
+  "admin_exchange_supported_info": "If the exchange api key credentials is being initialized (have been added in server/.env), this exchange will be supported. And can be enable/disabled.",
   "display_name": "Display name",
   "click_to_enable": "Click to enable",
   "click_to_disable": "Click to disable",

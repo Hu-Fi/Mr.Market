@@ -261,3 +261,7 @@ export const handleCoingeckoTokenName = (name: string) => {
   }
   return name
 }
+
+export const getRandomDelay = () => {
+  return Math.floor(Math.random() * (3000 - 2000 + 1)) + 2000;
+}

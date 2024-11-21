@@ -96,7 +96,7 @@ export class AdminGrowService {
     }
     const pair: GrowdataMarketMakingPair = {
       ...pairDto,
-      exchange,
+      exchange_id: exchange.exchange_id,
     };
     return this.growdataRepository.addMarketMakingPair(pair);
   }
@@ -137,8 +137,8 @@ export class AdminGrowService {
     }
     const pair: GrowdataArbitragePair = {
       ...pairDto,
-      base_exchange,
-      target_exchange,
+      base_exchange_id: base_exchange.exchange_id,
+      target_exchange_id: target_exchange.exchange_id,
     };
     return this.growdataRepository.addArbitragePair(pair);
   }

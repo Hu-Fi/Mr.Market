@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('growdata_exchanges')
 export class GrowdataExchange {
@@ -65,13 +65,11 @@ export class GrowdataArbitragePair {
   @Column({ nullable: true })
   target_price: string;
 
-  @ManyToOne(() => GrowdataExchange)
-  @JoinColumn({ name: 'exchange_id' })
-  base_exchange: GrowdataExchange;
+  @Column()
+  base_exchange_id: string;
 
-  @ManyToOne(() => GrowdataExchange)
-  @JoinColumn({ name: 'exchange_id' })
-  target_exchange: GrowdataExchange;
+  @Column()
+  target_exchange_id: string;
 
   @Column({ default: true })
   enable: boolean;
@@ -109,9 +107,8 @@ export class GrowdataMarketMakingPair {
   @Column({ nullable: true })
   target_price: string;
 
-  @ManyToOne(() => GrowdataExchange)
-  @JoinColumn({ name: 'exchange_id' })
-  exchange: GrowdataExchange;
+  @Column()
+  exchange_id: string;
 
   @Column({ default: true })
   enable: boolean;

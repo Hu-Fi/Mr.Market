@@ -13,6 +13,8 @@ export interface SimplyGrowToken {
   enable: boolean;
 }
 
+export interface SimplyGrowTokenDto extends SimplyGrowToken {}
+
 export interface ArbitragePair {
   id: string;
   symbol: string;
@@ -24,15 +26,12 @@ export interface ArbitragePair {
   target_icon_url: string;
   base_price?: string;
   target_price?: string;
-  base_exchange: Exchange;
-  target_exchange: Exchange;
-  enable: boolean;
-}
-
-export interface ArbitragePairDto extends Omit<ArbitragePair, 'base_exchange' | 'target_exchange'> {
   base_exchange_id: string;
   target_exchange_id: string;
+  enable: boolean;
 }
+  
+export interface ArbitragePairDto extends ArbitragePair {}
 
 export interface MarketMakingPair {
   id: string;
@@ -45,13 +44,11 @@ export interface MarketMakingPair {
   target_icon_url: string;
   base_price?: string;
   target_price?: string;
-  exchange: Exchange;
+  exchange_id: string;
   enable: boolean;
 }
 
-export interface MarketMakingPairDto extends Omit<MarketMakingPair, 'exchange'> {
-  exchange_id: string;
-}
+export interface MarketMakingPairDto extends MarketMakingPair {}
 
 export interface GrowInfo {
   exchanges: Exchange[];

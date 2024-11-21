@@ -53,6 +53,7 @@ export class GrowdataService {
   // ArbitragePair Methods
   async getAllArbitragePairs() {
     const pairs = await this.growdataRepository.findAllArbitragePairs();
+
     for (const pair of pairs) {
       const baseAssetPrice = await this.fetchExternalPriceData(
         pair.base_asset_id,

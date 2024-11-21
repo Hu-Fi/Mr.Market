@@ -1,5 +1,5 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
-import type { ArbitragePairDto, MarketMakingPairDto } from "$lib/types/hufi/grow";
+import type { ArbitragePairDto, MarketMakingPairDto, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
 
 const getHeaders = (token: string) => ({
   'Authorization': `Bearer ${token}`,
@@ -87,7 +87,7 @@ export const updateExchange = async (exchangeId: string, modifications: any, tok
 };
 
 // SimplyGrow Token Methods
-export const addSimplyGrowToken = async (tokenDto: any, token: string): Promise<any> => {
+export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/add`, {
       method: 'POST',
@@ -127,7 +127,7 @@ export const removeAllSimplyGrowTokens = async (token: string): Promise<any> => 
   }
 };
 
-export const updateSimplyGrowToken = async (assetId: string, modifications: any, token: string): Promise<any> => {
+export const updateSimplyGrowToken = async (assetId: string, modifications: SimplyGrowTokenDto, token: string): Promise<any> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/update/${assetId}`, {
       method: 'POST',

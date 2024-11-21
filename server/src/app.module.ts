@@ -20,7 +20,6 @@ import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { CustomLogger } from './modules/logger/logger.service';
 import { MixinModule } from './modules/mixin/mixin.module';
-import { AdminController } from './modules/admin/admin.controller';
 import { EventListenersModule } from './modules/mixin/listeners/events.module';
 
 import { Trade } from './common/entities/trade.entity';
