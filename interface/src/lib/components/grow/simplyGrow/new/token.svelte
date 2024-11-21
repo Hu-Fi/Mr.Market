@@ -1,6 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import {
     findCoinIconBySymbol,
@@ -11,11 +12,8 @@
     createJustGrowSearch,
   } from "$lib/stores/grow";
   import { SUPPORTED_JUST_GROW_TOKENS } from "$lib/helpers/constants";
-  import { getSupportedJustGrowTokens } from "$lib/helpers/hufi/grow";
 
-  // TODO: Replace here with API request
-  const justGrowTokens = (async ()=>{return await getSupportedJustGrowTokens()})()
-  $: tokens = SUPPORTED_JUST_GROW_TOKENS.map((item) => ({ ...item }))
+  $: tokens = SUPPORTED_JUST_GROW_TOKENS.map((item: any) => ({ ...item }))
     .filter((item) => {
         // Filter search
         return item.symbol
@@ -61,15 +59,15 @@
     />
   </div>
 
-  {#await justGrowTokens}
-    <span>
-      loading
-    </span>
-  {:then _}
+  {#await $page.data.growInfo}
+    <div class="flex justify-center items-center w-full">
+      <span class="text-sm loading loading-spinner loading-lg" />
+    </div>
+  {:then growInfo}
     <!-- Token -->
     <div class="px-2 w-full !mt-6">
       <div class="grid grid-cols-2 gap-3 w-full overflow-y-auto">
-        {#each tokens as item, i}
+        {#each growInfo.simply_grow.tokens as item, i}
           <button
             class={clsx(
               "flex flex-row px-4 items-center space-x-4 justify-start shadow-none py-3 bg-base-100 border border-base-200 rounded-xl text-start",
@@ -80,7 +78,7 @@
             }}
             data-testid={`just-grow-token-${i}`}
           >
-            <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol)} clazz="w-8 h-8" claxx="" imageClass="" />
+            <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8" claxx="" imageClass="" />
             <div class="flex flex-col grow">
               <span class="text-sm font-semibold">
                 {item.symbol}

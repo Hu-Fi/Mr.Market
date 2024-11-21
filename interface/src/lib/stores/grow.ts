@@ -2,6 +2,7 @@ import { page } from "$app/stores";
 import { derived } from 'svelte/store';
 import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
+import type { SimplyGrowToken } from "$lib/types/hufi/grow";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -39,7 +40,7 @@ export const createMMSelectPairEasyFilter = writable('')
 export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow
-export const createJustGrowAsset = writable({ symbol:'BTC', name: 'Bitcoin', icon: 'https://mixin.one' })
+export const createJustGrowAsset = writable<SimplyGrowToken>()
 export const createJustGrowAmount = writable()
 export const createJustGrowLockTime = writable({ key: '', value: '' })
 export const createJustGrowLockTimeDialog = writable(false)

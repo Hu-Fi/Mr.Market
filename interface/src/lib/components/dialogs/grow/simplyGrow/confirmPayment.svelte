@@ -44,7 +44,7 @@
           {$_("payment_amount")}
         </span>
         <span class="text-3xl font-bold">
-          {$createJustGrowAmount} {$createJustGrowAsset.symbol}
+          {$createJustGrowAmount} {$createJustGrowAsset ? $createJustGrowAsset.symbol : ''}
         </span>
       </div>
 

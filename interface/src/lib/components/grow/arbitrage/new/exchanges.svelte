@@ -11,8 +11,9 @@
     createArbPair,
     editArbitrageDialog,
   } from "$lib/stores/grow";
-  import { getSupportedArbitrageExchanges } from "$lib/helpers/hufi/grow";
   import ExchangeBtn from "$lib/components/grow/arbitrage/new/exchangeBtn.svelte";
+  import { page } from "$app/stores";
+  import type { Exchange } from "$lib/types/hufi/grow";
 
   onDestroy(() => {
     createArbPair.set("");
@@ -23,15 +24,16 @@
     editArbitrageDialog.set(false);
   });
 
-  let assets = getSupportedArbitrageExchanges();
-  $: arbitrageFristExchanges = assets.filter((item) => {
-    return item.toUpperCase().match($createArbExchange1Search.toUpperCase())
+  let exchanges = $page.data.growInfo.exchanges as Exchange[]
+  console.log(exchanges)
+  $: arbitrageFristExchanges = exchanges.filter((item: Exchange) => {
+    return item.name.toUpperCase().match($createArbExchange1Search.toUpperCase())
   })
-  $: arbitrageSecondExchanges = assets.filter((item) => {
-    return item.toUpperCase().match($createArbExchange2Search.toUpperCase())
-  }).filter((item) => {
+  $: arbitrageSecondExchanges = exchanges.filter((item: Exchange) => {
+    return item.name.toUpperCase().match($createArbExchange2Search.toUpperCase())
+  }).filter((item: Exchange) => {
     if (!$createArbExchange1) return true;
-    return item.toUpperCase() !== $createArbExchange1.toUpperCase();
+    return item.name.toUpperCase() !== $createArbExchange1.toUpperCase();
   });
 
   export let typeIndex: 1 | 2 = 1;

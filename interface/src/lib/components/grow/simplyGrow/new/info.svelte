@@ -29,7 +29,7 @@
     <div class="flex items-center space-x-2">
       <div class="avatar">
         <div class="mask mask-squircle w-5 h-5">
-          <AssetIcon assetIcon={findCoinIconBySymbol($createJustGrowAsset.symbol)} clazz="w-5 h-5" claxx="w-2 h-2" />
+          <AssetIcon assetIcon={findCoinIconBySymbol($createJustGrowAsset.symbol) || $createJustGrowAsset.icon_url} clazz="w-5 h-5" claxx="w-2 h-2" />
         </div>
       </div>
       <span class="font-semibold text-sm text-nowrap">
