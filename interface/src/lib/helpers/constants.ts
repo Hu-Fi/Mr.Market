@@ -259,37 +259,6 @@ export const SUPPORTED_PAIRS: {
 export const SUPPORTED_UNIQUE_PAIRS: string[] = Array.from(new Set(Object.values(SUPPORTED_PAIRS).flatMap(pairs => pairs)));
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);
 export const SUPPORTED_TIMERANGES: SupportedTimeFrame[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M']
-export const SUPPORTED_ARBITRAGE_PAIRS = [
-  {symbol: "BTC/USDT", exchange: "okx",},
-  {symbol: "ETH/USDT", exchange: "okx",},
-  {symbol: "SOL/USDT", exchange: "okx",},
-  {symbol: "XRP/USDT", exchange: "okx",},
-  {symbol: "HMT/USDT", exchange: "gate",},
-  {symbol: "ETH/USDT", exchange: "gate",},
-  {symbol: "HMT/USDT", exchange: "mexc",},
-  {symbol: "HMT/USDT", exchange: "bitfinex",},
-  {symbol: "HMT/USDT", exchange: "lbank",}
-];
-export const SUPPORTED_MARKET_MAKING_PAIRS = [
-  {symbol: "BTC/USDT", exchange: "okx",},
-  {symbol: "ETH/USDT", exchange: "okx",},
-  {symbol: "SOL/USDT", exchange: "okx",},
-  {symbol: "XRP/USDT", exchange: "okx",},
-  {symbol: "HMT/USDT", exchange: "gate",},
-  {symbol: "ETH/USDT", exchange: "gate",},
-  {symbol: "HMT/USDT", exchange: "mexc",},
-  {symbol: "HMT/USDT", exchange: "bitfinex",},
-  {symbol: "HMT/USDT", exchange: "lbank",}
-];
-export const SUPPORTED_JUST_GROW_TOKENS = [
-  {symbol: 'BTC', name: 'Bitcoin'},
-  {symbol: 'ETH', name: 'Ethereum'},
-  {symbol: 'USDT', name: 'Tether'},
-  {symbol: 'HMT', name: 'Human Token'},
-  {symbol: 'XIN', name: 'Mixin'},
-]
-
-export const SUPPORTED_UNIQUE_ARBITRAGE_PAIRS = Array.from(new Set(SUPPORTED_ARBITRAGE_PAIRS.map(pair => pair.symbol)));
 
 // Limit order needs 12, Market order needs 10, use 14 to avoid data loss
 export const ORDERBOOK_STREAM_LENGTH = 14

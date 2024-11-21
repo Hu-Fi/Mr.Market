@@ -1,16 +1,11 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import PairIcon from "$lib/components/common/pairIcon.svelte";
-  import { getSupportedArbitragePairs } from "$lib/helpers/hufi/grow";
   import { createArbPair, createArbPairSearch } from "$lib/stores/grow";
-
-  let assets = getSupportedArbitragePairs();
-  $: arbitragePairs = assets.filter((item) => {
-    return item.symbol.toUpperCase().match($createArbPairSearch.toUpperCase())
-  })
 </script>
 
 <div class="grid w-full px-4 mt-4">
@@ -48,33 +43,41 @@
       />
     </div>
 
-    <!-- Pairs -->
-    <div class="grid grid-cols-1 gap-2 w-full overflow-y-auto">
-      {#each arbitragePairs as item, i}
-        <button
-          class={clsx(
-            "flex items-center justify-start px-4 shadow-none space-x-4 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
-            "",
-          )}
-          on:click={() => {
-            createArbPair.set(item.symbol);
-            goto(`/grow/arbitrage/new/four`);
-          }}
-          data-testid={`arbitrage-pair-${i}`}
-        >
-          <PairIcon
-            clazz="w-5 h-5"
-            claxx="w-2 h-2"
-            asset0Icon={findCoinIconBySymbol(item.symbol.split("/")[0] || '')}
-            asset1Icon={findCoinIconBySymbol(item.symbol.split("/")[1] || '')}
-          />
-          <div class="flex flex-col my-2">
-            <span class="text-sm font-semibold">
-              {item.symbol}
-            </span>
-          </div>
-        </button>
-      {/each}
-    </div>
+    {#await $page.data.growInfo}
+      <div class="flex justify-center items-center w-full">
+        <span class="text-sm loading loading-spinner loading-md" />
+      </div>
+    {:then growInfo}
+      <!-- Pairs -->
+      <div class="grid grid-cols-1 gap-2 w-full overflow-y-auto">
+        {#each growInfo.arbitrage.pairs as item, i}
+          {#if !$createArbPairSearch || item.symbol.toUpperCase().contains($createArbPairSearch.toUpperCase())}
+            <button
+              class={clsx(
+                "flex items-center justify-start px-4 shadow-none space-x-4 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
+                "",
+              )}
+              on:click={() => {
+                createArbPair.set(item.symbol);
+                goto(`/grow/arbitrage/new/four`);
+              }}
+              data-testid={`arbitrage-pair-${i}`}
+            >
+              <PairIcon
+                clazz="w-5 h-5"
+                claxx="w-2 h-2"
+                asset0Icon={findCoinIconBySymbol(item.symbol.split("/")[0] || '')}
+                asset1Icon={findCoinIconBySymbol(item.symbol.split("/")[1] || '')}
+              />
+              <div class="flex flex-col my-2">
+                <span class="text-sm font-semibold">
+                  {item.symbol}
+                </span>
+              </div>
+            </button>
+          {/if}
+        {/each}
+      </div>
+    {/await}
   </div>
 </div>

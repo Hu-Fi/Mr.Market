@@ -2,7 +2,7 @@ import { page } from "$app/stores";
 import { derived } from 'svelte/store';
 import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
-import type { SimplyGrowToken } from "$lib/types/hufi/grow";
+import type { MarketMakingPair, SimplyGrowToken } from "$lib/types/hufi/grow";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -21,7 +21,6 @@ export const createArbConfirmDialog = writable(false)
 export const editArbitrageDialog = writable(false)
 export const selectArbExchange1Dialog = writable(false)
 export const selectArbExchange2Dialog = writable(false)
-export const selectArbPairDialog = writable(false)
 export const createArbExchange1: Writable<string> = writable()
 export const createArbExchange2: Writable<string> = writable()
 export const createArbExchange1Search = writable('')
@@ -34,9 +33,9 @@ export const createArbAmount = writable([])
 // Create new market making
 export const createMMConfirmDialog = writable(false)
 export const editMarketMakingDialog = writable(false)
-export const createMMEasyPair = writable({ symbol:'BTC/USDT', exchange:'okx' })
+export const createMMEasyPair = writable<MarketMakingPair>()
 export const createMMEasyAmounts = writable([])
-export const createMMSelectPairEasyFilter = writable('')
+export const createMMSelectPairEasyFilter = writable('all')
 export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow

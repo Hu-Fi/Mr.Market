@@ -1,4 +1,4 @@
-import { HUFI_BACKEND_URL, SUPPORTED_ARBITRAGE_PAIRS } from "$lib/helpers/constants";
+import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import type { GrowInfo } from "$lib/types/hufi/grow";
 
 const handleResponse = async (response: Response) => {
@@ -16,17 +16,4 @@ export const getGrowBasicInfo = async (): Promise<GrowInfo> => {
     console.error('Error fetching grow basic info:', error);
   }
   return {} as GrowInfo;
-}
-
-export const getSupportedArbitragePairs = () => {
-  return SUPPORTED_ARBITRAGE_PAIRS;
-}
-
-export const getSupportedMarketMakingPairs = async () => {
-  try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/grow/market_making/supported_pairs`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error fetching supported pairs for market making:', error);
-  }
 }

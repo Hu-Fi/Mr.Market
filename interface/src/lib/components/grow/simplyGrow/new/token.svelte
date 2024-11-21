@@ -11,18 +11,6 @@
     createJustGrowAsset,
     createJustGrowSearch,
   } from "$lib/stores/grow";
-  import { SUPPORTED_JUST_GROW_TOKENS } from "$lib/helpers/constants";
-
-  $: tokens = SUPPORTED_JUST_GROW_TOKENS.map((item: any) => ({ ...item }))
-    .filter((item) => {
-        // Filter search
-        return item.symbol
-          .toUpperCase()
-          .match($createJustGrowSearch.toUpperCase()) ||
-          item.name
-          .toUpperCase()
-          .match($createJustGrowSearch.toUpperCase());
-      })
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -78,7 +66,7 @@
             }}
             data-testid={`just-grow-token-${i}`}
           >
-            <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8" claxx="" imageClass="" />
+            <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8 min-w-8" claxx="" imageClass="" />
             <div class="flex flex-col grow">
               <span class="text-sm font-semibold">
                 {item.symbol}

@@ -10,9 +10,9 @@
   import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
-  $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
+  $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
   $: baseAssetAmount = $createMMEasyAmounts[0]
-  $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+  $: targetAssetSymbol = $createMMEasyPair ? $createMMEasyPair.target_symbol : ''
   $: targetAssetAmount = $createMMEasyAmounts[1]
 
   let btn1Loading = false;

@@ -16,7 +16,7 @@ test('create arbitrage', async ({ page }) => {
   await page.waitForURL('**/new/**');
 
   await page.getByTestId('arbitrage-first-exchange-0').click();
-  await page.getByTestId('arbitrage-second-exchange-0').click();
+  await page.getByTestId('arbitrage-second-exchange-1').click();
   await page.getByTestId('arbitrage-pair-0').click();
 
   expect(page.getByTestId(`amount-input-0`)).toBeVisible();

@@ -1,39 +1,21 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import PairIcon from "$lib/components/common/pairIcon.svelte";
   import {
     findCoinIconBySymbol,
     findExchangeIconByIdentifier,
   } from "$lib/helpers/helpers";
-
   import {
     createMMEasyPair,
     createMMSelectPairEasyFilter,
     createMMSelectPairEasySearch,
   } from "$lib/stores/grow";
-  import { SUPPORTED_EXCHANGES, SUPPORTED_MARKET_MAKING_PAIRS } from "$lib/helpers/constants";
+  import Loading from "$lib/components/common/loading.svelte";
 
-  const exchangeFilter = SUPPORTED_EXCHANGES.map((exchange) => ({
-    name: $_(exchange),
-    key: exchange,
-    icon: findExchangeIconByIdentifier(exchange),
-  }));
-
-  let assets = SUPPORTED_MARKET_MAKING_PAIRS.map((item) => ({ ...item, selected: false }));
-  $: marketMakingPairs = assets
-      .filter((item) => {
-        // Filter by exchange
-        if ($createMMSelectPairEasyFilter.toUpperCase() === 'ALL') return item;
-        return item.exchange.toUpperCase().match($createMMSelectPairEasyFilter.toUpperCase())
-      })
-      .filter((item) => {
-        // Filter search
-        return item.symbol
-          .toUpperCase()
-          .match($createMMSelectPairEasySearch.toUpperCase());
-      })
+  $: showAllExchanges = $createMMSelectPairEasyFilter === 'all'
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -84,58 +66,75 @@
       >
         <span class="font-normal text-xs"> {$_("all")} </span>
       </button>
-      {#each exchangeFilter as exchange}
-        <button
-          on:click={() => {
-            createMMSelectPairEasyFilter.set(exchange.key);
-          }}
-          class={clsx(
-            "flex items-center justify-center rounded-2xl border border-base-100 no-animation font-medium shadow-none",
-            $createMMSelectPairEasyFilter === exchange.key
-              ? "bg-base-200/60"
-              : "bg-base-100 border border-base-200",
-          )}
-        >
-          <div class="flex items-center justify-center mx-5 space-x-1 py-1.5">
-            <img src={exchange.icon} alt="" class="w-4 h-4 rounded-full" />
-            <span class="font-normal text-xs"> {exchange.name} </span>
-          </div>
-        </button>
-      {/each}
+      {#await $page.data.growInfo}
+        <div />
+      {:then growInfo}
+        {#each growInfo.exchanges as exchange}
+          <button
+            on:click={() => {
+              if ($createMMSelectPairEasyFilter === exchange.exchange_id) {
+                createMMSelectPairEasyFilter.set('all');
+                return;
+              }
+              createMMSelectPairEasyFilter.set(exchange.exchange_id);
+            }}
+            class={clsx(
+              "flex items-center justify-center rounded-2xl border border-base-100 no-animation font-medium shadow-none",
+              $createMMSelectPairEasyFilter === exchange.exchange_id
+                ? "bg-base-200/60"
+                : "bg-base-100 border border-base-200",
+            )}
+          >
+            <div class="flex items-center justify-center mx-5 space-x-1 py-1.5">
+              <img src={findExchangeIconByIdentifier(exchange.exchange_id)} alt="" class="w-4 h-4 rounded-full" />
+              <span class="font-normal text-xs"> {exchange.name} </span>
+            </div>
+          </button>
+        {/each}
+      {/await}
     </div>
   </div>
 
   <!-- Pairs -->
   <div class="px-2 w-full !mt-6">
-    <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
-      {#each marketMakingPairs as item, i}
-        <button
-          class={clsx(
-            "flex items-center justify-center shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
-            "",
-          )}
-          on:click={() => {
-            createMMEasyPair.set(item);
-            goto(`/grow/market_making/new/two/`);
-          }}
-          data-testid={`market-making-pair-${i}`}
-        >
-          <PairIcon
-            clazz="w-5 h-5"
-            claxx="w-2 h-2"
-            asset0Icon={findCoinIconBySymbol(item.symbol.split("/")[0])}
-            asset1Icon={findCoinIconBySymbol(item.symbol.split("/")[1])}
-          />
-          <div class="flex flex-col">
-            <span class="text-sm font-semibold">
-              {item.symbol}
-            </span>
-            <span class="text-xs !text-[10px] opacity-60 capitalize">
-              {item.exchange}
-            </span>
-          </div>
-        </button>
-      {/each}
-    </div>
+    {#await $page.data.growInfo}
+      <Loading />
+    {:then growInfo}
+      <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
+        {#each growInfo.market_making.pairs as item, i}
+          <!-- Filter by exchange -->
+          {#if showAllExchanges || item.exchange_id.toUpperCase().match($createMMSelectPairEasyFilter.toUpperCase())}
+            <!-- Filter by search -->
+            {#if $createMMSelectPairEasySearch.toUpperCase() === '' || item.symbol.toUpperCase().match($createMMSelectPairEasySearch.toUpperCase())}
+              <button
+                class={clsx(
+                  "flex items-center justify-center shadow-none space-x-2 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
+              )}
+                on:click={() => {
+                  createMMEasyPair.set(item);
+                  goto(`/grow/market_making/new/two/`);
+                }}
+                data-testid={`market-making-pair-${i}`}
+              >
+                <PairIcon
+                  clazz="w-5 h-5"
+                  claxx="w-2 h-2"
+                  asset0Icon={findCoinIconBySymbol(item.base_symbol)}
+                  asset1Icon={findCoinIconBySymbol(item.target_symbol)}
+                />
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold">
+                    {item.symbol}
+                  </span>
+                  <span class="text-xs !text-[10px] opacity-60 capitalize">
+                    {item.exchange_id}
+                  </span>
+                </div>
+              </button>
+            {/if}
+          {/if}
+        {/each}
+      </div>
+    {/await}
   </div>
 </div>
