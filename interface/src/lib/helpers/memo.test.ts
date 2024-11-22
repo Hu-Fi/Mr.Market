@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { GenerateSpotMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from './memo';
+import { GenerateSpotTradingMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from './memo';
 
 vi.mock('$env/dynamic/public', () => {
   return {
@@ -15,7 +15,7 @@ vi.mock('$env/dynamic/public', () => {
 });describe('Memo Generation', () => {
 
   it('Generates correct Spot Memo', () => {
-    const memo = GenerateSpotMemo({
+    const memo = GenerateSpotTradingMemo({
       limit: true,
       buy: true,
       symbol: 'BTC/USDT',
@@ -24,7 +24,7 @@ vi.mock('$env/dynamic/public', () => {
     });
     // Assuming the PAIRS_MAP_REVERSED['BTC/USDT-ERC20'] = 'Z7GC'
     const encoded = Buffer.from('SP:LB:01:Z7GC:50000:', 'binary').toString('base64').replaceAll('=', '');
-    console.log(`GenerateSpotMemo: ${encoded}`)
+    console.log(`GenerateSpotTradingMemo: ${encoded}`)
     expect(memo).toBe(encoded);
   });
 

@@ -38,7 +38,7 @@ export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entri
 export const REVERSED_SPOT_EXCHANGE_MAP: Record<string, string> = Object.entries(SPOT_EXCHANGE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
-export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
+export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
   let finalSymbol = symbol;
   if (symbol.endsWith('USDT')) {
     finalSymbol = `${symbol}-ERC20`
@@ -47,12 +47,12 @@ export const GenerateSpotMemo = ({ limit, buy, symbol, exchange, price }: { limi
   const spotOrderType = limit ? (buy ? 'LB' : 'LS') : (buy ? 'MB' : 'MS');
   const exchangeId = REVERSED_SPOT_EXCHANGE_MAP[exchange.toLowerCase()];
   if (!exchange) {
-    console.error(`GenerateSpotMemo failed to get exchange:${exchange}`);
+    console.error(`GenerateSpotTradingMemo failed to get exchange:${exchange}`);
     return;
   }
   const pairId = PAIRS_MAP_REVERSED[finalSymbol]
   if (!pairId) {
-    console.error(`GenerateSpotMemo failed to get pairId for symbol:${symbol}`)
+    console.error(`GenerateSpotTradingMemo failed to get pairId for symbol:${symbol}`)
     return;
   }
   const limitPriceOrRefId = price || '0';

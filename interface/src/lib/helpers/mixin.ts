@@ -9,7 +9,7 @@ import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
-import { GenerateSpotMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from "$lib/helpers/memo";
+import { GenerateSpotTradingMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userArbitrageOrders, userAssets, userMarketMakingOrders, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
@@ -293,7 +293,7 @@ export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: 
     console.error('Failed to get asset id because invaild symbol submmited')
     return;
   }
-  const memo = GenerateSpotMemo({ limit, buy, symbol, price, exchange });
+  const memo = GenerateSpotTradingMemo({ limit, buy, symbol, price, exchange });
   if (buy) {
     return mixinPay({ asset_id: secondAssetID, amount, memo, trace_id: trace });
   }
