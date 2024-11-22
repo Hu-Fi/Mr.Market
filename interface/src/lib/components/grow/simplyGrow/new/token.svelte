@@ -56,26 +56,28 @@
     <div class="px-2 w-full !mt-6">
       <div class="grid grid-cols-2 gap-3 w-full overflow-y-auto">
         {#each growInfo.simply_grow.tokens as item, i}
-          <button
-            class={clsx(
+          {#if $createJustGrowSearch.length === 0 || item.symbol.toUpperCase().includes($createJustGrowSearch.toUpperCase()) || item.name.toUpperCase().includes($createJustGrowSearch.toUpperCase())}
+            <button
+              class={clsx(
               "flex flex-row px-4 items-center space-x-4 justify-start shadow-none py-3 bg-base-100 border border-base-200 rounded-xl text-start",
             )}
-            on:click={() => {
-              createJustGrowAsset.set(item);
-              goto(`/grow/simply_grow/new/two/`);
-            }}
-            data-testid={`just-grow-token-${i}`}
-          >
-            <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8 min-w-8" claxx="" imageClass="" />
-            <div class="flex flex-col grow">
-              <span class="text-sm font-semibold">
-                {item.symbol}
-              </span>
-              <span class="text-xs !text-[10px] opacity-60 capitalize">
-                {item.name}
-              </span>
-            </div>
-          </button>
+              on:click={() => {
+                createJustGrowAsset.set(item);
+                goto(`/grow/simply_grow/new/two/`);
+              }}
+              data-testid={`just-grow-token-${i}`}
+            >
+              <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8 min-w-8" claxx="" imageClass="" />
+              <div class="flex flex-col grow">
+                <span class="text-sm font-semibold">
+                  {item.symbol}
+                </span>
+                <span class="text-xs !text-[10px] opacity-60 capitalize">
+                  {item.name}
+                </span>
+              </div>
+            </button>
+          {/if}
         {/each}
       </div>
     </div>

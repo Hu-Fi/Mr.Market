@@ -51,7 +51,7 @@
       <!-- Pairs -->
       <div class="grid grid-cols-1 gap-2 w-full overflow-y-auto">
         {#each growInfo.arbitrage.pairs as item, i}
-          {#if !$createArbPairSearch || item.symbol.toUpperCase().contains($createArbPairSearch.toUpperCase())}
+          {#if ($createArbPairSearch.length === 0 || item.symbol.toUpperCase().includes($createArbPairSearch.toUpperCase()))}
             <button
               class={clsx(
                 "flex items-center justify-start px-4 shadow-none space-x-4 py-3 bg-base-100 border border-base-200 rounded-xl text-start",
