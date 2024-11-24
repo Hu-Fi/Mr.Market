@@ -39,7 +39,6 @@ import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  isExchangeIndexValueValid,
   isSpotOrderTypeValueValid,
   isTradingTypeValueValid,
 } from 'src/common/helpers/checks/spotChecks';
@@ -71,9 +70,6 @@ export class SpotOrderListener {
       return;
     }
     if (!isSpotOrderTypeValueValid(event.spotOrderType)) {
-      return;
-    }
-    if (!isExchangeIndexValueValid(event.exchangeName)) {
       return;
     }
     console.log(`spot.create:${JSON.stringify(event)}`);

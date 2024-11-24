@@ -115,8 +115,9 @@
             <th></th>
             <th>{"symbol"}</th>
             <th>{"base_symbol"}</th>
-            <th>{"base_asset_id"}</th>
             <th>{"target_symbol"}</th>
+            <th>{"id"}</th>
+            <th>{"base_asset_id"}</th>
             <th>{"target_asset_id"}</th>
             <th>{"base_icon_url"}</th>
             <th>{"target_icon_url"}</th>
@@ -141,10 +142,13 @@
                 <span class="text-xs select-text"> {pair.base_symbol} </span>
               </td>
               <td>
-                <span class="text-xs select-text"> {pair.base_asset_id} </span>
+                <span class="text-xs select-text"> {pair.target_symbol} </span>
               </td>
               <td>
-                <span class="text-xs select-text"> {pair.target_symbol} </span>
+                <span class="text-xs select-text"> {pair.id} </span>
+              </td>
+              <td>
+                <span class="text-xs select-text"> {pair.base_asset_id} </span>
               </td>
               <td>
                 <span class="text-xs select-text"> {pair.target_asset_id} </span>

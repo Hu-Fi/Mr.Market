@@ -73,15 +73,16 @@ import {
   MixinCashier,
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
-import {
-  decodeArbitrageMemo,
-  decodeMarketMakingMemo,
-  decodeSpotMemo,
-} from 'src/common/helpers/mixin/memo';
+// import { memoPreDecode } from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
+import {
+  decodeMarketMakingMemo,
+  decodeArbitrageMemo,
+  decodeSpotMemo,
+} from 'src/common/helpers/mixin/memo';
 
 @Injectable()
 export class SnapshotsService {
@@ -115,30 +116,6 @@ export class SnapshotsService {
 
     this.enableCron = this.configService.get<string>('strategy.run') === 'true';
     this.logger.log(this.enableCron);
-  }
-
-  async createSnapshot(snapshot: SafeSnapshot) {
-    try {
-      return await this.snapshotsRepository.createSnapshot(snapshot);
-    } catch (e) {
-      this.logger.error(`createSnapshot()=> ${e}`);
-    }
-  }
-
-  async fetchAndProcessSnapshots() {
-    try {
-      const snapshots = await this.client.safe.fetchSafeSnapshots({});
-      if (!snapshots) {
-        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
-        return;
-      }
-      snapshots.forEach(async (snapshot: SafeSnapshot) => {
-        await this.handleSnapshot(snapshot);
-      });
-      return snapshots;
-    } catch (error) {
-      this.logger.error(`Failed to fetch snapshots: ${error}`);
-    }
   }
 
   async depositAddress(asset_id: string) {
@@ -518,32 +495,56 @@ export class SnapshotsService {
     }
   }
 
+  async createSnapshot(snapshot: SafeSnapshot) {
+    try {
+      return await this.snapshotsRepository.createSnapshot(snapshot);
+    } catch (e) {
+      this.logger.error(`createSnapshot()=> ${e}`);
+    }
+  }
+
+  async fetchAndProcessSnapshots() {
+    try {
+      const snapshots = await this.client.safe.fetchSafeSnapshots({});
+      if (!snapshots) {
+        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
+        return;
+      }
+      snapshots.forEach(async (snapshot: SafeSnapshot) => {
+        await this.handleSnapshot(snapshot);
+      });
+      return snapshots;
+    } catch (error) {
+      this.logger.error(`Failed to fetch snapshots: ${error}`);
+    }
+  }
+
   private async handleSnapshot(snapshot: SafeSnapshot) {
     const exist = await this.snapshotsRepository.checkSnapshotExist(
       snapshot.snapshot_id,
     );
+
+    // Snapshot already being processed
     if (exist) {
       return;
     }
-    if (!snapshot.memo) {
-      await this.createSnapshot(snapshot);
-      this.logger.log('snapshot no memo, return');
-      return;
-    }
-    if (snapshot.memo.length === 0) {
-      await this.createSnapshot(snapshot);
-      this.logger.log('snapshot.memo.length === 0, return');
-      // await this.refund(snapshot);
-      return;
-    }
 
-    // this.logger.log(`encodedMemo:${snapshot.memo}`);
+    // Snapshot has no memo, store and refund
+    // if (!snapshot.memo || snapshot.memo.length === 0) {
+    //   await this.createSnapshot(snapshot);
+    //   return;
+    // }
+
+    // // Base58 decode memo, verify checksum, refund if invalid
+    // const { payload, version, tradingTypeKey } = memoPreDecode(snapshot.memo);
+    // if (!payload) {
+    //   await this.createSnapshot(snapshot);
+    //   return;
+    // }
+
     const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    // this.logger.log(`hexDecoedMemo:${hexDecoedMemo}`);
     const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    // this.logger.log(`decodedMemo:${decodedMemo}`);
     const tradingType = decodedMemo.slice(0, 2);
-    // this.logger.log(`tradingType:${tradingType}`);
     switch (tradingType) {
       case 'SP':
         const spotDetails = decodeSpotMemo(decodedMemo);

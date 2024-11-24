@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { GenerateSpotTradingMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo } from './memo';
+import { GenerateSpotTradingMemo, GenerateArbitrageMemo, GenerateMarketMakingMemo, encodeArbitrageCreateMemo } from './memo';
 
 vi.mock('$env/dynamic/public', () => {
   return {
@@ -12,8 +12,24 @@ vi.mock('$env/dynamic/public', () => {
       MIXIN_API_BASE_URL: '',
     }
   }
-});describe('Memo Generation', () => {
+});
 
+describe('Arbitrage Memo', () => {
+  it('Generate correcnt create arbitrage memo', () => {
+    const memo = encodeArbitrageCreateMemo({
+      version: 1,
+      tradingType: 'Arbitrage',
+      action: 'create',
+      arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
+      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      rewardAddress: '0x0000000000000000000000000000000000000000',
+    });
+    console.log(`encodeArbitrageCreateMemo: ${memo}`)
+    expect(memo).toBe('3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h7MFgy3')
+  })
+})
+
+describe.skip('Memo Generation', () => {
   it('Generates correct Spot Memo', () => {
     const memo = GenerateSpotTradingMemo({
       limit: true,

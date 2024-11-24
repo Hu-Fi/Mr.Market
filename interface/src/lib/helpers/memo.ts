@@ -1,32 +1,46 @@
+import { createHash } from "crypto";
 import { PAIRS_MAP_REVERSED } from "./constants";
+import base58 from "bs58";
 
 // related to 
 // /server/src/common/helpers/mixin/memo.ts
 // /server/src/common/constants/memo.ts
 export const TARDING_TYPE_MAP: Record<string, string> = {
-  SP: 'Spot',
-  SW: 'Swap',
-  SG: 'Simply Grow',
-  MM: 'Market Making',
-  AR: 'Arbitrage',
-  LE: 'Leverage',
-  PE: 'Perpetual',
+  0: 'Spot',
+  1: 'Swap',
+  2: 'Simply Grow',
+  3: 'Market Making',
+  4: 'Arbitrage',
+  5: 'Leverage',
+  6: 'Perpetual',
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
-  LB: 'Limit Buy',
-  LS: 'Limit Sell',
-  MB: 'Market Buy',
-  MS: 'Market Sell',
+  0: 'Limit Buy',
+  1: 'Limit Sell',
+  2: 'Market Buy',
+  3: 'Market Sell',
 };
 
 export const SPOT_EXCHANGE_MAP: Record<string, string> = {
-  '01': 'binance',
-  '02': 'bitfinex',
-  '03': 'mexc',
-  '04': 'okx',
-  '05': 'gate',
-  '06': 'lbank',
+  1: 'binance',
+  2: 'bitfinex',
+  3: 'mexc',
+  4: 'okx',
+  5: 'gate',
+  6: 'lbank',
+};
+
+// Decode memo for payment related actions, delete is jwt protected
+export const ARBITRAGE_MEMO_ACTION_MAP: Record<string, string> = {
+  1: 'create',
+  2: 'deposit',
+};
+
+// Decode memo for payment related actions, delete is jwt protected
+export const MARKET_MAKING_MEMO_ACTION_MAP: Record<string, string> = {
+  1: 'create',
+  2: 'deposit',
 };
 
 export const REVERSED_TARDING_TYPE_MAP: Record<string, string> = Object.entries(TARDING_TYPE_MAP)
@@ -37,6 +51,67 @@ export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entri
 
 export const REVERSED_SPOT_EXCHANGE_MAP: Record<string, string> = Object.entries(SPOT_EXCHANGE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
+
+
+export const encodeArbitrageCreateMemo = (
+  details: {
+    version: number
+    tradingType: string
+    action: string
+    arbitragePairId: string
+    traceId: string
+    rewardAddress: string
+  },
+): string => {
+  // Get numeric keys for tradingType and action
+  const tradingTypeKey = Number(
+    Object.keys(TARDING_TYPE_MAP).find(
+      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+    ),
+  );
+  const actionKey = Number(
+    Object.keys(ARBITRAGE_MEMO_ACTION_MAP).find(
+      (key) => ARBITRAGE_MEMO_ACTION_MAP[key] === details.action,
+    ),
+  );
+
+  if (tradingTypeKey === undefined || actionKey === undefined) {
+    throw new Error('Invalid memo details');
+  }
+
+  // Serialize fields into binary
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+  const actionBuffer = Buffer.from([actionKey]);
+
+  const arbitragePairIdBuffer = Buffer.from(
+    details.arbitragePairId.replace(/-/g, ''),
+    'hex',
+  ); // UUID as binary
+  const traceIdBuffer = Buffer.from(details.traceId.replace(/-/g, ''), 'hex'); // UUID as binary
+  const rewardAddressBuffer = Buffer.from(
+    details.rewardAddress.replace(/^0x/, ''),
+    'hex',
+  ); // Ethereum address as binary
+
+  // Concatenate all parts
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    actionBuffer,
+    arbitragePairIdBuffer,
+    traceIdBuffer,
+    rewardAddressBuffer,
+  ]);
+
+  // Compute checksum
+  const checksum = computeMemoChecksum(payload);
+
+  // Concatenate payload and checksum
+  const completeBuffer = Buffer.concat([payload, checksum]);
+  return base58.encode(completeBuffer);
+};
+
 
 export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
   let finalSymbol = symbol;
@@ -128,3 +203,8 @@ export const GenerateMarketMakingMemo = ({
   const memo = `${tradingType}:${actionCode}:${exchangeId}:${symbolKey}:${orderId}`;
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 };
+
+function computeMemoChecksum(buffer: Buffer): Buffer {
+  const hash = createHash('sha256').update(buffer).digest();
+  return createHash('sha256').update(hash).digest().subarray(0, 4);
+}
