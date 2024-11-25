@@ -19,6 +19,7 @@
  * - constructor: Initializes the winston logger with specified configuration and log file paths.
  * - log(message: any, context?: string): Logs informational messages. Uses NestJS's log method and winston for file logging.
  * - error(message: any, trace?: string, context?: string): Logs error messages with trace information. Uses NestJS's error method and winston for file logging.
+ * - warn(message: any, context?: string): Logs warning messages. Uses NestJS's warn method.
  * - debug(message: any, context?: string): Logs debug messages. Uses NestJS's debug method.
  * - onModuleInit(): Logs a message when the logger module is initialized.
  * - onModuleDestroy(): Logs a message when the logger module is destroyed and performs any necessary cleanup.
@@ -32,10 +33,12 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
 import * as winston from 'winston';
 import * as path from 'path';
+import axios from 'axios';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CustomLogger extends Logger {
   private logger: winston.Logger;
+  private discordWebhookUrl: string;
 
   constructor(context?: string) {
     super(context);
@@ -64,35 +67,44 @@ export class CustomLogger extends Logger {
         }),
       ],
     });
+    this.discordWebhookUrl = process.env.DISCORD_LOG_WEBHOOK_URL ?? '';
+  }
+
+  async logToDiscord(message: string, level: string = 'INFO') {
+    if (this.discordWebhookUrl.length === 0) {
+      return;
+    }
+
+    try {
+      await axios.post(this.discordWebhookUrl, {
+        content: `[${level}] ${message}`,
+      });
+    } catch (error) {
+      super.error('Failed to send log to Discord', error.message);
+    }
   }
 
   log(message: any, context?: string) {
-    if (context) {
-      super.log(message, context); // NestJS's internal logging
-      this.logger.info(message, { context }); // winston log into file
-      return;
-    }
-    super.log(message);
-    this.logger.info(message);
+    super.log(message, context);
+    this.logger.info(message, { context });
+    this.logToDiscord(message, 'INFO');
   }
 
   error(message: any, trace?: string, context?: string) {
-    if (context) {
-      super.error(message, trace, context); // NestJS's internal error logging
-      this.logger.error(`${message}, Trace: ${trace}`, { context }); // winston log into file
-      return;
-    }
-    super.error(message, trace);
-    this.logger.error(`${message}, Trace: ${trace}`);
+    super.error(message, trace, context);
+    this.logger.error(`${message}, Trace: ${trace}`, { context });
+    // this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
   }
 
-  // Implement warn, debug, verbose similarly...
   debug(message: any, context?: string) {
-    if (context) {
-      super.debug(message, context); // NestJS's internal logging
-      return;
-    }
-    super.debug(message);
+    super.debug(message, context);
+    this.logger.debug(message, { context });
+  }
+
+  warn(message: any, context?: string) {
+    super.warn(message, context);
+    this.logger.warn(message, { context });
+    // this.logToDiscord(message, 'WARNING');
   }
 
   onModuleInit() {

@@ -47,7 +47,7 @@
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { getUuid } from '@mixin.dev/mixin-node-sdk';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
@@ -62,10 +62,11 @@ import {
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
 import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class RebalanceService {
-  private readonly logger = new Logger(RebalanceService.name);
+  private readonly logger = new CustomLogger(RebalanceService.name);
 
   constructor(
     private configService: ConfigService,

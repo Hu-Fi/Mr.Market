@@ -162,7 +162,7 @@ export class StrategyService {
 
     // Extract the parameters and run the strategy based on its type
     const { parameters, strategyType } = strategyInstance;
-    console.log(parameters);
+    this.logger.debug(parameters);
     switch (strategyType) {
       case 'arbitrage':
         await this.startArbitrageStrategyForUser(

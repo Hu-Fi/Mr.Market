@@ -46,7 +46,6 @@ class ExchangeInitServiceMock {
 
 describe('StrategyService', () => {
   let service: StrategyService;
-  let adminService: AdminService;
 
   // Example mock repository implementation
   const mockOrderRepository = {
@@ -104,8 +103,6 @@ describe('StrategyService', () => {
     }).compile();
 
     service = module.get<StrategyService>(StrategyService);
-    adminService = module.get<AdminService>(AdminService);
-    console.log(adminService);
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
       '1-client1-arbitrage',

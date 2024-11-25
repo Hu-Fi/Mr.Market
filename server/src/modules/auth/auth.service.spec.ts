@@ -20,7 +20,6 @@ jest.mock('src/common/helpers/mixin/user');
 describe('AuthService', () => {
   let authService: AuthService;
   let jwtService: JwtService;
-  let configService: ConfigService;
   let userService: UserService;
 
   beforeEach(async () => {
@@ -61,8 +60,6 @@ describe('AuthService', () => {
 
     authService = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
-    configService = module.get<ConfigService>(ConfigService);
-    console.log(configService);
     userService = module.get<UserService>(UserService);
   });
 
