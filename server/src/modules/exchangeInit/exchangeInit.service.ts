@@ -15,7 +15,7 @@ export class ExchangeInitService {
   constructor() {
     this.initializeExchanges()
       .then(() => {
-        this.logger.log('Exchanges initialized successfully.');
+        this.logger.debug('Exchanges initialized successfully.');
         this.startKeepAlive();
       })
       .catch((error) =>
@@ -325,7 +325,7 @@ export class ExchangeInitService {
               if (config.name === 'probit' && exchange.has['signIn']) {
                 try {
                   await exchange.signIn();
-                  this.logger.log(
+                  this.logger.debug(
                     `${config.name} ${account.label} signed in successfully.`,
                   );
                 } catch (error) {
@@ -337,7 +337,7 @@ export class ExchangeInitService {
 
               // Save the initialized exchange
               exchangeMap.set(account.label, exchange);
-              this.logger.log(
+              this.logger.debug(
                 `${config.name} ${account.label} initialized successfully.`,
               );
 
@@ -362,14 +362,16 @@ export class ExchangeInitService {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
 
     setInterval(async () => {
-      this.logger.log('Running keep-alive checks for all exchanges...');
+      this.logger.debug('Running keep-alive checks for all exchanges...');
       for (const [exchangeName, accounts] of this.exchanges) {
         if (exchangeName === 'probit') {
           for (const [label, exchange] of accounts) {
             try {
               if (exchange.has['signIn']) {
                 await exchange.signIn().then(() => {
-                  this.logger.log(`ProBit ${label} re-signed in successfully.`);
+                  this.logger.debug(
+                    `ProBit ${label} re-signed in successfully.`,
+                  );
                 }); // Explicitly refresh the session
               } else {
                 this.logger.debug(
@@ -459,7 +461,7 @@ export class ExchangeInitService {
         );
       }
 
-      this.logger.log(
+      this.logger.debug(
         `Fetched deposit address for ${tokenSymbol} on ${network}: ${addressInfo.address}`,
       );
       return addressInfo.address;

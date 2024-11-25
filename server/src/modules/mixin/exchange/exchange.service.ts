@@ -344,7 +344,7 @@ export class ExchangeService {
             );
           }
         } else {
-          this.logger.log(
+          this.logger.warn(
             'The exchange does not support createDepositAddress()',
           );
         }

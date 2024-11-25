@@ -99,7 +99,7 @@ export class MarketdataService {
         'Exchange does not support fetchTickers or is not configured.',
       );
     }
-    this.logger.log(
+    this.logger.debug(
       `Fetching tickers from ${this.exchange.name} for ${symbols}`,
     );
 
@@ -120,7 +120,7 @@ export class MarketdataService {
         'Exchange does not support fetchOHLCV or is not configured.',
       );
     }
-    this.logger.log(
+    this.logger.debug(
       `Fetching OHLCV data from ${this.exchange.name} for ${symbol}`,
     );
 
