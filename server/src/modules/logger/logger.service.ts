@@ -67,7 +67,7 @@ export class CustomLogger extends Logger {
         }),
       ],
     });
-    this.discordWebhookUrl = process.env.DISCORD_LOG_WEBHOOK_URL;
+    this.discordWebhookUrl = process.env.DISCORD_LOG_WEBHOOK_URL ?? '';
   }
 
   async logToDiscord(message: string, level: string = 'INFO') {
