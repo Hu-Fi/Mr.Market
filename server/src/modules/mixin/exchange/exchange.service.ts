@@ -311,9 +311,9 @@ export class ExchangeService {
       };
     } catch (error) {
       if (error instanceof ccxt.InvalidAddress) {
-        this.logger.log(`The address for ${symbol} does not exist yet`);
+        this.logger.debug(`The address for ${symbol} does not exist yet`);
         if (e.has['createDepositAddress']) {
-          this.logger.log(
+          this.logger.debug(
             `Attempting to create a deposit address for ${symbol}...`,
           );
 
@@ -329,27 +329,27 @@ export class ExchangeService {
             try {
               const fetchResult = await e.fetchDepositAddress(symbol);
 
-              this.logger.log(
+              this.logger.debug(
                 `Successfully fetched deposit address for ${symbol}`,
               );
-              this.logger.log(fetchResult);
+              this.logger.debug(fetchResult);
             } catch (e) {
-              this.logger.log(
+              this.logger.error(
                 `Failed to fetch deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
               );
             }
           } catch (e) {
-            this.logger.log(
+            this.logger.error(
               `Failed to create deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
             );
           }
         } else {
-          this.logger.log(
+          this.logger.warn(
             'The exchange does not support createDepositAddress()',
           );
         }
       } else {
-        this.logger.log(
+        this.logger.error(
           `There was an error while fetching deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
         );
       }
