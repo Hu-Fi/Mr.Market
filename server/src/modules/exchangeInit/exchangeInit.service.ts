@@ -307,7 +307,7 @@ export class ExchangeInitService {
           config.accounts.map(async (account) => {
             try {
               if (!account.apiKey || !account.secret) {
-                this.logger.warn(
+                this.logger.debug(
                   `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
                 );
                 return;
@@ -329,7 +329,7 @@ export class ExchangeInitService {
                     `${config.name} ${account.label} signed in successfully.`,
                   );
                 } catch (error) {
-                  this.logger.warn(
+                  this.logger.error(
                     `ProBit ${account.label} sign-in failed: ${error.message}`,
                   );
                 }
@@ -346,7 +346,7 @@ export class ExchangeInitService {
                 this.defaultAccounts.set(config.name, exchange);
               }
             } catch (error) {
-              this.logger.warn(
+              this.logger.error(
                 `Failed to initialize ${config.name} ${account.label}: ${error.message}`,
               );
             }
@@ -372,12 +372,12 @@ export class ExchangeInitService {
                   this.logger.log(`ProBit ${label} re-signed in successfully.`);
                 }); // Explicitly refresh the session
               } else {
-                this.logger.warn(
+                this.logger.debug(
                   `ProBit ${label} does not support signIn. Skipping.`,
                 );
               }
             } catch (error) {
-              this.logger.warn(
+              this.logger.error(
                 `ProBit ${label} keep-alive signIn failed: ${error.message}`,
               );
             }

@@ -195,7 +195,7 @@ export class MessageService implements OnModuleInit {
       // Add message record if not exist in db
       const processed = this.addMessageIfNotExist({ ...msg }, msg.message_id);
       if (!processed) {
-        this.logger.log(`message ${msg.message_id} was not processed`);
+        this.logger.warn(`message ${msg.message_id} was not processed`);
         return;
       }
 
