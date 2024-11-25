@@ -56,9 +56,12 @@ import {
 } from 'src/modules/mixin/events/spot.event';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class SpotOrderListener {
+  private readonly logger = new CustomLogger(SpotOrderListener.name);
+
   constructor(
     private exchangeService: ExchangeService,
     private eventEmitter: EventEmitter2,
@@ -76,7 +79,7 @@ export class SpotOrderListener {
     if (!isExchangeIndexValueValid(event.exchangeName)) {
       return;
     }
-    console.log(`spot.create:${JSON.stringify(event)}`);
+    this.logger.debug(`spot.create:${JSON.stringify(event)}`);
 
     // Get Asset ID of buy and sell asset
     const symbol = getPairSymbolByKey(event.destId as PairsMapKey);

@@ -19,7 +19,6 @@ describe('AdminService', () => {
   let service: AdminService;
   let web3Service: Web3Service;
   let strategyService: StrategyService;
-  let performanceService: PerformanceService;
 
   const mockContributionRepository = {
     findOne: jest.fn(),
@@ -83,8 +82,6 @@ describe('AdminService', () => {
     service = module.get<AdminService>(AdminService);
     strategyService = module.get<StrategyService>(StrategyService);
     web3Service = module.get<Web3Service>(Web3Service);
-    performanceService = module.get<PerformanceService>(PerformanceService);
-    console.log(performanceService);
   });
 
   describe('startStrategy', () => {

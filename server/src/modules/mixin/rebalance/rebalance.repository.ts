@@ -8,9 +8,12 @@ import {
   RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
 import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/constants';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class RebalanceRepository {
+  private readonly logger = new CustomLogger(RebalanceRepository.name);
+
   constructor(
     @InjectRepository(RebalanceToken)
     private tokenRepository: Repository<RebalanceToken>,
@@ -105,13 +108,16 @@ export class RebalanceRepository {
         exchange: exchange,
         minimumBalance: minimumBalance,
       });
-      console.log('this.tokenExchangeRepository.create()=>', {
-        token_id: assetId,
-        exchange_id: exchangeName,
-        token: token,
-        exchange: exchange,
-        minimumBalance: minimumBalance,
-      });
+      this.logger.debug(
+        'this.tokenExchangeRepository.create()=>',
+        JSON.stringify({
+          token_id: assetId,
+          exchange_id: exchangeName,
+          token: token,
+          exchange: exchange,
+          minimumBalance: minimumBalance,
+        }),
+      );
       await this.tokenExchangeRepository.save(tokenExchange);
     }
   }

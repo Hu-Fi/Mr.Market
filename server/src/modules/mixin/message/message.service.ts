@@ -204,7 +204,7 @@ export class MessageService implements OnModuleInit {
     // callback when group information update, which your bot is in
     onConversation: async (msg) => {
       const group = await this.client.conversation.fetch(msg.conversation_id);
-      console.log(`group ${group.name} information updated`);
+      this.logger.debug(`group ${group.name} information updated`);
     },
   };
 }

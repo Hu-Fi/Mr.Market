@@ -29,8 +29,7 @@ describe.skip('getBestFeeByAssetID', () => {
     service = module.get<RebalanceService>(RebalanceService);
   });
 
-  it('hello', () => {
-    console.log('hello');
+  it('call rebalance', () => {
     service.rebalance();
   });
 });
