@@ -36,7 +36,6 @@ describe('StrategyController', () => {
 
     controller = module.get<StrategyController>(StrategyController);
     adminService = module.get<AdminStrategyService>(AdminStrategyService);
-    console.log(adminService);
   });
 
   it('should be defined', () => {

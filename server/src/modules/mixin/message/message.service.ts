@@ -195,7 +195,7 @@ export class MessageService implements OnModuleInit {
       // Add message record if not exist in db
       const processed = this.addMessageIfNotExist({ ...msg }, msg.message_id);
       if (!processed) {
-        this.logger.log(`message ${msg.message_id} was not processed`);
+        this.logger.warn(`message ${msg.message_id} was not processed`);
         return;
       }
 
@@ -204,7 +204,7 @@ export class MessageService implements OnModuleInit {
     // callback when group information update, which your bot is in
     onConversation: async (msg) => {
       const group = await this.client.conversation.fetch(msg.conversation_id);
-      console.log(`group ${group.name} information updated`);
+      this.logger.debug(`group ${group.name} information updated`);
     },
   };
 }

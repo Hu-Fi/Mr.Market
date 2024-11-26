@@ -60,7 +60,7 @@ export class MessageController {
         privateMessageDto.message,
       );
     } catch (e) {
-      this.logger.error(`Error sending priavet message: ${e.message}`);
+      this.logger.error(`Error sending private message: ${e.message}`);
       throw e;
     }
   }

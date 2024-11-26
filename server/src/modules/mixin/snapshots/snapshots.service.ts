@@ -119,7 +119,7 @@ export class SnapshotsService {
 
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
-    this.logger.log(this.enableCron);
+    this.logger.debug(this.enableCron);
   }
 
   async depositAddress(asset_id: string) {
@@ -152,7 +152,7 @@ export class SnapshotsService {
         ? asset
         : await this.client.network.fetchAsset(asset.chain_id);
     const fee = chain;
-    this.logger.log(fee);
+    this.logger.debug(fee);
 
     // withdrawal with chain asset as fee
     if (fee.asset_id !== asset.asset_id) {
@@ -203,7 +203,7 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         memo,
       );
-      this.logger.log(tx);
+      this.logger.debug(tx);
       // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
@@ -239,14 +239,14 @@ export class SnapshotsService {
         'withdrawal-fee-memo',
         [ref],
       );
-      this.logger.log(feeTx);
+      this.logger.debug(feeTx);
       // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
-      this.logger.log(feeRaw);
+      this.logger.debug(feeRaw);
 
       const txId = randomUUID();
       const feeId = randomUUID();
-      this.logger.log(txId, feeId);
+      this.logger.debug(txId, feeId);
       const txs = await this.client.utxo.verifyTransaction([
         {
           raw,
@@ -276,7 +276,7 @@ export class SnapshotsService {
           request_id: feeId,
         },
       ]);
-      this.logger.log(res);
+      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
     // withdrawal with asset as fee
@@ -285,7 +285,7 @@ export class SnapshotsService {
         asset: asset_id,
         state: 'unspent',
       });
-      this.logger.log(outputs);
+      this.logger.debug(outputs);
 
       const recipients = [
         // withdrawal output, must be put first
@@ -329,12 +329,12 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         'withdrawal-memo',
       );
-      this.logger.log(tx);
+      this.logger.debug(tx);
       // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
-      this.logger.log(request_id);
+      this.logger.debug(request_id);
       const txs = await this.client.utxo.verifyTransaction([
         {
           raw,
@@ -350,7 +350,7 @@ export class SnapshotsService {
           request_id,
         },
       ]);
-      this.logger.log(res);
+      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
   }
@@ -524,6 +524,23 @@ export class SnapshotsService {
   }
 
   private async handleSnapshot(snapshot: SafeSnapshot) {
+    const exist = await this.snapshotsRepository.checkSnapshotExist(
+      snapshot.snapshot_id,
+    );
+    if (exist) {
+      return;
+    }
+    if (!snapshot.memo) {
+      await this.createSnapshot(snapshot);
+      this.logger.warn('snapshot no memo, return');
+      return;
+    }
+    if (snapshot.memo.length === 0) {
+      await this.createSnapshot(snapshot);
+      this.logger.warn('snapshot.memo.length === 0, return');
+      // await this.refund(snapshot);
+      return;
+    }
     try {
       const exist = await this.snapshotsRepository.checkSnapshotExist(
         snapshot.snapshot_id,

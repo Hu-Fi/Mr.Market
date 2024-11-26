@@ -105,7 +105,7 @@ describe('StrategyService', () => {
 
     service = module.get<StrategyService>(StrategyService);
     adminService = module.get<AdminStrategyService>(AdminStrategyService);
-    console.log(adminService);
+
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
       '1-client1-arbitrage',
