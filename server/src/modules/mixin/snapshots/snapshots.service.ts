@@ -533,7 +533,6 @@ export class SnapshotsService {
       if (exist) {
         return;
       }
-      this.logger.log(`handleSnapshot()=> snapshot_memo: ${snapshot.memo}`);
 
       // Snapshot has no memo, store and refund
       if (!snapshot.memo || snapshot.memo.length === 0) {
@@ -568,7 +567,6 @@ export class SnapshotsService {
           break;
         case 2:
           // Simply grow
-          this.logger.log(`Simply grow: ${snapshot.snapshot_id}`);
           const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
           if (!simplyGrowDetails) {
             break;
@@ -580,24 +578,18 @@ export class SnapshotsService {
           break;
         case 3:
           // Market making
-          this.logger.log(`Market making: ${snapshot.snapshot_id}`);
           const mmDetails = decodeMarketMakingCreateMemo(payload);
           if (!mmDetails) {
             break;
           }
-          this.logger.log(
-            `Market making details: ${JSON.stringify(mmDetails)}`,
-          );
           this.events.emit('market_making.create', mmDetails, snapshot);
           break;
         case 4:
           // Arbitrage
-          this.logger.log(`Arbitrage: ${snapshot.snapshot_id}`);
           const arbDetails = decodeArbitrageCreateMemo(payload);
           if (!arbDetails) {
             break;
           }
-          this.logger.log(`Arbitrage details: ${JSON.stringify(arbDetails)}`);
           this.events.emit('arbitrage.create', arbDetails, snapshot);
           break;
         default:
