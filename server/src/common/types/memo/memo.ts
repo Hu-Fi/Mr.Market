@@ -68,7 +68,7 @@ export interface ArbitrageCreateMemoDetails {
   tradingType: TradingTypeValue;
   action: ArbitrageMemoActionType;
   arbitragePairId: string;
-  traceId: string;
+  orderId: string;
   rewardAddress: string;
 }
 
@@ -77,7 +77,6 @@ export interface ArbitrageAddMemoDetails {
   tradingType: TradingTypeValue;
   action: ArbitrageMemoActionType;
   orderId: string;
-  traceId: string;
 }
 
 export interface MarketMakingCreateMemoDetails {
@@ -85,7 +84,8 @@ export interface MarketMakingCreateMemoDetails {
   tradingType: TradingTypeValue;
   action: MarketMakingMemoActionType;
   marketMakingPairId: string;
-  traceId: string;
+  orderId: string;
+  rewardAddress: string;
 }
 
 export interface MarketMakingAddMemoDetails {
@@ -93,14 +93,16 @@ export interface MarketMakingAddMemoDetails {
   tradingType: TradingTypeValue;
   action: MarketMakingMemoActionType;
   orderId: string;
-  traceId: string;
 }
 
 export interface SimplyGrowCreateMemoDetails {
   version: number;
   tradingType: TradingTypeValue;
   action: SimplyGrowMemoActionType;
-  traceId: string;
+  orderId: string;
+  mixinAssetId: string;
+  amount: string;
+  rewardAddress: string;
 }
 
 export interface SimplyGrowAddMemoDetails {
@@ -108,5 +110,4 @@ export interface SimplyGrowAddMemoDetails {
   tradingType: TradingTypeValue;
   action: SimplyGrowMemoActionType;
   orderId: string;
-  traceId: string;
 }

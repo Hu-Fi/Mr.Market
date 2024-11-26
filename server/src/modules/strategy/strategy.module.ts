@@ -13,7 +13,8 @@ import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
-} from 'src/common/entities/strategy.entity';
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
@@ -33,6 +34,7 @@ import { AdminModule } from '../admin/admin.module';
     AdminModule,
     TypeOrmModule.forFeature([
       ArbitrageOrder,
+      SimplyGrowOrder,
       MarketMakingOrder,
       StrategyInstance,
       PaymentState,

@@ -58,7 +58,7 @@
                 "",
               )}
               on:click={() => {
-                createArbPair.set(item.symbol);
+                createArbPair.set(item);
                 goto(`/grow/arbitrage/new/four`);
               }}
               data-testid={`arbitrage-pair-${i}`}

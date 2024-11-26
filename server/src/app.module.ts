@@ -36,7 +36,12 @@ import {
 } from './common/entities/mixin-release.entity';
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
-import { PaymentState } from './common/entities/strategy.entity';
+import {
+  ArbitrageOrder,
+  MarketMakingOrder,
+  PaymentState,
+  SimplyGrowOrder,
+} from './common/entities/strategy-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 import { AdminModule } from './modules/admin/admin.module';
@@ -105,6 +110,9 @@ dotenv.config();
         RebalanceExchange,
         RebalanceHistory,
         RebalanceTokenExchange,
+        MarketMakingOrder,
+        ArbitrageOrder,
+        SimplyGrowOrder,
         GrowdataExchange,
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,

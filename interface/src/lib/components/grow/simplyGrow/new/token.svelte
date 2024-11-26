@@ -11,6 +11,7 @@
     createJustGrowAsset,
     createJustGrowSearch,
   } from "$lib/stores/grow";
+    import Loading from "$lib/components/common/loading.svelte";
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -48,8 +49,8 @@
   </div>
 
   {#await $page.data.growInfo}
-    <div class="flex justify-center items-center w-full">
-      <span class="text-sm loading loading-spinner loading-lg" />
+    <div class="flex justify-center items-center w-full py-36">
+      <Loading />
     </div>
   {:then growInfo}
     <!-- Token -->

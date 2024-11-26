@@ -98,7 +98,9 @@
   <!-- Pairs -->
   <div class="px-2 w-full !mt-6">
     {#await $page.data.growInfo}
-      <Loading />
+      <div class="flex justify-center items-center w-full py-36">
+        <Loading />
+      </div>
     {:then growInfo}
       <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
         {#each growInfo.market_making.pairs as item, i}

@@ -5,10 +5,12 @@ import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
-} from 'src/common/entities/strategy.entity';
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
 import {
   ArbitrageStates,
   MarketMakingStates,
+  SimplyGrowStates,
 } from 'src/common/types/orders/states';
 import { ConfigService } from '@nestjs/config';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -40,6 +42,45 @@ export class StrategyUserService {
     } catch (error) {
       this.logger.error('Error finding all strategy by user', error);
       return { arbitrage: [], market_making: [], total: 0 };
+    }
+  }
+
+  async createSimplyGrow(
+    simplyGrowOrder: SimplyGrowOrder,
+  ): Promise<SimplyGrowOrder> {
+    try {
+      const createdOrder = await this.strategyUserRepository.createSimplyGrow(
+        simplyGrowOrder,
+      );
+      return createdOrder;
+    } catch (error) {
+      this.logger.error('Error creating simply grow order', error);
+      throw error;
+    }
+  }
+
+  async findSimplyGrowByOrderId(
+    orderId: string,
+  ): Promise<SimplyGrowOrder | undefined> {
+    return await this.strategyUserRepository.findSimplyGrowByOrderId(orderId);
+  }
+
+  async findSimplyGrowByUserId(userId: string): Promise<SimplyGrowOrder[]> {
+    return await this.strategyUserRepository.findSimplyGrowByUserId(userId);
+  }
+
+  async updateSimplyGrowState(
+    orderId: string,
+    newState: SimplyGrowStates,
+  ): Promise<void> {
+    try {
+      await this.strategyUserRepository.updateSimplyGrowState(
+        orderId,
+        newState,
+      );
+    } catch (error) {
+      this.logger.error('Error updating simply grow state', error);
+      throw error;
     }
   }
 

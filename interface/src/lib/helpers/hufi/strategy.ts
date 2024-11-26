@@ -1,4 +1,4 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { HUFI_BACKEND_URL, MIXIN_API_BASE_URL } from "$lib/helpers/constants";
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
@@ -7,7 +7,16 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-export const getPaymentState = async (orderId: string) => {
+export const getMixinTx = async (txId: string) => {
+  try {
+    const response = await fetch(`${MIXIN_API_BASE_URL}/safe/transactions/${txId}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching mixin tx state:', error);
+  }
+}
+
+export const getOrderPaymentState = async (orderId: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/strategy/payment_state/${orderId}`);
     return await handleResponse(response);

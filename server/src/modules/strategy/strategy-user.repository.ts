@@ -1,14 +1,16 @@
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
-} from 'src/common/entities/strategy.entity';
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
 import {
   ArbitrageStates,
   MarketMakingStates,
+  SimplyGrowStates,
 } from 'src/common/types/orders/states';
 
 @Injectable()
@@ -20,12 +22,48 @@ export class StrategyUserRepository {
     private readonly marketMakingRepository: Repository<MarketMakingOrder>,
     @InjectRepository(PaymentState)
     private readonly paymentStateRepository: Repository<PaymentState>,
+    @InjectRepository(SimplyGrowOrder)
+    private readonly simplyGrowRepository: Repository<SimplyGrowOrder>,
   ) {}
 
   async findPaymentStateByOrderId(
     orderId: string,
   ): Promise<PaymentState | undefined> {
     return this.paymentStateRepository.findOneBy({ orderId });
+  }
+
+  async createSimplyGrow(
+    simplyGrowOrder: SimplyGrowOrder,
+  ): Promise<SimplyGrowOrder> {
+    return this.simplyGrowRepository.save(simplyGrowOrder);
+  }
+
+  async findSimplyGrowByOrderId(
+    orderId: string,
+  ): Promise<SimplyGrowOrder | undefined> {
+    return this.simplyGrowRepository.findOneBy({ orderId });
+  }
+
+  async findSimplyGrowByUserId(userId: string): Promise<SimplyGrowOrder[]> {
+    return this.simplyGrowRepository.findBy({ userId });
+  }
+
+  async findRunningSimplyGrowOrders(): Promise<SimplyGrowOrder[]> {
+    return this.simplyGrowRepository.findBy({ state: 'created' });
+  }
+
+  async findPausedSimplyGrowOrders(): Promise<SimplyGrowOrder[]> {
+    return this.simplyGrowRepository.findBy({ state: 'paused' });
+  }
+
+  async updateSimplyGrowState(
+    orderId: string,
+    newState: SimplyGrowStates,
+  ): Promise<UpdateResult> {
+    return await this.simplyGrowRepository.update(
+      { orderId },
+      { state: newState },
+    );
   }
 
   async createArbitrage(

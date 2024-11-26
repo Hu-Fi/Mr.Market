@@ -73,7 +73,6 @@ import {
   MixinCashier,
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
-// import { memoPreDecode } from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
@@ -82,6 +81,10 @@ import {
   decodeMarketMakingMemo,
   decodeArbitrageMemo,
   decodeSpotMemo,
+  memoPreDecode,
+  decodeArbitrageCreateMemo,
+  decodeMarketMakingCreateMemo,
+  decodeSimplyGrowCreateMemo,
 } from 'src/common/helpers/mixin/memo';
 
 @Injectable()
@@ -520,65 +523,91 @@ export class SnapshotsService {
   }
 
   private async handleSnapshot(snapshot: SafeSnapshot) {
-    const exist = await this.snapshotsRepository.checkSnapshotExist(
-      snapshot.snapshot_id,
-    );
+    try {
+      const exist = await this.snapshotsRepository.checkSnapshotExist(
+        snapshot.snapshot_id,
+      );
 
-    // Snapshot already being processed
-    if (exist) {
-      return;
+      // Snapshot already being processed
+      if (exist) {
+        return;
+      }
+      this.logger.log(`handleSnapshot()=> snapshot_memo: ${snapshot.memo}`);
+
+      // Snapshot has no memo, store and refund
+      if (!snapshot.memo || snapshot.memo.length === 0) {
+        return;
+      }
+
+      this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
+      // Hex and Base58 decode memo, verify checksum, refund if invalid
+      const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
+        'utf-8',
+      );
+      const { payload, version, tradingTypeKey } =
+        memoPreDecode(hexDecodedMemo);
+      if (!payload) {
+        this.logger.log(
+          `Snapshot memo is invalid, store and refund: ${snapshot.snapshot_id}`,
+        );
+        return;
+      }
+
+      // Only memo version 1 is supported
+      if (version !== 1) {
+        this.logger.log(
+          `Snapshot memo version is not 1, store and refund: ${snapshot.snapshot_id}`,
+        );
+        return;
+      }
+
+      switch (tradingTypeKey) {
+        case 0:
+          // Spot trading
+          break;
+        case 2:
+          // Simply grow
+          this.logger.log(`Simply grow: ${snapshot.snapshot_id}`);
+          const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
+          if (!simplyGrowDetails) {
+            break;
+          }
+          this.logger.log(
+            `Simply grow details: ${JSON.stringify(simplyGrowDetails)}`,
+          );
+          this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
+          break;
+        case 3:
+          // Market making
+          this.logger.log(`Market making: ${snapshot.snapshot_id}`);
+          const mmDetails = decodeMarketMakingCreateMemo(payload);
+          if (!mmDetails) {
+            break;
+          }
+          this.logger.log(
+            `Market making details: ${JSON.stringify(mmDetails)}`,
+          );
+          this.events.emit('market_making.create', mmDetails, snapshot);
+          break;
+        case 4:
+          // Arbitrage
+          this.logger.log(`Arbitrage: ${snapshot.snapshot_id}`);
+          const arbDetails = decodeArbitrageCreateMemo(payload);
+          if (!arbDetails) {
+            break;
+          }
+          this.logger.log(`Arbitrage details: ${JSON.stringify(arbDetails)}`);
+          this.events.emit('arbitrage.create', arbDetails, snapshot);
+          break;
+        default:
+          // Refund
+          break;
+      }
+    } catch (error) {
+      this.logger.error(`handleSnapshot()=> ${error}`);
+    } finally {
+      await this.createSnapshot(snapshot);
     }
-
-    // Snapshot has no memo, store and refund
-    // if (!snapshot.memo || snapshot.memo.length === 0) {
-    //   await this.createSnapshot(snapshot);
-    //   return;
-    // }
-
-    // // Base58 decode memo, verify checksum, refund if invalid
-    // const { payload, version, tradingTypeKey } = memoPreDecode(snapshot.memo);
-    // if (!payload) {
-    //   await this.createSnapshot(snapshot);
-    //   return;
-    // }
-
-    const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    const tradingType = decodedMemo.slice(0, 2);
-    switch (tradingType) {
-      case 'SP':
-        const spotDetails = decodeSpotMemo(decodedMemo);
-        if (!spotDetails) {
-          break;
-        }
-        let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...spotDetails, snapshot };
-        this.events.emit('spot.create', spotOrderCreateEvent);
-        break;
-
-      case 'AR':
-        const arbDetails = decodeArbitrageMemo(decodedMemo);
-        // this.logger.log(`arbDetails: ${arbDetails}`);
-        if (!arbDetails) {
-          break;
-        }
-        this.events.emit('arbitrage.create', arbDetails, snapshot);
-        break;
-
-      case 'MM':
-        const mmDetails = decodeMarketMakingMemo(decodedMemo);
-        // this.logger.log(`mmDetails: ${mmDetails}`);
-        if (!mmDetails) {
-          break;
-        }
-        this.events.emit('market_making.create', mmDetails, snapshot);
-        break;
-
-      default:
-        // await this.refund(snapshot);
-        break;
-    }
-    await this.createSnapshot(snapshot);
   }
 
   @Cron('*/5 * * * * *') // Every 5 seconds

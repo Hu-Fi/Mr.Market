@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class NewMigrations1732180694516 implements MigrationInterface {
-  name = 'NewMigrations1732180694516';
+export class NewMigrations1732481482739 implements MigrationInterface {
+  name = 'NewMigrations1732481482739';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -12,6 +12,96 @@ export class NewMigrations1732180694516 implements MigrationInterface {
                 "currency" character varying NOT NULL,
                 "balance" numeric(15, 8) NOT NULL DEFAULT '0',
                 CONSTRAINT "PK_f3edf5a1907e7b430421b9c2ddd" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "transaction" (
+                "id" SERIAL NOT NULL,
+                "userId" character varying NOT NULL,
+                "exchange" character varying NOT NULL,
+                "amount" numeric(10, 2) NOT NULL,
+                "currency" character varying NOT NULL,
+                "type" character varying NOT NULL,
+                "status" character varying NOT NULL DEFAULT 'pending',
+                "orderId" character varying NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "trade" (
+                "id" SERIAL NOT NULL,
+                "userId" character varying NOT NULL,
+                "clientId" character varying NOT NULL,
+                "symbol" character varying NOT NULL,
+                "side" character varying NOT NULL,
+                "type" character varying NOT NULL,
+                "amount" numeric(18, 10) NOT NULL,
+                "price" numeric(18, 10) NOT NULL,
+                "status" character varying NOT NULL DEFAULT 'pending',
+                "orderId" character varying NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_d4097908741dc408f8274ebdc53" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "arbitrage_order" (
+                "orderId" character varying NOT NULL,
+                "userId" character varying NOT NULL,
+                "pair" character varying NOT NULL,
+                "amountToTrade" character varying NOT NULL,
+                "minProfitability" character varying NOT NULL,
+                "exchangeAName" character varying NOT NULL,
+                "exchangeBName" character varying NOT NULL,
+                "balanceA" character varying,
+                "balanceB" character varying,
+                "state" character varying NOT NULL,
+                "createdAt" character varying NOT NULL,
+                "rewardAddress" character varying,
+                CONSTRAINT "PK_4e99f9bd26c6f499f24dd30af0d" PRIMARY KEY ("orderId")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "market_making_order" (
+                "orderId" character varying NOT NULL,
+                "userId" character varying NOT NULL,
+                "pair" character varying NOT NULL,
+                "exchangeName" character varying NOT NULL,
+                "bidSpread" character varying NOT NULL,
+                "askSpread" character varying NOT NULL,
+                "orderAmount" character varying NOT NULL,
+                "orderRefreshTime" character varying NOT NULL,
+                "numberOfLayers" character varying NOT NULL,
+                "priceSourceType" character varying NOT NULL,
+                "amountChangePerLayer" character varying NOT NULL,
+                "amountChangeType" character varying NOT NULL,
+                "ceilingPrice" character varying NOT NULL,
+                "floorPrice" character varying NOT NULL,
+                "balanceA" character varying,
+                "balanceB" character varying,
+                "state" character varying NOT NULL,
+                "createdAt" character varying NOT NULL,
+                "rewardAddress" character varying,
+                CONSTRAINT "PK_dfe992849c5d888c2a803a5db25" PRIMARY KEY ("orderId")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "payment_state" (
+                "orderId" character varying NOT NULL,
+                "type" character varying NOT NULL,
+                "symbol" character varying NOT NULL,
+                "firstAssetId" character varying NOT NULL,
+                "firstAssetAmount" character varying NOT NULL,
+                "secondAssetId" character varying,
+                "secondAssetAmount" character varying,
+                "firstSnapshotId" character varying NOT NULL,
+                "secondSnapshotId" character varying,
+                "state" character varying,
+                "createdAt" character varying NOT NULL,
+                "updatedAt" character varying NOT NULL,
+                CONSTRAINT "PK_5bec61a79e43d6ac6b3fd7ac040" PRIMARY KEY ("orderId")
             )
         `);
     await queryRunner.query(`
@@ -61,94 +151,6 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "transaction" (
-                "id" SERIAL NOT NULL,
-                "userId" character varying NOT NULL,
-                "exchange" character varying NOT NULL,
-                "amount" numeric(10, 2) NOT NULL,
-                "currency" character varying NOT NULL,
-                "type" character varying NOT NULL,
-                "status" character varying NOT NULL DEFAULT 'pending',
-                "orderId" character varying NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "trade" (
-                "id" SERIAL NOT NULL,
-                "userId" character varying NOT NULL,
-                "clientId" character varying NOT NULL,
-                "symbol" character varying NOT NULL,
-                "side" character varying NOT NULL,
-                "type" character varying NOT NULL,
-                "amount" numeric(18, 10) NOT NULL,
-                "price" numeric(18, 10) NOT NULL,
-                "status" character varying NOT NULL DEFAULT 'pending',
-                "orderId" character varying NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_d4097908741dc408f8274ebdc53" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "arbitrage_order" (
-                "orderId" character varying NOT NULL,
-                "userId" character varying NOT NULL,
-                "pair" character varying NOT NULL,
-                "amountToTrade" character varying NOT NULL,
-                "minProfitability" character varying NOT NULL,
-                "exchangeAName" character varying NOT NULL,
-                "exchangeBName" character varying NOT NULL,
-                "balanceA" character varying,
-                "balanceB" character varying,
-                "state" character varying NOT NULL,
-                "createdAt" character varying NOT NULL,
-                CONSTRAINT "PK_4e99f9bd26c6f499f24dd30af0d" PRIMARY KEY ("orderId")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "market_making_order" (
-                "orderId" character varying NOT NULL,
-                "userId" character varying NOT NULL,
-                "pair" character varying NOT NULL,
-                "exchangeName" character varying NOT NULL,
-                "bidSpread" character varying NOT NULL,
-                "askSpread" character varying NOT NULL,
-                "orderAmount" character varying NOT NULL,
-                "orderRefreshTime" character varying NOT NULL,
-                "numberOfLayers" character varying NOT NULL,
-                "priceSourceType" character varying NOT NULL,
-                "amountChangePerLayer" character varying NOT NULL,
-                "amountChangeType" character varying NOT NULL,
-                "ceilingPrice" character varying NOT NULL,
-                "floorPrice" character varying NOT NULL,
-                "balanceA" character varying,
-                "balanceB" character varying,
-                "state" character varying NOT NULL,
-                "createdAt" character varying NOT NULL,
-                CONSTRAINT "PK_dfe992849c5d888c2a803a5db25" PRIMARY KEY ("orderId")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "payment_state" (
-                "orderId" character varying NOT NULL,
-                "type" character varying NOT NULL,
-                "symbol" character varying NOT NULL,
-                "firstAssetId" character varying NOT NULL,
-                "firstAssetAmount" character varying NOT NULL,
-                "secondAssetId" character varying,
-                "secondAssetAmount" character varying,
-                "firstSnapshotId" character varying NOT NULL,
-                "secondSnapshotId" character varying,
-                "state" character varying,
-                "createdAt" character varying NOT NULL,
-                "updatedAt" character varying NOT NULL,
-                CONSTRAINT "PK_5bec61a79e43d6ac6b3fd7ac040" PRIMARY KEY ("orderId")
-            )
-        `);
-    await queryRunner.query(`
             CREATE TABLE "spot_order" (
                 "orderId" character varying NOT NULL,
                 "snapshotId" character varying NOT NULL,
@@ -168,15 +170,20 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "performance" (
-                "id" SERIAL NOT NULL,
-                "userId" character varying NOT NULL,
-                "clientId" character varying NOT NULL,
-                "strategyType" character varying NOT NULL,
-                "profitLoss" double precision NOT NULL,
-                "additionalMetrics" text,
-                "executedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_bd775d560f1a8d8e0e2e43fc57f" PRIMARY KEY ("id")
+            CREATE TABLE "snapshot" (
+                "snapshot_id" character varying NOT NULL,
+                "type" character varying NOT NULL,
+                "asset_id" character varying NOT NULL,
+                "amount" character varying NOT NULL,
+                "user_id" character varying NOT NULL,
+                "opponent_id" character varying NOT NULL,
+                "memo" character varying NOT NULL,
+                "transaction_hash" character varying,
+                "created_at" character varying NOT NULL,
+                "confirmations" integer,
+                "opening_balance" character varying,
+                "closing_balance" character varying,
+                CONSTRAINT "PK_85e35883678d1dd9a21ea0e22e8" PRIMARY KEY ("snapshot_id")
             )
         `);
     await queryRunner.query(`
@@ -217,6 +224,39 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
+            CREATE TABLE "performance" (
+                "id" SERIAL NOT NULL,
+                "userId" character varying NOT NULL,
+                "clientId" character varying NOT NULL,
+                "strategyType" character varying NOT NULL,
+                "profitLoss" double precision NOT NULL,
+                "additionalMetrics" text,
+                "executedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "PK_bd775d560f1a8d8e0e2e43fc57f" PRIMARY KEY ("id")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "mixin_release_token" (
+                "orderId" character varying NOT NULL,
+                "userId" character varying NOT NULL,
+                "assetId" character varying NOT NULL,
+                "state" character varying NOT NULL,
+                "amount" character varying NOT NULL,
+                "createdAt" character varying NOT NULL,
+                "updatedAt" character varying NOT NULL,
+                CONSTRAINT "PK_a5230e1ce2d4e620926d9ea33e2" PRIMARY KEY ("orderId")
+            )
+        `);
+    await queryRunner.query(`
+            CREATE TABLE "mixin_release_history" (
+                "orderId" character varying NOT NULL,
+                "snapshotId" character varying NOT NULL,
+                "createdAt" character varying NOT NULL,
+                "fee" character varying NOT NULL,
+                CONSTRAINT "PK_1346a2bf4505550fb70a1c45988" PRIMARY KEY ("orderId")
+            )
+        `);
+    await queryRunner.query(`
             CREATE TABLE "market_making_history" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -231,23 +271,6 @@ export class NewMigrations1732180694516 implements MigrationInterface {
                 "status" character varying,
                 "strategy" character varying,
                 CONSTRAINT "PK_e5aad4207764bbf0ba916df4d98" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "snapshot" (
-                "snapshot_id" character varying NOT NULL,
-                "type" character varying NOT NULL,
-                "asset_id" character varying NOT NULL,
-                "amount" character varying NOT NULL,
-                "user_id" character varying NOT NULL,
-                "opponent_id" character varying NOT NULL,
-                "memo" character varying NOT NULL,
-                "transaction_hash" character varying,
-                "created_at" character varying NOT NULL,
-                "confirmations" integer,
-                "opening_balance" character varying,
-                "closing_balance" character varying,
-                CONSTRAINT "PK_85e35883678d1dd9a21ea0e22e8" PRIMARY KEY ("snapshot_id")
             )
         `);
     await queryRunner.query(`
@@ -270,24 +293,13 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "mixin_release_token" (
-                "orderId" character varying NOT NULL,
-                "userId" character varying NOT NULL,
-                "assetId" character varying NOT NULL,
-                "state" character varying NOT NULL,
-                "amount" character varying NOT NULL,
-                "createdAt" character varying NOT NULL,
-                "updatedAt" character varying NOT NULL,
-                CONSTRAINT "PK_a5230e1ce2d4e620926d9ea33e2" PRIMARY KEY ("orderId")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "mixin_release_history" (
-                "orderId" character varying NOT NULL,
-                "snapshotId" character varying NOT NULL,
-                "createdAt" character varying NOT NULL,
-                "fee" character varying NOT NULL,
-                CONSTRAINT "PK_1346a2bf4505550fb70a1c45988" PRIMARY KEY ("orderId")
+            CREATE TABLE "custom_config_entity" (
+                "config_id" SERIAL NOT NULL,
+                "max_balance_mixin_bot" character varying NOT NULL,
+                "max_balance_single_api_key" character varying NOT NULL,
+                "funding_account" character varying NOT NULL,
+                "spot_fee" character varying NOT NULL,
+                CONSTRAINT "PK_7ba5aed5b83b9515ebb4cff37d8" PRIMARY KEY ("config_id")
             )
         `);
     await queryRunner.query(`
@@ -345,13 +357,14 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "custom_config_entity" (
-                "config_id" SERIAL NOT NULL,
-                "max_balance_mixin_bot" character varying NOT NULL,
-                "max_balance_single_api_key" character varying NOT NULL,
-                "funding_account" character varying NOT NULL,
-                "spot_fee" character varying NOT NULL,
-                CONSTRAINT "PK_7ba5aed5b83b9515ebb4cff37d8" PRIMARY KEY ("config_id")
+            CREATE TABLE "api_keys_config" (
+                "key_id" SERIAL NOT NULL,
+                "exchange" character varying NOT NULL,
+                "exchange_index" character varying NOT NULL,
+                "name" character varying NOT NULL,
+                "api_key" character varying NOT NULL,
+                "api_secret" character varying NOT NULL,
+                CONSTRAINT "PK_de3f6c18a8f6dc9ba664034e6f8" PRIMARY KEY ("key_id")
             )
         `);
     await queryRunner.query(`
@@ -370,17 +383,6 @@ export class NewMigrations1732180694516 implements MigrationInterface {
                 "status" character varying,
                 "strategy" character varying,
                 CONSTRAINT "PK_407ba393b3734915a80b664781e" PRIMARY KEY ("id")
-            )
-        `);
-    await queryRunner.query(`
-            CREATE TABLE "api_keys_config" (
-                "key_id" SERIAL NOT NULL,
-                "exchange" character varying NOT NULL,
-                "exchange_index" character varying NOT NULL,
-                "name" character varying NOT NULL,
-                "api_key" character varying NOT NULL,
-                "api_secret" character varying NOT NULL,
-                CONSTRAINT "PK_de3f6c18a8f6dc9ba664034e6f8" PRIMARY KEY ("key_id")
             )
         `);
     await queryRunner.query(`
@@ -451,13 +453,10 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             DROP TABLE "token_exchange"
         `);
     await queryRunner.query(`
-            DROP TABLE "api_keys_config"
-        `);
-    await queryRunner.query(`
             DROP TABLE "arbitrage_history"
         `);
     await queryRunner.query(`
-            DROP TABLE "custom_config_entity"
+            DROP TABLE "api_keys_config"
         `);
     await queryRunner.query(`
             DROP TABLE "growdata_market_making_pairs"
@@ -472,19 +471,22 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             DROP TABLE "growdata_exchanges"
         `);
     await queryRunner.query(`
+            DROP TABLE "custom_config_entity"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "mixin_message"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "market_making_history"
+        `);
+    await queryRunner.query(`
             DROP TABLE "mixin_release_history"
         `);
     await queryRunner.query(`
             DROP TABLE "mixin_release_token"
         `);
     await queryRunner.query(`
-            DROP TABLE "mixin_message"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "snapshot"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "market_making_history"
+            DROP TABLE "performance"
         `);
     await queryRunner.query(`
             DROP TABLE "rebalance_history"
@@ -499,10 +501,19 @@ export class NewMigrations1732180694516 implements MigrationInterface {
             DROP TABLE "rebalance_token"
         `);
     await queryRunner.query(`
-            DROP TABLE "performance"
+            DROP TABLE "snapshot"
         `);
     await queryRunner.query(`
             DROP TABLE "spot_order"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "strategy_instances"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "contribution"
+        `);
+    await queryRunner.query(`
+            DROP TABLE "mixin_user"
         `);
     await queryRunner.query(`
             DROP TABLE "payment_state"
@@ -518,15 +529,6 @@ export class NewMigrations1732180694516 implements MigrationInterface {
         `);
     await queryRunner.query(`
             DROP TABLE "transaction"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "strategy_instances"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "contribution"
-        `);
-    await queryRunner.query(`
-            DROP TABLE "mixin_user"
         `);
     await queryRunner.query(`
             DROP TABLE "user_balance"

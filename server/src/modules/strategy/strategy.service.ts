@@ -120,9 +120,9 @@ export class StrategyService {
     @InjectRepository(StrategyInstance)
     private strategyInstanceRepository: Repository<StrategyInstance>,
   ) {
-    process.on('SIGINT', () => this.handleShutdown());
-    process.on('SIGTERM', () => this.handleShutdown());
-    process.on('uncaughtException', () => this.handleShutdown());
+    // process.on('SIGINT', () => this.handleShutdown());
+    // process.on('SIGTERM', () => this.handleShutdown());
+    // process.on('uncaughtException', () => this.handleShutdown());
   }
 
   async getSupportedExchanges(): Promise<string[]> {

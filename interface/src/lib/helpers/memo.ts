@@ -31,14 +31,17 @@ export const SPOT_EXCHANGE_MAP: Record<string, string> = {
   6: 'lbank',
 };
 
-// Decode memo for payment related actions, delete is jwt protected
 export const ARBITRAGE_MEMO_ACTION_MAP: Record<string, string> = {
   1: 'create',
   2: 'deposit',
 };
 
-// Decode memo for payment related actions, delete is jwt protected
 export const MARKET_MAKING_MEMO_ACTION_MAP: Record<string, string> = {
+  1: 'create',
+  2: 'deposit',
+};
+
+export const SIMPLY_GROW_MEMO_ACTION_MAP: Record<string, string> = {
   1: 'create',
   2: 'deposit',
 };
@@ -59,7 +62,7 @@ export const encodeArbitrageCreateMemo = (
     tradingType: string
     action: string
     arbitragePairId: string
-    traceId: string
+    orderId: string
     rewardAddress: string
   },
 ): string => {
@@ -88,7 +91,7 @@ export const encodeArbitrageCreateMemo = (
     details.arbitragePairId.replace(/-/g, ''),
     'hex',
   ); // UUID as binary
-  const traceIdBuffer = Buffer.from(details.traceId.replace(/-/g, ''), 'hex'); // UUID as binary
+  const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
   const rewardAddressBuffer = Buffer.from(
     details.rewardAddress.replace(/^0x/, ''),
     'hex',
@@ -100,7 +103,7 @@ export const encodeArbitrageCreateMemo = (
     tradingTypeBuffer,
     actionBuffer,
     arbitragePairIdBuffer,
-    traceIdBuffer,
+    orderIdBuffer,
     rewardAddressBuffer,
   ]);
 
@@ -112,6 +115,64 @@ export const encodeArbitrageCreateMemo = (
   return base58.encode(completeBuffer);
 };
 
+export const encodeMarketMakingCreateMemo = (
+  details: {
+    version: number;
+    tradingType: string;
+    action: string;
+    marketMakingPairId: string;
+    orderId: string;
+    rewardAddress: string;
+  },
+): string => {
+  // Get numeric keys for tradingType and action
+  const tradingTypeKey = Number(
+    Object.keys(TARDING_TYPE_MAP).find(
+      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+    ),
+  );
+  const actionKey = Number(
+    Object.keys(MARKET_MAKING_MEMO_ACTION_MAP).find(
+      (key) => MARKET_MAKING_MEMO_ACTION_MAP[key] === details.action,
+    ),
+  );
+
+  if (tradingTypeKey === undefined || actionKey === undefined) {
+    throw new Error('Invalid memo details');
+  }
+
+  // Serialize fields into binary
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+  const actionBuffer = Buffer.from([actionKey]);
+
+  const marketMakingPairIdBuffer = Buffer.from(
+    details.marketMakingPairId.replace(/-/g, ''),
+    'hex',
+  ); // UUID as binary
+  const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
+  const rewardAddressBuffer = Buffer.from(
+    details.rewardAddress.replace(/^0x/, ''),
+    'hex',
+  ); // Ethereum address as binary
+
+  // Concatenate all parts
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    actionBuffer,
+    marketMakingPairIdBuffer,
+    orderIdBuffer,
+    rewardAddressBuffer,
+  ]);
+
+  // Compute checksum
+  const checksum = computeMemoChecksum(payload);
+
+  // Concatenate payload and checksum
+  const completeBuffer = Buffer.concat([payload, checksum]);
+  return base58.encode(completeBuffer);
+};
 
 export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
   let finalSymbol = symbol;
@@ -136,73 +197,6 @@ export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }:
   const memo = `${tradingType}:${spotOrderType}:${exchangeId}:${pairId}:${limitPriceOrRefId}:${refId}`
   return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
 }
-
-export const GenerateArbitrageMemo = ({
-  action,
-  exchangeA,
-  exchangeB,
-  symbol,
-  orderId,
-}:{
-  action: string
-  exchangeA: string
-  exchangeB: string
-  symbol: string
-  orderId: string
-}) => {
-  const tradingType = 'AR';
-  const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
-  const exchangeAId = REVERSED_SPOT_EXCHANGE_MAP[exchangeA.toLowerCase()];
-  const exchangeBId = REVERSED_SPOT_EXCHANGE_MAP[exchangeB.toLowerCase()];
-  if (!exchangeAId || !exchangeBId) {
-    console.error(`GenerateArbitrageMemo failed to get exchange indices for: ${exchangeA}, ${exchangeB}`);
-    return;
-  }
-  let finalSymbol = symbol;
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
-  const symbolKey = PAIRS_MAP_REVERSED[finalSymbol];
-  if (!symbolKey) {
-    console.error(`GenerateArbitrageMemo failed to get symbol key for: ${finalSymbol}`);
-    return;
-  }
-
-  const memo = `${tradingType}:${actionCode}:${exchangeAId}:${exchangeBId}:${symbolKey}:${orderId}`;
-  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
-};
-
-export const GenerateMarketMakingMemo = ({
-  action,
-  exchange,
-  symbol,
-  orderId,
-}:{
-  action: string
-  exchange: string
-  symbol: string
-  orderId: string
-}) => {
-  const tradingType = 'MM';
-  const actionCode = action; // CR/DE/WI - Create/Deposit/Withdraw
-  const exchangeId = REVERSED_SPOT_EXCHANGE_MAP[exchange.toLowerCase()];
-  if (!exchangeId) {
-    console.error(`GenerateMarketMakingMemo failed to get exchange index for: ${exchange}`);
-    return;
-  }
-  let finalSymbol = symbol;
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
-  const symbolKey = PAIRS_MAP_REVERSED[finalSymbol];
-  if (!symbolKey) {
-    console.error(`GenerateMarketMakingMemo failed to get symbol key for: ${symbol}`);
-    return;
-  }
-
-  const memo = `${tradingType}:${actionCode}:${exchangeId}:${symbolKey}:${orderId}`;
-  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
-};
 
 function computeMemoChecksum(buffer: Buffer): Buffer {
   const hash = createHash('sha256').update(buffer).digest();

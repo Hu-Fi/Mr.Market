@@ -55,6 +55,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'created' as ArbitrageStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
         {
           orderId: 'arb2',
@@ -68,6 +69,7 @@ describe('StrategyUserService', () => {
           balanceB: '2000',
           state: 'created' as ArbitrageStates,
           createdAt: '2021-02-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
       const mockMarketMakingOrders = [
@@ -90,6 +92,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'created' as MarketMakingStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
         {
           orderId: 'mm2',
@@ -110,6 +113,7 @@ describe('StrategyUserService', () => {
           balanceB: '2000',
           state: 'created' as MarketMakingStates,
           createdAt: '2021-02-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
 
@@ -169,6 +173,7 @@ describe('StrategyUserService', () => {
         balanceB: '1000',
         state: 'created' as ArbitrageStates,
         createdAt: '2021-01-01T00:00:00.000Z',
+        rewardAddress: '0x0000000000000000000000000000000000000000',
       };
 
       jest
@@ -204,6 +209,7 @@ describe('StrategyUserService', () => {
         balanceB: '1000',
         state: 'created' as MarketMakingStates,
         createdAt: '2021-01-01T00:00:00.000Z',
+        rewardAddress: '0x0000000000000000000000000000000000000000',
       };
 
       jest
@@ -251,6 +257,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'created' as ArbitrageStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
       const mockActiveMMOrders = [
@@ -273,6 +280,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'created' as MarketMakingStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
       const mockPausedArbOrders = [
@@ -288,6 +296,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'paused' as ArbitrageStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
       const mockPausedMMOrders = [
@@ -310,6 +319,7 @@ describe('StrategyUserService', () => {
           balanceB: '1000',
           state: 'paused' as MarketMakingStates,
           createdAt: '2021-01-01T00:00:00.000Z',
+          rewardAddress: '0x0000000000000000000000000000000000000000',
         },
       ];
 

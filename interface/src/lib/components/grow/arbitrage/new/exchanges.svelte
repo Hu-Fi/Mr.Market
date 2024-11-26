@@ -13,6 +13,7 @@
   } from "$lib/stores/grow";
   import { page } from "$app/stores";
   import ExchangeBtn from "$lib/components/grow/arbitrage/new/exchangeBtn.svelte";
+    import Loading from "$lib/components/common/loading.svelte";
 
   onDestroy(() => {
     createArbPair.set("");
@@ -27,8 +28,8 @@
 </script>
 
 {#await $page.data.growInfo}
-  <div class="flex justify-center items-center w-full">
-    <span class="text-sm loading loading-spinner loading-lg" />
+  <div class="flex justify-center items-center w-full py-36">
+    <Loading />
   </div>
 {:then growInfo}
   <div class="grid w-full px-4 mt-4">

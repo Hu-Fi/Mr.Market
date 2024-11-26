@@ -5,6 +5,8 @@ import {
   decodeSpotMemo,
   encodeArbitrageCreateMemo,
   memoPreDecode,
+  decodeMarketMakingCreateMemo,
+  encodeMarketMakingCreateMemo,
 } from './memo';
 import {
   TARDING_TYPE_MAP,
@@ -13,13 +15,38 @@ import {
 } from 'src/common/constants/memo';
 
 describe('decodeArbitrageCreateMemo', () => {
-  it('should throw an error for Non-base58 character', () => {
+  it('test', () => {
+    const params = {
+      version: 1,
+      tradingType: 'Arbitrage',
+      action: 'create',
+      arbitragePairId: '7fef38d5-5644-42e9-9abb-9f8e1a51ff36',
+      orderId: '3a0a5fd3-786d-419c-8cbc-a5179dce9d95',
+      rewardAddress: '0x1AE60D36412a6745fce4d4935FF5Bf2b8139a371',
+    };
+    const memo = encodeArbitrageCreateMemo(params);
+    const feMemo =
+      '3NBCZM5GMuRKQKKTGxBEMgAEVdoEek2A9My9BgMBM2k2QkhDzxdWQAyDP1cgTdFgS6eo8pfAo5ij6vNT';
+    console.log(`memo: ${memo}`);
+    console.log(`femo: ${feMemo}`);
+    expect(memo).toEqual(feMemo);
+
+    const { payload, version, tradingTypeKey } = memoPreDecode(memo);
+    console.log(`payload: ${payload}`);
+    console.log(`version: ${version}`);
+    console.log(`tradingTypeKey: ${tradingTypeKey}`);
+    const result = decodeArbitrageCreateMemo(payload);
+    console.log(`result: ${JSON.stringify(result)}`);
+    expect(result).toEqual(params);
+  });
+
+  it('should throw an error for invalid checksum (memo without 4 bytes checksum)', () => {
     const invalidMemo =
-      '1:AR:CR:01:02:Z7GC:b0177350-ae29-43ec-a26e-d46f821e416e';
+      '3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h7M';
     expect(() => {
       const { payload } = memoPreDecode(invalidMemo);
       decodeArbitrageCreateMemo(payload);
-    }).toThrow('Non-base58 character');
+    }).toThrow('Invalid checksum');
   });
 
   it('should return arbtirage memo details', () => {
@@ -28,9 +55,10 @@ describe('decodeArbitrageCreateMemo', () => {
       tradingType: 'Arbitrage',
       action: 'create',
       arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
       rewardAddress: '0x0000000000000000000000000000000000000000',
     });
+    console.log(`encodeArbitrageCreateMemo: ${encodedMemo}`);
     const { payload } = memoPreDecode(encodedMemo);
     const result = decodeArbitrageCreateMemo(payload);
     expect(result).toEqual({
@@ -38,7 +66,40 @@ describe('decodeArbitrageCreateMemo', () => {
       tradingType: 'Arbitrage',
       action: 'create',
       arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      rewardAddress: '0x0000000000000000000000000000000000000000',
+    });
+  });
+});
+
+describe('decodeMarketMakingCreateMemo', () => {
+  it('should throw an error for invalid checksum (memo without 6 bytes)', () => {
+    const invalidMemo =
+      '3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h';
+    expect(() => {
+      const { payload } = memoPreDecode(invalidMemo);
+      decodeMarketMakingCreateMemo(payload);
+    }).toThrow('Invalid checksum');
+  });
+
+  it('should return market making memo details', () => {
+    const encodedMemo = encodeMarketMakingCreateMemo({
+      version: 1,
+      tradingType: 'Market Making',
+      action: 'create',
+      marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      rewardAddress: '0x0000000000000000000000000000000000000000',
+    });
+    console.log(`encodeMarketMakingCreateMemo: ${encodedMemo}`);
+    const { payload } = memoPreDecode(encodedMemo);
+    const result = decodeMarketMakingCreateMemo(payload);
+    expect(result).toEqual({
+      version: 1,
+      tradingType: 'Market Making',
+      action: 'create',
+      marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
       rewardAddress: '0x0000000000000000000000000000000000000000',
     });
   });

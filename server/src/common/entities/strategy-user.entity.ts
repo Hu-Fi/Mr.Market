@@ -1,6 +1,10 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { ArbitrageStates, MarketMakingStates } from '../types/orders/states';
+import {
+  ArbitrageStates,
+  MarketMakingStates,
+  SimplyGrowStates,
+} from '../types/orders/states';
 
 @Entity()
 export class ArbitrageOrder {
@@ -36,6 +40,9 @@ export class ArbitrageOrder {
 
   @Column()
   createdAt: string;
+
+  @Column({ nullable: true })
+  rewardAddress: string;
 }
 
 @Entity()
@@ -93,6 +100,33 @@ export class MarketMakingOrder {
 
   @Column()
   createdAt: string;
+
+  @Column({ nullable: true })
+  rewardAddress: string;
+}
+
+@Entity()
+export class SimplyGrowOrder {
+  @PrimaryColumn()
+  orderId: string;
+
+  @Column()
+  userId: string;
+
+  @Column()
+  mixinAssetId: string;
+
+  @Column()
+  amount: string;
+
+  @Column()
+  state: SimplyGrowStates;
+
+  @Column()
+  createdAt: string;
+
+  @Column()
+  rewardAddress: string;
 }
 
 @Entity()

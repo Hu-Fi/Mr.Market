@@ -12,14 +12,14 @@
   } from "$lib/stores/grow";
     import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
-  $: baseAssetSymbol = $createArbPair.split("/")[0] || ''
-  $: targetAssetSymbol = $createArbPair.split("/")[1] || ''
+  $: baseAssetSymbol = $createArbPair ? $createArbPair.base_symbol : ''
+  $: targetAssetSymbol = $createArbPair ? $createArbPair.target_symbol : ''
 
   onDestroy(() => {
-    createArbPair.set('');
+    createArbPair.set(undefined);
     createMMEasyAmounts.set([]);
     createArbConfirmDialog.set(false);
-    createArbPairSearch.set("");
+    createArbPairSearch.set('');
   });
 </script>
 
@@ -89,7 +89,7 @@
         </div>
       </div>
       <span class="font-semibold text-sm text-nowrap">
-        {$createArbPair}
+        {$createArbPair ? baseAssetSymbol + "/" + targetAssetSymbol : ''}
       </span>
     </div>
   </div>

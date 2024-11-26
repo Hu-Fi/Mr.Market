@@ -2,7 +2,7 @@ import { page } from "$app/stores";
 import { derived } from 'svelte/store';
 import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
-import type { MarketMakingPair, SimplyGrowToken } from "$lib/types/hufi/grow";
+import type { ArbitragePair, MarketMakingPair, SimplyGrowToken } from "$lib/types/hufi/grow";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -25,7 +25,7 @@ export const createArbExchange1: Writable<string> = writable()
 export const createArbExchange2: Writable<string> = writable()
 export const createArbExchange1Search = writable('')
 export const createArbExchange2Search = writable('')
-export const createArbPair: Writable<string>= writable('')
+export const createArbPair: Writable<ArbitragePair> = writable()
 export const createArbPairSearch: Writable<string>= writable('')
 export const createArbAmount = writable([])
 
