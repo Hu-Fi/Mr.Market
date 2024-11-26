@@ -53,7 +53,6 @@
     "clsx": "^2.0.0",
     "crypto-js": "^4.2.0",
     "daisyui": "^4.12",
-    "js-base64": "^3.7.6",
     "klinecharts": "^9.7.2",
     "lightweight-charts": "^4.1.1",
     "moment": "^2.30.1",
