@@ -1,12 +1,23 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { createJustGrowAmount, createJustGrowAsset, createJustGrowConfirmDialog } from "$lib/stores/grow";
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import { SimplyGrowCreatePay } from "$lib/helpers/mixin";
+  import { createJustGrowAmount, createJustGrowAsset, createJustGrowConfirmDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
 
   let loading = false;
   const confirmPayment = () => {
     loading = true;
-    
+    const orderId = getUuid();
+    const mixinTrace = SimplyGrowCreatePay({
+      assetId: $createJustGrowAsset.asset_id,
+      amount: $createJustGrowAmount,
+      orderId,
+      rewardAddress: $createJustGrowRewardAddress,
+    });
+    if (mixinTrace) {
+      console.log('mixinTraceId: ', mixinTrace);
+    }
   }
 </script>
 

@@ -40,7 +40,7 @@ export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow
 export const createJustGrowAsset = writable<SimplyGrowToken>()
-export const createJustGrowAmount = writable()
+export const createJustGrowAmount = writable<string>()
 export const createJustGrowLockTime = writable({ key: '', value: '' })
 export const createJustGrowLockTimeDialog = writable(false)
 export const createJustGrowConfirmDialog = writable(false)
