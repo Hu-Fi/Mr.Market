@@ -300,7 +300,7 @@ export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: 
   return mixinPay({ asset_id: firstAssetID, amount, memo, trace_id: trace });
 }
 
-export const ArbitragePay = ({
+export const ArbitrageCreatePay = ({
   action,
   amount,
   assetId,
@@ -359,7 +359,7 @@ export const ArbitragePay = ({
   });
 };
 
-export const MarketMakingPay = ({
+export const MarketMakingCreatePay = ({
   action,
   exchange,
   symbol,
@@ -421,3 +421,36 @@ export const MarketMakingPay = ({
     trace_id: mixinTraceId,
   });
 };
+
+export const SimplyGrowCreatePay = ({
+  assetId,
+  amount,
+  orderId,
+  rewardAddress,
+}: {
+  assetId: string,
+  amount: string,
+  orderId: string,
+  rewardAddress: string,
+}) => {
+  if (!assetId || !amount || !orderId || !rewardAddress) {
+    console.error('Invalid input parameters for SimplyGrowCreatePay');
+    return;
+  }
+  const mixinTraceId = getUuid();
+  const memoParams = {
+    version: 1,
+    tradingType: 'Just Grow',
+    action: 'create',
+    assetId,
+    orderId,
+    rewardAddress,
+  }
+  const memo = encodeJustGrowCreateMemo(memoParams);
+  return mixinPay({
+    asset_id: assetId,
+    amount,
+    memo,
+    trace_id: mixinTraceId,
+  });
+}

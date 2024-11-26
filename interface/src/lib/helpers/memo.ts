@@ -55,6 +55,56 @@ export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entri
 export const REVERSED_SPOT_EXCHANGE_MAP: Record<string, string> = Object.entries(SPOT_EXCHANGE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
+export const encodeSimplyGrowCreateMemo = (details: {
+  version: number;
+  tradingType: string;
+  action: string;
+  orderId: string;
+  rewardAddress: string;
+}): string => {
+  // Get numeric keys for tradingType and action
+  const tradingTypeKey = Number(
+    Object.keys(TARDING_TYPE_MAP).find(
+      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+    ),
+  );
+  const actionKey = Number(
+    Object.keys(SIMPLY_GROW_MEMO_ACTION_MAP).find(
+      (key) => SIMPLY_GROW_MEMO_ACTION_MAP[key] === details.action,
+    ),
+  );
+
+  if (tradingTypeKey === undefined || actionKey === undefined) {
+    throw new Error('Invalid memo details');
+  }
+
+  // Serialize fields into binary
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+  const actionBuffer = Buffer.from([actionKey]);
+
+  const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
+  const rewardAddressBuffer = Buffer.from(
+    details.rewardAddress.replace(/^0x/, ''),
+    'hex',
+  ); // Ethereum address as binary
+
+  // Concatenate all parts
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    actionBuffer,
+    orderIdBuffer,
+    rewardAddressBuffer,
+  ]);
+
+  // Compute checksum
+  const checksum = computeMemoChecksum(payload);
+
+  // Concatenate payload and checksum
+  const completeBuffer = Buffer.concat([payload, checksum]);
+  return base58.encode(completeBuffer);
+};
 
 export const encodeArbitrageCreateMemo = (
   details: {

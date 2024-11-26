@@ -6,7 +6,7 @@
   let loading = false;
   const confirmPayment = () => {
     loading = true;
-    // TODO: call mixin pay
+    
   }
 </script>
 

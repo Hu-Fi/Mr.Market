@@ -74,13 +74,9 @@ import {
   SequencerTransactionRequest,
 } from '@mixin.dev/mixin-node-sdk';
 import { CustomLogger } from 'src/modules/logger/logger.service';
-import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 import {
-  decodeMarketMakingMemo,
-  decodeArbitrageMemo,
-  decodeSpotMemo,
   memoPreDecode,
   decodeArbitrageCreateMemo,
   decodeMarketMakingCreateMemo,
@@ -581,6 +577,9 @@ export class SnapshotsService {
       switch (tradingTypeKey) {
         case 0:
           // Spot trading
+          break;
+        case 1:
+          // Swap
           break;
         case 2:
           // Simply grow

@@ -75,9 +75,6 @@ export class SpotOrderListener {
     if (!isSpotOrderTypeValueValid(event.spotOrderType)) {
       return;
     }
-    if (!isExchangeIndexValueValid(event.exchangeName)) {
-      return;
-    }
     this.logger.debug(`spot.create:${JSON.stringify(event)}`);
 
     // Get Asset ID of buy and sell asset

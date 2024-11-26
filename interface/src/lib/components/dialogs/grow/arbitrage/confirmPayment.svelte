@@ -2,7 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { ArbitragePay } from "$lib/helpers/mixin";
+  import { ArbitrageCreatePay } from "$lib/helpers/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
@@ -73,7 +73,7 @@
   const payment = (type: string) => {
     if (type === '1') {
       btn1Loading = true;
-      mixinTraceId1 = ArbitragePay({
+      mixinTraceId1 = ArbitrageCreatePay({
         action: 'create', 
         rewardAddress: $createJustGrowRewardAddress,
         amount: baseAssetAmount,
@@ -86,7 +86,7 @@
     }
     if (type === '2') {
       btn2Loading = true;
-      mixinTraceId2 = ArbitragePay({
+      mixinTraceId2 = ArbitrageCreatePay({
         action: 'create', 
         rewardAddress: $createJustGrowRewardAddress,
         amount: targetAssetAmount,

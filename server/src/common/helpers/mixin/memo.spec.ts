@@ -1,12 +1,12 @@
 import {
-  decodeArbitrageMemo,
-  decodeArbitrageCreateMemo,
-  decodeMarketMakingMemo,
   decodeSpotMemo,
   encodeArbitrageCreateMemo,
+  decodeArbitrageCreateMemo,
   memoPreDecode,
-  decodeMarketMakingCreateMemo,
   encodeMarketMakingCreateMemo,
+  decodeMarketMakingCreateMemo,
+  encodeSimplyGrowCreateMemo,
+  decodeSimplyGrowCreateMemo,
 } from './memo';
 import {
   TARDING_TYPE_MAP,
@@ -14,32 +14,37 @@ import {
   SPOT_EXCHANGE_MAP,
 } from 'src/common/constants/memo';
 
-describe('decodeArbitrageCreateMemo', () => {
-  it('test', () => {
-    const params = {
+describe('decodeSimplyGrowCreateMemo', () => {
+  it('test encodeSimplyGrowCreateMemo', () => {
+    const memo = encodeSimplyGrowCreateMemo({
       version: 1,
-      tradingType: 'Arbitrage',
+      tradingType: 'Simply Grow',
       action: 'create',
-      arbitragePairId: '7fef38d5-5644-42e9-9abb-9f8e1a51ff36',
-      orderId: '3a0a5fd3-786d-419c-8cbc-a5179dce9d95',
-      rewardAddress: '0x1AE60D36412a6745fce4d4935FF5Bf2b8139a371',
-    };
-    const memo = encodeArbitrageCreateMemo(params);
-    const feMemo =
-      '3NBCZM5GMuRKQKKTGxBEMgAEVdoEek2A9My9BgMBM2k2QkhDzxdWQAyDP1cgTdFgS6eo8pfAo5ij6vNT';
-    console.log(`memo: ${memo}`);
-    console.log(`femo: ${feMemo}`);
-    expect(memo).toEqual(feMemo);
-
-    const { payload, version, tradingTypeKey } = memoPreDecode(memo);
-    console.log(`payload: ${payload}`);
-    console.log(`version: ${version}`);
-    console.log(`tradingTypeKey: ${tradingTypeKey}`);
-    const result = decodeArbitrageCreateMemo(payload);
-    console.log(`result: ${JSON.stringify(result)}`);
-    expect(result).toEqual(params);
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      rewardAddress: '0x7dfa0e4456cb794d1f46cc8e0e5882dc3ad6d6d3',
+    });
+    console.log(`encodeSimplyGrowCreateMemo: ${memo}`);
+    expect(memo).toBe(
+      '5JkNjkChhHjzsFr6cm4yAbJPUGVDST6tk9Cxdapvvq9kFgBmJuQVoahd8v',
+    );
   });
 
+  it('test decodeSimplyGrowCreateMemo', () => {
+    const memo = '5JkNjkChhHjzsFr6cm4yAbJPUGVDST6tk9Cxdapvvq9kFgBmJuQVoahd8v';
+    const { payload } = memoPreDecode(memo);
+    const result = decodeSimplyGrowCreateMemo(payload);
+    console.log(`decodeSimplyGrowCreateMemo: ${JSON.stringify(result)}`);
+    expect(result).toEqual({
+      version: 1,
+      tradingType: 'Simply Grow',
+      action: 'create',
+      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      rewardAddress: '0x7dFA0E4456Cb794D1F46CC8E0e5882DC3AD6d6D3',
+    });
+  });
+});
+
+describe('decodeArbitrageCreateMemo', () => {
   it('should throw an error for invalid checksum (memo without 4 bytes checksum)', () => {
     const invalidMemo =
       '3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h7M';
@@ -165,67 +170,5 @@ describe.skip('decodeSpotMemo', () => {
       spotOrderType: undefined,
       tradingType: undefined,
     });
-  });
-});
-
-describe.skip('decodeArbitrageMemo', () => {
-  it('should decode a valid arbitrage memo correctly', () => {
-    const decodedMemo = 'AR:CR:01:02:Z7GC:b0177350-ae29-43ec-a26e-d46f821e416e';
-    const result = decodeArbitrageMemo(decodedMemo);
-    expect(result).toEqual({
-      tradingType: 'Arbitrage',
-      action: 'create',
-      exchangeAName: 'binance',
-      exchangeBName: 'bitfinex',
-      symbol: 'BTC/USDT-ERC20',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-    });
-  });
-
-  it('should return null for empty input', () => {
-    const result = decodeArbitrageMemo('');
-    expect(result).toBeNull();
-  });
-
-  it('should return null for invalid memo format', () => {
-    const decodedMemo = 'AR:CR:01'; // Missing parts
-    const result = decodeArbitrageMemo(decodedMemo);
-    expect(result).toBeNull();
-  });
-
-  it('should return null when destId does not map to a symbol', () => {
-    const decodedMemo = 'AR:CR:01:02:99';
-    const result = decodeArbitrageMemo(decodedMemo);
-    expect(result).toBeNull();
-  });
-});
-
-describe.skip('decodeMarketMakingMemo', () => {
-  it('should decode a valid market making memo correctly', () => {
-    const decodedMemo = 'MM:DE:04:MX5C:b0177350-ae29-43ec-a26e-d46f821e416e';
-    const result = decodeMarketMakingMemo(decodedMemo);
-    expect(result).toEqual({
-      tradingType: 'Market Making',
-      action: 'deposit',
-      exchangeName: 'okx',
-      symbol: 'ETH/USDT-ERC20',
-      traceId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-    });
-  });
-
-  it('should return null for empty input', () => {
-    const result = decodeMarketMakingMemo('');
-    expect(result).toBeNull();
-  });
-
-  it('should return null for invalid memo format', () => {
-    const decodedMemo = 'MM:CR:ETHUSD'; // Incorrect format
-    expect(decodeMarketMakingMemo(decodedMemo)).toBeNull();
-  });
-
-  it('should return null when destId does not map to a symbol', () => {
-    const decodedMemo = 'MM:CR:03:99'; // '99' does not map to any symbol
-    const result = decodeMarketMakingMemo(decodedMemo);
-    expect(result).toBeNull();
   });
 });

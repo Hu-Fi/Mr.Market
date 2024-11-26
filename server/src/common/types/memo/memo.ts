@@ -100,8 +100,6 @@ export interface SimplyGrowCreateMemoDetails {
   tradingType: TradingTypeValue;
   action: SimplyGrowMemoActionType;
   orderId: string;
-  mixinAssetId: string;
-  amount: string;
   rewardAddress: string;
 }
 

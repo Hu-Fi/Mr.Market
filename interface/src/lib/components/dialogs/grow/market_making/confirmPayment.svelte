@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
   import { goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { MarketMakingPay } from "$lib/helpers/mixin";
+  import { MarketMakingCreatePay } from "$lib/helpers/mixin";
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
@@ -79,7 +79,7 @@
 
     if (type === '1') {
       btn1Loading = true;
-      mixinTraceId1 = MarketMakingPay({
+      mixinTraceId1 = MarketMakingCreatePay({
         action: 'create', 
         exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,
@@ -94,7 +94,7 @@
     }
     if (type === '2') {
       btn2Loading = true;
-      mixinTraceId2 = MarketMakingPay({
+      mixinTraceId2 = MarketMakingCreatePay({
         action: 'create',
         exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,

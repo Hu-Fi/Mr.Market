@@ -97,8 +97,8 @@ export class CustomLogger extends Logger {
   }
 
   debug(message: any, context?: string) {
-    super.debug(message, context);
-    this.logger.debug(message, { context });
+    super.debug(message, context ?? this.context);
+    this.logger.debug(message, { context: context ?? this.context });
   }
 
   warn(message: any, context?: string) {
