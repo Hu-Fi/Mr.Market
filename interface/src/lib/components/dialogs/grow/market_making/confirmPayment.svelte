@@ -7,7 +7,7 @@
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts } from "$lib/stores/grow"
+  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts, createJustGrowRewardAddress } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
   $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
@@ -80,23 +80,31 @@
     if (type === '1') {
       btn1Loading = true;
       mixinTraceId1 = MarketMakingPay({
-        action: 'CR', 
-        exchange: $createMMEasyPair.exchange,
+        action: 'create', 
+        exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,
         amount: baseAssetAmount,
         assetId: ids.firstAssetID,
+        firstAssetId: ids.firstAssetID,
+        secondAssetId: ids.secondAssetID,
+        marketMakingPairId: $createMMEasyPair.id,
         orderId,
+        rewardAddress: $createJustGrowRewardAddress,
       })
     }
     if (type === '2') {
       btn2Loading = true;
       mixinTraceId2 = MarketMakingPay({
-        action: 'CR', 
-        exchange: $createMMEasyPair.exchange,
+        action: 'create',
+        exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,
         amount: targetAssetAmount,
         assetId: ids.secondAssetID,
+        firstAssetId: ids.firstAssetID,
+        secondAssetId: ids.secondAssetID,
+        marketMakingPairId: $createMMEasyPair.id,
         orderId,
+        rewardAddress: $createJustGrowRewardAddress,
       })
     }
     if (btn1Loading) {

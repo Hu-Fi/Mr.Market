@@ -366,8 +366,10 @@ export const MarketMakingPay = ({
   assetId,
   firstAssetId,
   secondAssetId,
+  marketMakingPairId,
   amount,
   orderId,
+  rewardAddress,
 }: {
   action: string,
   exchange: string,
@@ -375,10 +377,12 @@ export const MarketMakingPay = ({
   assetId: string,
   firstAssetId: string,
   secondAssetId: string,
+  marketMakingPairId: string,
   amount: string,
   orderId: string,
+  rewardAddress: string,
 }) => {
-  if (!exchange || !symbol || !amount || !orderId || !assetId) {
+  if (!exchange || !symbol || !amount || !orderId || !assetId || !marketMakingPairId || !rewardAddress) {
     console.error('Invalid input parameters for MarketMakingPay');
     return;
   }
@@ -386,7 +390,7 @@ export const MarketMakingPay = ({
   const mixinTraceId = getUuid();
   const memoParams = {
     version: 1,
-    tradingType: 'MarketMaking',
+    tradingType: 'Market Making',
     action,
     marketMakingPairId,
     orderId,

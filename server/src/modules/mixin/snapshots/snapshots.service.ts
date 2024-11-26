@@ -117,7 +117,8 @@ export class SnapshotsService {
     });
     this.events = this.eventEmitter;
 
-    this.enableCron = this.configService.get<string>('strategy.run') === 'true';
+    this.enableCron =
+      this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
     this.logger.log(this.enableCron);
   }
 
