@@ -27,8 +27,8 @@ export class SimplyGrowListener {
     await this.strategyUserService.createSimplyGrow({
       orderId: details.orderId,
       userId: snapshot.opponent_id,
-      mixinAssetId: details.mixinAssetId,
-      amount: details.amount,
+      mixinAssetId: snapshot.asset_id,
+      amount: snapshot.amount,
       state: 'created',
       createdAt: getRFC3339Timestamp(),
       rewardAddress: details.rewardAddress,
