@@ -3,26 +3,54 @@
   import { _ } from "svelte-i18n"
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { SimplyGrowCreatePay } from "$lib/helpers/mixin";
+  import { getMixinTx } from "$lib/helpers/hufi/strategy";
   import { createSimplyGrowAmount, createSimplyGrowAsset, createSimplyGrowConfirmDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
+  import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
+    import { goto } from "$app/navigation";
 
   let loading = false;
+  let paymentSuccessful = false;
   const orderId = getUuid();
+  let mixinTraceId = '';
+
   const confirmPayment = () => {
     loading = true;
-    const mixinTrace = SimplyGrowCreatePay({
+    mixinTraceId = SimplyGrowCreatePay({
       assetId: $createSimplyGrowAsset.asset_id,
       amount: $createSimplyGrowAmount,
       orderId,
       rewardAddress: $createSimplyGrowRewardAddress,
     });
-    if (mixinTrace) {
-      console.log('mixinTraceId: ', mixinTrace);
+
+    if (mixinTraceId) {
+      console.log('mixinTraceId: ', mixinTraceId);
+      checkPaymentState(mixinTraceId);
     }
+  }
+
+  const checkPaymentState = async (traceId: string) => {
+    let totalTime = 0;
+    const interval = setInterval(async () => {
+      const state = await getMixinTx(traceId);
+      if (state.error) {
+        return;
+      }
+      if (state.data.state === 'spent') {
+        loading = false;
+        paymentSuccessful = true;
+        clearInterval(interval);
+        // goto(`/grow/simply_grow/${orderId}`);
+      }
+      totalTime += ORDER_STATE_FETCH_INTERVAL;
+      if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+        clearInterval(interval);
+      }
+    }, ORDER_STATE_FETCH_INTERVAL);
   }
 </script>
 
 <dialog
-  id="confirm_arb_payment_modal"
+  id="confirm_simply_grow_payment_modal"
   class="modal modal-bottom sm:modal-middle"
   class:modal-open={$createSimplyGrowConfirmDialog}
 >

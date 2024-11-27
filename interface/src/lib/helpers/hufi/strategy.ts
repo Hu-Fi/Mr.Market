@@ -25,6 +25,24 @@ export const getOrderPaymentState = async (orderId: string) => {
   }
 }
 
+export const getSimplyGrowDetailsById = async (id: string) => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/strategy/simply_grow/${id}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching simply grow order details by id:', error);
+  }
+}
+
+export const getAllSimplyGrowByUser = async (userId: string) => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/strategy/simply_grow/all?userId=${userId}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching all simply grow orders by user:', error);
+  }
+}
+
 export const getAllStrategyByUser = async (userId: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/strategy/all?userId=${userId}`);

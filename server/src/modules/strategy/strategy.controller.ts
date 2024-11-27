@@ -86,6 +86,32 @@ export class StrategyController {
     return await this.strategyUserSerive.findPaymentStateById(orderId);
   }
 
+  @Get('/simply_grow/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all simply grow orders by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'All simply grow orders of user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getSimplyGrowByUserId(@Query('user_id') userId: string) {
+    return await this.strategyUserSerive.findSimplyGrowByUserId(userId);
+  }
+
+  @Get('/simply_grow/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simply grow order by id' })
+  @ApiQuery({ name: 'id', type: String, description: 'Order ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The details of the simply grow order.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getSimplyGrowByOrderId(@Param('id') id: string) {
+    return await this.strategyUserSerive.findSimplyGrowByOrderId(id);
+  }
+
   @Get('/arbitrage/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all arbitrage by user' })
