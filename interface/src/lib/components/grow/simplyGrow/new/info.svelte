@@ -3,17 +3,17 @@
   import { onDestroy } from "svelte";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import {
-    createJustGrowAmount,
-    createJustGrowAsset,
-    createJustGrowSearch,
+    createSimplyGrowAmount,
+    createSimplyGrowAsset,
+    createSimplyGrowSearch,
   } from "$lib/stores/grow";
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
   onDestroy(() => {
-    createJustGrowAsset.set({});
-    createJustGrowAmount.set('');
-    createJustGrowSearch.set("");
-    createJustGrowAsset.set({});
+    createSimplyGrowAsset.set({});
+    createSimplyGrowAmount.set('');
+    createSimplyGrowSearch.set("");
+    createSimplyGrowAsset.set({});
   });
 </script>
 
@@ -29,11 +29,11 @@
     <div class="flex items-center space-x-2">
       <div class="avatar">
         <div class="mask mask-squircle w-5 h-5">
-          <AssetIcon assetIcon={findCoinIconBySymbol($createJustGrowAsset.symbol) || $createJustGrowAsset.icon_url} clazz="w-5 h-5" claxx="w-2 h-2" />
+          <AssetIcon assetIcon={findCoinIconBySymbol($createSimplyGrowAsset.symbol) || $createSimplyGrowAsset.icon_url} clazz="w-5 h-5" claxx="w-2 h-2" />
         </div>
       </div>
       <span class="font-semibold text-sm text-nowrap">
-        {$createJustGrowAsset.symbol}
+        {$createSimplyGrowAsset.symbol}
       </span>
     </div>
   </div>

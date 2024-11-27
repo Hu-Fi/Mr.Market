@@ -7,11 +7,11 @@
     // import { ETH_UUID } from "$lib/helpers/constants";
     import { mixinConnected } from "$lib/stores/home";
     import { isValidEvmAddress } from "$lib/helpers/validateAddress";
-    import { createJustGrowRewardAddressDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
+    import { createSimplyGrowRewardAddressDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
 
     onDestroy(()=>{
-        createJustGrowRewardAddressDialog.set(false);
-        createJustGrowRewardAddress.set("");
+        createSimplyGrowRewardAddressDialog.set(false);
+        createSimplyGrowRewardAddress.set("");
     })
 
     let closeTooltip = true;
@@ -53,13 +53,13 @@
             <input 
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
-                bind:value={$createJustGrowRewardAddress}
+                bind:value={$createSimplyGrowRewardAddress}
                 on:keyup={()=>{
-                    validAddress = isValidEvmAddress($createJustGrowRewardAddress)
+                    validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-ghost focus:outline-none focus:border-x-0 focus:border-base-300 z-10 absolute join-item pr-0" 
             />
-            <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={$createJustGrowRewardAddressDialog} data-testid="select-reward-address">
+            <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={$createSimplyGrowRewardAddressDialog} data-testid="select-reward-address">
                 <summary class="flex justify-between text-end border rounded-lg items-center h-12">
                 <div class="flex justify-end mx-4 w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-4">
@@ -93,14 +93,14 @@
             <input
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
-                bind:value={$createJustGrowRewardAddress}
+                bind:value={$createSimplyGrowRewardAddress}
                 on:keyup={()=>{
-                    validAddress = isValidEvmAddress($createJustGrowRewardAddress)
+                    validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-bordered border-base-300 focus:outline-none w-full z-10" 
             />
         {/if}
-        {#if $createJustGrowRewardAddress.length > 0}
+        {#if $createSimplyGrowRewardAddress.length > 0}
             <div class="flex items-center justify-start mx-2">
                 {#if validatingAddress}
                     <span class="text-xs text-green-500">
@@ -110,7 +110,7 @@
                     <span class="text-xs text-green-500">
                         {$_('valid_address')}
                     </span>
-                {:else if $createJustGrowRewardAddress.length > 2}
+                {:else if $createSimplyGrowRewardAddress.length > 2}
                     <span class="text-xs text-red-500">
                         {$_('invalid_address')}
                     </span>

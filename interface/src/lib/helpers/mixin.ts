@@ -9,7 +9,7 @@ import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
-import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo } from "$lib/helpers/memo";
+import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userArbitrageOrders, userAssets, userMarketMakingOrders, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
@@ -440,13 +440,14 @@ export const SimplyGrowCreatePay = ({
   const mixinTraceId = getUuid();
   const memoParams = {
     version: 1,
-    tradingType: 'Just Grow',
+    tradingType: 'Simply Grow',
     action: 'create',
-    assetId,
     orderId,
     rewardAddress,
   }
-  const memo = encodeJustGrowCreateMemo(memoParams);
+  const memo = encodeSimplyGrowCreateMemo(memoParams);
+  console.log(`SimplyGrowCreatePay()=> memoParams: ${JSON.stringify(memoParams)}`)
+  console.log(`SimplyGrowCreatePay()=> memo: ${memo}`)
   return mixinPay({
     asset_id: assetId,
     amount,

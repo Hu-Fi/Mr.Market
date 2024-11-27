@@ -3,17 +3,17 @@
   import { _ } from "svelte-i18n"
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { SimplyGrowCreatePay } from "$lib/helpers/mixin";
-  import { createJustGrowAmount, createJustGrowAsset, createJustGrowConfirmDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
+  import { createSimplyGrowAmount, createSimplyGrowAsset, createSimplyGrowConfirmDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
 
   let loading = false;
+  const orderId = getUuid();
   const confirmPayment = () => {
     loading = true;
-    const orderId = getUuid();
     const mixinTrace = SimplyGrowCreatePay({
-      assetId: $createJustGrowAsset.asset_id,
-      amount: $createJustGrowAmount,
+      assetId: $createSimplyGrowAsset.asset_id,
+      amount: $createSimplyGrowAmount,
       orderId,
-      rewardAddress: $createJustGrowRewardAddress,
+      rewardAddress: $createSimplyGrowRewardAddress,
     });
     if (mixinTrace) {
       console.log('mixinTraceId: ', mixinTrace);
@@ -24,14 +24,14 @@
 <dialog
   id="confirm_arb_payment_modal"
   class="modal modal-bottom sm:modal-middle"
-  class:modal-open={$createJustGrowConfirmDialog}
+  class:modal-open={$createSimplyGrowConfirmDialog}
 >
   <div class="modal-box space-y-3 pt-0">
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-4 space-y-8">
       <!-- Title -->
       <div class="flex justify-between">
         <span class="font-semibold"> {$_("confirm_payment")} </span>
-        <button on:click={() => createJustGrowConfirmDialog.set(false)}>
+        <button on:click={() => createSimplyGrowConfirmDialog.set(false)}>
           <!-- Close Icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +55,7 @@
           {$_("payment_amount")}
         </span>
         <span class="text-3xl font-bold">
-          {$createJustGrowAmount} {$createJustGrowAsset ? $createJustGrowAsset.symbol : ''}
+          {$createSimplyGrowAmount} {$createSimplyGrowAsset ? $createSimplyGrowAsset.symbol : ''}
         </span>
       </div>
 
@@ -81,6 +81,6 @@
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button on:click={() => createJustGrowConfirmDialog.set(false)}></button>
+    <button on:click={() => createSimplyGrowConfirmDialog.set(false)}></button>
   </form>
 </dialog>

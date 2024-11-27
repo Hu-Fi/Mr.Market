@@ -7,7 +7,7 @@
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts, createJustGrowRewardAddress } from "$lib/stores/grow"
+  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts, createSimplyGrowRewardAddress } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
   $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
@@ -89,7 +89,7 @@
         secondAssetId: ids.secondAssetID,
         marketMakingPairId: $createMMEasyPair.id,
         orderId,
-        rewardAddress: $createJustGrowRewardAddress,
+        rewardAddress: $createSimplyGrowRewardAddress,
       })
     }
     if (type === '2') {
@@ -104,7 +104,7 @@
         secondAssetId: ids.secondAssetID,
         marketMakingPairId: $createMMEasyPair.id,
         orderId,
-        rewardAddress: $createJustGrowRewardAddress,
+        rewardAddress: $createSimplyGrowRewardAddress,
       })
     }
     if (btn1Loading) {

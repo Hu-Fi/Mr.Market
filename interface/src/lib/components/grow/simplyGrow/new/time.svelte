@@ -2,11 +2,11 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
   import { onDestroy } from "svelte";
-  import { createJustGrowLockTime, createJustGrowLockTimeDialog } from "$lib/stores/grow";
+  import { createSimplyGrowLockTime, createSimplyGrowLockTimeDialog } from "$lib/stores/grow";
 
   onDestroy(() => {
-    createJustGrowLockTime.set({ key: '', value: '' });
-    createJustGrowLockTimeDialog.set(false);
+    createSimplyGrowLockTime.set({ key: '', value: '' });
+    createSimplyGrowLockTimeDialog.set(false);
   })
 
   const locktimes: { key: string, value: string }[] = [
@@ -24,11 +24,11 @@
       </span>
     </div>
 
-    <details class="dropdown dropdown-end" bind:open={$createJustGrowLockTimeDialog} data-testid="select-lock-time">
+    <details class="dropdown dropdown-end" bind:open={$createSimplyGrowLockTimeDialog} data-testid="select-lock-time">
       <summary class="flex justify-between text-end border rounded-lg items-center w-[12.5rem] h-12">
-        <span class={clsx("pl-4", !$createJustGrowLockTime && "text-base-content/40")}> 
-          {#if $createJustGrowLockTime}
-            {$createJustGrowLockTime.key}
+        <span class={clsx("pl-4", !$createSimplyGrowLockTime && "text-base-content/40")}> 
+          {#if $createSimplyGrowLockTime}
+            {$createSimplyGrowLockTime.key}
           {:else}
             {$_('select_lock_time')}
           {/if} 
@@ -45,8 +45,8 @@
             <button
               data-testid={`time-${i}`}
               on:click={()=>{
-                createJustGrowLockTimeDialog.set(false);
-                createJustGrowLockTime.set(time);
+                createSimplyGrowLockTimeDialog.set(false);
+                createSimplyGrowLockTime.set(time);
             }}>
               {time.key}
             </button>

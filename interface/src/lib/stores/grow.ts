@@ -39,14 +39,14 @@ export const createMMSelectPairEasyFilter = writable('all')
 export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow
-export const createJustGrowAsset = writable<SimplyGrowToken>()
-export const createJustGrowAmount = writable<string>()
-export const createJustGrowLockTime = writable({ key: '', value: '' })
-export const createJustGrowLockTimeDialog = writable(false)
-export const createJustGrowConfirmDialog = writable(false)
-export const createJustGrowSearch = writable('')
-export const createJustGrowRewardAddressDialog = writable(false)
-export const createJustGrowRewardAddress = writable('')
+export const createSimplyGrowAsset = writable<SimplyGrowToken>()
+export const createSimplyGrowAmount = writable<string>()
+export const createSimplyGrowLockTime = writable({ key: '', value: '' })
+export const createSimplyGrowLockTimeDialog = writable(false)
+export const createSimplyGrowConfirmDialog = writable(false)
+export const createSimplyGrowSearch = writable('')
+export const createSimplyGrowRewardAddressDialog = writable(false)
+export const createSimplyGrowRewardAddress = writable('')
 
 // Create new auto invest
 export const createAISelectAssetSearch = writable("")
@@ -64,4 +64,4 @@ export const createAISelectUnitDialog = writable(false)
 
 export const isArbitragePage = derived(page, $page => growPathChecker($page, 'arbitrage'));
 export const isMarketMakingPage = derived(page, $page => growPathChecker($page, 'market_making'));
-export const isJustGrowPage = derived(page, $page => growPathChecker($page, 'simply_grow'))
+export const isSimplyGrowPage = derived(page, $page => growPathChecker($page, 'simply_grow'))

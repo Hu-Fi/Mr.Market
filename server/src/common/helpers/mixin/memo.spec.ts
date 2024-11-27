@@ -42,6 +42,20 @@ describe('decodeSimplyGrowCreateMemo', () => {
       rewardAddress: '0x7dFA0E4456Cb794D1F46CC8E0e5882DC3AD6d6D3',
     });
   });
+
+  it('test with interface', () => {
+    const memo = '5JkQ2HgrejnStAJyD1UyH3p5t2EfNH4yqvkqP54Bf4ZxFt9QhB7JGVSo8f';
+    const { payload } = memoPreDecode(memo);
+    const result = decodeSimplyGrowCreateMemo(payload);
+    console.log(`decodeSimplyGrowCreateMemo: ${JSON.stringify(result)}`);
+    expect(result).toEqual({
+      version: 1,
+      tradingType: 'Simply Grow',
+      action: 'create',
+      orderId: 'c9f52c4c-1d03-47ce-89a3-bba2cd48f5d6',
+      rewardAddress: '0x1AE60D36412a6745fce4d4935FF5Bf2b8139a371',
+    });
+  });
 });
 
 describe('decodeArbitrageCreateMemo', () => {

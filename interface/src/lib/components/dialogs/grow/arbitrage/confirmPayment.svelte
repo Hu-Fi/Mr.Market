@@ -6,7 +6,7 @@
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createArbAmount, createArbConfirmDialog, createArbPair, createJustGrowRewardAddress } from "$lib/stores/grow"
+  import { createArbAmount, createArbConfirmDialog, createArbPair, createSimplyGrowRewardAddress } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
   $: baseAssetSymbol = $createArbPair ? $createArbPair.base_symbol : ''
@@ -75,7 +75,7 @@
       btn1Loading = true;
       mixinTraceId1 = ArbitrageCreatePay({
         action: 'create', 
-        rewardAddress: $createJustGrowRewardAddress,
+        rewardAddress: $createSimplyGrowRewardAddress,
         amount: baseAssetAmount,
         assetId: $createArbPair.base_asset_id,
         firstAssetId: $createArbPair.base_asset_id,
@@ -88,7 +88,7 @@
       btn2Loading = true;
       mixinTraceId2 = ArbitrageCreatePay({
         action: 'create', 
-        rewardAddress: $createJustGrowRewardAddress,
+        rewardAddress: $createSimplyGrowRewardAddress,
         amount: targetAssetAmount,
         assetId: $createArbPair.target_asset_id,
         firstAssetId: $createArbPair.base_asset_id,

@@ -8,8 +8,8 @@
   } from "$lib/helpers/helpers";
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import {
-    createJustGrowAsset,
-    createJustGrowSearch,
+    createSimplyGrowAsset,
+    createSimplyGrowSearch,
   } from "$lib/stores/grow";
     import Loading from "$lib/components/common/loading.svelte";
 </script>
@@ -39,7 +39,7 @@
       >
     </div>
     <input
-      bind:value={$createJustGrowSearch}
+      bind:value={$createSimplyGrowSearch}
       class={clsx(
         "input input-md h-[2.5rem] w-full pl-2 focus:outline-none focus:border-none border-none rounded-full join-item",
         "bg-base-200/60",
@@ -57,13 +57,13 @@
     <div class="px-2 w-full !mt-6">
       <div class="grid grid-cols-2 gap-3 w-full overflow-y-auto">
         {#each growInfo.simply_grow.tokens as item, i}
-          {#if $createJustGrowSearch.length === 0 || item.symbol.toUpperCase().includes($createJustGrowSearch.toUpperCase()) || item.name.toUpperCase().includes($createJustGrowSearch.toUpperCase())}
+          {#if $createSimplyGrowSearch.length === 0 || item.symbol.toUpperCase().includes($createSimplyGrowSearch.toUpperCase()) || item.name.toUpperCase().includes($createSimplyGrowSearch.toUpperCase())}
             <button
               class={clsx(
               "flex flex-row px-4 items-center space-x-4 justify-start shadow-none py-3 bg-base-100 border border-base-200 rounded-xl text-start",
             )}
               on:click={() => {
-                createJustGrowAsset.set(item);
+                createSimplyGrowAsset.set(item);
                 goto(`/grow/simply_grow/new/two/`);
               }}
               data-testid={`just-grow-token-${i}`}
