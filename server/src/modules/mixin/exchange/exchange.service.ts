@@ -321,7 +321,7 @@ export class ExchangeService {
             const createResult = await e.createDepositAddress(symbol);
 
             if (createResult) {
-              this.logger.log(
+              this.logger.debug(
                 `Successfully created a deposit address for ${symbol} fetching the deposit address now...`,
               );
             }

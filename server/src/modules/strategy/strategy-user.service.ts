@@ -86,7 +86,7 @@ export class StrategyUserService {
         orderId,
         newState,
       );
-      this.logger.log(
+      this.logger.debug(
         `Arbitrage order ${orderId} updated successfully to state ${newState}`,
       );
     } catch (error) {
@@ -143,7 +143,7 @@ export class StrategyUserService {
         orderId,
         newState,
       );
-      this.logger.log(
+      this.logger.debug(
         `Market making order ${orderId} updated successfully to state ${newState}`,
       );
     } catch (error) {

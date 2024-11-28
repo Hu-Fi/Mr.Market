@@ -121,7 +121,7 @@ export class RebalanceService {
 
       const mixinSymbolBalanceMap =
         convertAssetBalancesToSymbols(mixinBalances);
-      this.logger.log(
+      this.logger.debug(
         `mixinSymbolBalanceMap: ${JSON.stringify(mixinSymbolBalanceMap)}`,
       );
       const allBalanceByKey = await this.exchangeService.getAllAPIKeysBalance();
@@ -145,7 +145,7 @@ export class RebalanceService {
         const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
         const mixinAmount = BigNumber(mixinBalance);
         if (mixinAmount.lte(minAmount)) {
-          this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
+          this.logger.debug(`Rebalance ${symbol} from exchange to Mixin`);
           await this.rebalanceFromExchangeToMixin(
             mixinAssetID,
             symbol,
@@ -169,7 +169,7 @@ export class RebalanceService {
             BigNumber(balance).lte(minAmount) &&
             BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
           ) {
-            this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
+            this.logger.debug(`Rebalance ${symbol} from Mixin to exchange`);
             await this.rebalanceFromMixinToExchange(
               symbol,
               balance,
@@ -271,7 +271,7 @@ export class RebalanceService {
     const mixinBalanceBN = new BigNumber(mixinBalance);
 
     // Log the initiation of the rebalance process
-    this.logger.log(
+    this.logger.debug(
       `Starting rebalance from Mixin to ${exchange} for ${symbol} with balance ${balanceBN.toString()}`,
     );
 
@@ -351,7 +351,7 @@ export class RebalanceService {
     });
 
     if (Array.isArray(transferResult) && transferResult.length > 0) {
-      this.logger.log(
+      this.logger.debug(
         `Successfully initiated transfer of ${amountToRebalance.toString()} ${symbol} from Mixin to ${exchange}`,
       );
     } else {
