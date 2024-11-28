@@ -1,12 +1,12 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
+  import { goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { SimplyGrowCreatePay } from "$lib/helpers/mixin";
-  import { getMixinTx } from "$lib/helpers/hufi/strategy";
-  import { createSimplyGrowAmount, createSimplyGrowAsset, createSimplyGrowConfirmDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
+  import { getMixinTx, getSimplyGrowDetailsById } from "$lib/helpers/hufi/strategy";
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
-    import { goto } from "$app/navigation";
+  import { createSimplyGrowAmount, createSimplyGrowAsset, createSimplyGrowConfirmDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
 
   let loading = false;
   let paymentSuccessful = false;
@@ -39,13 +39,32 @@
         loading = false;
         paymentSuccessful = true;
         clearInterval(interval);
-        // goto(`/grow/simply_grow/${orderId}`);
+        checkOrderCreation(orderId);
       }
       totalTime += ORDER_STATE_FETCH_INTERVAL;
       if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
         clearInterval(interval);
       }
     }, ORDER_STATE_FETCH_INTERVAL);
+  }
+
+  const checkOrderCreation = async (orderId: string) => {
+    // When both payments are successful, check if the order is created, then redirect to the order page
+    let totalTime = 0;
+    if (paymentSuccessful) {
+      var OrderCreationInterval = setInterval(async () => {
+        const order = await getSimplyGrowDetailsById(orderId);
+        if (order.state) {
+          clearInterval(OrderCreationInterval);
+          goto(`/grow/simply_grow/${orderId}`);
+        }
+        totalTime += ORDER_STATE_FETCH_INTERVAL;
+        if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+          clearInterval(OrderCreationInterval);
+        }
+      }, ORDER_STATE_FETCH_INTERVAL);
+      return;
+    }
   }
 </script>
 
@@ -108,7 +127,7 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
+  <!-- <form method="dialog" class="modal-backdrop">
     <button on:click={() => createSimplyGrowConfirmDialog.set(false)}></button>
-  </form>
+  </form> -->
 </dialog>

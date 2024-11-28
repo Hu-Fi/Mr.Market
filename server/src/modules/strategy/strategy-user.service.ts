@@ -34,14 +34,17 @@ export class StrategyUserService {
         await this.strategyUserRepository.findArbitrageByUserId(userId);
       const market_makings =
         await this.strategyUserRepository.findMarketMakingByUserId(userId);
+      const simply_grows =
+        await this.strategyUserRepository.findSimplyGrowByUserId(userId);
       return {
         arbitrage: arbitrages,
         market_making: market_makings,
-        total: arbitrages.length + market_makings.length,
+        simply_grow: simply_grows,
+        total: arbitrages.length + market_makings.length + simply_grows.length,
       };
     } catch (error) {
       this.logger.error('Error finding all strategy by user', error);
-      return { arbitrage: [], market_making: [], total: 0 };
+      return { arbitrage: [], market_making: [], simply_grow: [], total: 0 };
     }
   }
 

@@ -200,7 +200,7 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
+  <!-- <form method="dialog" class="modal-backdrop">
     <button on:click={() => createMMConfirmDialog.set(false)}></button>
-  </form>
+  </form> -->
 </dialog>

@@ -587,9 +587,6 @@ export class SnapshotsService {
           if (!simplyGrowDetails) {
             break;
           }
-          this.logger.log(
-            `Simply grow details: ${JSON.stringify(simplyGrowDetails)}`,
-          );
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
         case 3:

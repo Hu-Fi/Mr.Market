@@ -191,43 +191,7 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
+  <!-- <form method="dialog" class="modal-backdrop">
     <button on:click={() => createArbConfirmDialog.set(false)}></button>
-  </form>
+  </form> -->
 </dialog>
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-// if (btn1Loading && btn2Loading) {
-  //   let totalTime = 0;
-  //   var interval = setInterval(async () => {
-  //     const state = await getOrderPaymentState(orderId);
-  //     console.log(`state: ${JSON.stringify(state)}`)
-  //     totalTime += ORDER_STATE_FETCH_INTERVAL;
-  //     if (!state) {
-  //       return;
-  //     }
-  //     if (state.data.firstSnapshotId) {
-  //       btn1Loading = false;
-  //       btn1Paid = true;
-  //     }
-
-  //     if (state.data.secondSnapshotId) {
-  //       clearInterval(interval);
-  //       goto(`/grow/arbitrage/${orderId}`);
-  //     } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
-  //       clearInterval(interval);
-  //       console.log('Timeout reached, stopping execution.');
-  //     }
-  //   }, ORDER_STATE_FETCH_INTERVAL);
-  // }
- -->

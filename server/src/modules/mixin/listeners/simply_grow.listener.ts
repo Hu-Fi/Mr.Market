@@ -24,6 +24,7 @@ export class SimplyGrowListener {
       this.logger.error('Invalid arguments passed to handleSimplyGrowCreate');
       return;
     }
+    this.logger.debug(`Simply grow details: ${JSON.stringify(details)}`);
     await this.strategyUserService.createSimplyGrow({
       orderId: details.orderId,
       userId: snapshot.opponent_id,
