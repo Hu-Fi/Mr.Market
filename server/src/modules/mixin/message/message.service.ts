@@ -87,7 +87,7 @@ export class MessageService implements OnModuleInit {
 
   async onModuleInit() {
     this.client.blaze.loop(this.messageHandler);
-    this.logger.log('Start handling mixin messages');
+    this.logger.debug('Start handling mixin messages');
   }
 
   async addMessageHistory(message: MixinMessage) {
@@ -173,7 +173,7 @@ export class MessageService implements OnModuleInit {
         return;
       }
 
-      this.logger.log(
+      this.logger.debug(
         `Mixin Message: ${Buffer.from(msg.data, 'base64').toString('utf-8')}`,
       );
 

@@ -39,7 +39,7 @@ import axios from 'axios';
 export class CustomLogger extends Logger {
   private logger: winston.Logger;
   private discordWebhookUrl: string;
-
+  private mixinGroupWebhookUrl: string;
   constructor(context?: string) {
     super(context);
     const logsDir = process.env.IS_DEV
@@ -68,6 +68,7 @@ export class CustomLogger extends Logger {
       ],
     });
     this.discordWebhookUrl = process.env.DISCORD_LOG_WEBHOOK_URL ?? '';
+    this.mixinGroupWebhookUrl = process.env.MIXIN_GROUP_WEBHOOK_URL ?? '';
   }
 
   async logToDiscord(message: string, level: string = 'INFO') {
@@ -84,10 +85,26 @@ export class CustomLogger extends Logger {
     }
   }
 
+  async logToMixinGroup(message: string) {
+    if (this.mixinGroupWebhookUrl.length === 0) {
+      return;
+    }
+
+    try {
+      await axios.post(this.mixinGroupWebhookUrl, {
+        category: 'PLAIN_TEXT',
+        data: message,
+      });
+    } catch (error) {
+      super.error('Failed to send log to Mixin Group', error.message);
+    }
+  }
+
   log(message: any, context?: string) {
     super.log(message, context);
     this.logger.info(message, { context });
     this.logToDiscord(message, 'INFO');
+    this.logToMixinGroup(message);
   }
 
   error(message: any, trace?: string, context?: string) {

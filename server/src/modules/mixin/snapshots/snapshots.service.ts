@@ -295,7 +295,7 @@ export class SnapshotsService {
           request_id: feeId,
         },
       ]);
-      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
+      this.logger.debug(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
     // withdrawal with asset as fee
@@ -369,7 +369,7 @@ export class SnapshotsService {
           request_id,
         },
       ]);
-      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
+      this.logger.debug(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
   }
@@ -389,7 +389,7 @@ export class SnapshotsService {
       state: 'unspent',
     });
 
-    this.logger.log(`this.sendMixinTx.outputs => ${JSON.stringify(outputs)}`);
+    this.logger.debug(`this.sendMixinTx.outputs => ${JSON.stringify(outputs)}`);
 
     const balance = getTotalBalanceFromOutputs(outputs);
     const amountBN = BigNumber(amount);
@@ -398,7 +398,7 @@ export class SnapshotsService {
       return;
     }
 
-    this.logger.log(`this.sendMixinTx.balance => ${balance}`);
+    this.logger.debug(`this.sendMixinTx.balance => ${balance}`);
     const { utxos, change } = getUnspentOutputsForRecipients(
       outputs,
       recipients,
@@ -537,13 +537,13 @@ export class SnapshotsService {
       return;
     }
 
-    // this.logger.log(`encodedMemo:${snapshot.memo}`);
+    // this.logger.debug(`encodedMemo:${snapshot.memo}`);
     const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    // this.logger.log(`hexDecoedMemo:${hexDecoedMemo}`);
+    // this.logger.debug(`hexDecoedMemo:${hexDecoedMemo}`);
     const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    // this.logger.log(`decodedMemo:${decodedMemo}`);
+    // this.logger.debug(`decodedMemo:${decodedMemo}`);
     const tradingType = decodedMemo.slice(0, 2);
-    // this.logger.log(`tradingType:${tradingType}`);
+    // this.logger.debug(`tradingType:${tradingType}`);
     switch (tradingType) {
       case 'SP':
         const spotDetails = decodeSpotMemo(decodedMemo);
@@ -557,7 +557,7 @@ export class SnapshotsService {
 
       case 'AR':
         const arbDetails = decodeArbitrageMemo(decodedMemo);
-        // this.logger.log(`arbDetails: ${arbDetails}`);
+        // this.logger.debug(`arbDetails: ${arbDetails}`);
         if (!arbDetails) {
           break;
         }
@@ -566,7 +566,7 @@ export class SnapshotsService {
 
       case 'MM':
         const mmDetails = decodeMarketMakingMemo(decodedMemo);
-        // this.logger.log(`mmDetails: ${mmDetails}`);
+        // this.logger.debug(`mmDetails: ${mmDetails}`);
         if (!mmDetails) {
           break;
         }

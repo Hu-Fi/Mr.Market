@@ -233,7 +233,7 @@ export class StrategyService {
     });
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.log(
+      this.logger.debug(
         `Strategy already running for user ${userId} and client ${clientId}`,
       );
       return;
@@ -271,7 +271,7 @@ export class StrategyService {
     const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
     const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
-    this.logger.log(
+    this.logger.debug(
       `Starting arbitrage strategy for user ${userId}, client ${clientId}`,
     );
     // Add the pair to active watches for this strategy
@@ -292,7 +292,7 @@ export class StrategyService {
           strategyParamsDto,
         );
       } else {
-        this.logger.log(
+        this.logger.debug(
           `Waiting for open orders to fill for ${strategyKey} before evaluating new opportunities.`,
         );
       }
@@ -306,7 +306,7 @@ export class StrategyService {
     clientId: string,
     strategyType?: string,
   ) {
-    this.logger.log(
+    this.logger.debug(
       `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
     );
 
@@ -345,7 +345,7 @@ export class StrategyService {
     if (strategyInstance) {
       clearInterval(strategyInstance.intervalId);
       this.strategyInstances.delete(strategyKey);
-      this.logger.log(
+      this.logger.debug(
         `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
       );
 
