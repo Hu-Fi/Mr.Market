@@ -4,8 +4,9 @@ import { AfterMixinOauth } from "$lib/helpers/mixin";
 import { mixinConnected } from "./home";
 import type { SpotOrder } from "$lib/types/hufi/spot";
 import type { UserAssets } from "$lib/types/hufi/wallet";
+import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
 
-export const user = writable()
+export const user = writable<UserResponse>()
 export const userAssets:Writable<UserAssets> = writable()
 export const userSpotOrders:Writable<SpotOrder[]> = writable([])
 export const userSpotOrdersLoaded = writable(false)
