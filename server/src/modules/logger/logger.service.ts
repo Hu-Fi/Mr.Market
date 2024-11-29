@@ -103,14 +103,14 @@ export class CustomLogger extends Logger {
   log(message: any, context?: string) {
     super.log(message, context);
     this.logger.info(message, { context });
-    this.logToDiscord(message, 'INFO');
-    this.logToMixinGroup(message);
   }
 
   error(message: any, trace?: string, context?: string) {
     super.error(message, trace, context);
     this.logger.error(`${message}, Trace: ${trace}`, { context });
-    // this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
+
+    this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
+    this.logToMixinGroup(`ERROR: ${message}, Trace: ${trace}`);
   }
 
   debug(message: any, context?: string) {
@@ -121,7 +121,9 @@ export class CustomLogger extends Logger {
   warn(message: any, context?: string) {
     super.warn(message, context);
     this.logger.warn(message, { context });
-    // this.logToDiscord(message, 'WARNING');
+
+    this.logToDiscord(message, 'WARNING');
+    this.logToMixinGroup(`WARN: ${message}`);
   }
 
   onModuleInit() {
