@@ -11,7 +11,7 @@
     createSimplyGrowAsset,
     createSimplyGrowSearch,
   } from "$lib/stores/grow";
-    import Loading from "$lib/components/common/loading.svelte";
+  import Loading from "$lib/components/common/loading.svelte";
 </script>
 
 <div class="flex flex-col justify-start items-start space-y-4 mb-20">
@@ -69,7 +69,7 @@
               data-testid={`just-grow-token-${i}`}
             >
               <AssetIcon chainIcon="" assetIcon={findCoinIconBySymbol(item.symbol) || item.icon_url} clazz="w-8 h-8 min-w-8" claxx="" imageClass="" />
-              <div class="flex flex-col grow">
+              <div class="flex flex-col grow truncate">
                 <span class="text-sm font-semibold">
                   {item.symbol}
                 </span>

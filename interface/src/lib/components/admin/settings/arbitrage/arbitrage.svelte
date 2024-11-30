@@ -98,8 +98,6 @@
       }, getRandomDelay());
     });
   }
-
-  console.log($page.data.growInfo);
 </script>
 
 {#if !arbitragePairs}
