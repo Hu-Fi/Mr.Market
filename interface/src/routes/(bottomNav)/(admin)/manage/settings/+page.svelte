@@ -5,9 +5,10 @@
   import Exchanges from "$lib/components/admin/settings/exchanges/exchanges.svelte";
   import Arbitrage from "$lib/components/admin/settings/arbitrage/arbitrage.svelte";
   import SimplyGrow from "$lib/components/admin/settings/simplyGrow/simplyGrow.svelte";
+  import SpotTrading from "$lib/components/admin/settings/spotTrading/spotTrading.svelte";
   import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
 
-  let modes = ["config", "exchanges", "arbitrage", "market_making", "simply_grow"];
+  let modes = ["config", "spot_trading", "exchanges", "arbitrage", "market_making", "simply_grow"];
   let mode = "config";
 </script>
 
@@ -30,6 +31,8 @@
   
   {#if mode === "config"}
     <Config />
+  {:else if mode === "spot_trading"}
+    <SpotTrading />
   {:else if mode === "exchanges"}
     <Exchanges />
   {:else if mode === "arbitrage"}
