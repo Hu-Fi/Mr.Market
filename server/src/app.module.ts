@@ -6,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { TradeModule } from './modules/trade/trade.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
@@ -110,6 +109,6 @@ dotenv.config();
     Web3Module,
   ],
   controllers: [AppController, AdminController],
-  providers: [CustomLogger, AppService],
+  providers: [CustomLogger],
 })
 export class AppModule {}

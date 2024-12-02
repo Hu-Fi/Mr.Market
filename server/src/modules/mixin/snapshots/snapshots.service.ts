@@ -72,6 +72,8 @@ import {
   blake3Hash,
   MixinCashier,
   SequencerTransactionRequest,
+  SafeMixinRecipient,
+  SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
 import {
   decodeArbitrageMemo,
@@ -114,14 +116,14 @@ export class SnapshotsService {
     this.events = this.eventEmitter;
 
     this.enableCron = this.configService.get<string>('strategy.run') === 'true';
-    this.logger.debug(this.enableCron);
+    this.logger.log(`Cron enabled: ${this.enableCron}`);
   }
 
   async createSnapshot(snapshot: SafeSnapshot) {
     try {
       return await this.snapshotsRepository.createSnapshot(snapshot);
     } catch (e) {
-      this.logger.error(`createSnapshot()=> ${e}`);
+      this.logger.error(`createSnapshot()=> ${e.message}`);
     }
   }
 
@@ -137,7 +139,7 @@ export class SnapshotsService {
       });
       return snapshots;
     } catch (error) {
-      this.logger.error(`Failed to fetch snapshots: ${error}`);
+      this.logger.error(`Failed to fetch snapshots: ${error.message}`);
     }
   }
 
@@ -155,7 +157,7 @@ export class SnapshotsService {
         memo: entities[0].tag,
       };
     } catch (error) {
-      this.logger.error(`Failed to get deposit address: ${error}`);
+      this.logger.error(`Failed to get deposit address: ${error.message}`);
     }
   }
 
@@ -171,7 +173,7 @@ export class SnapshotsService {
         ? asset
         : await this.client.network.fetchAsset(asset.chain_id);
     const fee = chain;
-    this.logger.debug(fee);
+    this.logger.log(`Withdrawal Fee: ${fee.amount} ${fee.symbol}`);
 
     // withdrawal with chain asset as fee
     if (fee.asset_id !== asset.asset_id) {
@@ -184,7 +186,7 @@ export class SnapshotsService {
         state: 'unspent',
       });
 
-      const recipients = [
+      const recipients: (SafeWithdrawalRecipient | SafeMixinRecipient)[] = [
         {
           amount: amount,
           destination: destination,
@@ -196,7 +198,6 @@ export class SnapshotsService {
       );
       if (!change.isZero() && !change.isNegative()) {
         recipients.push(
-          // @ts-expect-error add change output if needed
           buildSafeTransactionRecipient(
             outputs[0].receivers,
             outputs[0].receivers_threshold,
@@ -211,8 +212,7 @@ export class SnapshotsService {
           .filter((r) => 'members' in r)
           .map((r, i) => ({
             hint: randomUUID(),
-            // @ts-expect-error type
-            receivers: r.members,
+            receivers: (r as SafeMixinRecipient).members,
             index: i + 1,
           })),
       );
@@ -222,7 +222,6 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         memo,
       );
-      this.logger.debug(tx);
       // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
@@ -258,14 +257,11 @@ export class SnapshotsService {
         'withdrawal-fee-memo',
         [ref],
       );
-      this.logger.debug(feeTx);
       // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
-      this.logger.debug(feeRaw);
 
       const txId = randomUUID();
       const feeId = randomUUID();
-      this.logger.debug(txId, feeId);
       const txs = await this.client.utxo.verifyTransaction([
         {
           raw,
@@ -295,7 +291,7 @@ export class SnapshotsService {
           request_id: feeId,
         },
       ]);
-      this.logger.debug(`Withdrawal result: ${JSON.stringify(res)}`);
+      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
     // withdrawal with asset as fee
@@ -304,7 +300,6 @@ export class SnapshotsService {
         asset: asset_id,
         state: 'unspent',
       });
-      this.logger.debug(outputs);
 
       const recipients = [
         // withdrawal output, must be put first
@@ -336,8 +331,7 @@ export class SnapshotsService {
           .filter((r) => 'members' in r)
           .map((r, i) => ({
             hint: randomUUID(),
-            // @ts-expect-error type
-            receivers: r.members,
+            receivers: (r as SafeMixinRecipient).members,
             index: i + 1,
           })),
       );
@@ -348,12 +342,10 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         'withdrawal-memo',
       );
-      this.logger.debug(tx);
       // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
-      this.logger.debug(request_id);
       const txs = await this.client.utxo.verifyTransaction([
         {
           raw,
@@ -369,7 +361,7 @@ export class SnapshotsService {
           request_id,
         },
       ]);
-      this.logger.debug(`Withdrawal result: ${JSON.stringify(res)}`);
+      this.logger.log(`Withdrawal result: ${JSON.stringify(res)}`);
       return res;
     }
   }
@@ -389,8 +381,6 @@ export class SnapshotsService {
       state: 'unspent',
     });
 
-    this.logger.debug(`this.sendMixinTx.outputs => ${JSON.stringify(outputs)}`);
-
     const balance = getTotalBalanceFromOutputs(outputs);
     const amountBN = BigNumber(amount);
     if (balance.isLessThan(amountBN)) {
@@ -398,7 +388,6 @@ export class SnapshotsService {
       return;
     }
 
-    this.logger.debug(`this.sendMixinTx.balance => ${balance}`);
     const { utxos, change } = getUnspentOutputsForRecipients(
       outputs,
       recipients,
@@ -455,7 +444,7 @@ export class SnapshotsService {
         snapshot.amount,
       );
     } catch (error) {
-      this.logger.error(`Failed to refund snapshot: ${error}`);
+      this.logger.error(`Failed to refund snapshot: ${error.message}`);
     }
   }
 
@@ -489,7 +478,7 @@ export class SnapshotsService {
       // map of AssetID: Balance
       return assetBalances;
     } catch (error) {
-      console.error(`Error fetching asset balances: ${error.message}`);
+      this.logger.error(`Error fetching asset balances: ${error.message}`);
       throw error;
     }
   }
@@ -498,7 +487,7 @@ export class SnapshotsService {
     try {
       return await this.client.utxo.safeAssetBalance({ asset: asset_id });
     } catch (e) {
-      this.logger.error(`Mixin getAssetBalance() => ${e}`);
+      this.logger.error(`Mixin getAssetBalance() => ${e.message}`);
       return '0';
     }
   }
@@ -537,13 +526,9 @@ export class SnapshotsService {
       return;
     }
 
-    // this.logger.debug(`encodedMemo:${snapshot.memo}`);
     const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    // this.logger.debug(`hexDecoedMemo:${hexDecoedMemo}`);
     const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    // this.logger.debug(`decodedMemo:${decodedMemo}`);
     const tradingType = decodedMemo.slice(0, 2);
-    // this.logger.debug(`tradingType:${tradingType}`);
     switch (tradingType) {
       case 'SP':
         const spotDetails = decodeSpotMemo(decodedMemo);
@@ -557,7 +542,6 @@ export class SnapshotsService {
 
       case 'AR':
         const arbDetails = decodeArbitrageMemo(decodedMemo);
-        // this.logger.debug(`arbDetails: ${arbDetails}`);
         if (!arbDetails) {
           break;
         }
@@ -566,7 +550,6 @@ export class SnapshotsService {
 
       case 'MM':
         const mmDetails = decodeMarketMakingMemo(decodedMemo);
-        // this.logger.debug(`mmDetails: ${mmDetails}`);
         if (!mmDetails) {
           break;
         }

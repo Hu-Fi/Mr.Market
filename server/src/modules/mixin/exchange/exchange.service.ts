@@ -128,11 +128,7 @@ export class ExchangeService {
 
   private async loadAPIKeys() {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
-    if (!apiKeys) {
-      this.logger.error('No API Keys loaded');
-      return;
-    }
-    if (apiKeys.length === 0) {
+    if (!apiKeys.length) {
       this.logger.error('No API Keys loaded');
       return;
     }
@@ -305,15 +301,17 @@ export class ExchangeService {
     try {
       // The network parameter needs a map. It's case sensitive
       const depositAddress = await e.fetchDepositAddress(symbol, { network });
+
       return {
         address: depositAddress['address'],
         memo: depositAddress['tag'] || '',
       };
     } catch (error) {
       if (error instanceof ccxt.InvalidAddress) {
-        this.logger.debug(`The address for ${symbol} does not exist yet`);
+        this.logger.warn(`The address for ${symbol} does not exist yet`);
+
         if (e.has['createDepositAddress']) {
-          this.logger.debug(
+          this.logger.log(
             `Attempting to create a deposit address for ${symbol}...`,
           );
 
@@ -321,18 +319,18 @@ export class ExchangeService {
             const createResult = await e.createDepositAddress(symbol);
 
             if (createResult) {
-              this.logger.debug(
+              this.logger.log(
                 `Successfully created a deposit address for ${symbol} fetching the deposit address now...`,
               );
             }
 
             try {
-              const fetchResult = await e.fetchDepositAddress(symbol);
+              const depositAddress = await e.fetchDepositAddress(symbol);
 
-              this.logger.debug(
-                `Successfully fetched deposit address for ${symbol}`,
-              );
-              this.logger.debug(fetchResult);
+              return {
+                address: depositAddress['address'],
+                memo: depositAddress['tag'] || '',
+              };
             } catch (e) {
               this.logger.error(
                 `Failed to fetch deposit address for ${symbol} ${error.constructor.name} ${error.message}`,

@@ -99,7 +99,7 @@ export class MarketdataService {
         'Exchange does not support fetchTickers or is not configured.',
       );
     }
-    this.logger.debug(
+    this.logger.log(
       `Fetching tickers from ${this.exchange.name} for ${symbols}`,
     );
 
@@ -120,7 +120,7 @@ export class MarketdataService {
         'Exchange does not support fetchOHLCV or is not configured.',
       );
     }
-    this.logger.debug(
+    this.logger.log(
       `Fetching OHLCV data from ${this.exchange.name} for ${symbol}`,
     );
 
@@ -158,7 +158,7 @@ export class MarketdataService {
         return pairs;
       }
     } catch (error) {
-      console.error('Error accessing cache:', error);
+      this.logger.error('Error accessing cache', error.message);
       const pairs = await this._getSupportedPairs();
       return pairs;
     }
@@ -353,7 +353,7 @@ export class MarketdataService {
         'Exchange does not support fetchTicker or is not configured.',
       );
     }
-    this.logger.debug(
+    this.logger.log(
       `Fetching ticker price from ${exchange.name} for ${symbol}`,
     );
     return await exchange.fetchTicker(symbol); //Use Last as it represent the last price.

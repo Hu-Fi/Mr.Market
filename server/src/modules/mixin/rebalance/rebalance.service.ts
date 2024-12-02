@@ -121,9 +121,6 @@ export class RebalanceService {
 
       const mixinSymbolBalanceMap =
         convertAssetBalancesToSymbols(mixinBalances);
-      this.logger.debug(
-        `mixinSymbolBalanceMap: ${JSON.stringify(mixinSymbolBalanceMap)}`,
-      );
       const allBalanceByKey = await this.exchangeService.getAllAPIKeysBalance();
       if (!allBalanceByKey) {
         this.logger.error('Failed to fetch exchange balances.');
@@ -145,7 +142,7 @@ export class RebalanceService {
         const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
         const mixinAmount = BigNumber(mixinBalance);
         if (mixinAmount.lte(minAmount)) {
-          this.logger.debug(`Rebalance ${symbol} from exchange to Mixin`);
+          this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
           await this.rebalanceFromExchangeToMixin(
             mixinAssetID,
             symbol,
@@ -169,7 +166,7 @@ export class RebalanceService {
             BigNumber(balance).lte(minAmount) &&
             BigNumber(mixinSymbolBalanceMap[symbol] || 0).gt(minAmount)
           ) {
-            this.logger.debug(`Rebalance ${symbol} from Mixin to exchange`);
+            this.logger.log(`Rebalance ${symbol} from Mixin to exchange`);
             await this.rebalanceFromMixinToExchange(
               symbol,
               balance,
@@ -180,7 +177,7 @@ export class RebalanceService {
         }
       }
     } catch (e) {
-      this.logger.error(`${e}`);
+      this.logger.error(e.message);
     }
   }
 
@@ -271,7 +268,7 @@ export class RebalanceService {
     const mixinBalanceBN = new BigNumber(mixinBalance);
 
     // Log the initiation of the rebalance process
-    this.logger.debug(
+    this.logger.log(
       `Starting rebalance from Mixin to ${exchange} for ${symbol} with balance ${balanceBN.toString()}`,
     );
 
@@ -287,7 +284,6 @@ export class RebalanceService {
     if (!balanceBN.isLessThanOrEqualTo(minBalance)) {
       return;
     }
-    console.warn(balanceBN.minus(minBalance).toString());
     // Calculate the amount needed to rebalance
     const amountToRebalance = calculateRebalanceAmount(
       balanceBN,
@@ -351,7 +347,7 @@ export class RebalanceService {
     });
 
     if (Array.isArray(transferResult) && transferResult.length > 0) {
-      this.logger.debug(
+      this.logger.log(
         `Successfully initiated transfer of ${amountToRebalance.toString()} ${symbol} from Mixin to ${exchange}`,
       );
     } else {
