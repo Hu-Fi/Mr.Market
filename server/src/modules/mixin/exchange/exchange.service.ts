@@ -128,7 +128,7 @@ export class ExchangeService {
 
   private async loadAPIKeys() {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
-    if (!apiKeys.length) {
+    if (!apiKeys?.length) {
       this.logger.error('No API Keys loaded');
       return;
     }
