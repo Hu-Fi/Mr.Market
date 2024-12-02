@@ -39,12 +39,13 @@ import axios from 'axios';
 export class CustomLogger extends Logger {
   private logger: winston.Logger;
   private discordWebhookUrl: string;
-
+  private mixinGroupWebhookUrl: string;
   constructor(context?: string) {
     super(context);
-    const logsDir = process.env.IS_DEV
-      ? path.join(__dirname, '..', '..', 'logs')
-      : path.join(__dirname, '..', 'logs'); // Adjust as necessary for production
+    const logsDir =
+      process.env.NODE_ENV !== 'production'
+        ? path.join(__dirname, '..', '..', 'logs')
+        : path.join(__dirname, '..', 'logs'); // Adjust as necessary for production
 
     this.logger = winston.createLogger({
       level: 'info', // Default logging level
@@ -68,6 +69,7 @@ export class CustomLogger extends Logger {
       ],
     });
     this.discordWebhookUrl = process.env.DISCORD_LOG_WEBHOOK_URL ?? '';
+    this.mixinGroupWebhookUrl = process.env.MIXIN_GROUP_WEBHOOK_URL ?? '';
   }
 
   async logToDiscord(message: string, level: string = 'INFO') {
@@ -77,39 +79,54 @@ export class CustomLogger extends Logger {
 
     try {
       await axios.post(this.discordWebhookUrl, {
-        content: `[${level}] ${message}`,
+        content: `${level} [${this.context}]: ${message}`,
       });
     } catch (error) {
       super.error('Failed to send log to Discord', error.message);
     }
   }
 
-  log(message: any, context?: string) {
-    super.log(message, context);
-    this.logger.info(message, { context });
-    this.logToDiscord(message, 'INFO');
-  }
+  async logToMixinGroup(message: string) {
+    if (this.mixinGroupWebhookUrl.length === 0) {
+      return;
+    }
 
-  error(message: any, trace?: string, context?: string) {
-    super.error(message, trace, context);
-    this.logger.error(`${message}, Trace: ${trace}`, { context });
-    // this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
-  }
-
-  debug(message: any, context?: string) {
-    if (context) {
-      super.debug(message, context);
-      this.logger.debug(message, { context });
-    } else {
-      super.debug(message);
-      this.logger.debug(message);
+    try {
+      await axios.post(this.mixinGroupWebhookUrl, {
+        category: 'PLAIN_TEXT',
+        data: message,
+      });
+    } catch (error) {
+      super.error('Failed to send log to Mixin Group', error.message);
     }
   }
 
-  warn(message: any, context?: string) {
-    super.warn(message, context);
-    this.logger.warn(message, { context });
-    // this.logToDiscord(message, 'WARNING');
+  log(message: any, ...optionalParams: any[]) {
+    super.log(message);
+    this.logger.info(message, optionalParams);
+  }
+
+  error(message: any, trace?: string, ...optionalParams: any[]) {
+    super.error(message, trace);
+    this.logger.error(`${message}, Trace: ${trace}`, optionalParams);
+
+    this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
+    this.logToMixinGroup(
+      `ERROR [${this.context}]: ${message}, Trace: ${trace}`,
+    );
+  }
+
+  debug(message: any, ...optionalParams: any[]) {
+    super.debug(message);
+    this.logger.debug(message, optionalParams);
+  }
+
+  warn(message: any, ...optionalParams: any[]) {
+    super.warn(message);
+    this.logger.warn(message, optionalParams);
+
+    this.logToDiscord(message, 'WARNING');
+    this.logToMixinGroup(`WARN [${this.context}]: ${message}`);
   }
 
   onModuleInit() {

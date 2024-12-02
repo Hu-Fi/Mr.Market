@@ -47,7 +47,7 @@ export class AlpacaStratService {
     });
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.warn(
+      this.logger.log(
         `Alpaca strategy for user ${userId}, client ${clientId} for ${pair} is already running.`,
       );
       return;
@@ -97,7 +97,7 @@ export class AlpacaStratService {
     });
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.warn(
+      this.logger.log(
         `Alpaca ${derivativeType} strategy for user ${userId}, client ${clientId} for ${pair} is already running.`,
       );
       return;

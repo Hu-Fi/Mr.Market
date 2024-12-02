@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // Global request logging
   app.use((req, _, next) => {
-    logger.debug(`Incoming request: ${req.method} ${req.url}`);
+    logger.log(`Incoming request: ${req.method} ${req.url}`);
     next();
   });
 

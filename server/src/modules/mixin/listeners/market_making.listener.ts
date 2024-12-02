@@ -54,7 +54,7 @@ export class MarketMakingListener {
     snapshot: SafeSnapshot,
   ) {
     if (!details || !snapshot) {
-      console.error('Invalid arguments passed to handleMarketMakingCreate');
+      this.logger.error('Invalid arguments passed to handleMarketMakingCreate');
       return;
     }
     const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(

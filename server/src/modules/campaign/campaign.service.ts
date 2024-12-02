@@ -34,17 +34,17 @@ export class CampaignService {
   }
 
   async getCampaigns() {
-    this.logger.debug('Getting HuFi campaigns');
+    this.logger.log('Getting HuFi campaigns');
 
     try {
       const { data } = await this.hufiCampaignLauncherAPI.get<
         CampaignDataDto[]
       >('/campaign?chainId=-1');
 
-      this.logger.debug('Finished getting HuFi campaigns');
+      this.logger.log('Finished getting HuFi campaigns');
       return data;
     } catch (error) {
-      this.logger.error('Error getting HuFi campaigns', error);
+      this.logger.error('Error getting HuFi campaigns', error.message);
       return [];
     }
   }
@@ -56,7 +56,7 @@ export class CampaignService {
   async joinCampaigns() {
     const campaigns = await this.getCampaigns();
 
-    this.logger.debug('Getting running campaigns');
+    this.logger.log('Getting running campaigns');
     const runningCampaigns = campaigns.filter((campaign) => {
       return (
         campaign.status !== 'Complete' &&
@@ -65,11 +65,11 @@ export class CampaignService {
     });
 
     if (runningCampaigns.length === 0) {
-      this.logger.debug('No campaigns to join');
+      this.logger.log('No campaigns to join');
       return;
     }
 
-    this.logger.debug(`Joining ${runningCampaigns.length} campaigns`);
+    this.logger.log(`Joining ${runningCampaigns.length} campaigns`);
 
     for (const campaign of runningCampaigns) {
       try {
@@ -82,7 +82,7 @@ export class CampaignService {
         );
 
         if (joined) {
-          this.logger.debug('Already joined campaign');
+          this.logger.log('Already joined campaign');
           continue;
         }
 
@@ -104,7 +104,7 @@ export class CampaignService {
           `Joined Hu-Fi campaign:\n\tChainId: ${campaign.chainId}\n\tAddress: ${campaign.address}\n\tExchange: ${campaign.exchangeName}`,
         );
       } catch (e) {
-        this.logger.error('Error joining campaign: ', e);
+        this.logger.error('Error joining campaign: ', e.message);
       }
     }
   }

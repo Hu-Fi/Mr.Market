@@ -97,7 +97,7 @@ export class MessageService implements OnModuleInit {
       );
       return newMessage;
     } catch (error) {
-      this.logger.error('Failed to add message history', error);
+      this.logger.error('Failed to add message history', error.message);
       throw error;
     }
   }
@@ -108,7 +108,7 @@ export class MessageService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Failed to remove message with ID ${message_id}`,
-        error,
+        error.message,
       );
       throw error;
     }
@@ -119,7 +119,10 @@ export class MessageService implements OnModuleInit {
       try {
         await this.messageRepository.removeMessageById(id);
       } catch (error) {
-        this.logger.error(`Failed to remove message with ID ${id}`, error);
+        this.logger.error(
+          `Failed to remove message with ID ${id}`,
+          error.message,
+        );
         throw error;
       }
     });
@@ -131,7 +134,7 @@ export class MessageService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         `Failed to check message existence ${message_id}`,
-        error,
+        error.message,
       );
       return false;
     }
@@ -149,7 +152,7 @@ export class MessageService implements OnModuleInit {
     try {
       return await this.messageRepository.getAllMessages();
     } catch (error) {
-      this.logger.error('Failed to get all messages', error);
+      this.logger.error('Failed to get all messages', error.message);
       throw error;
     }
   }
@@ -204,7 +207,7 @@ export class MessageService implements OnModuleInit {
     // callback when group information update, which your bot is in
     onConversation: async (msg) => {
       const group = await this.client.conversation.fetch(msg.conversation_id);
-      this.logger.debug(`group ${group.name} information updated`);
+      this.logger.log(`group ${group.name} information updated`);
     },
   };
 }

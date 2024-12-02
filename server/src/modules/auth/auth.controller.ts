@@ -28,7 +28,6 @@ export class AuthController {
   async login(
     @Body('password') password: string,
   ): Promise<{ access_token: string }> {
-    this.logger.debug('Received password:', password); // Log the received password
     const access_token = await this.authService.validateUser(password);
     return { access_token };
   }

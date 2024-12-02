@@ -121,9 +121,6 @@ export class RebalanceService {
 
       const mixinSymbolBalanceMap =
         convertAssetBalancesToSymbols(mixinBalances);
-      this.logger.log(
-        `mixinSymbolBalanceMap: ${JSON.stringify(mixinSymbolBalanceMap)}`,
-      );
       const allBalanceByKey = await this.exchangeService.getAllAPIKeysBalance();
       if (!allBalanceByKey) {
         this.logger.error('Failed to fetch exchange balances.');
@@ -180,7 +177,7 @@ export class RebalanceService {
         }
       }
     } catch (e) {
-      this.logger.error(`${e}`);
+      this.logger.error(e.message);
     }
   }
 
@@ -287,7 +284,6 @@ export class RebalanceService {
     if (!balanceBN.isLessThanOrEqualTo(minBalance)) {
       return;
     }
-    console.warn(balanceBN.minus(minBalance).toString());
     // Calculate the amount needed to rebalance
     const amountToRebalance = calculateRebalanceAmount(
       balanceBN,

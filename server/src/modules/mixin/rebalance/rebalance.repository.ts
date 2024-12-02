@@ -108,16 +108,6 @@ export class RebalanceRepository {
         exchange: exchange,
         minimumBalance: minimumBalance,
       });
-      this.logger.debug(
-        'this.tokenExchangeRepository.create()=>',
-        JSON.stringify({
-          token_id: assetId,
-          exchange_id: exchangeName,
-          token: token,
-          exchange: exchange,
-          minimumBalance: minimumBalance,
-        }),
-      );
       await this.tokenExchangeRepository.save(tokenExchange);
     }
   }

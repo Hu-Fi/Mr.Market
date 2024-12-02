@@ -6,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { TradeModule } from './modules/trade/trade.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
@@ -64,6 +63,7 @@ import {
   RebalanceToken,
   RebalanceTokenExchange,
 } from './common/entities/rebalance-asset.entity';
+import { AdminController } from './modules/admin/admin.controller';
 
 dotenv.config();
 
@@ -95,7 +95,6 @@ dotenv.config();
         Performance,
         Transaction,
         UserBalance,
-        PaymentState,
         Snapshot,
         SpotOrder,
         APIKeysConfig,
@@ -105,6 +104,12 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
+        RebalanceToken,
+        RebalanceExchange,
+        RebalanceTokenExchange,
+        RebalanceHistory,
+        ArbitrageOrder,
+        MarketMakingOrder,
         PaymentState,
         RebalanceToken,
         RebalanceExchange,
@@ -138,7 +143,7 @@ dotenv.config();
     CampaignModule,
     Web3Module,
   ],
-  controllers: [AppController],
-  providers: [CustomLogger, AppService],
+  controllers: [AppController, AdminController],
+  providers: [CustomLogger],
 })
 export class AppModule {}
