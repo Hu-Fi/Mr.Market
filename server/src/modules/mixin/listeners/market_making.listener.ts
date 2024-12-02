@@ -36,11 +36,14 @@ import {
   getRFC3339Timestamp,
 } from 'src/common/helpers/utils';
 import { MarketMakingMemoDetails } from 'src/common/types/memo/memo';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 
 @Injectable()
 export class MarketMakingListener {
+  private readonly logger = new CustomLogger(MarketMakingListener.name);
+
   constructor(
     private readonly snapshotService: SnapshotsService,
     private readonly strategyUserService: StrategyUserService,
@@ -52,7 +55,7 @@ export class MarketMakingListener {
     snapshot: SafeSnapshot,
   ) {
     if (!details || !snapshot) {
-      console.error('Invalid arguments passed to handleMarketMakingCreate');
+      this.logger.error('Invalid arguments passed to handleMarketMakingCreate');
       return;
     }
     const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(

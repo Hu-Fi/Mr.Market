@@ -13,8 +13,7 @@ export const getUserMe = async (token: string) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    throw error;
+    throw new Error(`Error fetching user profile: ${error}`);
   }
 };
 

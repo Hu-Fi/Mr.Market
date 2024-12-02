@@ -16,9 +16,6 @@ export const getInfoFromChainId = async (chainId: number): Promise<any> => {
     // Use strict equality (===) to properly match the chainId
     const chainData = chains.find((chain) => chain.chainId === Number(chainId));
 
-    // Log the chainData found
-    console.log('Found chainData:', chainData);
-
     if (!chainData || !chainData.rpc || !chainData.rpc.length) {
       throw new BadRequestException(`No RPC URL found for chainId ${chainId}`);
     }
@@ -80,8 +77,6 @@ export const getTokenSymbolByContractAddress = async (
     // Try each RPC URL one by one with a timeout
     for (const rpcUrl of nonApiKeyRpcs) {
       try {
-        console.log(`Trying RPC URL: ${rpcUrl}`);
-
         // Create a provider with a timeout for the connection
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
         // Create a contract instance for the given address and ERC-20 ABI
@@ -103,7 +98,7 @@ export const getTokenSymbolByContractAddress = async (
         return tokenSymbol;
       } catch (rpcError) {
         // Log the error and continue trying the next RPC
-        console.error(
+        throw new Error(
           `Failed to connect using RPC URL: ${rpcUrl}. Error: ${rpcError.message}`,
         );
       }

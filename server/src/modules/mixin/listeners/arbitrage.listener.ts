@@ -36,9 +36,12 @@ import { ArbitrageMemoDetails } from 'src/common/types/memo/memo';
 import { PaymentState } from 'src/common/entities/strategy.entity';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class ArbitrageListener {
+  private readonly logger = new CustomLogger(ArbitrageListener.name);
+
   constructor(
     private readonly snapshotService: SnapshotsService,
     private readonly strategyUserService: StrategyUserService,
@@ -50,7 +53,7 @@ export class ArbitrageListener {
     snapshot: SafeSnapshot,
   ) {
     if (!details || !snapshot) {
-      console.error('Invalid arguments passed to handleArbitrageCreate');
+      this.logger.error('Invalid arguments passed to handleArbitrageCreate');
       return;
     }
     const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(

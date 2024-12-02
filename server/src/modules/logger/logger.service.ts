@@ -42,9 +42,10 @@ export class CustomLogger extends Logger {
   private mixinGroupWebhookUrl: string;
   constructor(context?: string) {
     super(context);
-    const logsDir = process.env.IS_DEV
-      ? path.join(__dirname, '..', '..', 'logs')
-      : path.join(__dirname, '..', 'logs'); // Adjust as necessary for production
+    const logsDir =
+      process.env.NODE_ENV !== 'production'
+        ? path.join(__dirname, '..', '..', 'logs')
+        : path.join(__dirname, '..', 'logs'); // Adjust as necessary for production
 
     this.logger = winston.createLogger({
       level: 'info', // Default logging level
@@ -78,7 +79,7 @@ export class CustomLogger extends Logger {
 
     try {
       await axios.post(this.discordWebhookUrl, {
-        content: `[${level}] ${message}`,
+        content: `${level} [${this.context}]: ${message}`,
       });
     } catch (error) {
       super.error('Failed to send log to Discord', error.message);
@@ -100,30 +101,32 @@ export class CustomLogger extends Logger {
     }
   }
 
-  log(message: any, context?: string) {
-    super.log(message, context);
-    this.logger.info(message, { context });
+  log(message: any, ...optionalParams: any[]) {
+    super.log(message);
+    this.logger.info(message, optionalParams);
   }
 
-  error(message: any, trace?: string, context?: string) {
-    super.error(message, trace, context);
-    this.logger.error(`${message}, Trace: ${trace}`, { context });
+  error(message: any, trace?: string, ...optionalParams: any[]) {
+    super.error(message, trace);
+    this.logger.error(`${message}, Trace: ${trace}`, optionalParams);
 
     this.logToDiscord(`${message}, Trace: ${trace}`, 'ERROR');
-    this.logToMixinGroup(`ERROR: ${message}, Trace: ${trace}`);
+    this.logToMixinGroup(
+      `ERROR [${this.context}]: ${message}, Trace: ${trace}`,
+    );
   }
 
-  debug(message: any, context?: string) {
-    super.debug(message, context);
-    this.logger.debug(message, { context });
+  debug(message: any, ...optionalParams: any[]) {
+    super.debug(message);
+    this.logger.debug(message, optionalParams);
   }
 
-  warn(message: any, context?: string) {
-    super.warn(message, context);
-    this.logger.warn(message, { context });
+  warn(message: any, ...optionalParams: any[]) {
+    super.warn(message);
+    this.logger.warn(message, optionalParams);
 
     this.logToDiscord(message, 'WARNING');
-    this.logToMixinGroup(`WARN: ${message}`);
+    this.logToMixinGroup(`WARN [${this.context}]: ${message}`);
   }
 
   onModuleInit() {

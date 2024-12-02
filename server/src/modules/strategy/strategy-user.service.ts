@@ -38,7 +38,7 @@ export class StrategyUserService {
         total: arbitrages.length + market_makings.length,
       };
     } catch (error) {
-      this.logger.error('Error finding all strategy by user', error);
+      this.logger.error('Error finding all strategy by user', error.message);
       return { arbitrage: [], market_making: [], total: 0 };
     }
   }
@@ -52,7 +52,7 @@ export class StrategyUserService {
       );
       return createdOrder;
     } catch (error) {
-      this.logger.error('Error creating arbitrage order', error);
+      this.logger.error('Error creating arbitrage order', error.message);
       throw error;
     }
   }
@@ -63,7 +63,10 @@ export class StrategyUserService {
     try {
       return await this.strategyUserRepository.findArbitrageByOrderId(orderId);
     } catch (error) {
-      this.logger.error('Error finding arbitrage order by orderId', error);
+      this.logger.error(
+        'Error finding arbitrage order by orderId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -72,7 +75,10 @@ export class StrategyUserService {
     try {
       return await this.strategyUserRepository.findArbitrageByUserId(userId);
     } catch (error) {
-      this.logger.error('Error finding arbitrage orders by userId', error);
+      this.logger.error(
+        'Error finding arbitrage orders by userId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -86,13 +92,13 @@ export class StrategyUserService {
         orderId,
         newState,
       );
-      this.logger.debug(
+      this.logger.log(
         `Arbitrage order ${orderId} updated successfully to state ${newState}`,
       );
     } catch (error) {
       this.logger.error(
         `Error updating arbitrage order state for orderId ${orderId}`,
-        error,
+        error.message,
       );
       throw error;
     }
@@ -107,7 +113,7 @@ export class StrategyUserService {
       );
       return createdOrder;
     } catch (error) {
-      this.logger.error('Error creating market making order', error);
+      this.logger.error('Error creating market making order', error.message);
       throw error;
     }
   }
@@ -120,7 +126,10 @@ export class StrategyUserService {
         orderId,
       );
     } catch (error) {
-      this.logger.error('Error finding market making order by orderId', error);
+      this.logger.error(
+        'Error finding market making order by orderId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -129,7 +138,10 @@ export class StrategyUserService {
     try {
       return await this.strategyUserRepository.findMarketMakingByUserId(userId);
     } catch (error) {
-      this.logger.error('Error finding market making orders by userId', error);
+      this.logger.error(
+        'Error finding market making orders by userId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -143,13 +155,13 @@ export class StrategyUserService {
         orderId,
         newState,
       );
-      this.logger.debug(
+      this.logger.log(
         `Market making order ${orderId} updated successfully to state ${newState}`,
       );
     } catch (error) {
       this.logger.error(
         `Error updating market making order state for orderId ${orderId}`,
-        error,
+        error.message,
       );
       throw error;
     }
@@ -169,7 +181,7 @@ export class StrategyUserService {
         return { code: 200, message: 'Found', data: result };
       }
     } catch (error) {
-      this.logger.error('Error finding state by id', error);
+      this.logger.error('Error finding state by id', error.message);
       return { code: 404, message: 'Not found', data: {} };
     }
   }

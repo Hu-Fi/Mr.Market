@@ -43,7 +43,7 @@ export class MarketDataGateway
     client.emit('connected', 'Connected Successfully');
 
     client.on('disconnect', () => this.handleDisconnect(clientId));
-    this.logger.debug(`Client connected: ${clientId}`);
+    this.logger.log(`Client connected: ${clientId}`);
   }
 
   private async subscribeToTickers(
@@ -174,7 +174,7 @@ export class MarketDataGateway
     @MessageBody() data: { exchange: string; symbol: string },
     @ConnectedSocket() client: Socket,
   ) {
-    this.logger.debug(
+    this.logger.log(
       `Subscribing to order book ${data.exchange} ${data.symbol}`,
     );
     const clientId = this.getClientId(client);
@@ -219,7 +219,7 @@ export class MarketDataGateway
     },
     @ConnectedSocket() client: Socket,
   ) {
-    this.logger.debug(
+    this.logger.log(
       `Subscribing to OHLCV ${data.exchange} ${data.symbol} ${data.timeFrame}`,
     );
     const clientId = this.getClientId(client);
@@ -262,7 +262,7 @@ export class MarketDataGateway
     @MessageBody() data: { exchange: string; symbol: string },
     @ConnectedSocket() client: Socket,
   ) {
-    this.logger.debug(`Subscribing to ticker ${data.exchange} ${data.symbol}`);
+    this.logger.log(`Subscribing to ticker ${data.exchange} ${data.symbol}`);
     const clientId = this.getClientId(client);
     if (!clientId) {
       this.logger.error(`Client ID not found for the connected socket`);
@@ -301,9 +301,7 @@ export class MarketDataGateway
     @MessageBody() data: { exchange: string; symbols: string[] },
     @ConnectedSocket() client: Socket,
   ) {
-    this.logger.debug(
-      `Subscribing to tickers ${data.exchange} ${data.symbols}`,
-    );
+    this.logger.log(`Subscribing to tickers ${data.exchange} ${data.symbols}`);
     const clientId = this.getClientId(client);
     if (!clientId) {
       this.logger.error(`Client ID not found for the connected socket`);
@@ -363,7 +361,7 @@ export class MarketDataGateway
     }
     this.clientSubscriptions.delete(clientId);
     this.clients.delete(clientId);
-    this.logger.debug(`Client disconnected: ${clientId}`);
+    this.logger.log(`Client disconnected: ${clientId}`);
   }
 
   @SubscribeMessage('unsubscribeData')
@@ -388,7 +386,7 @@ export class MarketDataGateway
     );
 
     const clientId = this.getClientId(client);
-    this.logger.debug(`Unsubscribe: ${subscriptionKey}`);
+    this.logger.log(`Unsubscribe: ${subscriptionKey}`);
     this.clientSubscriptions.get(clientId)?.delete(subscriptionKey);
 
     if (!this.isSymbolSubscribedByAnyClient(subscriptionKey)) {

@@ -156,13 +156,12 @@ export class StrategyService {
 
     // Check if the strategy is already running
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.warn(`Strategy ${strategyKey} is already running.`);
+      this.logger.log(`Strategy ${strategyKey} is already running.`);
       return;
     }
 
     // Extract the parameters and run the strategy based on its type
     const { parameters, strategyType } = strategyInstance;
-    this.logger.debug(parameters);
     switch (strategyType) {
       case 'arbitrage':
         await this.startArbitrageStrategyForUser(
@@ -233,7 +232,7 @@ export class StrategyService {
     });
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.debug(
+      this.logger.log(
         `Strategy already running for user ${userId} and client ${clientId}`,
       );
       return;
@@ -271,7 +270,7 @@ export class StrategyService {
     const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
     const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
-    this.logger.debug(
+    this.logger.log(
       `Starting arbitrage strategy for user ${userId}, client ${clientId}`,
     );
     // Add the pair to active watches for this strategy
@@ -292,7 +291,7 @@ export class StrategyService {
           strategyParamsDto,
         );
       } else {
-        this.logger.debug(
+        this.logger.log(
           `Waiting for open orders to fill for ${strategyKey} before evaluating new opportunities.`,
         );
       }
@@ -306,7 +305,7 @@ export class StrategyService {
     clientId: string,
     strategyType?: string,
   ) {
-    this.logger.debug(
+    this.logger.log(
       `Stopping Strategy ${strategyType} for user ${userId} and client ${clientId}`,
     );
 
@@ -345,7 +344,7 @@ export class StrategyService {
     if (strategyInstance) {
       clearInterval(strategyInstance.intervalId);
       this.strategyInstances.delete(strategyKey);
-      this.logger.debug(
+      this.logger.log(
         `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
       );
 
@@ -371,7 +370,7 @@ export class StrategyService {
     });
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.warn(`Strategy ${strategyKey} is already running.`);
+      this.logger.log(`Strategy ${strategyKey} is already running.`);
       return;
     }
 
@@ -924,12 +923,7 @@ export class StrategyService {
     const cacheKeyB = `${pair}-${exchangeB.id}`;
     const cachedOrderBookA = this.orderBookCache.get(cacheKeyA);
     const cachedOrderBookB = this.orderBookCache.get(cacheKeyB);
-    const strategyKey = createStrategyKey({
-      type: 'arbitrage',
-      user_id: userId,
-      client_id: clientId,
-    });
-    this.logger.log(strategyKey);
+
     if (
       cachedOrderBookA &&
       cachedOrderBookB &&
@@ -1194,7 +1188,7 @@ export class StrategyService {
         })
         .catch((error) => {
           this.logger.error(
-            `Failed to cancel orders for ${strategyKey}: ${error}`,
+            `Failed to cancel orders for ${strategyKey}: ${error.message}`,
           );
         });
     });

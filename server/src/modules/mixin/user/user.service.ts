@@ -78,7 +78,7 @@ export class UserService {
       const newUser = await this.userRepository.addUser(user);
       return newUser;
     } catch (error) {
-      this.logger.error('Failed to add user', error);
+      this.logger.error('Failed to add user', error.message);
       throw error;
     }
   }
@@ -87,7 +87,10 @@ export class UserService {
     try {
       await this.userRepository.removeUserById(user_id);
     } catch (error) {
-      this.logger.error(`Failed to remove user with ID ${user_id}`, error);
+      this.logger.error(
+        `Failed to remove user with ID ${user_id}`,
+        error.message,
+      );
       throw error;
     }
   }
@@ -96,7 +99,10 @@ export class UserService {
     try {
       return await this.userRepository.checkUserExist(user_id);
     } catch (error) {
-      this.logger.error(`Failed to check user existence ${user_id}`, error);
+      this.logger.error(
+        `Failed to check user existence ${user_id}`,
+        error.message,
+      );
       return false;
     }
   }
@@ -113,7 +119,7 @@ export class UserService {
     try {
       return await this.userRepository.getAllUsers();
     } catch (error) {
-      this.logger.error('Failed to get all users', error);
+      this.logger.error('Failed to get all users', error.message);
       throw error;
     }
   }
@@ -122,7 +128,10 @@ export class UserService {
     try {
       await this.userRepository.updateUser(user_id, { jwt_token });
     } catch (error) {
-      this.logger.error(`Failed to update user with ID ${user_id}`, error);
+      this.logger.error(
+        `Failed to update user with ID ${user_id}`,
+        error.message,
+      );
       throw error;
     }
   }
@@ -143,7 +152,7 @@ export class UserService {
     } catch (error) {
       this.logger.error(
         `Failed to check and update user with ID ${user_id}`,
-        error,
+        error.message,
       );
       throw error;
     }
