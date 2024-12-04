@@ -335,14 +335,13 @@ export class StrategyService {
       { status: 'stopped', updatedAt: new Date() },
     );
 
-    // Cancel all orders for this strategy before stopping
-    if (strategyKey) {
-      await this.cancelAllStrategyOrders(strategyKey);
-    }
-
     const strategyInstance = this.strategyInstances.get(strategyKey);
     if (strategyInstance) {
+      // Clear the interval
       clearInterval(strategyInstance.intervalId);
+      // Cancel all orders for this strategy
+      await this.cancelAllStrategyOrders(strategyKey);
+
       this.strategyInstances.delete(strategyKey);
       this.logger.log(
         `Stopped ${strategyType} strategy for user ${userId}, client ${clientId}`,
@@ -728,6 +727,21 @@ export class StrategyService {
       }),
     );
 
+    // Mark all open orders not canceled as closed
+    await this.orderRepository.update(
+      {
+        userId,
+        clientId,
+        exchange: exchangeName,
+        pair,
+        strategy: 'pureMarketMaking',
+        status: 'open',
+      },
+      {
+        status: 'closed',
+      },
+    );
+
     let currentOrderAmount = baseOrderAmount;
 
     for (let layer = 1; layer <= numberOfLayers; layer++) {
@@ -780,7 +794,7 @@ export class StrategyService {
           price: parseFloat(adjustedBuyPrice),
           orderId: order.id,
           executedAt: new Date(), // Assuming immediate execution; adjust as necessary
-          status: order.status,
+          status: 'open',
           strategy: 'pureMarketMaking',
         });
 
@@ -824,7 +838,7 @@ export class StrategyService {
           price: parseFloat(adjustedSellPrice),
           orderId: order.id,
           executedAt: new Date(),
-          status: order.status,
+          status: 'open',
           strategy: 'pureMarketMaking',
         });
 
@@ -866,6 +880,19 @@ export class StrategyService {
       for (const order of orders) {
         try {
           await exchange.cancelOrder(order.id, pair);
+
+          // Mark canceled on the database
+          await this.orderRepository.update(
+            {
+              orderId: order.id,
+              exchange: exchange.id,
+              pair,
+              strategy: 'pureMarketMaking',
+            },
+            {
+              status: 'canceled',
+            },
+          );
         } catch (error) {
           this.logger.error(
             `Failed to cancel order ${order.id} for ${pair} on ${exchange.id}: ${error.message}`,
