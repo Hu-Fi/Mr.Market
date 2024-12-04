@@ -16,14 +16,17 @@ import { Contribution } from 'src/common/entities/contribution.entity';
 import { Repository } from 'typeorm';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { Web3Service } from '../web3/web3.service';
-import { ethers } from 'ethers';
+import { CustomLogger } from '../logger/logger.service';
+import { SnapshotsService } from '../mixin/snapshots/snapshots.service';
 
 @Injectable()
 export class AdminService {
+  private readonly logger = new CustomLogger(AdminService.name);
   constructor(
     private readonly strategyService: StrategyService,
     private readonly performanceService: PerformanceService,
     private readonly exchangeInitService: ExchangeInitService,
+    private readonly snapshotsService: SnapshotsService,
     private readonly web3Service: Web3Service,
     @InjectRepository(Contribution)
     private contributionRepository: Repository<Contribution>,
@@ -133,7 +136,6 @@ export class AdminService {
     clientId: string,
     strategyKey: string,
     amount: number,
-    transactionHash: string,
     tokenSymbol: string,
     chainId: number,
     tokenAddress: string,
@@ -141,6 +143,7 @@ export class AdminService {
     const strategy = await this.strategyService.getStrategyInstanceKey(
       strategyKey,
     );
+
     if (!strategy || strategy.status !== 'running') {
       throw new BadRequestException(`Strategy ${strategyKey} is not active`);
     }
@@ -153,24 +156,65 @@ export class AdminService {
       throw new BadRequestException(`User ${userId} does not exist`);
     }
 
-    const contribution = this.contributionRepository.create({
-      userId,
-      clientId,
-      mixinUser,
-      strategy,
-      amount,
-      transactionHash,
-      status: 'pending', // Set status as pending until verification
-      tokenSymbol,
-      chainId,
-      tokenAddress,
-    });
+    let contribution;
 
-    await this.contributionRepository.save(contribution);
+    try {
+      // Create a contribution record
+      contribution = this.contributionRepository.create({
+        userId,
+        clientId,
+        mixinUser,
+        strategy,
+        amount,
+        transactionHash: null, // Initially null until the transfer is initiated
+        status: 'pending', // Status remains pending until explicitly updated
+        tokenSymbol,
+        chainId,
+        tokenAddress,
+      });
 
-    return {
-      message: `User ${userId} has joined the strategy with ${amount} funds`,
-    };
+      await this.contributionRepository.save(contribution);
+
+      try {
+        // Initiate transfer via SnapshotsService
+        const transferResult = await this.snapshotsService.initiateUserTransfer(
+          mixinUser.user_id, // Sender's Mixin user ID
+          tokenSymbol, // Token to transfer
+          amount, // Amount to transfer
+        );
+
+        // Update the contribution with the transaction hash
+        const transactionHash = transferResult[0].request_id; // Extract Mixin transaction ID
+        contribution.transactionHash = transactionHash;
+        await this.contributionRepository.save(contribution);
+
+        return {
+          message: `User ${userId} has successfully initiated a transfer to join the strategy.`,
+          contribution,
+        };
+      } catch (transferError) {
+        this.logger.error(
+          `Transfer failed for user ${userId}: ${transferError.message}`,
+        );
+        throw new BadRequestException(
+          `Transfer failed: ${transferError.message}`,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to create or process contribution for user ${userId}: ${error.message}`,
+      );
+
+      // Mark the contribution as failed if it was already created
+      if (contribution) {
+        contribution.status = 'failed';
+        await this.contributionRepository.save(contribution);
+      }
+
+      throw new BadRequestException(
+        `Failed to join strategy: ${error.message}`,
+      );
+    }
   }
 
   async verifyContribution(contributionId: string): Promise<boolean> {
@@ -183,27 +227,30 @@ export class AdminService {
       );
     }
 
-    const { transactionHash, amount, userId, chainId, tokenAddress } =
-      contribution;
+    const { transactionHash, amount, userId, tokenSymbol } = contribution;
 
-    // Fetch the user associated with the contribution
-    const user = await this.mixinuserrepository.findOne({
-      where: { user_id: userId },
-    });
-    if (!user) {
+    if (!transactionHash) {
       throw new BadRequestException(
-        `User associated with contribution does not exist`,
+        `Contribution ${contributionId} does not have a transaction hash`,
       );
     }
 
-    // Verify the transaction details on the blockchain
-    const isVerified = await this.web3Service.verifyTransactionDetails(
-      chainId,
+    // Fetch the transaction details from Mixin
+    const transaction = await this.snapshotsService.getTransactionById(
       transactionHash,
-      tokenAddress,
-      user.walletAddress, // Using the `walletAddress` field from the user entity
-      ethers.BigNumber.from(amount),
     );
+
+    if (!transaction) {
+      throw new BadRequestException(
+        `Transaction ${transactionHash} does not exist on Mixin`,
+      );
+    }
+
+    // Validate transaction details
+    const isVerified =
+      transaction.amount === amount.toString() &&
+      transaction.asset.symbol.toUpperCase() === tokenSymbol.toUpperCase() &&
+      transaction.user_id === userId;
 
     if (isVerified) {
       // Update the contribution status to confirmed

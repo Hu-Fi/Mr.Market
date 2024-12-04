@@ -14,16 +14,31 @@ import { Web3Service } from '../web3/web3.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Contribution } from 'src/common/entities/contribution.entity';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
+import { SnapshotsService } from '../mixin/snapshots/snapshots.service';
 
 describe('AdminService', () => {
   let service: AdminService;
-  let web3Service: Web3Service;
   let strategyService: StrategyService;
+  let snapshotsService: jest.Mocked<SnapshotsService>;
 
   const mockContributionRepository = {
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
+  };
+
+  const mockSnapshotsService = {
+    sendMixinTx: jest
+      .fn()
+      .mockResolvedValue([{ request_id: 'transaction123', status: 'success' }]),
+    getTransactionById: jest.fn().mockResolvedValue({
+      amount: '100',
+      asset: { symbol: 'ETH' },
+      user_id: 'user123',
+    }),
+    initiateUserTransfer: jest
+      .fn()
+      .mockResolvedValue([{ request_id: 'transaction123', status: 'success' }]),
   };
 
   const mockMixinUserRepository = {
@@ -65,6 +80,10 @@ describe('AdminService', () => {
           },
         },
         {
+          provide: SnapshotsService,
+          useValue: mockSnapshotsService,
+        },
+        {
           provide: getRepositoryToken(Contribution),
           useValue: mockContributionRepository,
         },
@@ -81,7 +100,9 @@ describe('AdminService', () => {
 
     service = module.get<AdminService>(AdminService);
     strategyService = module.get<StrategyService>(StrategyService);
-    web3Service = module.get<Web3Service>(Web3Service);
+    snapshotsService = module.get(
+      SnapshotsService,
+    ) as jest.Mocked<SnapshotsService>;
   });
 
   describe('startStrategy', () => {
@@ -205,7 +226,6 @@ describe('AdminService', () => {
         clientId: 'client123',
         strategyKey: 'strategyKey',
         amount: 100,
-        transactionHash: '0x123',
         tokenSymbol: 'ETH',
         chainId: 1,
         tokenAddress: '0xabc',
@@ -214,50 +234,32 @@ describe('AdminService', () => {
       mockMixinUserRepository.findOne.mockResolvedValue({ user_id: 'user123' });
       mockContributionRepository.create.mockReturnValue(joinData);
       mockContributionRepository.save.mockResolvedValue(joinData);
+      mockSnapshotsService.initiateUserTransfer.mockResolvedValue([
+        { request_id: 'transaction123' },
+      ]);
 
       const result = await service.joinStrategy(
         joinData.userId,
         joinData.clientId,
         joinData.strategyKey,
         joinData.amount,
-        joinData.transactionHash,
         joinData.tokenSymbol,
         joinData.chainId,
         joinData.tokenAddress,
       );
 
       expect(result).toEqual({
-        message: `User ${joinData.userId} has joined the strategy with ${joinData.amount} funds`,
+        message: `User ${joinData.userId} has successfully initiated a transfer to join the strategy.`,
+        contribution: expect.objectContaining({
+          userId: joinData.userId,
+          transactionHash: 'transaction123',
+        }),
       });
-      expect(mockContributionRepository.save).toHaveBeenCalledWith(joinData);
-    });
-
-    it('should throw error if user does not exist', async () => {
-      const joinData = {
-        userId: 'user123',
-        clientId: 'client123',
-        strategyKey: 'strategyKey',
-        amount: 100,
-        transactionHash: '0x123',
-        tokenSymbol: 'ETH',
-        chainId: 1,
-        tokenAddress: '0xabc',
-      };
-
-      mockMixinUserRepository.findOne.mockResolvedValue(null);
-
-      await expect(
-        service.joinStrategy(
-          joinData.userId,
-          joinData.clientId,
-          joinData.strategyKey,
-          joinData.amount,
-          joinData.transactionHash,
-          joinData.tokenSymbol,
-          joinData.chainId,
-          joinData.tokenAddress,
-        ),
-      ).rejects.toThrow(BadRequestException);
+      expect(mockContributionRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          transactionHash: 'transaction123',
+        }),
+      );
     });
   });
 
@@ -265,21 +267,21 @@ describe('AdminService', () => {
     it('should confirm and update contribution if verified', async () => {
       const contribution = {
         id: '1',
-        transactionHash: '0xabc',
+        transactionHash: 'transaction123',
         amount: 100,
         userId: 'user123',
-        chainId: 1,
-        tokenAddress: '0xabc',
+        tokenSymbol: 'ETH',
         status: 'pending',
       };
 
-      const user = { user_id: 'user123', walletAddress: '0xdef' };
+      const transaction = {
+        amount: '100',
+        asset: { symbol: 'ETH' },
+        user_id: 'user123',
+      };
 
       mockContributionRepository.findOne.mockResolvedValue(contribution);
-      mockMixinUserRepository.findOne.mockResolvedValue(user);
-      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(
-        true,
-      );
+      mockSnapshotsService.getTransactionById.mockResolvedValue(transaction);
 
       const result = await service.verifyContribution(contribution.id);
 
@@ -293,21 +295,21 @@ describe('AdminService', () => {
     it('should not update contribution if verification fails', async () => {
       const contribution = {
         id: '1',
-        transactionHash: '0xabc',
+        transactionHash: 'transaction123',
         amount: 100,
         userId: 'user123',
-        chainId: 1,
-        tokenAddress: '0xabc',
+        tokenSymbol: 'ETH',
         status: 'pending',
       };
 
-      const user = { user_id: 'user123', walletAddress: '0xdef' };
+      const transaction = {
+        amount: '50', // Mismatch amount
+        asset: { symbol: 'BTC' }, // Mismatch token
+        user_id: 'user123',
+      };
 
       mockContributionRepository.findOne.mockResolvedValue(contribution);
-      mockMixinUserRepository.findOne.mockResolvedValue(user);
-      (web3Service.verifyTransactionDetails as jest.Mock).mockResolvedValue(
-        false,
-      );
+      snapshotsService.getTransactionById.mockResolvedValue(transaction);
 
       const result = await service.verifyContribution(contribution.id);
 
