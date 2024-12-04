@@ -3,7 +3,7 @@ import { lineOptions } from "$lib/helpers/chart";
 import type { Chart } from "svelte-lightweight-charts";
 import type { OHLCVData, OrderBookPriceFormat, SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
 import { activeCoinTab } from "$lib/stores/home";
-import { marketQueryFn } from "$lib/helpers/hufi/coin";
+import { getCoingeckoMarket } from "$lib/helpers/hufi/coin";
 import { CoinsTypeTabs } from "$lib/helpers/constants";
 import type { CoingeckoToken } from "$lib/types/coingecko/token";
 
@@ -63,13 +63,13 @@ export const marketData = derived([activeCoinTab, stopMarketQuery], ([$activeCoi
     marketDataState.set('success')
   };
   const handleError = () => marketDataState.set('error');
-  marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
+  getCoingeckoMarket(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
   const interval = setInterval(() => {
     if ($stopMarketQuery) {
       clearInterval(interval);
       return;
     }
-    marketQueryFn(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
+    getCoingeckoMarket(CoinsTypeTabs[$activeCoinTab].id).then(handleSuccess).catch(handleError)
   }, 10000)
   return () => {
     clearInterval(interval)

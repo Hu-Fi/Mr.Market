@@ -3,7 +3,7 @@ import {
   GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
-} from 'src/common/entities/growdata.entity';
+} from 'src/common/entities/grow-data.entity';
 
 export const defaultExchanges: GrowdataExchange[] = [
   { exchange_id: 'okx', name: 'OKX', enable: true },

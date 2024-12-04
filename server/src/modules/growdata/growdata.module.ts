@@ -9,7 +9,7 @@ import {
   GrowdataSimplyGrowToken,
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
-} from 'src/common/entities/growdata.entity';
+} from 'src/common/entities/grow-data.entity';
 
 @Module({
   imports: [

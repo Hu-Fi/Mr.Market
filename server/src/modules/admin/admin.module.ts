@@ -6,7 +6,7 @@ import { PerformanceService } from '../performance/performance.service';
 import { TradeService } from '../trade/trade.service';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { TradeModule } from '../trade/trade.module';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';

@@ -1,5 +1,5 @@
 import { describe, it, vi } from "vitest"
-import { fetchOHLCV, pairsFn } from "./coin"
+import { fetchOHLCV, getSpotTradingPairs } from "./coin"
 import type { SupportedExchanges } from "$lib/types/hufi/exchanges"
 import { SUPPORTED_TIMERANGES } from "$lib/helpers/constants"
 
@@ -9,9 +9,9 @@ vi.mock('$env/dynamic/public', () => {
   };
 });
 
-describe.skip('pairsFn', () => {
+describe.skip('getSpotTradingPairs', () => {
   it('get pairs', async () => {
-    const pairs = await pairsFn()
+    const pairs = await getSpotTradingPairs()
     console.log(pairs)
   })
 })

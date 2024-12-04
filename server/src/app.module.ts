@@ -48,7 +48,7 @@ import { CampaignModule } from './modules/campaign/campaign.module';
 import { Web3Module } from './modules/web3/web3.module';
 import { StrategyInstance } from './common/entities/strategy-instances.entity';
 import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
-import { MarketMakingHistory } from './common/entities/mm-order.entity';
+import { MarketMakingHistory } from './common/entities/market-making-order.entity';
 import { Contribution } from './common/entities/contribution.entity';
 import { GrowdataModule } from './modules/growdata/growdata.module';
 import {
@@ -56,7 +56,7 @@ import {
   GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
-} from './common/entities/growdata.entity';
+} from './common/entities/grow-data.entity';
 import {
   RebalanceExchange,
   RebalanceHistory,

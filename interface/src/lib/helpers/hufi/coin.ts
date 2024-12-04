@@ -13,25 +13,25 @@ export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> => 
   return await r.json()
 }
 
-export const marketQueryFn = async (category: string = 'all', page: number = 1) =>  {
+export const getCoingeckoMarket = async (category: string = 'all', page: number = 1) =>  {
   try {
     const pathCategory = category ? `/category/${category}` : ''
     const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
     const re = await r.json()
     return re
   } catch (e) {
-    console.error('marketQueryFn: ', e)
+    console.error('getCoingeckoMarket: ', e)
     return []
   }
 }
 
-export const pairsFn = async () => {
+export const getSpotTradingPairs = async () => {
   try {
     const r = await fetch(`${HUFI_BACKEND_URL}/marketdata/tickers/pairs`)
     const re = await r.json()
     return re
   } catch (e) {
-    console.error('pairsFn: ', e)
+    console.error('getSpotTradingPairs: ', e)
     return []
   }
 }

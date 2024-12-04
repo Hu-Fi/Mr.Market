@@ -8,7 +8,7 @@ import {
   GrowdataMarketMakingPair,
   GrowdataArbitragePair,
   GrowdataSimplyGrowToken,
-} from '../../common/entities/growdata.entity';
+} from '../../common/entities/grow-data.entity';
 import {
   defaultArbitragePairs,
   defaultExchanges,

@@ -214,6 +214,7 @@ export const getUserStrategyOrders = async (user_id: string) => {
     }
     userArbitrageOrders.set(orders.arbitrage)
     userMarketMakingOrders.set(orders.market_making)
+    userSimplyGrowOrders.set(orders.simply_grow)
     userStrategyOrders.set(orders);
     userStrategyOrdersLoaded.set(true);
   } catch (e) {

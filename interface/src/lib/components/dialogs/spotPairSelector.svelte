@@ -2,7 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onDestroy, onMount } from "svelte";
-  import { pairsFn } from "$lib/helpers/hufi/coin";
+  import { getSpotTradingPairs } from "$lib/helpers/hufi/coin";
   import { switchSpotPair } from "$lib/helpers/hufi/socket";
   import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
@@ -37,7 +37,7 @@
   }
 
   const loadPairs = async () => {
-    pairs = await pairsFn()
+    pairs = await getSpotTradingPairs()
     pairSelectorLoaded.set(true)
   }
   onMount(async ()=> {

@@ -8,7 +8,7 @@ import * as ccxt from 'ccxt';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PureMarketMakingStrategyDto } from './strategy.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';

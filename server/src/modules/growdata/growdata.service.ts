@@ -1,7 +1,7 @@
 import { Cache } from 'cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
-import { GrowdataMarketMakingPair } from 'src/common/entities/growdata.entity';
+import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
 import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -18,18 +18,32 @@ export class GrowdataService {
   private cachingTTL = 600; // 10 minutes
 
   async getGrowData() {
-    return {
-      exchanges: await this.getAllExchanges(),
-      simply_grow: {
-        tokens: await this.getAllSimplyGrowTokens(),
-      },
-      arbitrage: {
-        pairs: await this.getAllArbitragePairs(),
-      },
-      market_making: {
-        pairs: await this.getAllMarketMakingPairs(),
-      },
-    };
+    try {
+      const exchanges = await this.getAllExchanges();
+      const simplyGrowTokens = await this.getAllSimplyGrowTokens();
+      const arbitragePairs = await this.getAllArbitragePairs();
+      const marketMakingPairs = await this.getAllMarketMakingPairs();
+
+      return {
+        exchanges,
+        simply_grow: {
+          tokens: simplyGrowTokens,
+        },
+        arbitrage: {
+          pairs: arbitragePairs,
+        },
+        market_making: {
+          pairs: marketMakingPairs,
+        },
+      };
+    } catch (error) {
+      this.logger.error('Error fetching grow data', error.stack);
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
   }
 
   // Exchange Methods

@@ -3,7 +3,7 @@
   import { activeCoinTab } from "$lib/stores/home";
   import { sortCoins } from "$lib/helpers/sortTable";
   import InfiniteLoading from 'svelte-infinite-loading';
-  import { marketQueryFn } from "$lib/helpers/hufi/coin";
+  import { getCoingeckoMarket } from "$lib/helpers/hufi/coin";
   import { asc, marketData, marketDataExtened, marketDataPage, marketDataState, selectedField, stopMarketQuery } from "$lib/stores/market";
   import SingleToken from "$lib/components/market/elements/singleToken.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
@@ -19,7 +19,7 @@
       complete();
       return;
     }
-    marketQueryFn('all', $marketDataPage+1)
+    getCoingeckoMarket('all', $marketDataPage+1)
       .then(data => {
         stopMarketQuery.set(true);
         if (data && data.length) {
