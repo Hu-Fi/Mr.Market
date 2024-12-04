@@ -14,6 +14,8 @@ import { Contribution } from 'src/common/entities/contribution.entity';
 import { Web3Module } from '../web3/web3.module';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { SnapshotsService } from '../mixin/snapshots/snapshots.service';
+import { ConfigService } from '@nestjs/config';
+import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { SnapshotsService } from '../mixin/snapshots/snapshots.service';
     ]),
     TradeModule,
     Web3Module,
+    SnapshotsModule,
   ],
   controllers: [AdminController],
   providers: [
@@ -36,6 +39,7 @@ import { SnapshotsService } from '../mixin/snapshots/snapshots.service';
     TradeService,
     ExchangeInitService,
     SnapshotsService,
+    ConfigService
   ],
   exports: [AdminService],
 })
