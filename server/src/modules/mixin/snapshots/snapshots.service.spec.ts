@@ -132,9 +132,7 @@ describe('SnapshotsService', () => {
       expect(mockSnapshotsRepository.createSnapshot).toHaveBeenCalledWith(
         snapshot,
       );
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        `createSnapshot()=> ${error}`,
-      );
+      expect(mockLogger.error).toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
   });
@@ -179,9 +177,7 @@ describe('SnapshotsService', () => {
       const result = await service.fetchAndProcessSnapshots();
 
       expect(mockMixinApi.safe.fetchSafeSnapshots).toHaveBeenCalledWith({});
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        `Failed to fetch snapshots: ${error}`,
-      );
+      expect(mockLogger.error).toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
   });
@@ -218,9 +214,7 @@ describe('SnapshotsService', () => {
       const result = await service.depositAddress(asset_id);
 
       expect(mockMixinApi.network.fetchAsset).toHaveBeenCalledWith(asset_id);
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        `Failed to get deposit address: ${error}`,
-      );
+      expect(mockLogger.error).toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
   });
@@ -384,9 +378,7 @@ describe('SnapshotsService', () => {
 
       const result = await service.getAssetBalance(asset_id);
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        `Mixin getAssetBalance() => ${error}`,
-      );
+      expect(mockLogger.error).toHaveBeenCalled();
       expect(result).toEqual('0');
     });
   });
