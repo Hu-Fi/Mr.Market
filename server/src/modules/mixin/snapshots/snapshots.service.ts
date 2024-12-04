@@ -56,7 +56,7 @@ import { randomUUID } from 'crypto';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   MixinApi,
@@ -366,6 +366,61 @@ export class SnapshotsService {
     }
   }
 
+  async getAssetIdFromMixin(tokenSymbol: string): Promise<string> {
+    try {
+      // Fetch all assets from Mixin
+      const assets = await this.client.network.searchAssets(tokenSymbol);
+
+      // Find the asset matching the token symbol
+      const asset = assets.find(
+        (a) => a.symbol.toUpperCase() === tokenSymbol.toUpperCase(),
+      );
+
+      if (!asset) {
+        throw new Error(`Asset not found for token symbol: ${tokenSymbol}`);
+      }
+
+      return asset.asset_id; // Return the asset ID
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch asset ID for ${tokenSymbol}: ${error.message}`,
+      );
+      throw new BadRequestException(
+        `Unable to fetch asset ID for token symbol: ${tokenSymbol}`,
+      );
+    }
+  }
+
+  async initiateUserTransfer(
+    userId: string,
+    tokenSymbol: string,
+    amount: number,
+  ): Promise<SequencerTransactionRequest[]> {
+    const assetId = await this.getAssetIdFromMixin(tokenSymbol); // Dynamically fetch asset ID
+    if (!assetId) {
+      throw new BadRequestException(`Invalid token symbol: ${tokenSymbol}`);
+    }
+
+    try {
+      const transferResult = await this.sendMixinTx(
+        userId, // Sender's Mixin user ID
+        assetId, // Mixin asset ID
+        amount.toString(), // Amount to transfer
+      );
+
+      if (!transferResult || transferResult.length === 0) {
+        throw new Error('Mixin transfer failed');
+      }
+
+      return transferResult;
+    } catch (error) {
+      this.logger.error(
+        `Failed to initiate transfer for user ${userId}: ${error.message}`,
+      );
+      throw new BadRequestException(`Transfer error: ${error.message}`);
+    }
+  }
+
   async sendMixinTx(
     opponent_id: string,
     asset_id: string,
@@ -434,6 +489,28 @@ export class SnapshotsService {
       },
     ]);
     return sendedTx;
+  }
+
+  async getTransactionById(transactionId: string): Promise<any> {
+    try {
+      // Use UTXO API to fetch the transaction snapshot
+      const transaction = await this.client.utxo.fetchTransaction(
+        transactionId,
+      );
+
+      if (!transaction) {
+        throw new Error(`Transaction not found: ${transactionId}`);
+      }
+
+      return transaction;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch transaction ${transactionId} from Mixin UTXO: ${error.message}`,
+      );
+      throw new BadRequestException(
+        `Unable to fetch transaction details for ${transactionId}`,
+      );
+    }
   }
 
   async refund(snapshot: SafeSnapshot) {
