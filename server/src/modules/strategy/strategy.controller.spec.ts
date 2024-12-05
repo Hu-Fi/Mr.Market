@@ -11,7 +11,7 @@ const mockStrategyUserService = {};
 
 describe('StrategyController', () => {
   let controller: StrategyController;
-  let adminService: AdminStrategyService;
+  // let adminService: AdminStrategyService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,7 +35,7 @@ describe('StrategyController', () => {
     }).compile();
 
     controller = module.get<StrategyController>(StrategyController);
-    adminService = module.get<AdminStrategyService>(AdminStrategyService);
+    // adminService = module.get<AdminStrategyService>(AdminStrategyService);
   });
 
   it('should be defined', () => {

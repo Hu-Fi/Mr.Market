@@ -46,21 +46,18 @@ class ExchangeInitServiceMock {
 
 describe('StrategyService', () => {
   let service: StrategyService;
-  let adminService: AdminStrategyService;
 
   // Example mock repository implementation
   const mockOrderRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
-    // Add other repository methods as needed
   };
 
   const mockArbitrageOrderRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
-    // Add other repository methods as needed
   };
 
   const mockStrategyInstanceRepository = {
@@ -68,7 +65,6 @@ describe('StrategyService', () => {
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
-    // Add other repository methods as needed
   };
 
   beforeEach(async () => {
@@ -104,7 +100,6 @@ describe('StrategyService', () => {
     }).compile();
 
     service = module.get<StrategyService>(StrategyService);
-    adminService = module.get<AdminStrategyService>(AdminStrategyService);
 
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
