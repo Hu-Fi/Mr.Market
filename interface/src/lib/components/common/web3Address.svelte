@@ -58,6 +58,7 @@
                     validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-ghost focus:outline-none focus:border-x-0 focus:border-base-300 z-10 absolute join-item pr-0" 
+                data-testid="reward-address-input"
             />
             <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={$createSimplyGrowRewardAddressDialog} data-testid="select-reward-address">
                 <summary class="flex justify-between text-end border rounded-lg items-center h-12">
@@ -98,6 +99,7 @@
                     validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-bordered border-base-300 focus:outline-none w-full z-10" 
+                data-testid="reward-address-input"
             />
         {/if}
         {#if $createSimplyGrowRewardAddress.length > 0}

@@ -5,7 +5,7 @@
     <Chart {...chartOptions} ref={(ref) => (chartApi = ref)} {localization}>
       <LineSeries
         {...$ChartLineOption}
-        data={dt.prices.map(([time, value]) => ({ time: time, value: formatChartPrice(value)})) || data}
+        data={dt.prices.map(([time, value]) => ({ time: time, value: formatChartPrice(value)})) || dt}
         reactive={true}
         ref={(api) => (series = api)}
       />
@@ -47,10 +47,6 @@
 
   onDestroy(()=>ChartActiveTab.set(0))
   $page.data.coin.then((c:unknown) => currentCoin.set(c))
-
-  $: [] = [
-    { time: "2018-10-19", value: 52.89 },
-  ];
 
   const clickHandler = (param: unknown) => {
     if (!param.point) return;

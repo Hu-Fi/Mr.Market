@@ -26,6 +26,7 @@ test('create arbitrage', async ({ page }) => {
 
   await page.getByTestId(`amount-input-0`).fill('0.00000001');
   await page.getByTestId(`amount-input-1`).fill('0.00000001');
+  await page.getByTestId(`reward-address-input`).fill('0x3b5fb9d9da3546e9ce6e5aa3cceca14c8d20041e');
 
   expect(page.getByTestId(`confirm-btn`)).toBeEnabled();
   await page.getByTestId(`confirm-btn`).click();

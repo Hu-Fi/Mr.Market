@@ -6,6 +6,9 @@
   let isRefreshing = false;
   let AddNewName = "";
   let AddNewExchangeId = "";
+  const AddExchange = async () => {
+    console.log(AddNewName, AddNewExchangeId);
+  };
 </script>
 
 

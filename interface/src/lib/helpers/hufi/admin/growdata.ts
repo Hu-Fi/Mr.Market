@@ -15,7 +15,7 @@ const handleApiResponse = async (response: Response) => {
 };
 
 // Exchange Methods
-export const addExchange = async (exchangeDto: any, token: string): Promise<any> => {
+export const addExchange = async (exchangeDto: Record<string, unknown>, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/add`, {
       method: 'POST',
@@ -29,7 +29,7 @@ export const addExchange = async (exchangeDto: any, token: string): Promise<any>
   }
 };
 
-export const getSupportedExchanges = async (token: string): Promise<any> => {
+export const getSupportedExchanges = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/supported`, {
       method: 'GET',
@@ -42,7 +42,7 @@ export const getSupportedExchanges = async (token: string): Promise<any> => {
   }
 };
 
-export const removeExchange = async (exchangeId: string, token: string): Promise<any> => {
+export const removeExchange = async (exchangeId: string, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove/${exchangeId}`, {
       method: 'DELETE',
@@ -55,7 +55,7 @@ export const removeExchange = async (exchangeId: string, token: string): Promise
   }
 };
 
-export const removeAllExchanges = async (token: string): Promise<any> => {
+export const removeAllExchanges = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove-all`, {
       method: 'DELETE',
@@ -68,7 +68,7 @@ export const removeAllExchanges = async (token: string): Promise<any> => {
   }
 };
 
-export const updateExchange = async (exchangeId: string, modifications: any, token: string): Promise<any> => {
+export const updateExchange = async (exchangeId: string, modifications: Record<string, unknown>, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/update/${exchangeId}`, {
       method: 'POST',
@@ -87,7 +87,7 @@ export const updateExchange = async (exchangeId: string, modifications: any, tok
 };
 
 // SimplyGrow Token Methods
-export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: string): Promise<any> => {
+export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/add`, {
       method: 'POST',
@@ -101,7 +101,7 @@ export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: st
   }
 };
 
-export const removeSimplyGrowToken = async (assetId: string, token: string): Promise<any> => {
+export const removeSimplyGrowToken = async (assetId: string, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/remove/${assetId}`, {
       method: 'DELETE',
@@ -114,7 +114,7 @@ export const removeSimplyGrowToken = async (assetId: string, token: string): Pro
   }
 };
 
-export const removeAllSimplyGrowTokens = async (token: string): Promise<any> => {
+export const removeAllSimplyGrowTokens = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/remove-all`, {
       method: 'DELETE',
@@ -127,7 +127,7 @@ export const removeAllSimplyGrowTokens = async (token: string): Promise<any> => 
   }
 };
 
-export const updateSimplyGrowToken = async (assetId: string, modifications: SimplyGrowTokenDto, token: string): Promise<any> => {
+export const updateSimplyGrowToken = async (assetId: string, modifications: SimplyGrowTokenDto, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/update/${assetId}`, {
       method: 'POST',
@@ -146,7 +146,7 @@ export const updateSimplyGrowToken = async (assetId: string, modifications: Simp
 };
 
 // Market Making Pair Methods
-export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: string): Promise<any> => {
+export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/add`, {
       method: 'POST',
@@ -160,7 +160,7 @@ export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: s
   }
 };
 
-export const removeMarketMakingPair = async (id: string, token: string): Promise<any> => {
+export const removeMarketMakingPair = async (id: string, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/remove/${id}`, {
       method: 'DELETE',
@@ -173,7 +173,7 @@ export const removeMarketMakingPair = async (id: string, token: string): Promise
   }
 };
 
-export const removeAllMarketMakingPairs = async (token: string): Promise<any> => {
+export const removeAllMarketMakingPairs = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/remove-all`, {
       method: 'DELETE',
@@ -186,7 +186,7 @@ export const removeAllMarketMakingPairs = async (token: string): Promise<any> =>
   }
 };
 
-export const updateMarketMakingPair = async (id: string, modifications: MarketMakingPairDto, token: string): Promise<any> => {
+export const updateMarketMakingPair = async (id: string, modifications: MarketMakingPairDto, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
       method: 'POST',
@@ -205,7 +205,7 @@ export const updateMarketMakingPair = async (id: string, modifications: MarketMa
 };
 
 // Arbitrage Pair Methods
-export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string): Promise<any> => {
+export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/add`, {
       method: 'POST',
@@ -219,7 +219,7 @@ export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string)
   }
 };
 
-export const removeArbitragePair = async (id: string, token: string): Promise<any> => {
+export const removeArbitragePair = async (id: string, token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/remove/${id}`, {
       method: 'DELETE',
@@ -232,7 +232,7 @@ export const removeArbitragePair = async (id: string, token: string): Promise<an
   }
 };
 
-export const removeAllArbitragePairs = async (token: string): Promise<any> => {
+export const removeAllArbitragePairs = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/remove-all`, {
       method: 'DELETE',
@@ -245,7 +245,7 @@ export const removeAllArbitragePairs = async (token: string): Promise<any> => {
   }
 };
 
-export const updateArbitragePair = async (id: string, modifications: ArbitragePairDto, token: string): Promise<any> => {
+export const updateArbitragePair = async (id: string, modifications: ArbitragePairDto, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/update/${id}`, {
       method: 'POST',
