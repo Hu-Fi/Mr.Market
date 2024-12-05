@@ -16,7 +16,7 @@ export default new DataSource({
   database: process.env.POSTGRES_DATABASE,
   entities: ['dist/src/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: ['dist/src/database/new-migrations/*{.ts,.js}'],
+  migrations: ['dist/src/database/migrations/*{.ts,.js}'],
   migrationsTableName: 'migrations_typeorm',
   migrationsRun: true,
   ssl: process.env.POSTGRES_SSL?.toLowerCase() === 'true',
