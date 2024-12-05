@@ -25,9 +25,7 @@ describe.skip('SimplyGrowListener', () => {
     }).compile();
 
     listener = module.get<SimplyGrowListener>(SimplyGrowListener);
-    snapshotsService = module.get<SnapshotsService>(SnapshotsService);
     strategyUserService = module.get<StrategyUserService>(StrategyUserService);
-    growdataService = module.get<GrowdataService>(GrowdataService);
     jest.clearAllMocks();
   });
 

@@ -7,8 +7,10 @@ import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import {
   type ArbitrageStates,
   type MarketMakingStates,
+  type SimplyGrowStates,
 } from 'src/common/types/orders/states';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SimplyGrowOrder } from 'src/common/entities/strategy-user.entity';
 
 jest.mock('./strategy-user.repository');
 jest.mock('../logger/logger.service');
@@ -39,106 +41,30 @@ describe('StrategyUserService', () => {
     jest.clearAllMocks();
   });
 
-  describe('findAllStrategyByUser', () => {
-    it('should return both arbitrage and market making orders', async () => {
-      const mockUserId = 'd889bd3f-e01c-4871-b7a1-da0ebd5bfe0b';
-      const mockArbitrageOrders = [
-        {
-          orderId: 'arb1',
-          userId: 'user1',
-          pair: 'BTC/USDT',
-          amountToTrade: '0.5',
-          minProfitability: '0.01',
-          exchangeAName: 'ExchangeA',
-          exchangeBName: 'ExchangeB',
-          balanceA: '100',
-          balanceB: '1000',
-          state: 'created' as ArbitrageStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
-          rewardAddress: '0x0000000000000000000000000000000000000000',
-        },
-        {
-          orderId: 'arb2',
-          userId: 'user2',
-          pair: 'ETH/USDT',
-          amountToTrade: '1',
-          minProfitability: '0.02',
-          exchangeAName: 'ExchangeC',
-          exchangeBName: 'ExchangeD',
-          balanceA: '200',
-          balanceB: '2000',
-          state: 'created' as ArbitrageStates,
-          createdAt: '2021-02-01T00:00:00.000Z',
-          rewardAddress: '0x0000000000000000000000000000000000000000',
-        },
-      ];
-      const mockMarketMakingOrders = [
-        {
-          orderId: 'mm1',
-          userId: 'user1',
-          pair: 'BTC/USDT',
-          exchangeName: 'ExchangeA',
-          bidSpread: '0.001',
-          askSpread: '0.001',
-          orderAmount: '0.5',
-          orderRefreshTime: '60', // Seconds
-          numberOfLayers: '1',
-          priceSourceType: PriceSourceType.MID_PRICE,
-          amountChangePerLayer: '0.1',
-          amountChangeType: 'percentage' as 'fixed' | 'percentage',
-          ceilingPrice: '60000',
-          floorPrice: '50000',
-          balanceA: '100',
-          balanceB: '1000',
-          state: 'created' as MarketMakingStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
-          rewardAddress: '0x0000000000000000000000000000000000000000',
-        },
-        {
-          orderId: 'mm2',
-          userId: 'user2',
-          pair: 'ETH/USDT',
-          exchangeName: 'ExchangeB',
-          bidSpread: '0.002',
-          askSpread: '0.002',
-          orderAmount: '1',
-          orderRefreshTime: '120', // Seconds
-          numberOfLayers: '2',
-          priceSourceType: PriceSourceType.MID_PRICE,
-          amountChangePerLayer: '0.2',
-          amountChangeType: 'percentage' as 'fixed' | 'percentage',
-          ceilingPrice: '4000',
-          floorPrice: '3000',
-          balanceA: '200',
-          balanceB: '2000',
-          state: 'created' as MarketMakingStates,
-          createdAt: '2021-02-01T00:00:00.000Z',
-          rewardAddress: '0x0000000000000000000000000000000000000000',
-        },
-      ];
-
-      jest
-        .spyOn(strategyUserRepository, 'findArbitrageByUserId')
-        .mockResolvedValue(mockArbitrageOrders);
-      jest
-        .spyOn(strategyUserRepository, 'findMarketMakingByUserId')
-        .mockResolvedValue(mockMarketMakingOrders);
-
-      const result = await service.findAllStrategyByUser(mockUserId);
-
-      const expectedResult = {
-        arbitrage: mockArbitrageOrders,
-        market_making: mockMarketMakingOrders,
-        total: mockMarketMakingOrders.length + mockArbitrageOrders.length,
+  describe('createSimplyGrow', () => {
+    it('should successfully create a simply grow order', async () => {
+      const mockSimplyGrowOrder = {
+        orderId: 'sg1',
+        userId: 'user1',
+        version: 'v1',
+        tradingType: 'typeA',
+        action: 'buy',
+        state: 'created' as SimplyGrowStates,
+        createdAt: '2021-01-01T00:00:00.000Z',
+        rewardAddress: '0x0000000000000000000000000000000000000000',
+        mixinAssetId: '123e4567-e89b-12d3-a456-426614174000',
+        amount: '100',
       };
 
-      expect(result).toEqual(expectedResult);
-      expect(strategyUserRepository.findArbitrageByUserId).toHaveBeenCalledWith(
-        mockUserId,
+      jest
+        .spyOn(strategyUserRepository, 'createSimplyGrow')
+        .mockResolvedValue(mockSimplyGrowOrder as SimplyGrowOrder);
+
+      const result = await service.createSimplyGrow(mockSimplyGrowOrder);
+      expect(result).toEqual(mockSimplyGrowOrder);
+      expect(strategyUserRepository.createSimplyGrow).toHaveBeenCalledWith(
+        mockSimplyGrowOrder,
       );
-      expect(
-        strategyUserRepository.findMarketMakingByUserId,
-      ).toHaveBeenCalledWith(mockUserId);
     });
   });
 

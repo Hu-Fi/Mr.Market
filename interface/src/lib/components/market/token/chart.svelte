@@ -48,7 +48,7 @@
   onDestroy(()=>ChartActiveTab.set(0))
   $page.data.coin.then((c:unknown) => currentCoin.set(c))
 
-  $: data: [] = [
+  $: [] = [
     { time: "2018-10-19", value: 52.89 },
   ];
 
