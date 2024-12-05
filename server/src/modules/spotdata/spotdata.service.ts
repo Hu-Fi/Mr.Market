@@ -69,6 +69,8 @@ export class SpotdataService {
 
   private async _getSupportedPairs(): Promise<any> {
     const tradingPairs = await this.spotdataRepository.findAllTradingPairs();
+    this.logger.debug(`Fetched trading pairs: ${JSON.stringify(tradingPairs)}`);
+
     const exchangeToSymbolsMap: { [exchange: string]: string[] } = {};
 
     // Organize symbols by exchange to minimize API calls
@@ -86,7 +88,9 @@ export class SpotdataService {
             exchange,
             symbols,
           );
-          // .filter((pair) => pair.exchange_id === exchange)
+          this.logger.debug(
+            `Fetched tickers for ${exchange}: ${JSON.stringify(tickers)}`,
+          );
 
           return tradingPairs.map((pair) => ({
             id: pair.id,
@@ -105,10 +109,25 @@ export class SpotdataService {
             change: tickers[pair.symbol]?.percentage || '0',
           }));
         } catch (error) {
-          this.logger.error(
+          this.logger.warn(
             `Error fetching tickers from ${exchange}: ${error.message}`,
           );
-          return [];
+          return tradingPairs.map((pair) => ({
+            id: pair.id,
+            symbol: pair.symbol,
+            ccxt_id: pair.ccxt_id,
+            exchange_id: pair.exchange_id,
+            base_asset_id: pair.base_asset_id,
+            quote_asset_id: pair.quote_asset_id,
+            amount_siginifianct_figures: pair.amount_siginifianct_figures,
+            price_siginifianct_figures: pair.price_siginifianct_figures,
+            max_buy_amount: pair.max_buy_amount,
+            max_sell_amount: pair.max_sell_amount,
+            buy_decimal_digits: pair.buy_decimal_digits,
+            sell_decimal_digits: pair.sell_decimal_digits,
+            enable: pair.enable,
+            change: '0',
+          }));
         }
       },
     );
@@ -116,6 +135,9 @@ export class SpotdataService {
     const results = await Promise.all(promises);
 
     const flattenedResults = results.flat();
+    this.logger.debug(
+      `Final trading pairs: ${JSON.stringify(flattenedResults)}`,
+    );
     return flattenedResults;
   }
 

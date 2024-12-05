@@ -15,7 +15,6 @@ import {
   GetDepositAddressDto,
   GetSupportedNetworksDto,
   GetTokenSymbolDto,
-  // JoinStrategyDto,
   StartStrategyDto,
   StopStrategyDto,
 } from './strategy/admin-strategy.dto';
@@ -34,6 +33,8 @@ import {
   GrowdataSimplyGrowTokenDto,
 } from './growdata/adminGrow.dto';
 import { AdminGrowService } from './growdata/adminGrow.service';
+import { AdminSpotService } from './spotData/adminSpot.service';
+import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
@@ -43,6 +44,7 @@ export class AdminController {
   constructor(
     private readonly adminStrategyService: AdminStrategyService,
     private readonly adminGrowService: AdminGrowService,
+    private readonly adminSpotService: AdminSpotService,
   ) {}
 
   // Admin strategy endpoints
@@ -375,5 +377,35 @@ export class AdminController {
     @Body() modifications: Partial<GrowdataArbitragePairDto>,
   ) {
     return this.adminGrowService.updateArbitragePair(id, modifications);
+  }
+
+  // Spot trading pair endpoints
+  @Post('spot/trading-pair/add')
+  @ApiOperation({ summary: 'Add a new spot trading pair' })
+  @ApiBody({ type: SpotdataTradingPairDto })
+  async addTradingPair(@Body() pairDto: SpotdataTradingPairDto) {
+    return this.adminSpotService.addTradingPair(pairDto);
+  }
+
+  @Delete('spot/trading-pair/remove/:id')
+  @ApiOperation({ summary: 'Remove a spot trading pair' })
+  async removeTradingPair(@Param('id') id: string) {
+    return this.adminSpotService.removeTradingPair(id);
+  }
+
+  @Delete('spot/trading-pair/remove-all')
+  @ApiOperation({ summary: 'Remove all spot trading pairs' })
+  async removeAllTradingPairs() {
+    return this.adminSpotService.removeAllTradingPairs();
+  }
+
+  @Post('spot/trading-pair/update/:id')
+  @ApiOperation({ summary: 'Update a spot trading pair' })
+  @ApiBody({ type: SpotdataTradingPairDto })
+  async updateTradingPair(
+    @Param('id') id: string,
+    @Body() modifications: Partial<SpotdataTradingPairDto>,
+  ) {
+    return this.adminSpotService.updateTradingPair(id, modifications);
   }
 }

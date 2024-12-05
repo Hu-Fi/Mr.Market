@@ -16,11 +16,14 @@ import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AdminGrowService } from './growdata/adminGrow.service';
 import { GrowdataModule } from '../growdata/growdata.module';
 import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
+import { AdminSpotService } from './spotData/adminSpot.service';
+import { SpotdataModule } from '../spotdata/spotdata.module';
 
 @Module({
   imports: [
     ExchangeInitModule,
     GrowdataModule,
+    SpotdataModule,
     TypeOrmModule.forFeature([
       MarketMakingHistory,
       ArbitrageHistory,
@@ -40,7 +43,8 @@ import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
     TradeService,
     ExchangeInitService,
     AdminGrowService,
+    AdminSpotService,
   ],
-  exports: [AdminStrategyService, AdminGrowService],
+  exports: [AdminStrategyService, AdminGrowService, AdminSpotService],
 })
 export class AdminModule {}

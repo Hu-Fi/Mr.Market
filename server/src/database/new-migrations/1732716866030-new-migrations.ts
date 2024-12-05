@@ -305,6 +305,24 @@ export class NewMigrations1732716866030 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
+        CREATE TABLE "spotdata_trading_pairs" (
+            "id" uuid NOT NULL,
+            "ccxt_id" character varying NOT NULL,
+            "symbol" character varying NOT NULL,
+            "exchange_id" character varying NOT NULL,
+            "amount_siginifianct_figures" character varying NOT NULL,
+            "price_siginifianct_figures" character varying NOT NULL,
+            "buy_decimal_digits" character varying NOT NULL,
+            "sell_decimal_digits" character varying NOT NULL,
+            "max_buy_amount" character varying NOT NULL,
+            "max_sell_amount" character varying NOT NULL,
+            "base_asset_id" character varying NOT NULL,
+            "quote_asset_id" character varying NOT NULL,
+            "enable" boolean NOT NULL,
+            CONSTRAINT "PK_883d6f632aaf2cf6f953731e94f" PRIMARY KEY ("id")
+        )
+    `);
+    await queryRunner.query(`
             CREATE TABLE "growdata_exchanges" (
                 "exchange_id" character varying NOT NULL,
                 "name" character varying NOT NULL,
@@ -473,6 +491,9 @@ export class NewMigrations1732716866030 implements MigrationInterface {
     await queryRunner.query(`
             DROP TABLE "custom_config_entity"
         `);
+    await queryRunner.query(`
+        DROP TABLE "spotdata_trading_pairs"
+    `);
     await queryRunner.query(`
             DROP TABLE "growdata_market_making_pairs"
         `);

@@ -12,7 +12,6 @@ import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { PerformanceModule } from './modules/performance/performance.module';
 
-// import { TransactionsModule } from './modules/transactions/transactions.module';
 import configuration from './config/configuration';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
@@ -64,6 +63,8 @@ import {
   RebalanceTokenExchange,
 } from './common/entities/rebalance-asset.entity';
 import { AdminController } from './modules/admin/admin.controller';
+import { SpotdataTradingPair } from './common/entities/spot-data.entity';
+import { SpotdataModule } from './modules/spotdata/spotdata.module';
 
 dotenv.config();
 
@@ -118,6 +119,7 @@ dotenv.config();
         MarketMakingOrder,
         ArbitrageOrder,
         SimplyGrowOrder,
+        SpotdataTradingPair,
         GrowdataExchange,
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
@@ -131,9 +133,9 @@ dotenv.config();
     StrategyModule,
     PerformanceModule,
     MarketdataModule,
+    SpotdataModule,
     GrowdataModule,
     ExchangeInitModule,
-    // TransactionsModule,
     CoingeckoModule,
     HealthModule,
     MixinModule,

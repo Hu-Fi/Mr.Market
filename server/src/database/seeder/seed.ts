@@ -14,7 +14,9 @@ import {
   defaultExchanges,
   defaultMarketMakingPairs,
   defaultSimplyGrowTokens,
+  defaultSpotdataTradingPairs,
 } from './defaultSeedValues';
+import { SpotdataTradingPair } from '../../common/entities/spot-data.entity';
 
 async function connectToDatabase() {
   dotenv.config();
@@ -30,6 +32,7 @@ async function connectToDatabase() {
       GrowdataMarketMakingPair,
       GrowdataArbitragePair,
       GrowdataSimplyGrowToken,
+      SpotdataTradingPair,
     ],
     synchronize: false,
   });
@@ -42,6 +45,18 @@ async function connectToDatabase() {
     console.error('Error connecting to the database', error);
     throw error;
   }
+}
+
+async function seedSpotdataTradingPair(
+  repository: Repository<SpotdataTradingPair>,
+) {
+  for (const pair of defaultSpotdataTradingPairs) {
+    const exists = await repository.findOneBy({ id: pair.id });
+    if (!exists) {
+      await repository.save(pair);
+    }
+  }
+  console.log('Seeding SpotdataTradingPair complete!');
 }
 
 async function seedGrowdataExchange(repository: Repository<GrowdataExchange>) {
@@ -94,6 +109,7 @@ async function seedGrowdataSimplyGrowToken(
 
 async function run() {
   const dataSource = await connectToDatabase();
+  await seedSpotdataTradingPair(dataSource.getRepository(SpotdataTradingPair));
   await seedGrowdataExchange(dataSource.getRepository(GrowdataExchange));
   await seedGrowdataMarketMakingPair(
     dataSource.getRepository(GrowdataMarketMakingPair),
