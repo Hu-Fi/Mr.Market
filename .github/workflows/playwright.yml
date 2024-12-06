@@ -46,7 +46,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
 
-      - name Run DB seed
+      - name Run DB seeder
         run: make run-seeder
         env:
           POSTGRES_PORT: 5432

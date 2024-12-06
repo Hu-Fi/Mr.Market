@@ -31,7 +31,7 @@ run-migrations:
 .PHONY: run-migrations
 
 run-seeder:
-    @echo "Running seender..."
+	@echo "Running seender..."
 	@cd server && yarn run migration:seed
 .PHONY: run-seeder
 
