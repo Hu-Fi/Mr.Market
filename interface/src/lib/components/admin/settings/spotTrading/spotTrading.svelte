@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
@@ -199,4 +199,4 @@
       </tbody>
     </table>
   </div>
-{/if}
+{/if} -->
