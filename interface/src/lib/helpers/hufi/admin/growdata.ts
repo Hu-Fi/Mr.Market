@@ -1,18 +1,6 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import type { ArbitragePairDto, MarketMakingPairDto, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
-
-const getHeaders = (token: string) => ({
-  'Authorization': `Bearer ${token}`,
-  'Content-Type': 'application/json',
-});
-
-const handleApiResponse = async (response: Response) => {
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Network response was not ok: ${errorText}`);
-  }
-  return response.json();
-};
+import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
 // Exchange Methods
 export const addExchange = async (exchangeDto: Record<string, unknown>, token: string): Promise<unknown> => {
