@@ -52,11 +52,5 @@ export default defineConfig({
       reuseExistingServer: true,
       ignoreHTTPSErrors: true,
     },
-    {
-      command: 'cd ../server; yarn start',
-      url: 'http://127.0.0.1:8080',
-      reuseExistingServer: true,
-      ignoreHTTPSErrors: true,
-    },
   ],
 });
