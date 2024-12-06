@@ -46,23 +46,23 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
 
-      - name: Wait for localhost:8080 to become available
+      - name: Wait for localhost:3000 to become available
         run: |
           make start-server &
-          echo "Waiting for localhost:8080 to become available..."
+          echo "Waiting for localhost:3000 to become available..."
           attempt=1
           max_attempts=3
           while [ $attempt -le $max_attempts ]; do
               echo "Attempt $attempt of $max_attempts"
-              if $(curl --output /dev/null --silent --head --fail http://localhost:8080); then
-                  echo "localhost:8080 is now available."
+              if $(curl --output /dev/null --silent --head --fail http://localhost:3000); then
+                  echo "localhost:3000 is now available."
                   break
               fi
               attempt=$((attempt+1))
               sleep 5
           done
           if [ $attempt -gt $max_attempts ]; then
-              echo "Failed to connect to localhost:8080 after $max_attempts attempts."
+              echo "Failed to connect to localhost:3000 after $max_attempts attempts."
               exit 1
           fi
         env:
@@ -82,7 +82,7 @@ jobs:
         run: npx playwright test --project='chromium'
         working-directory: ./interface
         env:
-          PUBLIC_HUFI_BACKEND_URL: "http://localhost:8080"
+          PUBLIC_HUFI_BACKEND_URL: "http://localhost:3000"
           POSTGRES_PORT: 5432
           POSTGRES_HOST: localhost
           POSTGRES_DATABASE: postgres
