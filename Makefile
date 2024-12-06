@@ -30,6 +30,11 @@ run-migrations:
 	@cd server && yarn build && yarn run migration:run
 .PHONY: run-migrations
 
+run-seeder:
+    @echo "Running seender..."
+	@cd server && yarn run migration:seed
+.PHONY: run-seeder
+
 stop-server-db:
 	@echo "Stopping server database..."
 	@cd server && yarn run stop:db
