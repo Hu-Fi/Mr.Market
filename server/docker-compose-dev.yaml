@@ -1,11 +1,11 @@
 version: '3.8'
-name: mr-market
+name: 'mr-market'
+
 services:
   mr-market-db:
     image: postgres:latest
     restart: always
-    env_file:
-      - .env
+    env_file: ['.env']
     environment:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -13,9 +13,20 @@ services:
       - POSTGRES_DB=${POSTGRES_DATABASE}
     logging:
       options:
-        max-size: 10m
+        max-size: '10m'
         max-file: '3'
     ports:
-      - '${POSTGRES_PORT}:5432'
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - ./db:/var/lib/postgresql/data
+
+  mr-market-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SGX_ENABLED=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mr-market-db

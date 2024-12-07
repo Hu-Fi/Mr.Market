@@ -1,15 +1,20 @@
-# Use node image as base image
-FROM node:18-alpine
+# Base image supporting SGX
+FROM intel/sgx-dcap:latest
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 COPY yarn.lock ./
+
 RUN yarn install
 
 COPY . .
+
 RUN yarn build
+
+# SGX-specific environment
+ENV SGX_ENABLED=true
 
 EXPOSE 3000
 
-CMD yarn migration:run && yarn start:prod
+CMD [ "yarn", "start:prod" ]

@@ -1,9 +1,3 @@
-name: Runs All Server Unit Tests
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 jobs:
   test:
     timeout-minutes: 60
@@ -11,13 +5,36 @@ jobs:
       run:
         working-directory: ./server
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+
       - name: Install dependencies
         run: yarn
+
       - name: Execute Unit tests
         run: yarn test
+
+  build-sgx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SGX dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsgx-enclave-common libsgx-urts
+
+      - name: Build server in SGX enclave
+        run: |
+          make build-sgx
+
+      - name: Generate attestation proof
+        run: |
+          make generate-attestation
+
+      - name: Upload attestation artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: attestation-proof
+          path: ./server/attestation/attestation_proof.json
