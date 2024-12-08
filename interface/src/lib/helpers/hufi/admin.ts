@@ -33,7 +33,7 @@ export const checkPassword = async (pass: string): Promise<string> => {
   return r.access_token;
 }
 
-export const autoCheckPassword = async (): Promise<boolean> => {
+export const autoCheckPassword = async (path: string = '/manage/dashboard'): Promise<boolean> => {
   const pass = localStorage.getItem('admin-password')
   if (!pass) {
     return false
@@ -45,7 +45,7 @@ export const autoCheckPassword = async (): Promise<boolean> => {
     checked.set(true);
     correct.set(true);
     localStorage.setItem("admin-access-token", accessToken);
-    goto('/manage/dashboard')
+    goto(path);
     return true;
   }
   submitted.set(true);
@@ -60,5 +60,5 @@ export const exit = () => {
   correct.set(false);
   localStorage.removeItem('admin-password')
   localStorage.removeItem('admin-access-token')
-  goto('/manage/login')
+  goto('/manage')
 }

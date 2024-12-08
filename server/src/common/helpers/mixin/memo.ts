@@ -7,19 +7,15 @@ import {
   SIMPLY_GROW_MEMO_ACTION_MAP,
 } from 'src/common/constants/memo';
 import {
-  ArbitrageMemoDetails,
   ArbitrageCreateMemoDetails,
   ExchangeIndexValue,
-  MarketMakingMemoActionValueType,
-  MarketMakingMemoDetails,
   SpotMemoDetails,
   SpotOrderTypeValue,
   TradingTypeValue,
   MarketMakingCreateMemoDetails,
   SimplyGrowCreateMemoDetails,
 } from 'src/common/types/memo/memo';
-import { getPairSymbolByKey } from 'src/common/helpers/utils';
-import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
+import { PairsMapKey } from 'src/common/types/pairs/pairs';
 import { base58, getAddress } from 'ethers/lib/utils';
 import { createHash } from 'crypto';
 
@@ -60,69 +56,6 @@ export const decodeSpotMemo = (decodedMemo: string): SpotMemoDetails => {
     destId: destId as PairsMapKey,
     limitPrice: parts.length === 6 ? limitPriceOrRefId : undefined,
     refId: parts.length === 6 ? refId : undefined,
-  };
-};
-
-export const decodeArbitrageMemo = (
-  decodedMemo: string,
-): ArbitrageMemoDetails => {
-  if (!decodedMemo) {
-    return null;
-  }
-  const parts = decodedMemo.split(':');
-  if (parts.length !== 6) {
-    return null;
-  }
-  const [
-    tradingType,
-    action,
-    exchangeAIndex,
-    exchangeBIndex,
-    destId,
-    traceId,
-    rewardAddress,
-  ] = parts;
-
-  const symbol = getPairSymbolByKey(destId as PairsMapKey);
-  if (!symbol) {
-    return null;
-  }
-  return {
-    tradingType: TARDING_TYPE_MAP[tradingType],
-    action: ARBITRAGE_MEMO_ACTION_MAP[action],
-    exchangeAName: SPOT_EXCHANGE_MAP[exchangeAIndex],
-    exchangeBName: SPOT_EXCHANGE_MAP[exchangeBIndex],
-    symbol: symbol as PairsMapValue,
-    traceId,
-    rewardAddress,
-  };
-};
-
-export const decodeMarketMakingMemo = (
-  decodedMemo: string,
-): MarketMakingMemoDetails => {
-  if (!decodedMemo) {
-    return null;
-  }
-  const parts = decodedMemo.split(':');
-  if (parts.length !== 5) {
-    return null;
-  }
-  const [tradingType, action, exchangeIndex, destId, traceId, rewardAddress] =
-    parts;
-  const symbol = getPairSymbolByKey(destId as PairsMapKey);
-  if (!symbol) {
-    return null;
-  }
-  return {
-    tradingType: TARDING_TYPE_MAP[tradingType] as TradingTypeValue,
-    action: MARKET_MAKING_MEMO_ACTION_MAP[
-      action
-    ] as MarketMakingMemoActionValueType,
-    exchangeName: SPOT_EXCHANGE_MAP[exchangeIndex] as ExchangeIndexValue,
-    symbol: symbol as PairsMapKey,
-    traceId,
-    rewardAddress,
   };
 };
 

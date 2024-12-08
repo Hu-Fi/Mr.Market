@@ -6,7 +6,7 @@ import {
   SPOT_ORDER_TYPE_MAP,
   TARDING_TYPE_MAP,
 } from 'src/common/constants/memo';
-import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
+import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
 // Maintain /src/common/constants/memo.ts
 export type TradingType = keyof typeof TARDING_TYPE_MAP;
@@ -40,25 +40,6 @@ export interface SpotMemoDetails {
   destId: PairsMapKey;
   limitPrice?: string;
   refId?: string;
-}
-
-export interface ArbitrageMemoDetails {
-  tradingType: TradingTypeValue;
-  action: ArbitrageMemoActionType;
-  exchangeAName: ExchangeIndexValue;
-  exchangeBName: ExchangeIndexValue;
-  symbol: PairsMapValue;
-  traceId: string;
-  rewardAddress: string;
-}
-
-export interface MarketMakingMemoDetails {
-  tradingType: TradingTypeValue;
-  action: MarketMakingMemoActionType;
-  exchangeName: ExchangeIndexValue;
-  symbol: PairsMapValue;
-  traceId: string;
-  rewardAddress: string;
 }
 
 // New

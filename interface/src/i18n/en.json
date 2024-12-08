@@ -357,5 +357,6 @@
   "display_name": "Display name",
   "click_to_enable": "Click to enable",
   "click_to_disable": "Click to disable",
-  "updating": "Updating..."
+  "updating": "Updating...",
+  "welcome_to_admin_panel": "Welcome to the admin panel!"
 }

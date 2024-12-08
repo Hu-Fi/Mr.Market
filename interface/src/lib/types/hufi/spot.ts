@@ -23,8 +23,8 @@ export type SpotTradingPair = {
   ccxt_id: string;
   symbol: string;
   exchange_id: string;
-  amount_siginifianct_figures: string;
-  price_siginifianct_figures: string;
+  amount_significant_figures: string;
+  price_significant_figures: string;
   buy_decimal_digits: string;
   sell_decimal_digits: string;
   max_buy_amount: string;

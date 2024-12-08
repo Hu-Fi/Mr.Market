@@ -15,10 +15,10 @@ export class SpotdataTradingPairDto {
   exchange_id: string;
 
   @IsString()
-  amount_siginifianct_figures: string;
+  amount_significant_figures: string;
 
   @IsString()
-  price_siginifianct_figures: string;
+  price_significant_figures: string;
 
   @IsString()
   buy_decimal_digits: string;
