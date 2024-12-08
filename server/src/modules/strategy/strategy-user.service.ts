@@ -5,16 +5,18 @@ import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
-} from 'src/common/entities/strategy.entity';
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
 import {
   ArbitrageStates,
   MarketMakingStates,
+  SimplyGrowStates,
 } from 'src/common/types/orders/states';
 import { ConfigService } from '@nestjs/config';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { createStrategyKey } from 'src/common/helpers/strategyKey';
 import { StrategyService } from 'src/modules/strategy/strategy.service';
 import { StrategyUserRepository } from 'src/modules/strategy/strategy-user.repository';
-import { createStrategyKey } from 'src/common/helpers/strategyKey';
 
 @Injectable()
 export class StrategyUserService {
@@ -32,14 +34,56 @@ export class StrategyUserService {
         await this.strategyUserRepository.findArbitrageByUserId(userId);
       const market_makings =
         await this.strategyUserRepository.findMarketMakingByUserId(userId);
+      const simply_grows =
+        await this.strategyUserRepository.findSimplyGrowByUserId(userId);
       return {
         arbitrage: arbitrages,
         market_making: market_makings,
-        total: arbitrages.length + market_makings.length,
+        simply_grow: simply_grows,
+        total: arbitrages.length + market_makings.length + simply_grows.length,
       };
     } catch (error) {
-      this.logger.error('Error finding all strategy by user', error.message);
-      return { arbitrage: [], market_making: [], total: 0 };
+      this.logger.error('Error finding all strategy by user', error);
+      return { arbitrage: [], market_making: [], simply_grow: [], total: 0 };
+    }
+  }
+
+  async createSimplyGrow(
+    simplyGrowOrder: SimplyGrowOrder,
+  ): Promise<SimplyGrowOrder> {
+    try {
+      const createdOrder = await this.strategyUserRepository.createSimplyGrow(
+        simplyGrowOrder,
+      );
+      return createdOrder;
+    } catch (error) {
+      this.logger.error('Error creating simply grow order', error);
+      throw error;
+    }
+  }
+
+  async findSimplyGrowByOrderId(
+    orderId: string,
+  ): Promise<SimplyGrowOrder | undefined> {
+    return await this.strategyUserRepository.findSimplyGrowByOrderId(orderId);
+  }
+
+  async findSimplyGrowByUserId(userId: string): Promise<SimplyGrowOrder[]> {
+    return await this.strategyUserRepository.findSimplyGrowByUserId(userId);
+  }
+
+  async updateSimplyGrowState(
+    orderId: string,
+    newState: SimplyGrowStates,
+  ): Promise<void> {
+    try {
+      await this.strategyUserRepository.updateSimplyGrowState(
+        orderId,
+        newState,
+      );
+    } catch (error) {
+      this.logger.error('Error updating simply grow state', error);
+      throw error;
     }
   }
 

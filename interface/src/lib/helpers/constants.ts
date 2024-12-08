@@ -15,9 +15,11 @@ export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mr-marke
 export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const BALANCE_CURRENCIES = ["USDT", "USD", "EUR", "GBP", "AED", "CNY", "HKD", "JPY"]
-export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usd.json"
+export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/v1/currencies/usdt.json"
+export const MARKET_TOKEN_EXCHANGES = ["binance", "huobi", "okex", "bybit", "bitget", "bitmex", "bitfinex", "kraken", "coinbase", "bigone"]
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
+export const HARDCODED_FEE = 1.002
 
 // It must sync with server/pairs.ts
 export const PAIRS_MAP = {
@@ -257,37 +259,6 @@ export const SUPPORTED_PAIRS: {
 export const SUPPORTED_UNIQUE_PAIRS: string[] = Array.from(new Set(Object.values(SUPPORTED_PAIRS).flatMap(pairs => pairs)));
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);
 export const SUPPORTED_TIMERANGES: SupportedTimeFrame[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M']
-export const SUPPORTED_ARBITRAGE_PAIRS = [
-  {symbol: "BTC/USDT", exchange: "okx",},
-  {symbol: "ETH/USDT", exchange: "okx",},
-  {symbol: "SOL/USDT", exchange: "okx",},
-  {symbol: "XRP/USDT", exchange: "okx",},
-  {symbol: "HMT/USDT", exchange: "gate",},
-  {symbol: "ETH/USDT", exchange: "gate",},
-  {symbol: "HMT/USDT", exchange: "mexc",},
-  {symbol: "HMT/USDT", exchange: "bitfinex",},
-  {symbol: "HMT/USDT", exchange: "lbank",}
-];
-export const SUPPORTED_MARKET_MAKING_PAIRS = [
-  {symbol: "BTC/USDT", exchange: "okx",},
-  {symbol: "ETH/USDT", exchange: "okx",},
-  {symbol: "SOL/USDT", exchange: "okx",},
-  {symbol: "XRP/USDT", exchange: "okx",},
-  {symbol: "HMT/USDT", exchange: "gate",},
-  {symbol: "ETH/USDT", exchange: "gate",},
-  {symbol: "HMT/USDT", exchange: "mexc",},
-  {symbol: "HMT/USDT", exchange: "bitfinex",},
-  {symbol: "HMT/USDT", exchange: "lbank",}
-];
-export const SUPPORTED_JUST_GROW_TOKENS = [
-  {symbol: 'BTC', name: 'Bitcoin'},
-  {symbol: 'ETH', name: 'Ethereum'},
-  {symbol: 'USDT', name: 'Tether'},
-  {symbol: 'HMT', name: 'Human Token'},
-  {symbol: 'XIN', name: 'Mixin'},
-]
-
-export const SUPPORTED_UNIQUE_ARBITRAGE_PAIRS = Array.from(new Set(SUPPORTED_ARBITRAGE_PAIRS.map(pair => pair.symbol)));
 
 // Limit order needs 12, Market order needs 10, use 14 to avoid data loss
 export const ORDERBOOK_STREAM_LENGTH = 14

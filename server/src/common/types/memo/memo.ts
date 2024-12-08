@@ -1,11 +1,12 @@
 import {
   ARBITRAGE_MEMO_ACTION_MAP,
   MARKET_MAKING_MEMO_ACTION_MAP,
+  SIMPLY_GROW_MEMO_ACTION_MAP,
   SPOT_EXCHANGE_MAP,
   SPOT_ORDER_TYPE_MAP,
   TARDING_TYPE_MAP,
 } from 'src/common/constants/memo';
-import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
+import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
 // Maintain /src/common/constants/memo.ts
 export type TradingType = keyof typeof TARDING_TYPE_MAP;
@@ -20,6 +21,10 @@ export type MarketMakingMemoActionType =
   keyof typeof MARKET_MAKING_MEMO_ACTION_MAP;
 export type MarketMakingMemoActionValueType =
   (typeof MARKET_MAKING_MEMO_ACTION_MAP)[keyof typeof MARKET_MAKING_MEMO_ACTION_MAP];
+
+export type SimplyGrowMemoActionType = keyof typeof SIMPLY_GROW_MEMO_ACTION_MAP;
+export type SimplyGrowMemoActionValueType =
+  (typeof SIMPLY_GROW_MEMO_ACTION_MAP)[keyof typeof SIMPLY_GROW_MEMO_ACTION_MAP];
 
 export type TradingTypeValue =
   (typeof TARDING_TYPE_MAP)[keyof typeof TARDING_TYPE_MAP];
@@ -37,19 +42,51 @@ export interface SpotMemoDetails {
   refId?: string;
 }
 
-export interface ArbitrageMemoDetails {
+// New
+
+export interface ArbitrageCreateMemoDetails {
+  version: number;
   tradingType: TradingTypeValue;
   action: ArbitrageMemoActionType;
-  exchangeAName: ExchangeIndexValue;
-  exchangeBName: ExchangeIndexValue;
-  symbol: PairsMapValue;
-  traceId: string;
+  arbitragePairId: string;
+  orderId: string;
+  rewardAddress: string;
 }
 
-export interface MarketMakingMemoDetails {
+export interface ArbitrageAddMemoDetails {
+  version: number;
+  tradingType: TradingTypeValue;
+  action: ArbitrageMemoActionType;
+  orderId: string;
+}
+
+export interface MarketMakingCreateMemoDetails {
+  version: number;
   tradingType: TradingTypeValue;
   action: MarketMakingMemoActionType;
-  exchangeName: ExchangeIndexValue;
-  symbol: PairsMapValue;
-  traceId: string;
+  marketMakingPairId: string;
+  orderId: string;
+  rewardAddress: string;
+}
+
+export interface MarketMakingAddMemoDetails {
+  version: number;
+  tradingType: TradingTypeValue;
+  action: MarketMakingMemoActionType;
+  orderId: string;
+}
+
+export interface SimplyGrowCreateMemoDetails {
+  version: number;
+  tradingType: TradingTypeValue;
+  action: SimplyGrowMemoActionType;
+  orderId: string;
+  rewardAddress: string;
+}
+
+export interface SimplyGrowAddMemoDetails {
+  version: number;
+  tradingType: TradingTypeValue;
+  action: SimplyGrowMemoActionType;
+  orderId: string;
 }

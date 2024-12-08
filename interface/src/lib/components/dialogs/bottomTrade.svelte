@@ -6,6 +6,7 @@
   import { langs } from "../../../i18n/i18n";
   import { showSettingShortcut, toggleTheme } from "$lib/stores/theme";
   import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
+    import { isMixinIOS } from "$lib/stores/home";
 
   const items = [
     {title: $_("spot"), route: '/spot'},
@@ -27,7 +28,7 @@
   <form method="dialog" class="modal-backdrop h-[calc(100%-(56px+28px+16px+32px+274px))]">
     <button on:click={() => bottomTradeDialog.set(false)}></button>
   </form>
-  <div class="modal-box space-y-3 py-4 pb-8 mb-7 w-80 rounded-2xl shadow-sm clip-trade">
+  <div class={clsx("modal-box space-y-3 py-4 pb-8 w-80 rounded-2xl shadow-sm clip-trade", $isMixinIOS ? "mb-14" : "mb-7")}>
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10">
       <!-- Routes -->
       {#if !toggleLanguage}
@@ -66,7 +67,7 @@
   </div>
   
   <!-- Close Button -->
-  <div class="relative bottom-6 flex items-center justify-between w-80">    
+  <div class={clsx("relative flex items-center justify-between w-80", $isMixinIOS ? "bottom-[3.25rem]" : "bottom-6")}>
     <div class={clsx(expanded ? "w-[calc(32px*2+12px+20px)]" : "w-[52px]")}></div>
     
     <button class="btn rounded-full bg-base-100 hover:bg-base-100 no-animation h-[2.875rem] w-[2.875rem] min-h-[2.875rem] px-3" on:click={()=>bottomTradeDialog.set(false)}>

@@ -28,14 +28,12 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
-import {
-  getAssetIDBySymbol,
-  getRFC3339Timestamp,
-} from 'src/common/helpers/utils';
-import { ArbitrageMemoDetails } from 'src/common/types/memo/memo';
-import { PaymentState } from 'src/common/entities/strategy.entity';
+import { getRFC3339Timestamp } from 'src/common/helpers/utils';
+import { ArbitrageCreateMemoDetails } from 'src/common/types/memo/memo';
+import { PaymentState } from 'src/common/entities/strategy-user.entity';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
+import { GrowdataService } from 'src/modules/growdata/growdata.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
@@ -43,13 +41,14 @@ export class ArbitrageListener {
   private readonly logger = new CustomLogger(ArbitrageListener.name);
 
   constructor(
+    private readonly growdataService: GrowdataService,
     private readonly snapshotService: SnapshotsService,
     private readonly strategyUserService: StrategyUserService,
   ) {}
 
   @OnEvent('arbitrage.create')
   async handleArbitrageCreate(
-    details: ArbitrageMemoDetails,
+    details: ArbitrageCreateMemoDetails,
     snapshot: SafeSnapshot,
   ) {
     if (!details || !snapshot) {
@@ -57,27 +56,32 @@ export class ArbitrageListener {
       return;
     }
     const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
-      details.traceId,
+      details.orderId,
     );
 
-    const { baseAssetID, targetAssetID } = getAssetIDBySymbol(details.symbol);
-    if (
-      snapshot.asset_id != baseAssetID &&
-      snapshot.asset_id != targetAssetID
-    ) {
-      // Transfer asset doesn't match any of symbol, refund
-      return await this.snapshotService.refund(snapshot);
+    const pair = await this.growdataService.getArbitragePairById(
+      details.arbitragePairId,
+    );
+    if (!pair) {
+      this.logger.error('Arbitrage pair not found');
+      return;
     }
 
-    // TODO: check max/min amount when creating
+    // Transfer asset doesn't match any of symbol, refund
+    if (
+      snapshot.asset_id != pair.base_asset_id &&
+      snapshot.asset_id != pair.target_asset_id
+    ) {
+      return await this.snapshotService.refund(snapshot);
+    }
 
     // First asset
     if (!paymentState) {
       const now = getRFC3339Timestamp();
       return await this.strategyUserService.createPaymentState({
-        orderId: details.traceId,
+        orderId: details.orderId,
         type: 'arbitrage',
-        symbol: details.symbol,
+        symbol: pair.symbol,
         firstAssetId: snapshot.asset_id,
         firstAssetAmount: snapshot.amount,
         firstSnapshotId: snapshot.snapshot_id,
@@ -86,9 +90,9 @@ export class ArbitrageListener {
       } as PaymentState);
     }
 
-    // Check if second asset
+    // Second asset
     if (paymentState && !paymentState.secondAssetId) {
-      await this.strategyUserService.updatePaymentStateById(details.traceId, {
+      await this.strategyUserService.updatePaymentStateById(details.orderId, {
         secondAssetId: snapshot.asset_id,
         secondAssetAmount: snapshot.amount,
         secondSnapshotId: snapshot.snapshot_id,
@@ -96,17 +100,18 @@ export class ArbitrageListener {
       } as PaymentState);
 
       await this.strategyUserService.createArbitrage({
-        orderId: details.traceId,
+        orderId: details.orderId,
         userId: snapshot.opponent_id,
-        pair: details.symbol,
+        pair: pair.symbol,
         amountToTrade: '1',
         minProfitability: '0.01',
-        exchangeAName: details.exchangeAName,
-        exchangeBName: details.exchangeBName,
+        exchangeAName: pair.base_exchange_id,
+        exchangeBName: pair.target_exchange_id,
         balanceA: paymentState.firstAssetAmount,
         balanceB: snapshot.amount,
         state: 'created',
         createdAt: getRFC3339Timestamp(),
+        rewardAddress: details.rewardAddress,
       });
     }
   }

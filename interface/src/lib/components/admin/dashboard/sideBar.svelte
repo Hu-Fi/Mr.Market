@@ -16,7 +16,7 @@
     // "revenue",
     "health",
     "message",
-    "config",
+    "settings",
     "exit",
   ];
   const items = paths.map((path) => {

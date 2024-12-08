@@ -2,6 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
+  import { MARKET_TOKEN_EXCHANGES } from "$lib/helpers/constants";
   import SinglePair from "$lib/components/market/token/singlePair.svelte";
   import CoinInfoLoader from "$lib/components/skeleton/market/coinInfoLoader.svelte";
 
@@ -55,7 +56,13 @@
       </div>
 
       <!-- Pairs -->
-      {#each coin.tickers.slice(0, showItems) as pair}
+      {#each coin.tickers
+        .sort((a, b) => {
+          const aa = MARKET_TOKEN_EXCHANGES.includes(a.market.identifier);
+          const bb = MARKET_TOKEN_EXCHANGES.includes(b.market.identifier);
+          return (bb - aa);
+        })
+        .slice(0, showItems) as pair}
         <SinglePair {pair} />
       {/each}
 
@@ -96,5 +103,3 @@
     <CoinInfoLoader />
 {/await}
 
-<style>
-</style>

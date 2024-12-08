@@ -7,6 +7,7 @@
   import SinglePair from "$lib/components/market/elements/singlePair.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SpotTableColumns from "$lib/components/market/elements/spotTableColumns.svelte";
+    import NoResult from "$lib/components/common/NoResult.svelte";
 
   let defaultsPairs: PairsData[] = [];
   const exchangeMap: { [key: number]: string} = {
@@ -44,9 +45,13 @@
       {/if}
 
       <tbody class="h-full">
+      {#if sortedPairs.length > 0}
         {#each sortedPairs as pair}
           <SinglePair {pair} />
         {/each}
+      {:else}
+        <NoResult />
+      {/if}
       </tbody>
     </table>
   </div>

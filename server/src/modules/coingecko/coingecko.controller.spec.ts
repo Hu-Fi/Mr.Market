@@ -46,20 +46,36 @@ describe('CoingeckoController', () => {
     const currency = 'ethereum';
     const expectedResult = coinMarketDataFixture;
     (service.coinsMarkets as jest.Mock).mockReturnValueOnce(expectedResult);
-    const result = await controller.getCoinMarkets(currency);
-    expect(service.coinsMarkets).toHaveBeenCalledWith(currency);
+    const result = await controller.getCoinMarkets(
+      currency,
+      undefined,
+      undefined,
+    );
+    expect(service.coinsMarkets).toHaveBeenCalledWith(
+      currency,
+      undefined,
+      undefined,
+      undefined,
+    );
     expect(result).toEqual(expectedResult);
   });
   it('should get coin markets by category', async () => {
     const currency = 'ethereum';
     const expectedResult = [coinMarketDataFixture[2]];
-    const category = 'stablecoins';
+    const category = 'all';
     (service.coinsMarkets as jest.Mock).mockReturnValueOnce(expectedResult);
     const result = await controller.getCoinMarketsByCategory(
       currency,
       category,
+      undefined,
+      undefined,
     );
-    expect(service.coinsMarkets).toHaveBeenCalledWith(currency, category);
+    expect(service.coinsMarkets).toHaveBeenCalledWith(
+      currency,
+      category === 'all' ? undefined : 'all',
+      undefined,
+      undefined,
+    );
     expect(result).toEqual(expectedResult);
   });
   it('should get coin markets with all category', async () => {
@@ -70,8 +86,15 @@ describe('CoingeckoController', () => {
     const result = await controller.getCoinMarketsByCategory(
       currency,
       category,
+      undefined,
+      undefined,
     );
-    expect(service.coinsMarkets).toHaveBeenCalledWith(currency, undefined);
+    expect(service.coinsMarkets).toHaveBeenCalledWith(
+      currency,
+      category === 'all' ? undefined : 'all',
+      undefined,
+      undefined,
+    );
     expect(result).toEqual(expectedResult);
   });
   it('should get coin market chart', async () => {

@@ -4,7 +4,6 @@
     BN2,
     findChainIcon,
     formatDecimals,
-    formatWalletBalanceFull,
   } from "$lib/helpers/utils";
   import { assetDetailAsset } from "$lib/stores/wallet";
   let locale_currency = 1;
@@ -27,8 +26,8 @@ on:click={() => {}}
   <!-- Center Amount and USD Value -->
   <div class="flex flex-col space-y-0.5 items-start">
     <div>
-      <span class="balance-font text-3xl"
-        >{formatWalletBalanceFull($assetDetailAsset.balance)}</span
+      <span class="balance-font text-3xl select-text"
+        >{formatDecimals($assetDetailAsset.balance, 8)}</span
       >
       <span class="text-xs">{$assetDetailAsset.details.symbol}</span>
     </div>

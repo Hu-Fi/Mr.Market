@@ -98,7 +98,7 @@
       clip-rule="evenodd"
     />
   </svg>
-{:else if name === "config"}
+{:else if name === "settings"}
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"

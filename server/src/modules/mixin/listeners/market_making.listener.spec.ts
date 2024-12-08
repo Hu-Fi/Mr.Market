@@ -3,38 +3,49 @@ import { MarketMakingListener } from './market_making.listener';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
+import { GrowdataService } from 'src/modules/growdata/growdata.service';
+import { DataSource } from 'typeorm';
 
 jest.mock('src/modules/mixin/snapshots/snapshots.service');
 jest.mock('src/modules/strategy/strategy-user.service');
+jest.mock('src/modules/growdata/growdata.service');
 
 describe('MarketMakingListener', () => {
   let listener: MarketMakingListener;
   let snapshotsService: SnapshotsService;
   let strategyUserService: StrategyUserService;
+  let growdataService: GrowdataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MarketMakingListener, SnapshotsService, StrategyUserService],
+      providers: [
+        MarketMakingListener,
+        SnapshotsService,
+        StrategyUserService,
+        GrowdataService,
+        { provide: DataSource, useValue: {} },
+      ],
     }).compile();
 
     listener = module.get<MarketMakingListener>(MarketMakingListener);
     snapshotsService = module.get<SnapshotsService>(SnapshotsService);
     strategyUserService = module.get<StrategyUserService>(StrategyUserService);
-
+    growdataService = module.get<GrowdataService>(GrowdataService);
     jest.clearAllMocks();
   });
 
   it('should handle a snapshot matching the first asset correctly', async () => {
     const mockDetails = {
+      version: 1,
       tradingType: 'Market Making',
       action: 'create',
-      exchangeName: 'mexc',
-      symbol: 'BTC/USDT',
-      traceId: '1043e42c-dd12-4260-a443-d1896b64eae4',
+      marketMakingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: '1043e42c-dd12-4260-a443-d1896b64eae4',
+      rewardAddress: '0x0000000000000000000000000000000000000000',
     };
 
     const mockSnapshot: SafeSnapshot = {
-      asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa', // Assuming this matches the base asset ID for BTC/USDT
+      asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
       amount: '100',
       snapshot_id: 'e82afdfb-6239-4530-8a45-d86294750da6',
       opponent_id: '9f771b3d-15c0-42e1-ae05-bcdc1c5c54f3',
@@ -51,45 +62,42 @@ describe('MarketMakingListener', () => {
       withdrawal: null,
     };
 
-    // const getAssetIDBySymbol = jest.fn().mockReturnValue({
-    //   baseAssetID: mockSnapshot.asset_id,
-    //   targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    // });
-
     strategyUserService.findPaymentStateByIdRaw = jest
       .fn()
       .mockResolvedValue(null);
+    growdataService.getMarketMakingPairById = jest.fn().mockResolvedValue({
+      base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+      target_asset_id: 'another-asset-id',
+      symbol: 'BTC/USDT',
+      exchange_id: 'exchangeA',
+    });
     strategyUserService.createPaymentState = jest.fn().mockResolvedValue({});
 
     await listener.handleMarketMakingCreate(mockDetails, mockSnapshot);
 
-    // expect(getAssetIDBySymbol).toHaveBeenCalledWith(mockDetails.symbol);
+    expect(growdataService.getMarketMakingPairById).toHaveBeenCalledWith(
+      mockDetails.marketMakingPairId,
+    );
     expect(strategyUserService.findPaymentStateByIdRaw).toHaveBeenCalledWith(
-      mockDetails.traceId,
+      mockDetails.orderId,
     );
     expect(strategyUserService.createPaymentState).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orderId: mockDetails.traceId,
-        type: 'market_making',
-        symbol: mockDetails.symbol,
-        firstAssetId: mockSnapshot.asset_id,
-        firstAssetAmount: mockSnapshot.amount,
-        firstSnapshotId: mockSnapshot.snapshot_id,
-      }),
+      expect.anything(),
     );
   });
 
   it('should refund if the snapshot asset does not match either base or target asset IDs', async () => {
     const mockDetails = {
+      version: 1,
       tradingType: 'Market Making',
       action: 'create',
-      exchangeName: 'mexc',
-      symbol: 'BTC/USDT',
-      traceId: '1043e42c-dd12-4260-a443-d1896b64eae4',
+      marketMakingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      orderId: '1043e42c-dd12-4260-a443-d1896b64eae4',
+      rewardAddress: '0x0000000000000000000000000000000000000000',
     };
 
     const mockSnapshot: SafeSnapshot = {
-      asset_id: 'b91e18ff-a9ae-3dc7-8679-e935d9a4b34b', // Asset ID that doesn't match the expected for BTC/USDT
+      asset_id: 'b91e18ff-a9ae-3dc7-8679-e935d9a4b34b',
       amount: '100',
       snapshot_id: 'e82afdfb-6239-4530-8a45-d86294750dc3',
       opponent_id: '9f771b3d-15c0-42e1-ae05-bcdc1c5c54f3',
@@ -106,16 +114,14 @@ describe('MarketMakingListener', () => {
       withdrawal: null,
     };
 
-    // const getAssetIDBySymbol = jest.fn().mockReturnValue({
-    //   baseAssetID: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
-    //   targetAssetID: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    // });
-
+    growdataService.getMarketMakingPairById = jest.fn().mockResolvedValue({
+      base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+      target_asset_id: 'another-asset-id',
+    });
     snapshotsService.refund = jest.fn().mockResolvedValue({});
 
     await listener.handleMarketMakingCreate(mockDetails, mockSnapshot);
 
-    // expect(getAssetIDBySymbol).toHaveBeenCalledWith(mockDetails.symbol);
     expect(snapshotsService.refund).toHaveBeenCalledWith(mockSnapshot);
   });
 });

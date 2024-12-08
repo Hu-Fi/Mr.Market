@@ -29,6 +29,7 @@ import type { Page } from "@sveltejs/kit";
 
 // Input identifier from coingecko /coin/:id
 export const findExchangeIconByIdentifier = (identifier: string) => {
+  if (!identifier) return emptyToken;
   switch(identifier.toUpperCase()) {
     case "BINANCE": return binance;
     case "BINGX": return bingx;
@@ -69,6 +70,7 @@ export const findExchangeIconByIdentifier = (identifier: string) => {
 
 // Input symbol to get Mixin image link
 export const findCoinIconBySymbol = (symbol: string) => {
+  if (!symbol) return emptyToken;
   // @ts-expect-error ingore import from json file
   return mixinIcons[symbol.toUpperCase()];
 }

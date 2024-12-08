@@ -7,11 +7,11 @@
     // import { ETH_UUID } from "$lib/helpers/constants";
     import { mixinConnected } from "$lib/stores/home";
     import { isValidEvmAddress } from "$lib/helpers/validateAddress";
-    import { createJustGrowRewardAddressDialog, createJustGrowRewardAddress } from "$lib/stores/grow";
+    import { createSimplyGrowRewardAddressDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
 
     onDestroy(()=>{
-        createJustGrowRewardAddressDialog.set(false);
-        createJustGrowRewardAddress.set("");
+        createSimplyGrowRewardAddressDialog.set(false);
+        createSimplyGrowRewardAddress.set("");
     })
 
     let closeTooltip = true;
@@ -21,11 +21,6 @@
     let addressTooltip = false;
     // let mixinAddressesLoaded = false;
     // let mixinAddressesLoading = false;
-
-    export let rewardAddress = $createJustGrowRewardAddress;
-    export let dialogOpen = $createJustGrowRewardAddressDialog;
-
-    // Load from localstorage
 </script>
 
 <div class="flex flex-col space-y-2 mx-4">
@@ -58,13 +53,14 @@
             <input 
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
-                bind:value={rewardAddress}
-                on:keyup={()=>{
-                    validAddress = isValidEvmAddress(rewardAddress)
+                bind:value={$createSimplyGrowRewardAddress}
+                on:change={()=>{
+                    validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
-                class="input input-ghost focus:outline-none focus:border-r-0 z-10 absolute w-4/5 join-item pr-0" 
+                class="input input-ghost focus:outline-none focus:border-x-0 focus:border-base-300 z-10 absolute join-item pr-0" 
+                data-testid="reward-address-input"
             />
-            <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={dialogOpen} data-testid="select-reward-address">
+            <details class="dropdown dropdown-end cursor-pointer join-item" bind:open={$createSimplyGrowRewardAddressDialog} data-testid="select-reward-address">
                 <summary class="flex justify-between text-end border rounded-lg items-center h-12">
                 <div class="flex justify-end mx-4 w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-4">
@@ -74,7 +70,6 @@
                 </summary>
                 <ul class="p-4 shadow menu dropdown-content z-[1] rounded-box bg-white text-sm w-full" >
                 <button on:click={async ()=>{
-                    // dialogOpen = false
                     const token = localStorage.getItem('mixin-oauth') || '';
                     if (!token) {
                         return;
@@ -96,17 +91,18 @@
                 </ul>
             </details>
         {:else}
-            <input 
+            <input
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
-                bind:value={rewardAddress}
-                on:keyup={()=>{
-                    validAddress = isValidEvmAddress(rewardAddress)
+                bind:value={$createSimplyGrowRewardAddress}
+                on:change={()=>{
+                    validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-bordered border-base-300 focus:outline-none w-full z-10" 
+                data-testid="reward-address-input"
             />
         {/if}
-        {#if rewardAddress.length > 0}
+        {#if $createSimplyGrowRewardAddress.length > 0}
             <div class="flex items-center justify-start mx-2">
                 {#if validatingAddress}
                     <span class="text-xs text-green-500">
@@ -116,7 +112,7 @@
                     <span class="text-xs text-green-500">
                         {$_('valid_address')}
                     </span>
-                {:else if rewardAddress.length > 31}
+                {:else if $createSimplyGrowRewardAddress.length > 2}
                     <span class="text-xs text-red-500">
                         {$_('invalid_address')}
                     </span>

@@ -11,8 +11,12 @@
 	import WalletPageLoader from '$lib/components/skeleton/wallet/walletPageLoader.svelte';
 </script>
 
+<!-- Zero balance -->
+{#if $mixinConnected && $userAssets && $userAssets.balances && $userAssets.balances.length === 0}
+  <NoBalance />
+
 <!-- Have balance -->
-{#if $mixinConnected && $userAssets && $userAssets.balances && $userAssets.balances.length > 0}
+{:else if $mixinConnected && $userAssets && $userAssets.balances && $userAssets.balances.length > 0}
   <div class="flex flex-col space-y-4">
     <Title />
     <Percentage />
@@ -21,9 +25,7 @@
   <div class={clsx("mt-6 border-t mb-36", $darkTheme ? "border-slate-900" : "border-base-200")}>
     <Assets />
   </div>
-<!-- Zero balance -->
-{:else if $mixinConnected && $userAssets && $userAssets.balances && $userAssets.balances.length === 0}
-  <NoBalance />
+
 <!-- Loading -->
 {:else if $mixinConnected && !$userAssets}
   <WalletPageLoader />

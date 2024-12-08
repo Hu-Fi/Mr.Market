@@ -75,15 +75,15 @@ import {
   SafeMixinRecipient,
   SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
-import {
-  decodeArbitrageMemo,
-  decodeMarketMakingMemo,
-  decodeSpotMemo,
-} from 'src/common/helpers/mixin/memo';
 import { CustomLogger } from 'src/modules/logger/logger.service';
-import { SpotOrderCreateEvent } from 'src/modules/mixin/events/spot.event';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
+import {
+  memoPreDecode,
+  decodeArbitrageCreateMemo,
+  decodeMarketMakingCreateMemo,
+  decodeSimplyGrowCreateMemo,
+} from 'src/common/helpers/mixin/memo';
 
 @Injectable()
 export class SnapshotsService {
@@ -115,32 +115,9 @@ export class SnapshotsService {
     });
     this.events = this.eventEmitter;
 
-    this.enableCron = this.configService.get<string>('strategy.run') === 'true';
-    this.logger.log(`Cron enabled: ${this.enableCron}`);
-  }
-
-  async createSnapshot(snapshot: SafeSnapshot) {
-    try {
-      return await this.snapshotsRepository.createSnapshot(snapshot);
-    } catch (e) {
-      this.logger.error(`createSnapshot()=> ${e.message}`);
-    }
-  }
-
-  async fetchAndProcessSnapshots() {
-    try {
-      const snapshots = await this.client.safe.fetchSafeSnapshots({});
-      if (!snapshots) {
-        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
-        return;
-      }
-      snapshots.forEach(async (snapshot: SafeSnapshot) => {
-        await this.handleSnapshot(snapshot);
-      });
-      return snapshots;
-    } catch (error) {
-      this.logger.error(`Failed to fetch snapshots: ${error.message}`);
-    }
+    this.enableCron =
+      this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
+    this.logger.debug(this.enableCron);
   }
 
   async depositAddress(asset_id: string) {
@@ -507,6 +484,30 @@ export class SnapshotsService {
     }
   }
 
+  async createSnapshot(snapshot: SafeSnapshot) {
+    try {
+      return await this.snapshotsRepository.createSnapshot(snapshot);
+    } catch (e) {
+      this.logger.error(`createSnapshot()=> ${e}`);
+    }
+  }
+
+  async fetchAndProcessSnapshots() {
+    try {
+      const snapshots = await this.client.safe.fetchSafeSnapshots({});
+      if (!snapshots) {
+        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
+        return;
+      }
+      snapshots.forEach(async (snapshot: SafeSnapshot) => {
+        await this.handleSnapshot(snapshot);
+      });
+      return snapshots;
+    } catch (error) {
+      this.logger.error(`Failed to fetch snapshots: ${error}`);
+    }
+  }
+
   private async handleSnapshot(snapshot: SafeSnapshot) {
     const exist = await this.snapshotsRepository.checkSnapshotExist(
       snapshot.snapshot_id,
@@ -525,42 +526,83 @@ export class SnapshotsService {
       // await this.refund(snapshot);
       return;
     }
+    try {
+      const exist = await this.snapshotsRepository.checkSnapshotExist(
+        snapshot.snapshot_id,
+      );
 
-    const hexDecoedMemo = Buffer.from(snapshot.memo, 'hex').toString('utf-8');
-    const decodedMemo = Buffer.from(hexDecoedMemo, 'base64').toString('utf-8');
-    const tradingType = decodedMemo.slice(0, 2);
-    switch (tradingType) {
-      case 'SP':
-        const spotDetails = decodeSpotMemo(decodedMemo);
-        if (!spotDetails) {
+      // Snapshot already being processed
+      if (exist) {
+        return;
+      }
+
+      // Snapshot has no memo, store and refund
+      if (!snapshot.memo || snapshot.memo.length === 0) {
+        return;
+      }
+
+      this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
+      // Hex and Base58 decode memo, verify checksum, refund if invalid
+      const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
+        'utf-8',
+      );
+      const { payload, version, tradingTypeKey } =
+        memoPreDecode(hexDecodedMemo);
+      if (!payload) {
+        this.logger.log(
+          `Snapshot memo is invalid, store and refund: ${snapshot.snapshot_id}`,
+        );
+        return;
+      }
+
+      // Only memo version 1 is supported
+      if (version !== 1) {
+        this.logger.log(
+          `Snapshot memo version is not 1, store and refund: ${snapshot.snapshot_id}`,
+        );
+        return;
+      }
+
+      switch (tradingTypeKey) {
+        case 0:
+          // Spot trading
           break;
-        }
-        let spotOrderCreateEvent = new SpotOrderCreateEvent();
-        spotOrderCreateEvent = { ...spotDetails, snapshot };
-        this.events.emit('spot.create', spotOrderCreateEvent);
-        break;
-
-      case 'AR':
-        const arbDetails = decodeArbitrageMemo(decodedMemo);
-        if (!arbDetails) {
+        case 1:
+          // Swap
           break;
-        }
-        this.events.emit('arbitrage.create', arbDetails, snapshot);
-        break;
-
-      case 'MM':
-        const mmDetails = decodeMarketMakingMemo(decodedMemo);
-        if (!mmDetails) {
+        case 2:
+          // Simply grow
+          const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
+          if (!simplyGrowDetails) {
+            break;
+          }
+          this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
-        }
-        this.events.emit('market_making.create', mmDetails, snapshot);
-        break;
-
-      default:
-        // await this.refund(snapshot);
-        break;
+        case 3:
+          // Market making
+          const mmDetails = decodeMarketMakingCreateMemo(payload);
+          if (!mmDetails) {
+            break;
+          }
+          this.events.emit('market_making.create', mmDetails, snapshot);
+          break;
+        case 4:
+          // Arbitrage
+          const arbDetails = decodeArbitrageCreateMemo(payload);
+          if (!arbDetails) {
+            break;
+          }
+          this.events.emit('arbitrage.create', arbDetails, snapshot);
+          break;
+        default:
+          // Refund
+          break;
+      }
+    } catch (error) {
+      this.logger.error(`handleSnapshot()=> ${error}`);
+    } finally {
+      await this.createSnapshot(snapshot);
     }
-    await this.createSnapshot(snapshot);
   }
 
   @Cron('*/5 * * * * *') // Every 5 seconds

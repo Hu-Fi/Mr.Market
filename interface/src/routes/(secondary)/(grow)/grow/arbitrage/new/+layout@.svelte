@@ -3,7 +3,6 @@
   import GrowNewArbBar from "$lib/components/topBar/growNewArbBar.svelte";
   import GrowNewArbNav from "$lib/components/bottomNav/growNewArbNav.svelte";
   import SelectExchange from "$lib/components/dialogs/grow/arbitrage/selectExchange.svelte";
-  import SelectPair from "$lib/components/dialogs/grow/arbitrage/selectPair.svelte";
   import ConfirmPayment from "$lib/components/dialogs/grow/arbitrage/confirmPayment.svelte";
 </script>
 
@@ -18,7 +17,6 @@
 <GrowNewArbNav btnText={$_('create_arbitrage')} />
 <SelectExchange type=1 />
 <SelectExchange type=2 />
-<SelectPair />
 <ConfirmPayment />
 
 <style>

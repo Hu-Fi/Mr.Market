@@ -20,11 +20,13 @@ test('create market making', async ({ page }) => {
 
   expect(page.getByTestId(`amount-input-0`)).toBeVisible();
   expect(page.getByTestId(`amount-input-1`)).toBeVisible();
+  expect(page.getByTestId(`reward-address-input`)).toBeVisible();
 
   expect(page.getByTestId(`confirm-btn`)).toBeDisabled();
 
   await page.getByTestId(`amount-input-0`).fill('0.00000001');
   await page.getByTestId(`amount-input-1`).fill('0.00000001');
+  await page.getByTestId(`reward-address-input`).fill('0x3b5fb9d9da3546e9ce6e5aa3cceca14c8d20041e');
 
   expect(page.getByTestId(`confirm-btn`)).toBeEnabled();
   await page.getByTestId(`confirm-btn`).click();

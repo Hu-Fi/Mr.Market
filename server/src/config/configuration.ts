@@ -52,6 +52,7 @@ export default () => ({
   },
   strategy: {
     run: process.env.RUN_STARTEGY_FOR_MIXIN_ORDERS || 'false',
+    mixin_snapshots_run: process.env.RUN_MIXIN_SNAPSHOTS || 'false',
   },
   constants: {
     mixin_api_base_url:

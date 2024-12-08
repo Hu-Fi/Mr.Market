@@ -13,7 +13,13 @@
     </div>
     {#if $userAssets.totalUSDBalance}
       <span class="text-4xl font-medium balance-font">
-        {formatDecimals($userAssets.totalUSDBalance, 2)}
+        {
+          $userAssets.totalUSDBalance <= 1 ? formatDecimals($userAssets.totalUSDBalance, 4) : formatDecimals($userAssets.totalUSDBalance, 2)
+        }
+      </span>
+    {:else}
+      <span class="text-4xl font-medium balance-font">
+        0
       </span>
     {/if}
   </div>
@@ -23,6 +29,10 @@
     {#if $userAssets.totalBTCBalance}
       <span class="balance-font">
         {formatDecimals($userAssets.totalBTCBalance, 8)}
+      </span>
+    {:else}
+      <span class="balance-font">
+        0
       </span>
     {/if}
     <span class="text-xs opacity-50">

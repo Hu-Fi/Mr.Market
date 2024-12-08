@@ -39,3 +39,4 @@ export type SpotOrderStatus = keyof typeof STATE_CODE_MAP;
 // refunded: soft deleted and refunded
 export type ArbitrageStates = 'created' | 'paused' | 'deleted' | 'refunded';
 export type MarketMakingStates = 'created' | 'paused' | 'deleted' | 'refunded';
+export type SimplyGrowStates = 'created' | 'paused' | 'deleted' | 'refunded';

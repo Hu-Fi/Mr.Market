@@ -6,19 +6,19 @@
     {
       message_id: "e12cd458-7691-4aa1-b601-f51aacdc755b",
       user_id: "fa36bfbf-f72d-4901-9a7b-0f0a43985312",
-      data: "CAONIMA",
+      data: "Hello, world!",
       created_at: "2024-03-18T19:30:02Z",
     },
     {
       message_id: "e12cd458-7691-4aa1-b601-f51aacdc755b",
       user_id: "fa36bfbf-f72d-4901-9a7b-0f0a43985312",
-      data: "CAONIMA",
+      data: "Hello, world!",
       created_at: "2024-03-18T19:30:02Z",
     },
     {
       message_id: "e12cd458-7691-4aa1-b601-f51aacdc755b",
       user_id: "fa36bfbf-f72d-4901-9a7b-0f0a43985312",
-      data: "CAONIMA",
+      data: "Hello, world!",
       created_at: "2024-03-18T19:30:02Z",
     },
   ]

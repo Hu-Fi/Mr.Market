@@ -37,28 +37,32 @@
   import { BN, BN2, findChainIcon, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";    
 
   let locale_currency = 1;
-  export let asset = {
-    "balance": 320.85893223,
-    "asset_id": "0ff3f325-4f34-334d-b6c0-a3bd8850fc06",
-    "usdBalance": 0,
-    "details": {
-      "type": "safe_asset",
-      "asset_id": "0ff3f325-4f34-334d-b6c0-a3bd8850fc06",
-      "chain_id": "43d61dcd-e413-450d-80b8-101d5e903357",
-      "symbol": "JPYC",
-      "name": "JPY Coin",
-      "icon_url": "https://mixin-images.zeromesh.net/CxP44pLrWUlNyP0xFx4nrOe-GIe9oPHFLKEjsgj7hja9bvWW4n-VkBvhArFlRm73ZrmalAGgVzHEk56VluNyjM-pTX0a4_cMveWORA=s128",
-      "price_btc": "0",
-      "price_usd": "0",
-      "change_btc": "0",
-      "change_usd": "0",
-      "asset_key": "0x2370f9d504c7a6e775bf6e14b3f12846b594cd53",
-      "precision": 18,
-      "dust": "0.0001",
-      "confirmations": 32,
-      "kernel_asset_id": "7094b7c7867ee6c4d563a4eb7356428005390efb00be64c11180664dd0c2451e",
-      "price_updated_at": "0001-01-01T00:00:00Z",
-      "fee_asset_id": "43d61dcd-e413-450d-80b8-101d5e903357"
-    }
-  }
+  type AssetDetails = {
+    type: string;
+    asset_id: string;
+    chain_id: string;
+    symbol: string;
+    name: string;
+    icon_url: string;
+    price_btc: string;
+    price_usd: string;
+    change_btc: string;
+    change_usd: string;
+    asset_key: string;
+    precision: number;
+    dust: string;
+    confirmations: number;
+    kernel_asset_id: string;
+    price_updated_at: string;
+    fee_asset_id: string;
+  };
+
+  type Asset = {
+    balance: string;
+    asset_id: string;
+    usdBalance: number;
+    details: AssetDetails;
+  };
+
+  export let asset: Asset;
 </script>

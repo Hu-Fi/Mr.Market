@@ -1,5 +1,13 @@
-<script>
-    import Confirm from "$lib/components/grow/arbitrage/new/confirm.svelte";
+<script lang="ts">
+  import Amount from "$lib/components/grow/arbitrage/new/amount.svelte";
+  import CreateIntro from "$lib/components/grow/simplyGrow/new/createIntro.svelte";
+  import ExchangeView from "$lib/components/grow/arbitrage/new/exchangeView.svelte";
+  import Web3Address from "$lib/components/common/web3Address.svelte";
 </script>
-
-<Confirm />
+  
+<div class="flex flex-col space-y-8">
+  <ExchangeView />
+  <Amount />
+  <Web3Address />
+  <CreateIntro />
+</div>

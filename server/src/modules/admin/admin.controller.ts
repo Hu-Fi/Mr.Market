@@ -6,17 +6,18 @@ import {
   UseGuards,
   BadRequestException,
   Query,
+  Delete,
+  Param,
 } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   GetDepositAddressDto,
   GetSupportedNetworksDto,
   GetTokenSymbolDto,
-  // JoinStrategyDto,
   StartStrategyDto,
   StopStrategyDto,
-} from './admin-strategy.dto';
+} from './strategy/admin-strategy.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -25,14 +26,28 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  GrowdataArbitragePairDto,
+  GrowdataExchangeDto,
+  GrowdataMarketMakingPairDto,
+  GrowdataSimplyGrowTokenDto,
+} from './growdata/adminGrow.dto';
+import { AdminGrowService } from './growdata/adminGrow.service';
+import { AdminSpotService } from './spotData/adminSpot.service';
+import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth() // Secures endpoints with JWT
+@ApiBearerAuth()
 @ApiTags('Admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminStrategyService: AdminStrategyService,
+    private readonly adminGrowService: AdminGrowService,
+    private readonly adminSpotService: AdminSpotService,
+  ) {}
 
+  // Admin strategy endpoints
   @Post('strategy/start')
   @ApiOperation({
     summary: 'Start a trading strategy',
@@ -52,7 +67,7 @@ export class AdminController {
     description: 'Invalid strategy parameters',
   })
   async startStrategy(@Body() startStrategyDto: StartStrategyDto) {
-    return this.adminService.startStrategy(startStrategyDto);
+    return this.adminStrategyService.startStrategy(startStrategyDto);
   }
 
   @Post('strategy/stop')
@@ -74,7 +89,7 @@ export class AdminController {
     description: 'Invalid strategy parameters',
   })
   async stopStrategy(@Body() stopStrategyDto: StopStrategyDto) {
-    return this.adminService.stopStrategy(stopStrategyDto);
+    return this.adminStrategyService.stopStrategy(stopStrategyDto);
   }
 
   @Post('exchange/deposit-address')
@@ -98,7 +113,7 @@ export class AdminController {
     description: 'Invalid request or unsupported token/network.',
   })
   async getDepositAddress(@Body() getDepositAddressDto: GetDepositAddressDto) {
-    return this.adminService.getDepositAddress(getDepositAddressDto);
+    return this.adminStrategyService.getDepositAddress(getDepositAddressDto);
   }
 
   @Post('exchange/supported-deposit-networks')
@@ -127,7 +142,7 @@ export class AdminController {
     const { exchangeName, tokenSymbol, accountLabel } = getSupportedNetworksDto;
 
     try {
-      return await this.adminService.getSupportedNetworks(
+      return await this.adminStrategyService.getSupportedNetworks(
         exchangeName,
         tokenSymbol,
         accountLabel,
@@ -160,7 +175,7 @@ export class AdminController {
   })
   async getChainInfo(@Query('chainId') chainId: number) {
     try {
-      return await this.adminService.getChainInfo(chainId);
+      return await this.adminStrategyService.getChainInfo(chainId);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -192,7 +207,7 @@ export class AdminController {
   async getTokenSymbol(@Body() body: GetTokenSymbolDto) {
     const { contractAddress, chainId } = body;
     try {
-      return await this.adminService.getTokenSymbolByContract(
+      return await this.adminStrategyService.getTokenSymbolByContract(
         contractAddress,
         chainId,
       );
@@ -223,27 +238,174 @@ export class AdminController {
   async verifyContribution(
     @Query('contributionId') contributionId: string,
   ): Promise<boolean> {
-    return await this.adminService.verifyContribution(contributionId);
-  }
-
-  @Get('/admin')
-  getAdminData() {
-    return 'This is admin data';
-  }
-
-  @Get('/config')
-  getConfigData() {
-    return 'This is config data';
+    return await this.adminStrategyService.verifyContribution(contributionId);
   }
 
   //TODO: Implement returning strategies to be dispalyed.
   @Get('strategies')
   async getRunningStrategies() {
-    return this.adminService.getRunningStrategies();
+    return this.adminStrategyService.getRunningStrategies();
   }
 
   // @Get('strategy/performance/:strategyKey')
   // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {
   //   return this.adminService.getStrategyPerformance(strategyKey);
   // }
+
+  // Admin growdata endpoints
+  // Exchange endpoints
+  @Post('grow/exchange/add')
+  @ApiOperation({ summary: 'Add a new exchange' })
+  @ApiBody({ type: GrowdataExchangeDto })
+  async addExchange(@Body() exchangeDto: GrowdataExchangeDto) {
+    return this.adminGrowService.addExchange(exchangeDto);
+  }
+
+  @Get('grow/exchange/supported')
+  @ApiOperation({ summary: 'Get supported exchanges by backend' })
+  async getSupportedExchanges() {
+    return this.adminStrategyService.getSupportedExchanges();
+  }
+
+  @Delete('grow/exchange/remove/:exchange_id')
+  @ApiOperation({ summary: 'Remove an exchange' })
+  async removeExchange(@Param('exchange_id') exchange_id: string) {
+    return this.adminGrowService.removeExchange(exchange_id);
+  }
+
+  @Delete('grow/exchange/remove-all')
+  @ApiOperation({ summary: 'Remove all exchanges' })
+  async removeAllExchanges() {
+    return this.adminGrowService.removeAllExchanges();
+  }
+
+  @Post('grow/exchange/update/:exchange_id')
+  @ApiOperation({ summary: 'Update an exchange' })
+  @ApiBody({ type: GrowdataExchangeDto })
+  async updateExchange(
+    @Param('exchange_id') exchange_id: string,
+    @Body() modifications: Partial<GrowdataExchangeDto>,
+  ) {
+    return this.adminGrowService.updateExchange(exchange_id, modifications);
+  }
+
+  // SimplyGrow token endpoints
+  @Post('grow/simply-grow/add')
+  @ApiOperation({ summary: 'Add a new SimplyGrow token' })
+  @ApiBody({ type: GrowdataSimplyGrowTokenDto })
+  async addSimplyGrowToken(@Body() tokenDto: GrowdataSimplyGrowTokenDto) {
+    return this.adminGrowService.addSimplyGrowToken(tokenDto);
+  }
+
+  @Delete('grow/simply-grow/remove/:asset_id')
+  @ApiOperation({ summary: 'Remove a SimplyGrow token' })
+  async removeSimplyGrowToken(@Param('asset_id') asset_id: string) {
+    return this.adminGrowService.removeSimplyGrowToken(asset_id);
+  }
+
+  @Delete('grow/simply-grow/remove-all')
+  @ApiOperation({ summary: 'Remove all SimplyGrow tokens' })
+  async removeAllSimplyGrowTokens() {
+    return this.adminGrowService.removeAllSimplyGrowTokens();
+  }
+
+  @Post('grow/simply-grow/update/:asset_id')
+  @ApiOperation({ summary: 'Update a SimplyGrow token' })
+  @ApiBody({ type: GrowdataSimplyGrowTokenDto })
+  async updateSimplyGrowToken(
+    @Param('asset_id') asset_id: string,
+    @Body() modifications: Partial<GrowdataSimplyGrowTokenDto>,
+  ) {
+    return this.adminGrowService.updateSimplyGrowToken(asset_id, modifications);
+  }
+
+  // Market making pair endpoints
+  @Post('grow/market-making/add')
+  @ApiOperation({ summary: 'Add a new market making pair' })
+  @ApiBody({ type: GrowdataMarketMakingPairDto })
+  async addMarketMakingPair(@Body() pairDto: GrowdataMarketMakingPairDto) {
+    return this.adminGrowService.addMarketMakingPair(pairDto);
+  }
+
+  @Delete('grow/market-making/remove/:id')
+  @ApiOperation({ summary: 'Remove a market making pair' })
+  async removeMarketMakingPair(@Param('id') id: string) {
+    return this.adminGrowService.removeMarketMakingPair(id);
+  }
+
+  @Delete('grow/market-making/remove-all')
+  @ApiOperation({ summary: 'Remove all market making pairs' })
+  async removeAllMarketMakingPairs() {
+    return this.adminGrowService.removeAllMarketMakingPairs();
+  }
+
+  @Post('grow/market-making/update/:id')
+  @ApiOperation({ summary: 'Update a market making pair' })
+  @ApiBody({ type: GrowdataMarketMakingPairDto })
+  async updateMarketMakingPair(
+    @Param('id') id: string,
+    @Body() modifications: Partial<GrowdataMarketMakingPairDto>,
+  ) {
+    return this.adminGrowService.updateMarketMakingPair(id, modifications);
+  }
+
+  // Arbitrage pair endpoints
+  @Post('grow/arbitrage/add')
+  @ApiOperation({ summary: 'Add a new arbitrage pair' })
+  @ApiBody({ type: GrowdataArbitragePairDto })
+  async addArbitragePair(@Body() pairDto: GrowdataArbitragePairDto) {
+    return this.adminGrowService.addArbitragePair(pairDto);
+  }
+
+  @Delete('grow/arbitrage/remove/:id')
+  @ApiOperation({ summary: 'Remove an arbitrage pair' })
+  async removeArbitragePair(@Param('id') id: string) {
+    return this.adminGrowService.removeArbitragePair(id);
+  }
+
+  @Delete('grow/arbitrage/remove-all')
+  @ApiOperation({ summary: 'Remove all arbitrage pairs' })
+  async removeAllArbitragePairs() {
+    return this.adminGrowService.removeAllArbitragePairs();
+  }
+
+  @Post('grow/arbitrage/update/:id')
+  @ApiOperation({ summary: 'Update an arbitrage pair' })
+  @ApiBody({ type: GrowdataArbitragePairDto })
+  async updateArbitragePair(
+    @Param('id') id: string,
+    @Body() modifications: Partial<GrowdataArbitragePairDto>,
+  ) {
+    return this.adminGrowService.updateArbitragePair(id, modifications);
+  }
+
+  // Spot trading pair endpoints
+  @Post('spot/trading-pair/add')
+  @ApiOperation({ summary: 'Add a new spot trading pair' })
+  @ApiBody({ type: SpotdataTradingPairDto })
+  async addTradingPair(@Body() pairDto: SpotdataTradingPairDto) {
+    return this.adminSpotService.addTradingPair(pairDto);
+  }
+
+  @Delete('spot/trading-pair/remove/:id')
+  @ApiOperation({ summary: 'Remove a spot trading pair' })
+  async removeTradingPair(@Param('id') id: string) {
+    return this.adminSpotService.removeTradingPair(id);
+  }
+
+  @Delete('spot/trading-pair/remove-all')
+  @ApiOperation({ summary: 'Remove all spot trading pairs' })
+  async removeAllTradingPairs() {
+    return this.adminSpotService.removeAllTradingPairs();
+  }
+
+  @Post('spot/trading-pair/update/:id')
+  @ApiOperation({ summary: 'Update a spot trading pair' })
+  @ApiBody({ type: SpotdataTradingPairDto })
+  async updateTradingPair(
+    @Param('id') id: string,
+    @Body() modifications: Partial<SpotdataTradingPairDto>,
+  ) {
+    return this.adminSpotService.updateTradingPair(id, modifications);
+  }
 }

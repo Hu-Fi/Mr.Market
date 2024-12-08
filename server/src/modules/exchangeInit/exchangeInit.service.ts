@@ -393,12 +393,12 @@ export class ExchangeInitService {
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
     if (!exchangeMap) {
-      this.logger.error(`Exchange ${exchangeName} is not configured.`);
+      this.logger.warn(`Exchange ${exchangeName} is not configured.`);
       throw new InternalServerErrorException('Exchange configuration error.');
     }
     const exchange = exchangeMap.get(label);
     if (!exchange) {
-      this.logger.error(
+      this.logger.warn(
         `Exchange ${exchangeName} with label ${label} is not configured.`,
       );
       throw new InternalServerErrorException('Exchange configuration error.');
