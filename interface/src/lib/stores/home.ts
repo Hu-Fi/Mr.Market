@@ -1,5 +1,5 @@
 import { writable, readable } from "svelte/store";
-import { isIOS, isMixin } from "$lib/helpers/mixin";
+import { isIOS } from "$lib/helpers/mixin";
 
 export const mixinConnectLoading = writable(false)
 export const mixinConnected = writable(false)
@@ -13,5 +13,5 @@ export const selectedField = writable(keys[0]);
 
 // In iOS, the bottom navigation bar is higher
 export const isMixinIOS = readable(false, set => {
-  set(isIOS() && isMixin());
+  set(isIOS());
 });

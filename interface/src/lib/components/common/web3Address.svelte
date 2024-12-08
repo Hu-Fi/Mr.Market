@@ -54,7 +54,7 @@
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
                 bind:value={$createSimplyGrowRewardAddress}
-                on:keyup={()=>{
+                on:change={()=>{
                     validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-ghost focus:outline-none focus:border-x-0 focus:border-base-300 z-10 absolute join-item pr-0" 
@@ -95,7 +95,7 @@
                 type="text" 
                 placeholder={$_('enter_reward_address')} 
                 bind:value={$createSimplyGrowRewardAddress}
-                on:keyup={()=>{
+                on:change={()=>{
                     validAddress = isValidEvmAddress($createSimplyGrowRewardAddress)
                 }}
                 class="input input-bordered border-base-300 focus:outline-none w-full z-10" 
