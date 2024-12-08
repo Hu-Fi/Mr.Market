@@ -71,12 +71,12 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
 
 export const defaultExchanges: GrowdataExchange[] = [
   { exchange_id: 'okx', name: 'OKX', enable: true },
-  { exchange_id: 'mexc', name: 'MEXC', enable: false },
-  { exchange_id: 'bigone', name: 'BigONE', enable: false },
-  { exchange_id: 'kraken', name: 'Kraken', enable: false },
-  { exchange_id: 'binance', name: 'Binance', enable: false },
-  { exchange_id: 'bitget', name: 'Bitget', enable: false },
-  { exchange_id: 'bybit', name: 'Bybit', enable: false },
+  { exchange_id: 'mexc', name: 'MEXC', enable: true },
+  { exchange_id: 'bigone', name: 'BigONE', enable: true },
+  { exchange_id: 'kraken', name: 'Kraken', enable: true },
+  { exchange_id: 'binance', name: 'Binance', enable: true },
+  { exchange_id: 'bitget', name: 'Bitget', enable: true },
+  { exchange_id: 'bybit', name: 'Bybit', enable: true },
 ];
 
 export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
