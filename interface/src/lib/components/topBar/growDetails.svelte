@@ -9,13 +9,13 @@
   onDestroy(() => { easyAdvancedMode.set(0) });
 
   const pathMappings = {
-    'just_grow/intro': '/grow/just_grow',
+    'simply_grow/intro': '/grow/simply_grow',
     'market_making/new/two': '/grow/market_making/new/one',
     'market_making/new/one': '/grow/market_making',
     'market_making/intro': '/grow/market_making',
     'arbitrage/new/easy': '/grow/arbitrage',
     'arbitrage/intro': '/grow/arbitrage',
-    'grow/just_grow': '/grow',
+    'grow/simply_grow': '/grow',
     'grow/market_making': '/grow',
     'grow/arbitrage': '/grow'
   };
@@ -36,7 +36,7 @@
     'market_making': $_('market_making'),
     'auto_invest/intro': $_('about_auto_invest'),
     'auto_invest': $_('auto_invest'),
-    'just_grow': $_('just_grow'),
+    'simply_grow': $_('simply_grow'),
   };
 
   $: pageName = Object.keys(pageNameMappings).reduce((acc, key) => {

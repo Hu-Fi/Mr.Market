@@ -4,7 +4,7 @@
   import { addMoreDialog } from "$lib/stores/grow";
 
   let items = [
-    { name: $_("just_grow"), intro: $_('just_grow_intro'),  icon:'just_grow', fn: () => goto('/grow/just_grow') },
+    { name: $_("simply_grow"), intro: $_('simply_grow_intro'),  icon:'simply_grow', fn: () => goto('/grow/simply_grow') },
     { name: $_("arbitrage"), intro: $_('arbitrage_intro'),  icon:'arbitrage', fn: () => goto('/grow/arbitrage') },
     { name: $_("market_making"), intro: $_('market_making_intro'),icon: 'market_making', fn: () => goto('/grow/market_making') },
     // { name: $_("auto_invest"), intro: $_('auto_invest_intro'),  icon: 'auto_invest', fn: () => goto('/grow/auto_invest') },
@@ -40,7 +40,7 @@
             <!-- Market making -->
             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" fill="currentColor"><rect fill="none" height="24" width="24"></rect><path d="M2,19.99l7.5-7.51l4,4l7.09-7.97L22,9.92l-8.5,9.56l-4-4l-6,6.01L2,19.99z M3.5,15.49l6-6.01l4,4L22,3.92l-1.41-1.41 l-7.09,7.97l-4-4L2,13.99L3.5,15.49z"></path></svg>
     
-          {:else if item.icon === 'just_grow'}
+          {:else if item.icon === 'simply_grow'}
             <!-- Just grow -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />

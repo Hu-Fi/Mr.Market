@@ -1,5 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
-
-  goto('/spot/okx/BTC-USDT')
+  import { page } from "$app/stores";
+  $page.data.growInfo.then((res) => {
+    goto(`/spot/${res.exchanges[0]}/${res.exchanges[0]}-USDT`)
+  })
 </script>

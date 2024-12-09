@@ -24,8 +24,9 @@
     "migration:create": "typeorm-ts-node-commonjs migration:create",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -p -d typeorm.config.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d typeorm.config.ts",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
-    "migration:show": "typeorm-ts-node-commonjs migration:show -d typeorm.config.ts"
+    "migration:run": "nest build && typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
+    "migration:show": "typeorm-ts-node-commonjs migration:show -d typeorm.config.ts",
+    "migration:seed": "ts-node src/database/seeder/seed.ts"
   },
   "dependencies": {
     "@mixin.dev/mixin-node-sdk": "^7.0.8",

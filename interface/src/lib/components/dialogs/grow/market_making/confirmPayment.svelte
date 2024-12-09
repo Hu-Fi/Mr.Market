@@ -1,26 +1,74 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n"
-  import { v4 as uuidv4 } from "uuid";
   import { goto } from "$app/navigation";
-  import { MarketMakingPay } from "$lib/helpers/mixin";
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import { MarketMakingCreatePay } from "$lib/helpers/mixin";
   import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import { getPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts } from "$lib/stores/grow"
+  import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
+  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts, createSimplyGrowRewardAddress } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
-  $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
+  $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
   $: baseAssetAmount = $createMMEasyAmounts[0]
-  $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+  $: targetAssetSymbol = $createMMEasyPair ? $createMMEasyPair.target_symbol : ''
   $: targetAssetAmount = $createMMEasyAmounts[1]
 
   let btn1Loading = false;
   let btn2Loading = false;
   let btn1Paid = false;
   let btn2Paid = false;
-  let orderId = uuidv4();
-  let traceId: string | undefined;
+  let checkOrderCreationStarted = false;
+  let orderId = getUuid();
+  let mixinTraceId1 = '';
+  let mixinTraceId2 = '';
+
+  const checkPaymentState = async (traceId: string, base: boolean) => {
+    let totalTime = 0;
+    var interval = setInterval(async () => {
+      const state = await getMixinTx(traceId);
+      if (state.error) {
+        return;
+      }
+      if (state.data.state === 'spent') {
+        if (base) {
+          btn1Loading = false;
+          btn1Paid = true;
+        } else {
+          btn2Loading = false;
+          btn2Paid = true;
+        }
+        clearInterval(interval);
+      }
+      if (btn1Paid && btn2Paid && !checkOrderCreationStarted) {
+        checkOrderCreation(orderId);
+        checkOrderCreationStarted = true;
+      }
+      totalTime += ORDER_STATE_FETCH_INTERVAL;
+      if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+        clearInterval(interval);
+      }
+    }, ORDER_STATE_FETCH_INTERVAL);
+  }
+
+  const checkOrderCreation = async (orderId: string) => {
+    let totalTime = 0;
+    if (btn1Paid && btn2Paid) {
+      var OrderCreationInterval = setInterval(async () => {
+        const state = await getOrderPaymentState(orderId);
+        if (state.data.firstSnapshotId && state.data.secondSnapshotId) {
+          clearInterval(OrderCreationInterval);
+          goto(`/grow/market_making/${orderId}`);
+        }
+        totalTime += ORDER_STATE_FETCH_INTERVAL;
+        if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+          clearInterval(OrderCreationInterval);
+        }
+      }, ORDER_STATE_FETCH_INTERVAL);
+      return;
+    }
+  }
 
   const payment = (type: string) => {
     const ids = decodeSymbolToAssetID($createMMEasyPair.symbol);
@@ -31,50 +79,41 @@
 
     if (type === '1') {
       btn1Loading = true;
-      traceId = MarketMakingPay({
-        action: 'CR', 
-        exchange: $createMMEasyPair.exchange,
+      mixinTraceId1 = MarketMakingCreatePay({
+        action: 'create', 
+        exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,
         amount: baseAssetAmount,
         assetId: ids.firstAssetID,
+        firstAssetId: ids.firstAssetID,
+        secondAssetId: ids.secondAssetID,
+        marketMakingPairId: $createMMEasyPair.id,
         orderId,
+        rewardAddress: $createSimplyGrowRewardAddress,
       })
     }
     if (type === '2') {
       btn2Loading = true;
-      traceId = MarketMakingPay({
-        action: 'CR', 
-        exchange: $createMMEasyPair.exchange,
+      mixinTraceId2 = MarketMakingCreatePay({
+        action: 'create',
+        exchange: $createMMEasyPair.exchange_id,
         symbol: $createMMEasyPair.symbol,
         amount: targetAssetAmount,
         assetId: ids.secondAssetID,
+        firstAssetId: ids.firstAssetID,
+        secondAssetId: ids.secondAssetID,
+        marketMakingPairId: $createMMEasyPair.id,
         orderId,
+        rewardAddress: $createSimplyGrowRewardAddress,
       })
     }
-    console.log(`traceId${type}:${traceId}`)
-    if (btn1Loading && btn2Loading) {
-      let totalTime = 0;
-      var interval = setInterval(async () => {
-        const state = await getPaymentState(orderId);
-        // console.log(`state: ${JSON.stringify(state)}`)
-        totalTime += ORDER_STATE_FETCH_INTERVAL;
-        if (!state) {
-          return;
-        }
-        if (state.data.firstSnapshotId) {
-          btn1Loading = false;
-          btn1Paid = true;
-        }
-
-        if (state.data.secondSnapshotId) {
-          clearInterval(interval);
-          goto(`/grow/market_making/${orderId}`);
-        } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
-          clearInterval(interval);
-          console.log('Timeout reached, stopping execution.');
-        }
-      }, ORDER_STATE_FETCH_INTERVAL);
-    }  }
+    if (btn1Loading) {
+      checkPaymentState(mixinTraceId1, true);
+    }
+    if (btn2Loading) {
+      checkPaymentState(mixinTraceId2, false);
+    }
+  }
 </script>
 
 <dialog
@@ -161,7 +200,7 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
+  <!-- <form method="dialog" class="modal-backdrop">
     <button on:click={() => createMMConfirmDialog.set(false)}></button>
-  </form>
+  </form> -->
 </dialog>

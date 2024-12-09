@@ -1,81 +1,107 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n"
-  import { v4 as uuidv4 } from "uuid";
+  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { ArbitragePay } from "$lib/helpers/mixin";
-  import { decodeSymbolToAssetID } from "$lib/helpers/utils";
+  import { ArbitrageCreatePay } from "$lib/helpers/mixin";
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import { getPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow"
+  import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
+  import { createArbAmount, createArbConfirmDialog, createArbPair, createSimplyGrowRewardAddress } from "$lib/stores/grow"
   import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 
-  $: baseAssetSymbol = $createArbPair.split("/")[0] || ''
+  $: baseAssetSymbol = $createArbPair ? $createArbPair.base_symbol : ''
   $: baseAssetAmount = $createArbAmount[0]
-  $: targetAssetSymbol = $createArbPair.split("/")[1] || ''
+  $: targetAssetSymbol = $createArbPair ? $createArbPair.target_symbol : ''
   $: targetAssetAmount = $createArbAmount[1]
 
   let btn1Loading = false;
   let btn2Loading = false;
   let btn1Paid = false;
   let btn2Paid = false;
-  let orderId = uuidv4();
-  let traceId: string | undefined;
+  let checkOrderCreationStarted = false;
+  let orderId = getUuid();
+  let mixinTraceId1 = '';
+  let mixinTraceId2 = '';
 
-  const payment = (type: string) => {
-    const ids = decodeSymbolToAssetID($createArbPair);
-    if (!ids?.firstAssetID || !ids.secondAssetID) {
-      console.error('Unable to get asset id from symbol')
+  const checkPaymentState = async (traceId: string, base: boolean) => {
+    let totalTime = 0;
+    var interval = setInterval(async () => {
+      const state = await getMixinTx(traceId);
+      if (state.error) {
+        return;
+      }
+      if (state.data.state === 'spent') {
+        if (base) {
+          btn1Loading = false;
+          btn1Paid = true;
+        } else {
+          btn2Loading = false;
+          btn2Paid = true;
+        }
+        clearInterval(interval);
+      }
+      if (btn1Paid && btn2Paid && !checkOrderCreationStarted) {
+        checkOrderCreation(orderId);
+        checkOrderCreationStarted = true;
+      }
+      totalTime += ORDER_STATE_FETCH_INTERVAL;
+      if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+        clearInterval(interval);
+      }
+    }, ORDER_STATE_FETCH_INTERVAL);
+  }
+
+  const checkOrderCreation = async (orderId: string) => {
+    // When both payments are successful, check if the order is created, then redirect to the order page
+    let totalTime = 0;
+    if (btn1Paid && btn2Paid) {
+      var OrderCreationInterval = setInterval(async () => {
+        const state = await getOrderPaymentState(orderId);
+        if (state.data.firstSnapshotId && state.data.secondSnapshotId) {
+          clearInterval(OrderCreationInterval);
+          goto(`/grow/arbitrage/${orderId}`);
+        }
+        totalTime += ORDER_STATE_FETCH_INTERVAL;
+        if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
+          clearInterval(OrderCreationInterval);
+        }
+      }, ORDER_STATE_FETCH_INTERVAL);
       return;
     }
+  }
 
+  const payment = (type: string) => {
     if (type === '1') {
       btn1Loading = true;
-      traceId = ArbitragePay({
-        action: 'CR', 
-        exchangeA: $createArbExchange1, 
-        exchangeB: $createArbExchange2, 
-        symbol: $createArbPair,
+      mixinTraceId1 = ArbitrageCreatePay({
+        action: 'create', 
+        rewardAddress: $createSimplyGrowRewardAddress,
         amount: baseAssetAmount,
-        assetId: ids.firstAssetID,
+        assetId: $createArbPair.base_asset_id,
+        firstAssetId: $createArbPair.base_asset_id,
+        secondAssetId: $createArbPair.target_asset_id,
+        arbitragePairId: $createArbPair.id,
         orderId,
       })
     }
     if (type === '2') {
       btn2Loading = true;
-      traceId = ArbitragePay({
-        action: 'CR', 
-        exchangeA: $createArbExchange1, 
-        exchangeB: $createArbExchange2, 
-        symbol: $createArbPair,
+      mixinTraceId2 = ArbitrageCreatePay({
+        action: 'create', 
+        rewardAddress: $createSimplyGrowRewardAddress,
         amount: targetAssetAmount,
-        assetId: ids.secondAssetID,
+        assetId: $createArbPair.target_asset_id,
+        firstAssetId: $createArbPair.base_asset_id,
+        secondAssetId: $createArbPair.target_asset_id,
+        arbitragePairId: $createArbPair.id,
         orderId,
       })
     }
-    console.log(`traceId${type}:${traceId}`)
-    if (btn1Loading && btn2Loading) {
-      let totalTime = 0;
-      var interval = setInterval(async () => {
-        const state = await getPaymentState(orderId);
-        // console.log(`state: ${JSON.stringify(state)}`)
-        totalTime += ORDER_STATE_FETCH_INTERVAL;
-        if (!state) {
-          return;
-        }
-        if (state.data.firstSnapshotId) {
-          btn1Loading = false;
-          btn1Paid = true;
-        }
-
-        if (state.data.secondSnapshotId) {
-          clearInterval(interval);
-          goto(`/grow/arbitrage/${orderId}`);
-        } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
-          clearInterval(interval);
-          console.log('Timeout reached, stopping execution.');
-        }
-      }, ORDER_STATE_FETCH_INTERVAL);
+    if (btn1Loading) {
+      checkPaymentState(mixinTraceId1, true);
+    }
+    if (btn2Loading) {
+      checkPaymentState(mixinTraceId2, false);
     }
   }
 </script>
@@ -165,7 +191,7 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
+  <!-- <form method="dialog" class="modal-backdrop">
     <button on:click={() => createArbConfirmDialog.set(false)}></button>
-  </form>
+  </form> -->
 </dialog>

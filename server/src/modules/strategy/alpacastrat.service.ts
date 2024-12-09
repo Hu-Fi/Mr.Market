@@ -4,7 +4,7 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 import { ArbitrageStrategyDto } from 'src/modules/strategy/strategy.dto';
 import { Repository } from 'typeorm';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createStrategyKey } from 'src/common/helpers/strategyKey';

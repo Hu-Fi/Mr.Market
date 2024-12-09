@@ -8,8 +8,8 @@
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import { createMMEasyAmounts, createMMEasyPair } from "$lib/stores/grow";
 
-  $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
-  $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+  $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
+  $: targetAssetSymbol = $createMMEasyPair ? $createMMEasyPair.target_symbol : ''
 
   onDestroy(() => {
     createMMEasyAmounts.set([]);

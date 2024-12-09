@@ -10,7 +10,7 @@ export const getCurrencyRate = async (currencies: string[] = BALANCE_CURRENCIES)
             throw new Error(`Error fetching currency rates: ${response.statusText}`);
         }
         const data = await response.json();
-        const list = data?.usd;
+        const list = data?.usdt;
 
         currencies = currencies.map(currency => currency.toUpperCase())
         // Filter the list by the specified currencies

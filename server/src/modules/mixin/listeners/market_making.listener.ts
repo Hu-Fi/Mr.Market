@@ -29,13 +29,11 @@
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { PaymentState } from 'src/common/entities/strategy.entity';
+import { PaymentState } from 'src/common/entities/strategy-user.entity';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import {
-  getAssetIDBySymbol,
-  getRFC3339Timestamp,
-} from 'src/common/helpers/utils';
-import { MarketMakingMemoDetails } from 'src/common/types/memo/memo';
+import { getRFC3339Timestamp } from 'src/common/helpers/utils';
+import { MarketMakingCreateMemoDetails } from 'src/common/types/memo/memo';
+import { GrowdataService } from 'src/modules/growdata/growdata.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
@@ -47,11 +45,12 @@ export class MarketMakingListener {
   constructor(
     private readonly snapshotService: SnapshotsService,
     private readonly strategyUserService: StrategyUserService,
+    private readonly growdataService: GrowdataService,
   ) {}
 
   @OnEvent('market_making.create')
   async handleMarketMakingCreate(
-    details: MarketMakingMemoDetails,
+    details: MarketMakingCreateMemoDetails,
     snapshot: SafeSnapshot,
   ) {
     if (!details || !snapshot) {
@@ -59,15 +58,20 @@ export class MarketMakingListener {
       return;
     }
     const paymentState = await this.strategyUserService.findPaymentStateByIdRaw(
-      details.traceId,
+      details.orderId,
     );
+    const pair = await this.growdataService.getMarketMakingPairById(
+      details.marketMakingPairId,
+    );
+    if (!pair) {
+      this.logger.error('Market making pair not found');
+      return;
+    }
 
-    const { baseAssetID, targetAssetID } = getAssetIDBySymbol(details.symbol);
     if (
-      snapshot.asset_id != baseAssetID &&
-      snapshot.asset_id != targetAssetID
+      snapshot.asset_id != pair.base_asset_id &&
+      snapshot.asset_id != pair.target_asset_id
     ) {
-      // Transfer asset doesn't match any of symbol, refund
       return await this.snapshotService.refund(snapshot);
     }
 
@@ -75,9 +79,9 @@ export class MarketMakingListener {
     if (!paymentState) {
       const now = getRFC3339Timestamp();
       return await this.strategyUserService.createPaymentState({
-        orderId: details.traceId,
+        orderId: details.orderId,
         type: 'market_making',
-        symbol: details.symbol,
+        symbol: pair.symbol,
         firstAssetId: snapshot.asset_id,
         firstAssetAmount: snapshot.amount,
         firstSnapshotId: snapshot.snapshot_id,
@@ -88,7 +92,7 @@ export class MarketMakingListener {
 
     // Check if second asset
     if (paymentState && !paymentState.secondAssetId) {
-      await this.strategyUserService.updatePaymentStateById(details.traceId, {
+      await this.strategyUserService.updatePaymentStateById(details.orderId, {
         secondAssetId: snapshot.asset_id,
         secondAssetAmount: snapshot.amount,
         secondSnapshotId: snapshot.snapshot_id,
@@ -96,11 +100,11 @@ export class MarketMakingListener {
       } as PaymentState);
 
       await this.strategyUserService.createMarketMaking({
-        orderId: details.traceId,
+        orderId: details.orderId,
         userId: snapshot.opponent_id,
-        pair: details.symbol,
+        pair: pair.symbol,
         state: 'created',
-        exchangeName: details.exchangeName,
+        exchangeName: pair.exchange_id,
         bidSpread: '0.1',
         askSpread: '0.1',
         orderAmount: '1',
@@ -114,6 +118,7 @@ export class MarketMakingListener {
         balanceA: paymentState.firstAssetAmount,
         balanceB: snapshot.amount,
         createdAt: getRFC3339Timestamp(),
+        rewardAddress: details.rewardAddress,
       });
     }
   }

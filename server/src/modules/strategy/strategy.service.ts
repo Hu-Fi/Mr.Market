@@ -85,7 +85,7 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PerformanceService } from '../performance/performance.service';
 import { Injectable } from '@nestjs/common';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { StrategyKey, createStrategyKey } from 'src/common/helpers/strategyKey';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';

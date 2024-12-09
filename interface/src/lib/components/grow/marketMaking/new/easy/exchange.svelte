@@ -10,15 +10,12 @@
     createMMSelectPairEasySearch,
     editMarketMakingDialog,
   } from "$lib/stores/grow";
-    import AssetIcon from "$lib/components/common/assetIcon.svelte";
-
-  $: baseAssetSymbol = $createMMEasyPair.symbol.split("/")[0] || ''
-  $: targetAssetSymbol = $createMMEasyPair.symbol.split("/")[1] || ''
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
   onDestroy(() => {
     createMMConfirmDialog.set(false);
     editMarketMakingDialog.set(false);
-    createMMEasyPair.set({ symbol: "BTC/USDT", exchange: "okx" });
+    createMMEasyPair.set({});
     createMMEasyAmounts.set([]);
     createMMSelectPairEasyFilter.set("");
     createMMSelectPairEasySearch.set("");
@@ -38,14 +35,14 @@
       <div class="avatar">
         <div class="mask mask-squircle w-6 h-6">
           <img
-            src={findExchangeIconByIdentifier($createMMEasyPair.exchange)}
+            src={findExchangeIconByIdentifier($createMMEasyPair.exchange_id)}
             alt=""
             class=""
           />
         </div>
       </div>
       <span class="font-semibold">
-        {$createMMEasyPair.exchange}
+        {$createMMEasyPair.exchange_id}
       </span>
     </div>
   </div>
@@ -62,12 +59,12 @@
       <div class="flex -space-x-2">
         <div class="avatar">
           <div class="mask mask-squircle w-5 h-5">
-            <AssetIcon assetIcon={findCoinIconBySymbol(baseAssetSymbol)} clazz="w-5 h-5" claxx="w-2 h-2" />
+            <AssetIcon assetIcon={findCoinIconBySymbol($createMMEasyPair.base_symbol)} clazz="w-5 h-5" claxx="w-2 h-2" />
           </div>
         </div>
         <div class="avatar">
           <div class="mask mask-squircle w-5 h-5">
-            <AssetIcon assetIcon={findCoinIconBySymbol(targetAssetSymbol)} clazz="w-5 h-5" claxx="w-2 h-2" />
+            <AssetIcon assetIcon={findCoinIconBySymbol($createMMEasyPair.target_symbol)} clazz="w-5 h-5" claxx="w-2 h-2" />
           </div>
         </div>
       </div>

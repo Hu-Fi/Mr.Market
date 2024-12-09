@@ -8,11 +8,11 @@ import * as ccxt from 'ccxt';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { PureMarketMakingStrategyDto } from './strategy.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { ExchangeInitService } from 'src/modules/exchangeInit/exchangeInit.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
-import { AdminService } from '../admin/admin.service';
+import { AdminStrategyService } from '../admin/strategy/adminStrategy.service';
 
 // Mocking the TradeService
 class TradeServiceMock {
@@ -52,14 +52,12 @@ describe('StrategyService', () => {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
-    // Add other repository methods as needed
   };
 
   const mockArbitrageOrderRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
     save: jest.fn(),
-    // Add other repository methods as needed
   };
 
   const mockStrategyInstanceRepository = {
@@ -67,7 +65,6 @@ describe('StrategyService', () => {
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn(),
-    // Add other repository methods as needed
   };
 
   beforeEach(async () => {
@@ -78,7 +75,7 @@ describe('StrategyService', () => {
         { provide: PerformanceService, useClass: PerformanceServiceMock },
         { provide: ExchangeInitService, useClass: ExchangeInitServiceMock },
         {
-          provide: AdminService,
+          provide: AdminStrategyService,
           useValue: {
             joinstrategy: jest.fn(),
           },
@@ -103,6 +100,7 @@ describe('StrategyService', () => {
     }).compile();
 
     service = module.get<StrategyService>(StrategyService);
+
     // Initialize activeOrderBookWatches map
     service['activeOrderBookWatches'].set(
       '1-client1-arbitrage',

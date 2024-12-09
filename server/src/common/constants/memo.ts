@@ -1,38 +1,43 @@
 export const TARDING_TYPE_MAP: Record<string, string> = {
-  SP: 'Spot',
-  SW: 'Swap',
-  MM: 'Market Making',
-  AR: 'Arbitrage',
-  LE: 'Leverage',
-  PE: 'Perpetual',
+  0: 'Spot',
+  1: 'Swap',
+  2: 'Simply Grow',
+  3: 'Market Making',
+  4: 'Arbitrage',
+  5: 'Leverage',
+  6: 'Perpetual',
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
-  LB: 'Limit Buy',
-  LS: 'Limit Sell',
-  MB: 'Market Buy',
-  MS: 'Market Sell',
+  0: 'Limit Buy',
+  1: 'Limit Sell',
+  2: 'Market Buy',
+  3: 'Market Sell',
 };
 
 export const SPOT_EXCHANGE_MAP: Record<string, string> = {
-  '01': 'binance',
-  '02': 'bitfinex',
-  '03': 'mexc',
-  '04': 'okx',
-  '05': 'gate',
-  '06': 'lbank',
+  1: 'binance',
+  2: 'bitfinex',
+  3: 'mexc',
+  4: 'okx',
+  5: 'gate',
+  6: 'lbank',
+  11: 'bitget',
+  12: 'bigone',
+  13: 'fswap',
 };
 
-// Decode memo for payment related actions, delete is auth protected
 export const ARBITRAGE_MEMO_ACTION_MAP: Record<string, string> = {
-  CR: 'create',
-  DE: 'deposit',
-  WI: 'withdraw',
+  1: 'create',
+  2: 'deposit',
 };
 
-// Decode memo for payment related actions, delete is auth protected
 export const MARKET_MAKING_MEMO_ACTION_MAP: Record<string, string> = {
-  CR: 'create',
-  DE: 'deposit',
-  WI: 'withdraw',
+  1: 'create',
+  2: 'deposit',
+};
+
+export const SIMPLY_GROW_MEMO_ACTION_MAP: Record<string, string> = {
+  1: 'create',
+  2: 'deposit',
 };
