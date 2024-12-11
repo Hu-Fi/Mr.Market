@@ -16,7 +16,7 @@ test('create arbitrage', async ({ page }) => {
   await page.waitForURL('**/new/**');
 
   await page.getByTestId('arbitrage-first-exchange-0').click();
-  await page.getByTestId('arbitrage-second-exchange-0').click();
+  await page.getByTestId('arbitrage-second-exchange-1').click();
   await page.getByTestId('arbitrage-pair-0').click();
 
   expect(page.getByTestId(`amount-input-0`)).toBeVisible();
@@ -26,18 +26,21 @@ test('create arbitrage', async ({ page }) => {
 
   await page.getByTestId(`amount-input-0`).fill('0.00000001');
   await page.getByTestId(`amount-input-1`).fill('0.00000001');
+  await page.getByTestId(`reward-address-input`).fill('0x3b5fb9d9da3546e9ce6e5aa3cceca14c8d20041e');
 
   expect(page.getByTestId(`confirm-btn`)).toBeEnabled();
   await page.getByTestId(`confirm-btn`).click();
 
-  const pagePromise = page.waitForEvent('popup');
+  const pagePromise1 = page.waitForEvent('popup');
   await page.getByTestId('pay-btn-1').click();
-  const newPage1 = await pagePromise;
+  const newPage1 = await pagePromise1;
   await newPage1.waitForLoadState();
   expect(newPage1.url()).toContain('https://mixin.one/pay');
 
+  const pagePromise2 = page.waitForEvent('popup');
   await page.getByTestId('pay-btn-2').click();
-  const newPage2 = await pagePromise;
+
+  const newPage2 = await pagePromise2;
   await newPage2.waitForLoadState();
   expect(newPage2.url()).toContain('https://mixin.one/pay');
 })

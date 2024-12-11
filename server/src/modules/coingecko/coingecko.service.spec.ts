@@ -58,17 +58,19 @@ describe('CoingeckoProxyService', () => {
   });
   describe('coinsMarkets', () => {
     const mockVsCurrency = 'usd';
+    const mockPage = 1;
     const mockPerPage = 250;
     const mockData = [{ id: 'bitcoin', symbol: 'btc', current_price: 50000 }];
 
     it('should return cached market data if available', async () => {
-      const key = `markets/${mockVsCurrency}`;
+      const key = `markets/${mockVsCurrency}/${mockPerPage}/${mockPage}`;
       cacheManagerMock.get.mockResolvedValue(mockData);
 
       const result = await service.coinsMarkets(
         mockVsCurrency,
         undefined,
         mockPerPage,
+        mockPage,
       );
       expect(result).toEqual(mockData);
       expect(cacheManagerMock.get).toHaveBeenCalledWith(key);

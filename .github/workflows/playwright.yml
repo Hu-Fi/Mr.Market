@@ -46,6 +46,15 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
 
+      - name: Run DB seeder
+        run: make run-seeder
+        env:
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          POSTGRES_DATABASE: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
       - name: Wait for localhost:3000 to become available
         run: |
           make start-server &
@@ -83,6 +92,13 @@ jobs:
         working-directory: ./interface
         env:
           PUBLIC_HUFI_BACKEND_URL: "http://localhost:3000"
+          POSTGRES_PORT: 5432
+          POSTGRES_HOST: localhost
+          POSTGRES_DATABASE: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          JWT_SECRET: 6b23439e8fee67c5da38b61b8779e9f41a5e3e36efe723c6299dd2111896def6
+          ADMIN_PASSWORD: 123123
 
       - name: Upload Playwright test artifacts
         if: always()

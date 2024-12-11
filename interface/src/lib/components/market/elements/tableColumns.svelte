@@ -9,6 +9,7 @@
     selectedField,
     spotSelectedField,
     spotKeys,
+    stopMarketQuery,
   } from "$lib/stores/market";
 
   let tableHeaders = [$_("name"), $_("price"), $_("24chg")];
@@ -25,6 +26,7 @@
     <th
       class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
       on:click={() => {
+        stopMarketQuery.set(true);
         if ($selectedField == keys[0]) {
           return;
         }
@@ -33,7 +35,7 @@
       }}
     >
       <button class="flex items-center" on:click={() => ($asc = !$asc)}>
-        <span class="text-xs !text-[10px]">{tableHeaders[0]}</span>
+        <span class="text-xs !text-[10px]">{tableHeaders[0]} / {$_('market_cap')}</span>
         <button
           class={clsx(
             "flex flex-col space-y-[-8px]",
@@ -82,6 +84,7 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
+          stopMarketQuery.set(true);
           if ($selectedField == keys[1]) {
             return;
           }
@@ -138,6 +141,7 @@
       <th
         class="cursor-pointer pb-2 md:first:pl-7 md:last:pr-7"
         on:click={() => {
+          stopMarketQuery.set(true);
           if ($selectedField == keys[2]) {
             return;
           }

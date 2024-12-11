@@ -75,11 +75,14 @@ export class CoingeckoProxyService {
   // /coins/markets
   async coinsMarkets(
     vs_currency = 'usd',
-    category?: 'decentralized_finance_defi' | 'stablecoins',
-    per_page = 500,
+    category?: 'decentralized_finance_defi' | 'stablecoins' | undefined,
+    per_page = 250,
+    page = 1,
   ): Promise<CoinMarket[]> {
     try {
-      const key = `markets/${vs_currency}${category ? `/${category}` : ''}`;
+      const key = `markets/${vs_currency}${
+        category ? `/${category}` : '/'
+      }${per_page}/${page}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
       if (!cachedData) {
         const data = await this.coingecko.coinMarket(
@@ -87,9 +90,10 @@ export class CoingeckoProxyService {
             ? {
                 vs_currency: vs_currency,
                 per_page,
+                page,
                 category,
               }
-            : { vs_currency: vs_currency, per_page },
+            : { vs_currency, per_page, page },
         );
         await this.cacheService.set(key, data, this.cachingTTL);
         return data;
@@ -135,7 +139,7 @@ export class CoingeckoProxyService {
     id: string,
     from: number,
     to: number,
-    vs_currency: string,
+    vs_currency: string = 'usd',
   ): Promise<CoinMarketChartResponse> {
     try {
       const key = `chart/${id}-${from}-${to}-${vs_currency}`;

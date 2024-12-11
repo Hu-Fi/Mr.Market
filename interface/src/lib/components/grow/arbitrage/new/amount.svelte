@@ -8,8 +8,8 @@
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
   import { createArbAmount, createArbPair } from "$lib/stores/grow";
 
-  $: baseAssetSymbol = $createArbPair.split("/")[0] || ''
-  $: targetAssetSymbol = $createArbPair.split("/")[1] || ''
+  $: baseAssetSymbol = $createArbPair ? $createArbPair.base_symbol : ''
+  $: targetAssetSymbol = $createArbPair ? $createArbPair.target_symbol : ''
 
   onDestroy(() => {
     createArbAmount.set([]);

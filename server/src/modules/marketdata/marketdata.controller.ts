@@ -60,6 +60,7 @@ export class MarketDataController {
   async getSupportedSymbols(@Query('exchange') exchange: string) {
     return this.marketDataService.getSupportedSymbols(exchange);
   }
+
   @Get('/tickers')
   @ApiOperation({ summary: 'Get tickers' })
   @ApiQuery({

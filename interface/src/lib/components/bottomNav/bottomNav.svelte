@@ -4,6 +4,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { darkTheme } from "$lib/stores/theme";
+  import { isMixinIOS } from "$lib/stores/home";
   import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
   
   $: active = $page.url.pathname.includes('/home') ? 0 : 
@@ -44,7 +45,7 @@
   }
 </script>
 
-<div class={clsx("btm-nav btm-nav-xs h-[3.25rem] visible bg-base-100 shadow-[0_-1px_1px_black]", $darkTheme ? "shadow-zinc-800":"shadow-zinc-100")}>
+<div class={clsx("btm-nav btm-nav-xs visible bg-base-100 shadow-[0_-1px_1px_black]", $darkTheme ? "shadow-zinc-800":"shadow-zinc-100", $isMixinIOS ? "h-[5rem]" : "h-[3.25rem]")}>
   {#each routes as route, i}
     <button class={clsx("flex flex-col justify-start")} on:click={()=>routing(route.route)} data-testid={`bottom-nav-${route.icon}`}>
       <div class={clsx(active === i ? 'opacity-100 text-base-content' : i===2 ? '' : 'opacity-40', "mt-2")}>

@@ -1,4 +1,18 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import type { SpotInfo } from "$lib/types/hufi/spot";
+
+export const getSpotInfo = async (): Promise<SpotInfo> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/spot/info`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching spot info:', error);
+  }
+  return {} as SpotInfo;
+}
 
 export const getOrdersByUser = async (userId: string) => {
   try {

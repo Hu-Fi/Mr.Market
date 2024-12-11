@@ -6,7 +6,7 @@
   import { darkTheme } from "$lib/stores/theme";  
   import { activeCoinTab } from "$lib/stores/home";
   import { CoinsTypeTabs, SUPPORTED_EXCHANGES } from "$lib/helpers/constants";
-    import { activeSpotTab } from "$lib/stores/market";
+  import { activeSpotTab, stopMarketQuery } from "$lib/stores/market";
   
   const MARKET_BAR_ITEMS = [
     { name: $_("token"), key: '/market/token' },
@@ -30,7 +30,13 @@
 {#if active === 0}
   <div class={clsx("w-full overflow-x-auto no-scrollbar flex border-y-[0.5px] py-0.5", $darkTheme ? "border-slate-800" : "border-slate-200")}>
     {#each CoinsTypeTabs as item, i}
-      <button class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeCoinTab === i && "")} on:click={()=>{activeCoinTab.set(i);}}>
+      <button 
+        class={clsx("btn btn-xs btn-ghost no-animation hover:bg-base-100 focus:bg-base-100 focus:border-none border-none my-1 px-3 first:pl-4 last:pr-4", $activeCoinTab === i && "")} 
+        on:click={()=>{
+          activeCoinTab.set(i); 
+          stopMarketQuery.set(false);
+        }}
+      >
         <span class={clsx("font-medium text-xs text-start", $activeCoinTab === i ? "opacity-100 font-semibold" : "opacity-60")}>{$_(item.name)}</span>
       </button>
     {/each}

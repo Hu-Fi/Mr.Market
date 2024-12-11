@@ -13,3 +13,23 @@ export type SpotOrder = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type SpotInfo = {
+  trading_pairs: SpotTradingPair[];
+}
+
+export type SpotTradingPair = {
+  id: string;
+  ccxt_id: string;
+  symbol: string;
+  exchange_id: string;
+  amount_significant_figures: string;
+  price_significant_figures: string;
+  buy_decimal_digits: string;
+  sell_decimal_digits: string;
+  max_buy_amount: string;
+  max_sell_amount: string;
+  base_asset_id: string;
+  quote_asset_id: string;
+  enable: boolean;
+}

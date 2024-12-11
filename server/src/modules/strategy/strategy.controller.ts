@@ -18,7 +18,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
-import { MarketMakingHistory } from 'src/common/entities/mm-order.entity';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import {
   ArbitrageStrategyDto,
@@ -28,7 +28,7 @@ import {
   StopVolumeStrategyDto,
 } from './strategy.dto';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
-import { AdminService } from '../admin/admin.service';
+import { AdminStrategyService } from '../admin/strategy/adminStrategy.service';
 
 @ApiTags('strategy')
 @Controller('strategy')
@@ -36,7 +36,7 @@ export class StrategyController {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly strategyUserSerive: StrategyUserService,
-    private readonly adminService: AdminService,
+    private readonly adminService: AdminStrategyService,
   ) {}
 
   @Get('/all')
@@ -84,6 +84,32 @@ export class StrategyController {
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async getPaymentState(@Param('order_id') orderId: string) {
     return await this.strategyUserSerive.findPaymentStateById(orderId);
+  }
+
+  @Get('/simply_grow/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all simply grow orders by user' })
+  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'All simply grow orders of user.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getSimplyGrowByUserId(@Query('user_id') userId: string) {
+    return await this.strategyUserSerive.findSimplyGrowByUserId(userId);
+  }
+
+  @Get('/simply_grow/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get simply grow order by id' })
+  @ApiQuery({ name: 'id', type: String, description: 'Order ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The details of the simply grow order.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  async getSimplyGrowByOrderId(@Param('id') id: string) {
+    return await this.strategyUserSerive.findSimplyGrowByOrderId(id);
   }
 
   @Get('/arbitrage/all')

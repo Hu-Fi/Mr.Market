@@ -82,12 +82,7 @@ export class AuthService {
     const hashedAdminPassword = createHash('sha256')
       .update(this.adminPassword)
       .digest('hex');
-
-    const hashIncomingPass = createHash('sha256')
-      .update(password)
-      .digest('hex');
-
-    if (hashedAdminPassword !== hashIncomingPass) {
+    if (hashedAdminPassword !== password) {
       throw new UnauthorizedException('Invalid password');
     }
 

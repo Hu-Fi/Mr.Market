@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n";
   import { socket } from "$lib/stores/spot";
   import { onDestroy, onMount } from "svelte";
-  import { pairsFn } from "$lib/helpers/hufi/coin";
+  import { getSpotTradingPairs } from "$lib/helpers/hufi/coin";
   import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
   import NoResult from "$lib/components/common/NoResult.svelte";
@@ -42,7 +42,7 @@
   }
 
   const loadPairs = async () => {
-    pairs = await pairsFn()
+    pairs = await getSpotTradingPairs()
     CandlePairSelectorLoaded.set(true)
   }
   onMount(async ()=> {

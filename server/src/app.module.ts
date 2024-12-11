@@ -12,14 +12,12 @@ import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { PerformanceModule } from './modules/performance/performance.module';
 
-// import { TransactionsModule } from './modules/transactions/transactions.module';
 import configuration from './config/configuration';
 import { HealthModule } from './modules/health/health.module';
 import { CoingeckoModule } from './modules/coingecko/coingecko.module';
 import { LoggerModule } from './modules/logger/logger.module';
 import { CustomLogger } from './modules/logger/logger.service';
 import { MixinModule } from './modules/mixin/mixin.module';
-import { AdminController } from './modules/admin/admin.controller';
 import { EventListenersModule } from './modules/mixin/listeners/events.module';
 
 import { Trade } from './common/entities/trade.entity';
@@ -40,7 +38,8 @@ import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
-} from './common/entities/strategy.entity';
+  SimplyGrowOrder,
+} from './common/entities/strategy-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
 import { AdminModule } from './modules/admin/admin.module';
@@ -48,14 +47,24 @@ import { CampaignModule } from './modules/campaign/campaign.module';
 import { Web3Module } from './modules/web3/web3.module';
 import { StrategyInstance } from './common/entities/strategy-instances.entity';
 import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
-import { MarketMakingHistory } from './common/entities/mm-order.entity';
+import { MarketMakingHistory } from './common/entities/market-making-order.entity';
 import { Contribution } from './common/entities/contribution.entity';
+import { GrowdataModule } from './modules/growdata/growdata.module';
 import {
-  RebalanceToken,
+  GrowdataArbitragePair,
+  GrowdataExchange,
+  GrowdataMarketMakingPair,
+  GrowdataSimplyGrowToken,
+} from './common/entities/grow-data.entity';
+import {
   RebalanceExchange,
-  RebalanceTokenExchange,
   RebalanceHistory,
+  RebalanceToken,
+  RebalanceTokenExchange,
 } from './common/entities/rebalance-asset.entity';
+import { AdminController } from './modules/admin/admin.controller';
+import { SpotdataTradingPair } from './common/entities/spot-data.entity';
+import { SpotdataModule } from './modules/spotdata/spotdata.module';
 
 dotenv.config();
 
@@ -103,6 +112,18 @@ dotenv.config();
         ArbitrageOrder,
         MarketMakingOrder,
         PaymentState,
+        RebalanceToken,
+        RebalanceExchange,
+        RebalanceHistory,
+        RebalanceTokenExchange,
+        MarketMakingOrder,
+        ArbitrageOrder,
+        SimplyGrowOrder,
+        SpotdataTradingPair,
+        GrowdataExchange,
+        GrowdataSimplyGrowToken,
+        GrowdataArbitragePair,
+        GrowdataMarketMakingPair,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
@@ -112,8 +133,9 @@ dotenv.config();
     StrategyModule,
     PerformanceModule,
     MarketdataModule,
+    SpotdataModule,
+    GrowdataModule,
     ExchangeInitModule,
-    // TransactionsModule,
     CoingeckoModule,
     HealthModule,
     MixinModule,

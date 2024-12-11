@@ -2,6 +2,7 @@ import { page } from "$app/stores";
 import { derived } from 'svelte/store';
 import { growPathChecker } from "$lib/helpers/helpers";
 import { writable, type Writable } from "svelte/store";
+import type { ArbitragePair, MarketMakingPair, SimplyGrowToken } from "$lib/types/hufi/grow";
 
 // 0 easy, 1 advanced
 export const easyAdvancedMode = writable(0)
@@ -20,12 +21,11 @@ export const createArbConfirmDialog = writable(false)
 export const editArbitrageDialog = writable(false)
 export const selectArbExchange1Dialog = writable(false)
 export const selectArbExchange2Dialog = writable(false)
-export const selectArbPairDialog = writable(false)
 export const createArbExchange1: Writable<string> = writable()
 export const createArbExchange2: Writable<string> = writable()
 export const createArbExchange1Search = writable('')
 export const createArbExchange2Search = writable('')
-export const createArbPair: Writable<string>= writable('')
+export const createArbPair: Writable<ArbitragePair> = writable()
 export const createArbPairSearch: Writable<string>= writable('')
 export const createArbAmount = writable([])
 
@@ -33,20 +33,20 @@ export const createArbAmount = writable([])
 // Create new market making
 export const createMMConfirmDialog = writable(false)
 export const editMarketMakingDialog = writable(false)
-export const createMMEasyPair = writable({ symbol:'BTC/USDT', exchange:'okx' })
+export const createMMEasyPair = writable<MarketMakingPair>()
 export const createMMEasyAmounts = writable([])
-export const createMMSelectPairEasyFilter = writable('')
+export const createMMSelectPairEasyFilter = writable('all')
 export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow
-export const createJustGrowAsset = writable({ symbol:'BTC', name: 'Bitcoin', icon: 'https://mixin.one' })
-export const createJustGrowAmount = writable()
-export const createJustGrowLockTime = writable({ key: '', value: '' })
-export const createJustGrowLockTimeDialog = writable(false)
-export const createJustGrowConfirmDialog = writable(false)
-export const createJustGrowSearch = writable('')
-export const createJustGrowRewardAddressDialog = writable(false)
-export const createJustGrowRewardAddress = writable('')
+export const createSimplyGrowAsset = writable<SimplyGrowToken>()
+export const createSimplyGrowAmount = writable<string>()
+export const createSimplyGrowLockTime = writable({ key: '', value: '' })
+export const createSimplyGrowLockTimeDialog = writable(false)
+export const createSimplyGrowConfirmDialog = writable(false)
+export const createSimplyGrowSearch = writable('')
+export const createSimplyGrowRewardAddressDialog = writable(false)
+export const createSimplyGrowRewardAddress = writable('')
 
 // Create new auto invest
 export const createAISelectAssetSearch = writable("")
@@ -64,4 +64,4 @@ export const createAISelectUnitDialog = writable(false)
 
 export const isArbitragePage = derived(page, $page => growPathChecker($page, 'arbitrage'));
 export const isMarketMakingPage = derived(page, $page => growPathChecker($page, 'market_making'));
-export const isJustGrowPage = derived(page, $page => growPathChecker($page, 'just_grow'))
+export const isSimplyGrowPage = derived(page, $page => growPathChecker($page, 'simply_grow'))
