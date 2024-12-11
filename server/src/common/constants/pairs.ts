@@ -8,19 +8,7 @@
 // 6. Update SUPPORTED_PAIRS and PAIRS_MAP in interface/src/lib/helpers/constants.ts
 
 export const SUPPORTED_PAIRS = {
-  // okx: [
-  //   'BTC/USDT',
-  //   'ETH/USDT',
-  //   'BNB/USDT',
-  //   'UNI/USDT',
-  //   'CRV/USDT',
-  //   'SOL/USDT',
-  //   'SUI/USDT',
-  // ],
-  // bitfinex: ['BTC/USDT', 'ETH/USDT', 'HMT/USDT'],
   mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT', 'HMT/USDT'],
-  // gate: ['HMT/USDT'],
-  // lbank: ['HMT/USDT'],
 };
 
 // Used for Mixin memo

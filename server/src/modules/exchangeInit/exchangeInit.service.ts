@@ -16,6 +16,11 @@ export class ExchangeInitService {
     this.initializeExchanges()
       .then(() => {
         this.logger.log('Exchanges initialized successfully.');
+        this.logger.log(
+          `Exchanges map: ${JSON.stringify(
+            Array.from(this.exchanges.entries()),
+          )}`,
+        );
         this.startKeepAlive();
       })
       .catch((error) =>
@@ -407,7 +412,13 @@ export class ExchangeInitService {
   }
 
   getSupportedExchanges(): string[] {
-    return Array.from(this.exchanges.keys());
+    return Array.from(this.exchanges.entries())
+      .filter(([, accounts]) => {
+        return Array.from(accounts.values()).some((exchange) => {
+          return exchange.apiKey && exchange.secret;
+        });
+      })
+      .map(([exchangeName]) => exchangeName);
   }
 
   getAccountsForExchange(exchangeName: string): string[] {

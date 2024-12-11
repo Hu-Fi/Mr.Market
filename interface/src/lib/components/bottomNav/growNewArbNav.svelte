@@ -2,9 +2,9 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
-  import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair } from "$lib/stores/grow";
+  import { createArbAmount, createArbConfirmDialog, createArbExchange1, createArbExchange2, createArbPair, createSimplyGrowRewardAddress } from "$lib/stores/grow";
 
-  $: inputValid = $createArbExchange1 && $createArbExchange2 && $createArbPair && $createArbAmount[0] && $createArbAmount[1];
+  $: inputValid = $createArbExchange1 && $createArbExchange2 && $createArbPair && $createArbAmount[0] && $createArbAmount[1] && $createSimplyGrowRewardAddress;
   export let btnText: string = $_('confirm');
 </script>
 

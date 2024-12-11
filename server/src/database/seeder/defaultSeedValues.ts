@@ -23,7 +23,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     enable: true,
   },
   {
-    id: '9f73fe03-de13-4942-a277-3e812ba606d5',
+    id: '76b67b09-159f-41b4-963d-7f41fd719535',
     ccxt_id: 'ETH/USDT',
     symbol: 'ETH/USDT',
     exchange_id: 'okx',

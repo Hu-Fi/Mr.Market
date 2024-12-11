@@ -15,6 +15,8 @@
 </main>
 
 <GrowNewArbNav btnText={$_('create_arbitrage')} />
+
+<!-- Dialogs below -->
 <SelectExchange type=1 />
 <SelectExchange type=2 />
 <ConfirmPayment />

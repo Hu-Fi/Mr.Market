@@ -1,53 +1,8 @@
-/**
- * RebalanceService
- *
- * This service handles the rebalancing of asset balances between the Mixin network and various exchanges.
- * It periodically checks asset balances and initiates transfers to maintain the desired balance levels.
- *
- * Dependencies:
- * - ExchangeService: Service for interacting with exchange-related data and operations.
- * - SnapshotsService: Service for interacting with Mixin snapshots.
- * - RebalanceRepository: Repository for interacting with rebalance-related data in the database.
- * - Cron: NestJS schedule module for defining cron jobs.
- * - Helper functions: Utilities for managing timestamps, UUIDs, and calculating rebalance amounts.
- * - BigNumber: Library for handling arbitrary-precision decimal arithmetic.
- * - Constants: ASSET_ID_NETWORK_MAP and SYMBOL_ASSET_ID_MAP for managing asset IDs and symbols.
- *
- * Methods:
- *
- * - constructor: Initializes the service with the injected ExchangeService, SnapshotsService, and RebalanceRepository.
- *
- * - rebalance(): Scheduled task that runs every 60 seconds to check and initiate rebalances.
- *
- * - rebalanceFromExchangeToMixin(assetId: string, symbol: string, mixinAmount: BigNumber, minAmount: BigNumber, allBalanceByExchange: any):
- *   Handles rebalancing assets from exchanges to Mixin.
- *
- * - rebalanceFromMixinToExchange(symbol: string, balance: BigNumber.Value, exchange: string, mixinBalance: BigNumber.Value):
- *   Handles rebalancing assets from Mixin to exchanges.
- *
- * - findAllTokensWithExchangesAndBalances(): Retrieves all tokens with their associated exchanges and balances.
- *
- * - findAllExchagnes(): Retrieves all exchanges.
- *
- * - addRebalanceHistory(history: RebalanceHistory): Adds a rebalance history record to the database.
- *
- * - getCurrencyMinAmountBySymbol(exchangeName: string, symbol: string): Retrieves the minimum amount for a currency on a specific exchange.
- *
- * - addMinimumBalance(symbol: string, assetId: string, exchangeName: string, minimumBalance: string): Adds a minimum balance requirement for an asset on an exchange.
- *
- * - updateMinimumBalance(assetId: string, exchangeName: string, minimumBalance: string): Updates the minimum balance requirement for an asset on an exchange.
- *
- * Notes:
- * - The service periodically checks asset balances and initiates rebalances based on predefined minimum balance requirements.
- * - The rebalanceFromExchangeToMixin and rebalanceFromMixinToExchange methods handle the logic for transferring assets between Mixin and exchanges.
- * - Error handling is implemented to log and manage errors during the rebalance process.
- * - The service maintains a history of rebalance operations for auditing and tracking purposes.
- */
-
 import { Cron } from '@nestjs/schedule';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getUuid } from '@mixin.dev/mixin-node-sdk';
-import { Injectable } from '@nestjs/common';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { RebalanceRepository } from 'src/modules/mixin/rebalance/rebalance.repository';
@@ -62,7 +17,6 @@ import {
   SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
 import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
-import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
 export class RebalanceService {
@@ -73,37 +27,7 @@ export class RebalanceService {
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
     private rebalanceRepository: RebalanceRepository,
-  ) {
-    // TODO: Initalize minium balance table
-  }
-
-  // We build a table which we can set the minium rebalance value for every asset in every exchange
-  //
-  // For example:
-  // for btc in okx, we can set 0.5 as the minium balance that triggers rebalance
-  // once this rebalance worker found btc in okx is smaller than 0.5, it initate checks
-  // if the checks are passed, rebalance from mixin to okx
-  //
-  // We get the balance of every asset in mixin first, and get the total balance from all api keys
-  // Create a map so we can access the balance via the symbol of asset (like BTC)
-  //
-  // The rebalance from mixin to exchange api keys is straight forward.
-  // When mixin has more money than needed, we compare and calulate a balance amount (substract from mixin but still remain balanced)
-  // We pick a random api key in that exchange, get the deposit address and inital withdrawal in mixin to that address.
-  //
-  // The rebalance from exchagne api keys to mixin is a bit complex.
-  // When exchange api keys have more money than needed, we compare and calulate a balance amount (substract from exchange but still remain balanced)
-  // We need to compare and check if the key with the most balance is enough for the withdrawal
-  // If not enough, we need to gather funds in different api keys into one, or just withdraw from the one with most funds
-  // If enough, choose the one with the most funds and withdraw
-  //
-  // For some assets we don't want them to rebalance, we set the minium balance to a huge number so it would never get triggered
-
-  // Basically
-  // If mixin balance is greater than minium amount, we don't rebalance.
-  // If mixin balance is smaller or equal minium amount, we rebalance from exchange api key to mixin. (this is complicated because we need to pick a api key that have enough balance. and we have multiple api keys so if one api key doesn't have enough balance we need to gather the balance to one api key and withdraw to mixin)
-  // if exchange is greater than minium amount, we don't rebalance.
-  // if exchange is smaller or equal to minium amount, we rebalance from mixin to exchange api key.(this is easy because we just pick any api key in that exchange)
+  ) {}
 
   @Cron('*/60 * * * * *')
   async rebalance() {

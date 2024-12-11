@@ -6,8 +6,9 @@
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { getRandomDelay } from "$lib/helpers/utils";
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
-  import Loading from "$lib/components/common/loading.svelte";
   import { addSpotTradingPair, updateSpotTradingPair, removeSpotTradingPair } from "$lib/helpers/hufi/admin/spotdata";
+
+  $: spotTradingPairs = $page.data.spotInfo.trading_pairs as SpotTradingPair[];
 
   let AddNewSymbol = "";
   let AddNewExchangeId = "";
@@ -69,8 +70,8 @@
       console.error(error);
     });
     
-    setTimeout(() => {
-      invalidate('admin:settings').finally(() => {
+    setTimeout(async () => {
+      await invalidate('admin:settings').finally(() => {
         isUpdating = '';
       });
     }, getRandomDelay());
@@ -99,12 +100,7 @@
   }
 </script>
 
-{#await $page.data.spotInfo}
-  <div class="w-full h-full flex justify-center items-center">
-    <Loading />
-  </div>
-{:then spotInfo}
-  {#if !spotInfo.trading_pairs}
+  {#if !spotTradingPairs}
     <div class="w-full h-full flex justify-center items-center">
       <button
         class="btn"
@@ -121,6 +117,7 @@
         <!-- head -->
         <thead>
           <tr>
+            <th/>
             <th>{"symbol"}</th>
             <th>{"exchange_id"}</th>
             <th>{"ccxt_id"}</th>
@@ -137,14 +134,15 @@
           </tr>
         </thead>
         <tbody>
-          {#if spotInfo.trading_pairs.length === 0}
+          {#if spotTradingPairs.length === 0}
             <tr>
               <td colspan="13" class="text-center">{$_("no_result_found")}</td>
             </tr>
           {/if}
           
-          {#each spotInfo.trading_pairs as pair}
+          {#each spotTradingPairs as pair}
             <tr>
+              <td/>
               <td>
                 <span class="text-xs select-text"> {pair.symbol} </span>
               </td>
@@ -295,4 +293,3 @@
       </button>
     </div>
   {/if}
-{/await}

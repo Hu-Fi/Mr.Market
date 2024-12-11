@@ -92,42 +92,47 @@ export class SpotdataService {
             `Fetched tickers for ${exchange}: ${JSON.stringify(tickers)}`,
           );
 
-          return tradingPairs.map((pair) => ({
-            id: pair.id,
-            symbol: pair.symbol,
-            ccxt_id: pair.ccxt_id,
-            exchange_id: pair.exchange_id,
-            base_asset_id: pair.base_asset_id,
-            quote_asset_id: pair.quote_asset_id,
-            amount_significant_figures: pair.amount_significant_figures,
-            price_significant_figures: pair.price_significant_figures,
-            max_buy_amount: pair.max_buy_amount,
-            max_sell_amount: pair.max_sell_amount,
-            buy_decimal_digits: pair.buy_decimal_digits,
-            sell_decimal_digits: pair.sell_decimal_digits,
-            enable: pair.enable,
-            change: tickers[pair.symbol]?.percentage || '0',
-          }));
+          // Filter trading pairs for the current exchange
+          return tradingPairs
+            .filter((pair) => pair.exchange_id === exchange)
+            .map((pair) => ({
+              id: pair.id,
+              symbol: pair.symbol,
+              ccxt_id: pair.ccxt_id,
+              exchange_id: pair.exchange_id,
+              base_asset_id: pair.base_asset_id,
+              quote_asset_id: pair.quote_asset_id,
+              amount_significant_figures: pair.amount_significant_figures,
+              price_significant_figures: pair.price_significant_figures,
+              max_buy_amount: pair.max_buy_amount,
+              max_sell_amount: pair.max_sell_amount,
+              buy_decimal_digits: pair.buy_decimal_digits,
+              sell_decimal_digits: pair.sell_decimal_digits,
+              enable: pair.enable,
+              change: tickers[pair.symbol]?.percentage || '0',
+            }));
         } catch (error) {
           this.logger.warn(
             `Error fetching tickers from ${exchange}: ${error.message}`,
           );
-          return tradingPairs.map((pair) => ({
-            id: pair.id,
-            symbol: pair.symbol,
-            ccxt_id: pair.ccxt_id,
-            exchange_id: pair.exchange_id,
-            base_asset_id: pair.base_asset_id,
-            quote_asset_id: pair.quote_asset_id,
-            amount_significant_figures: pair.amount_significant_figures,
-            price_significant_figures: pair.price_significant_figures,
-            max_buy_amount: pair.max_buy_amount,
-            max_sell_amount: pair.max_sell_amount,
-            buy_decimal_digits: pair.buy_decimal_digits,
-            sell_decimal_digits: pair.sell_decimal_digits,
-            enable: pair.enable,
-            change: '0',
-          }));
+          return tradingPairs
+            .filter((pair) => pair.exchange_id === exchange)
+            .map((pair) => ({
+              id: pair.id,
+              symbol: pair.symbol,
+              ccxt_id: pair.ccxt_id,
+              exchange_id: pair.exchange_id,
+              base_asset_id: pair.base_asset_id,
+              quote_asset_id: pair.quote_asset_id,
+              amount_significant_figures: pair.amount_significant_figures,
+              price_significant_figures: pair.price_significant_figures,
+              max_buy_amount: pair.max_buy_amount,
+              max_sell_amount: pair.max_sell_amount,
+              buy_decimal_digits: pair.buy_decimal_digits,
+              sell_decimal_digits: pair.sell_decimal_digits,
+              enable: pair.enable,
+              change: '0',
+            }));
         }
       },
     );

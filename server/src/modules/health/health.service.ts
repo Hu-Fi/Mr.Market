@@ -109,7 +109,7 @@ export class HealthService {
       'UserBalance',
       'Snapshot',
       'SpotOrder',
-      'APIKeysConfig',
+      'exchangeAPIKeysConfig',
       'CustomConfigEntity',
       'MixinReleaseToken',
       'MixinReleaseHistory',

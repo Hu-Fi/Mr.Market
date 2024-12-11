@@ -48,7 +48,7 @@
  *
  * - getAllSpotOrders(): Retrieves all spot orders from the repository.
  *
- * - addApiKey(key: APIKeysConfig): Adds a new API key to the repository.
+ * - addApiKey(key: exchangeAPIKeysConfig): Adds a new API key to the repository.
  *
  * - readAPIKey(keyId: string): Reads an API key by its ID from the repository.
  *
@@ -110,7 +110,7 @@ import {
 } from 'src/common/types/exchange/mixinRelease';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
-import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import { exchangeAPIKeysConfig } from 'src/common/entities/exchange-api-keys.entity';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 import { AggregatedBalances } from 'src/common/types/rebalance/map';
 
@@ -129,7 +129,7 @@ export class ExchangeService {
   private async loadAPIKeys() {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
     if (!apiKeys?.length) {
-      this.logger.error('No API Keys loaded');
+      this.logger.warn('No API Keys loaded');
       return;
     }
     for (const key of apiKeys) {
@@ -153,7 +153,7 @@ export class ExchangeService {
 
   async getAllAPIKeysBalance() {
     try {
-      const apiKeys: APIKeysConfig[] = await this.readAllAPIKeys();
+      const apiKeys: exchangeAPIKeysConfig[] = await this.readAllAPIKeys();
       const balancePromises = apiKeys.map((apiKeyConfig) =>
         this.getBalance(
           apiKeyConfig.exchange,
@@ -544,7 +544,7 @@ export class ExchangeService {
   }
 
   // DB related
-  async addApiKey(key: APIKeysConfig) {
+  async addApiKey(key: exchangeAPIKeysConfig) {
     return await this.exchangeRepository.addAPIKey(key);
   }
 
@@ -554,7 +554,7 @@ export class ExchangeService {
 
   async findFirstAPIKeyByExchange(
     exchange: string,
-  ): Promise<APIKeysConfig | null> {
+  ): Promise<exchangeAPIKeysConfig | null> {
     const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
       exchange,
     );

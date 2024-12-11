@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SpotOrderStatus } from 'src/common/types/orders/states';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
-import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
+import { exchangeAPIKeysConfig } from 'src/common/entities/exchange-api-keys.entity';
 import {
   MixinReleaseHistory,
   MixinReleaseToken,
@@ -12,8 +12,8 @@ import {
 @Injectable()
 export class ExchangeRepository {
   constructor(
-    @InjectRepository(APIKeysConfig)
-    private readonly apiKeysRepository: Repository<APIKeysConfig>,
+    @InjectRepository(exchangeAPIKeysConfig)
+    private readonly apiKeysRepository: Repository<exchangeAPIKeysConfig>,
     @InjectRepository(SpotOrder)
     private readonly spotOrderRepository: Repository<SpotOrder>,
     @InjectRepository(MixinReleaseToken)
@@ -23,7 +23,7 @@ export class ExchangeRepository {
   ) {}
 
   // API Key related methods
-  async addAPIKey(apiKey: APIKeysConfig) {
+  async addAPIKey(apiKey: exchangeAPIKeysConfig) {
     return this.apiKeysRepository.save(apiKey);
   }
 
@@ -44,11 +44,11 @@ export class ExchangeRepository {
     await this.apiKeysRepository.remove(apiKey);
   }
 
-  async readAllAPIKeys(): Promise<APIKeysConfig[]> {
+  async readAllAPIKeys(): Promise<exchangeAPIKeysConfig[]> {
     return await this.apiKeysRepository.find();
   }
 
-  async readAllAPIKeysByExchange(exchange: string): Promise<APIKeysConfig[]> {
+  async readAllAPIKeysByExchange(exchange: string): Promise<exchangeAPIKeysConfig[]> {
     return await this.apiKeysRepository.find({ where: { exchange } });
   }
 

@@ -5,6 +5,7 @@ export interface AdminPasswordResp {
 export interface AdminSpotOrder {
   type: string,
   userID: string,
+  orderID: string,
   exchange: string,
   symbol: string,
   amount: string,

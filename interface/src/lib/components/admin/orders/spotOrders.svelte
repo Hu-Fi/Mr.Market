@@ -8,6 +8,7 @@
     {
       type: 'limit buy',
       userID: 'c51ed85a-1684-4b90-81c7-9e4722d50d98',
+      orderID: 'f7352cfa-24ad-406a-84c4-9061d0f0b199',
       exchange: 'binance',
       symbol: 'BTC/USDT',
       amount: '2131.23',
@@ -17,6 +18,7 @@
     {
       type: 'market sell',
       userID: 'c51ed85a-1684-4b90-81c7-9e4722d50d98',
+      orderID: '722cda1c-5516-4b30-aca1-93c2157bdd4c',
       exchange: 'bitfinex',
       symbol: 'ETH/USDT',
       amount: '213.3241',
@@ -26,6 +28,7 @@
     {
       type: 'limit buy',
       userID: 'c51ed85a-1684-4b90-81c7-9e4722d50d98',
+      orderID: '013c2869-b3d1-4739-a69b-1ec28c476554',
       exchange: 'okx',
       symbol: 'SOL/USDT',
       amount: '642.3241',
@@ -54,6 +57,7 @@
         <th>{$_("amount")}</th>
         <th>{$_("state")}</th>
         <th>{$_("user_id")}</th>
+        <th>{$_("order_id")}</th>
         <th>{$_("time")}</th>
       </tr>
     </thead>

@@ -2,9 +2,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
-import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
+import { exchangeAPIKeysConfig } from 'src/common/entities/exchange-api-keys.entity';
 import {
   MixinReleaseHistory,
   MixinReleaseToken,
@@ -15,7 +15,7 @@ import { ExchangeUserController } from './exchange-client.controller';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      APIKeysConfig,
+      exchangeAPIKeysConfig,
       SpotOrder,
       MixinReleaseToken,
       MixinReleaseHistory,

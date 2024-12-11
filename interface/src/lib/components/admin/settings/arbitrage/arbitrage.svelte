@@ -117,6 +117,7 @@
       <!-- head -->
       <thead>
         <tr>
+          <th/>
           <th>{"symbol"}</th>
           <th>{"base_symbol"}</th>
           <th>{"target_symbol"}</th>
@@ -140,6 +141,7 @@
         
         {#each arbitragePairs as pair}
           <tr>
+            <td/>
             <td>
               <span class="text-xs select-text"> {pair.symbol} </span>
             </td>

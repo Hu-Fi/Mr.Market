@@ -5,7 +5,9 @@
   export let order: AdminSpotOrder;
 </script>
 
-<tr>
+<tr on:click={() => {
+  console.log(order);
+}}>
   <td>
     <div class="flex items-center gap-2">
       <div class="avatar">
@@ -41,6 +43,11 @@
   <td>
     <span>
       {order.userID}
+    </span>
+  </td>
+  <td>
+    <span>
+      {order.orderID}
     </span>
   </td>
   <td>

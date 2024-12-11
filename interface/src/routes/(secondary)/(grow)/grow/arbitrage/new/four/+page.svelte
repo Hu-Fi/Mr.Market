@@ -4,7 +4,7 @@
   import ExchangeView from "$lib/components/grow/arbitrage/new/exchangeView.svelte";
   import Web3Address from "$lib/components/common/web3Address.svelte";
 </script>
-  
+
 <div class="flex flex-col space-y-8">
   <ExchangeView />
   <Amount />

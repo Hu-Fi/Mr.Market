@@ -93,7 +93,5 @@
   {/if}
 </div>
 {:else}
-  <div class="flex items-center justify-center">
-    <span> We skip this for now as we can modifiy them through db. We don't have enough time for this (27 Mar) </span>
-  </div>
+  <div/>
 {/if}

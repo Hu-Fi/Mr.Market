@@ -332,14 +332,14 @@ export class NewMigrations1733665951812 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "api_keys_config" (
+            CREATE TABLE "exchange_api_keys_config" (
                 "key_id" SERIAL NOT NULL,
                 "exchange" character varying NOT NULL,
-                "exchange_index" character varying NOT NULL,
                 "name" character varying NOT NULL,
                 "api_key" character varying NOT NULL,
                 "api_secret" character varying NOT NULL,
-                CONSTRAINT "PK_de3f6c18a8f6dc9ba664034e6f8" PRIMARY KEY ("key_id")
+                "api_extra" character varying NOT NULL,
+                CONSTRAINT "PK_ea59127f64c75f7725f77151199" PRIMARY KEY ("key_id")
             )
         `);
     await queryRunner.query(`
@@ -498,7 +498,7 @@ export class NewMigrations1733665951812 implements MigrationInterface {
             DROP TABLE "growdata_exchanges"
         `);
     await queryRunner.query(`
-            DROP TABLE "api_keys_config"
+            DROP TABLE "exchange_api_keys_config"
         `);
     await queryRunner.query(`
             DROP TABLE "arbitrage_history"

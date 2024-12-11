@@ -26,7 +26,7 @@ import { UserBalance } from './common/entities/user-balance.entity';
 import { Performance } from './common/entities/performance.entity';
 import { Snapshot } from './common/entities/snapshots.entity';
 import { SpotOrder } from './common/entities/spot-order.entity';
-import { APIKeysConfig } from './common/entities/api-keys.entity';
+import { exchangeAPIKeysConfig } from './common/entities/exchange-api-keys.entity';
 import { CustomConfigEntity } from './common/entities/custom-config.entity';
 import {
   MixinReleaseToken,
@@ -98,7 +98,7 @@ dotenv.config();
         UserBalance,
         Snapshot,
         SpotOrder,
-        APIKeysConfig,
+        exchangeAPIKeysConfig,
         CustomConfigEntity,
         Contribution,
         MixinReleaseToken,

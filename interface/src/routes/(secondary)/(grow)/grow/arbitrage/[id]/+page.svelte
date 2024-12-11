@@ -67,13 +67,13 @@
   /> -->
 </div>
 <style>
-    .max-w-24rem {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        margin: 0 auto;
-        box-sizing: border-box;
-        max-width: 24rem;
-    }
+  .max-w-24rem {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      max-width: 24rem;
+  }
 </style>

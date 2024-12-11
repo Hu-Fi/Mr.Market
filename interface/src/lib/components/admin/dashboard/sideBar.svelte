@@ -10,7 +10,6 @@
     "dashboard",
     "orders",
     "users",
-    "database",
     "exchanges",
     "rebalance",
     // "revenue",
