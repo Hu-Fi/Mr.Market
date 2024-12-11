@@ -23,6 +23,7 @@ import whitebit from "$lib/images/exchanges/whitebit.jpg";
 import cryptocom from "$lib/images/exchanges/cryptocom.png";
 import bigone from "$lib/images/exchanges/bigone.png";
 import tapbit from "$lib/images/exchanges/tapbit.png";
+import mixin from "$lib/images/mixin.png";
 import emptyToken from "$lib/images/empty-token.svg";
 import mixinIcons from "$lib/constants/mixinIcons.json";
 import type { Page } from "@sveltejs/kit";
@@ -62,6 +63,7 @@ export const findExchangeIconByIdentifier = (identifier: string) => {
     case "CRYPTO_COM": return cryptocom;
     case "BIGONE": return bigone;
     case "TAPBIT": return tapbit;
+    case "MIXIN": return mixin;
     default: 
       // console.log(identifier);
       return emptyToken;

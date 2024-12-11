@@ -260,6 +260,7 @@
   "market_making_stopped":"Market making stopped",
   "stop": "Stop",
   "resume": "Resume",
+  "transfer": "Transfer",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
   "deposit_info": "Deposit more token for {grow_type}",
@@ -358,5 +359,8 @@
   "click_to_enable": "Click to enable",
   "click_to_disable": "Click to disable",
   "updating": "Updating...",
-  "welcome_to_admin_panel": "Welcome to the admin panel!"
+  "welcome_to_admin_panel": "Welcome to the admin panel!",
+  "rebalance_records": "Rebalance records",
+  "source": "Source",
+  "destination": "Destination"
 }
