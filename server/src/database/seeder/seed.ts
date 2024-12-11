@@ -35,6 +35,7 @@ async function connectToDatabase() {
       SpotdataTradingPair,
     ],
     synchronize: false,
+    ssl: process.env.POSTGRES_SSL === 'true',
   });
 
   try {
