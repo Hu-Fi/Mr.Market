@@ -1,6 +1,6 @@
 <script lang="ts">
-  // import Swap from "$lib/components/admin/orders/swap.svelte";
-  import Spot from "$lib/components/admin/orders/spot.svelte";
+  // import Swap from "$lib/components/admin/orders/swapOrders.svelte";
+  import Spot from "$lib/components/admin/orders/spotOrders.svelte";
   import ArbitrageOrders from "$lib/components/admin/orders/arbitrageOrders.svelte";
   import MarketMakingOrders from "$lib/components/admin/orders/marketMakingOrders.svelte";
 </script>
