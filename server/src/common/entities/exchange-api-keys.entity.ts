@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity()
 export class exchangeAPIKeysConfig {
   @PrimaryGeneratedColumn()
-  key_id: string; // The UUID used for identity API key
+  key_id: string; // The unique sequence number of API key
 
   @Column()
   exchange: string; // The ccxt identifier of exchange

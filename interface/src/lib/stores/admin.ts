@@ -7,3 +7,6 @@ export const loginLoading = writable(false);
 
 // /manage/user
 export const userSearch = writable('')
+
+// /manage/rebalance
+export const balances = writable()

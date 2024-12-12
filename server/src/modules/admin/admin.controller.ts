@@ -8,6 +8,7 @@ import {
   Query,
   Delete,
   Param,
+  HttpStatus,
 } from '@nestjs/common';
 import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -35,6 +36,7 @@ import {
 import { AdminGrowService } from './growdata/adminGrow.service';
 import { AdminSpotService } from './spotData/adminSpot.service';
 import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
+import { AdminRebalanceService } from './rebalance/adminRebalance.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
@@ -43,6 +45,7 @@ import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
 export class AdminController {
   constructor(
     private readonly adminStrategyService: AdminStrategyService,
+    private readonly adminRebalanceService: AdminRebalanceService,
     private readonly adminGrowService: AdminGrowService,
     private readonly adminSpotService: AdminSpotService,
   ) {}
@@ -251,6 +254,35 @@ export class AdminController {
   // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {
   //   return this.adminService.getStrategyPerformance(strategyKey);
   // }
+
+  // Admin rebalance endpoints
+  @Get('rebalance/all-balances')
+  async getAllBalances() {
+    return this.adminRebalanceService.getAllBalances();
+  }
+
+  @Get('rebalance/balance/:keyLabel')
+  @ApiOperation({ summary: 'Get balance by key label' })
+  @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getBalanceByKeyLabel(@Param('keyLabel') keyLabel: string) {
+    try {
+      const result = await this.adminRebalanceService.getBalanceByKeyLabel(
+        keyLabel,
+      );
+      return {
+        code: HttpStatus.OK,
+        message: 'Balance retrieved successfully',
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error retrieving balance',
+        error: e.message,
+      };
+    }
+  }
 
   // Admin growdata endpoints
   // Exchange endpoints

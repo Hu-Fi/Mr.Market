@@ -1,9 +1,21 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Body,
+  Param,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
-import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
+import {
+  ExchangeAPIKeysConfigDto,
+  ExchangeDepositDto,
+  ExchangeWithdrawalDto,
+} from './exchange.dto';
 
 // This API is used for admin page to do rebalance
 @ApiTags('exchange')
@@ -20,9 +32,19 @@ export class ExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async createWithdrawal(data: ExchangeWithdrawalDto) {
     try {
-      return this.exchagneService.createWithdrawal(data);
+      const result = await this.exchagneService.createWithdrawal(data);
+      return {
+        code: HttpStatus.OK,
+        message: 'Withdrawal created successfully',
+        data: result,
+      };
     } catch (e) {
       this.logger.error(`Create withdrawal error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error creating withdrawal',
+        error: e.message,
+      };
     }
   }
 
@@ -32,14 +54,105 @@ export class ExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getDepositAddress(data: ExchangeDepositDto) {
     try {
-      return this.exchagneService.getDepositAddress(data);
+      const result = await this.exchagneService.getDepositAddress(data);
+      return {
+        code: HttpStatus.OK,
+        message: 'Deposit address retrieved successfully',
+        data: result,
+      };
     } catch (e) {
       this.logger.error(`Get deposit address error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error retrieving deposit address',
+        error: e.message,
+      };
     }
   }
 
   @Get('/spot-orders')
   async getAllSpotOrders() {
-    return await this.exchagneService.getAllSpotOrders();
+    try {
+      const result = await this.exchagneService.getAllSpotOrders();
+      return {
+        code: HttpStatus.OK,
+        message: 'Spot orders retrieved successfully',
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get spot orders error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error retrieving spot orders',
+        error: e.message,
+      };
+    }
+  }
+
+  @Post('/api-key/add')
+  @ApiOperation({ summary: 'Add exchange API key' })
+  @ApiResponse({ status: 200, description: 'API key added successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async addApiKey(@Body() data: ExchangeAPIKeysConfigDto) {
+    try {
+      const result = await this.exchagneService.addApiKey(data);
+      return {
+        code: HttpStatus.OK,
+        message: 'API key added successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error adding API key',
+        error: error.message,
+      };
+    }
+  }
+
+  @Get('/api-key/all')
+  @ApiOperation({ summary: 'Get all exchange API keys' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved all API keys successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getAllApiKeys() {
+    try {
+      const result = await this.exchagneService.readAllAPIKeys();
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get API keys error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error retrieving API keys',
+        error: e.message,
+      };
+    }
+  }
+
+  @Post('/api-key/remove/:keyId')
+  @ApiOperation({ summary: 'Remove exchange API key' })
+  @ApiResponse({ status: 200, description: 'API key removed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async removeApiKey(@Param('keyId') keyId: string) {
+    try {
+      const result = await this.exchagneService.removeAPIKey(keyId);
+      return {
+        code: HttpStatus.OK,
+        message: 'API key removed successfully',
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Remove API key error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error removing API key',
+        error: e.message,
+      };
+    }
   }
 }

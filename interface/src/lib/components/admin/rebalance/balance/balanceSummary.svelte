@@ -1,30 +1,25 @@
 <script>
   import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+  import { balances } from "$lib/stores/admin";
   import BalanceCard from './balanceSimpleCard.svelte';
+  import Loading from "$lib/components/common/loading.svelte";
+  import { getAllBalances } from "$lib/helpers/hufi/admin/rebalance";
 
-  let balances = [
-    {
-      name: "Mixin",
-      total: "$5000",
-      percentage: "10",
-      assets: [
-        { symbol: "USDT", amount: "$1000", },
-        { symbol: "BTC", amount: "$1000" },
-        { symbol: "ETH", amount: "$1000" },
-      ],
-    },
-    {
-      name: "Binance",
-      total: "$5000",
-      percentage: "10",
-      assets: [
-        { symbol: "BTC", amount: "0.0001" },
-        { symbol: "ETH", amount: "0.002" },
-        { symbol: "SOL", amount: "1000" },
-      ],
-    },
-  ];
+  let balance = [];
+  let balanceLoading = false;
+
+  onMount(async () => {
+    const token = localStorage.getItem('admin-access-token');
+    if (token) {
+      balanceLoading = true;
+      balance = await getAllBalances(token);
+      balances.set(balance);
+    }
+    balanceLoading = false;
+    console.log(balance);
+  });
 </script>
 
 <!-- Balances Section -->
@@ -43,9 +38,11 @@
    </div>
 
   <!-- Top Balances Section -->
-  <div class="flex space-x-4">
-    {#if balances.length > 0}
-      {#each balances as info}
+  <div class="flex flex-wrap items-center gap-4">
+    {#if balanceLoading}
+      <Loading />
+    {:else if balance.length > 0}
+      {#each balance as info}
         <BalanceCard {info} />
       {/each}
     {:else}

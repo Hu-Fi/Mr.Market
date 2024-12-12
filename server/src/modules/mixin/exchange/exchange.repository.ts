@@ -48,7 +48,9 @@ export class ExchangeRepository {
     return await this.apiKeysRepository.find();
   }
 
-  async readAllAPIKeysByExchange(exchange: string): Promise<exchangeAPIKeysConfig[]> {
+  async readAllAPIKeysByExchange(
+    exchange: string,
+  ): Promise<exchangeAPIKeysConfig[]> {
     return await this.apiKeysRepository.find({ where: { exchange } });
   }
 

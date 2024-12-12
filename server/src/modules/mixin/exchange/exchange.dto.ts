@@ -36,3 +36,23 @@ export class ExchangeDepositDto {
   @ApiProperty({ description: 'The chain of asset' })
   network: string;
 }
+
+export class ExchangeAPIKeysConfigDto {
+  @ApiProperty({ description: 'The UUID used for identity API key' })
+  key_id: string;
+
+  @ApiProperty({ description: 'The ccxt identifier of exchange' })
+  exchange: string;
+
+  @ApiProperty({ description: 'The name(alias) of API key' })
+  name: string;
+
+  @ApiProperty({ description: 'The API Key' })
+  api_key: string;
+
+  @ApiProperty({ description: 'The secret' })
+  api_secret: string;
+
+  @ApiProperty({ description: 'The extra information', required: false })
+  api_extra: string;
+}

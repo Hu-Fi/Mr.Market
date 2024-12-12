@@ -190,6 +190,8 @@ export class ExchangeService {
     }
   }
 
+  // getAllAPIKeysBalance return all balances based on api key
+  // aggregateBalancesByExchange concrate all api keys balance by exchange
   aggregateBalancesByExchange(successfulBalances: any[]): AggregatedBalances {
     return successfulBalances.reduce((acc, curr) => {
       const { exchange, balance } = curr;
@@ -211,6 +213,19 @@ export class ExchangeService {
 
       return acc;
     }, {});
+  }
+
+  async getBalanceByKeyLabel(keyLabel: string) {
+    const apiKeys = await this.exchangeRepository.readAllAPIKeys();
+    const apiKey = apiKeys.find((key) => key.name === keyLabel);
+    if (!apiKey) {
+      return null;
+    }
+    return await this.getBalance(
+      apiKey.exchange,
+      apiKey.api_key,
+      apiKey.api_secret,
+    );
   }
 
   async getBalance(

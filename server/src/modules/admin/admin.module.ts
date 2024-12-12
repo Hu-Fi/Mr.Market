@@ -18,6 +18,9 @@ import { GrowdataModule } from '../growdata/growdata.module';
 import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
 import { AdminSpotService } from './spotData/adminSpot.service';
 import { SpotdataModule } from '../spotdata/spotdata.module';
+import { AdminRebalanceService } from './rebalance/adminRebalance.service';
+import { ExchangeModule } from '../mixin/exchange/exchange.module';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
@@ -34,10 +37,13 @@ import { SpotdataModule } from '../spotdata/spotdata.module';
     ]),
     TradeModule,
     Web3Module,
+    ExchangeModule,
+    LoggerModule,
   ],
   controllers: [AdminController],
   providers: [
     AdminStrategyService,
+    AdminRebalanceService,
     StrategyService,
     PerformanceService,
     TradeService,
@@ -45,6 +51,11 @@ import { SpotdataModule } from '../spotdata/spotdata.module';
     AdminGrowService,
     AdminSpotService,
   ],
-  exports: [AdminStrategyService, AdminGrowService, AdminSpotService],
+  exports: [
+    AdminStrategyService,
+    AdminGrowService,
+    AdminSpotService,
+    AdminRebalanceService,
+  ],
 })
 export class AdminModule {}
