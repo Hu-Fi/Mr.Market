@@ -6,11 +6,11 @@ import { MessageService } from 'src/modules/mixin/message/message.service';
 import { UserService } from 'src/modules/mixin/user/user.service';
 import { MessageRepository } from 'src/modules/mixin/message/message.repository';
 import { UserModule } from 'src/modules/mixin/user/user.module';
-import { MessageController } from 'src/modules/mixin/message/message.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([MixinMessage]), UserModule],
-  controllers: [MessageController],
+  controllers: [],
   providers: [MessageService, ConfigService, UserService, MessageRepository],
+  exports: [MessageService],
 })
-export class MessageModule {}
+export class MixinMessageModule {}

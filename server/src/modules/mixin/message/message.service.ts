@@ -3,7 +3,7 @@
  *
  * This service handles Mixin messages, including adding message history, checking for message existence,
  * sending and broadcasting messages, and managing the Mixin message handler. It interacts with the Mixin
- * network and manages user messages and notifications.
+ * messenger and manages user messages and notifications.
  *
  * Dependencies:
  * - ConfigService: Provides configuration values from environment variables.

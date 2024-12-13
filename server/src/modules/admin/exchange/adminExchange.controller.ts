@@ -7,26 +7,31 @@ import {
   Param,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { CustomLogger } from 'src/modules/logger/logger.service';
-import { ExchangeService } from './exchange.service';
+import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import {
   ExchangeAPIKeysConfigDto,
   ExchangeDepositDto,
   ExchangeWithdrawalDto,
-} from './exchange.dto';
+} from 'src/modules/mixin/exchange/exchange.dto';
 
-// This API is used for admin page to do rebalance
-@ApiTags('exchange')
-@Controller('exchange')
+@ApiTags('admin/exchange')
+@Controller('admin/exchange')
 @UseGuards(JwtAuthGuard)
-export class ExchangeController {
-  private readonly logger = new CustomLogger(ExchangeController.name);
+@ApiBearerAuth()
+export class AdminExchangeController {
+  private readonly logger = new CustomLogger(AdminExchangeController.name);
 
   constructor(private readonly exchagneService: ExchangeService) {}
 
-  @Post('/withdrawal/create')
+  @Post('withdrawal/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })
   @ApiResponse({ status: 200, description: 'Create withdrawal' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -48,7 +53,7 @@ export class ExchangeController {
     }
   }
 
-  @Post('/deposit/create')
+  @Post('deposit/create')
   @ApiOperation({ summary: 'Get deposit address with api key' })
   @ApiResponse({ status: 200, description: 'Get deposit address' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -70,7 +75,7 @@ export class ExchangeController {
     }
   }
 
-  @Get('/spot-orders')
+  @Get('spot-orders')
   async getAllSpotOrders() {
     try {
       const result = await this.exchagneService.getAllSpotOrders();
@@ -89,7 +94,7 @@ export class ExchangeController {
     }
   }
 
-  @Post('/api-key/add')
+  @Post('api-key/add')
   @ApiOperation({ summary: 'Add exchange API key' })
   @ApiResponse({ status: 200, description: 'API key added successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -110,7 +115,7 @@ export class ExchangeController {
     }
   }
 
-  @Get('/api-key/all')
+  @Get('api-key/all')
   @ApiOperation({ summary: 'Get all exchange API keys' })
   @ApiResponse({
     status: 200,
@@ -134,7 +139,7 @@ export class ExchangeController {
     }
   }
 
-  @Post('/api-key/remove/:keyId')
+  @Post('api-key/remove/:keyId')
   @ApiOperation({ summary: 'Remove exchange API key' })
   @ApiResponse({ status: 200, description: 'API key removed successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })

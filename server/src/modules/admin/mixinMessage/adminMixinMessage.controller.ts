@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -17,14 +18,15 @@ import {
   BroadcastMessageDto,
   PrivateMessageDto,
   RemoveMessagesDto,
-} from './message.dto';
-import { MessageService } from './message.service';
+} from 'src/modules/mixin/message/message.dto';
+import { MessageService } from 'src/modules/mixin/message/message.service';
 
-@ApiTags('message')
-@Controller('message')
+@ApiTags('admin/mixin_message')
+@Controller('admin/mixin_message')
 @UseGuards(JwtAuthGuard)
-export class MessageController {
-  private readonly logger = new CustomLogger(MessageController.name);
+@ApiBearerAuth()
+export class AdminMixinMessageController {
+  private readonly logger = new CustomLogger(AdminMixinMessageController.name);
 
   constructor(private readonly messageService: MessageService) {}
 
@@ -46,7 +48,7 @@ export class MessageController {
     }
   }
 
-  @Post('/pm')
+  @Post('/private_message')
   @ApiOperation({ summary: 'Private message to specific user' })
   @ApiResponse({ status: 200, description: 'Message sent successfully.' })
   @ApiBadRequestResponse({ description: 'Send message failed.' })

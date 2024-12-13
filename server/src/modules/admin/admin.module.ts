@@ -21,6 +21,14 @@ import { SpotdataModule } from '../spotdata/spotdata.module';
 import { AdminRebalanceService } from './rebalance/adminRebalance.service';
 import { ExchangeModule } from '../mixin/exchange/exchange.module';
 import { LoggerModule } from '../logger/logger.module';
+import { AdminExchangeController } from './exchange/adminExchange.controller';
+import { AdminRebalanceController } from './rebalance/adminRebalance.controller';
+import { AdminUserController } from './user/user.controller';
+import { UserModule } from '../mixin/user/user.module';
+import { AdminSpotController } from './spotData/adminSpot.controller';
+import { AdminGrowController } from './growdata/adminGrow.controller';
+import { AdminMixinMessageController } from './mixinMessage/adminMixinMessage.controller';
+import { MixinMessageModule } from '../mixin/message/message.module';
 
 @Module({
   imports: [
@@ -39,8 +47,18 @@ import { LoggerModule } from '../logger/logger.module';
     Web3Module,
     ExchangeModule,
     LoggerModule,
+    UserModule,
+    MixinMessageModule,
   ],
-  controllers: [AdminController],
+  controllers: [
+    AdminController,
+    AdminExchangeController,
+    AdminRebalanceController,
+    AdminSpotController,
+    AdminGrowController,
+    AdminUserController,
+    AdminMixinMessageController,
+  ],
   providers: [
     AdminStrategyService,
     AdminRebalanceService,

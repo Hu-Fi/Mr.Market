@@ -6,9 +6,6 @@ import {
   UseGuards,
   BadRequestException,
   Query,
-  Delete,
-  Param,
-  HttpStatus,
 } from '@nestjs/common';
 import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -27,28 +24,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  GrowdataArbitragePairDto,
-  GrowdataExchangeDto,
-  GrowdataMarketMakingPairDto,
-  GrowdataSimplyGrowTokenDto,
-} from './growdata/adminGrow.dto';
-import { AdminGrowService } from './growdata/adminGrow.service';
-import { AdminSpotService } from './spotData/adminSpot.service';
-import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
-import { AdminRebalanceService } from './rebalance/adminRebalance.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiTags('Admin')
 export class AdminController {
-  constructor(
-    private readonly adminStrategyService: AdminStrategyService,
-    private readonly adminRebalanceService: AdminRebalanceService,
-    private readonly adminGrowService: AdminGrowService,
-    private readonly adminSpotService: AdminSpotService,
-  ) {}
+  constructor(private readonly adminStrategyService: AdminStrategyService) {}
 
   // Admin strategy endpoints
   @Post('strategy/start')
@@ -254,190 +236,4 @@ export class AdminController {
   // async getStrategyPerformance(@Param('strategyKey') strategyKey: string) {
   //   return this.adminService.getStrategyPerformance(strategyKey);
   // }
-
-  // Admin rebalance endpoints
-  @Get('rebalance/all-balances')
-  async getAllBalances() {
-    return this.adminRebalanceService.getAllBalances();
-  }
-
-  @Get('rebalance/balance/:keyLabel')
-  @ApiOperation({ summary: 'Get balance by key label' })
-  @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getBalanceByKeyLabel(@Param('keyLabel') keyLabel: string) {
-    try {
-      const result = await this.adminRebalanceService.getBalanceByKeyLabel(
-        keyLabel,
-      );
-      return {
-        code: HttpStatus.OK,
-        message: 'Balance retrieved successfully',
-        data: result,
-      };
-    } catch (e) {
-      return {
-        code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error retrieving balance',
-        error: e.message,
-      };
-    }
-  }
-
-  // Admin growdata endpoints
-  // Exchange endpoints
-  @Post('grow/exchange/add')
-  @ApiOperation({ summary: 'Add a new exchange' })
-  @ApiBody({ type: GrowdataExchangeDto })
-  async addExchange(@Body() exchangeDto: GrowdataExchangeDto) {
-    return this.adminGrowService.addExchange(exchangeDto);
-  }
-
-  @Get('grow/exchange/supported')
-  @ApiOperation({ summary: 'Get supported exchanges by backend' })
-  async getSupportedExchanges() {
-    return this.adminStrategyService.getSupportedExchanges();
-  }
-
-  @Delete('grow/exchange/remove/:exchange_id')
-  @ApiOperation({ summary: 'Remove an exchange' })
-  async removeExchange(@Param('exchange_id') exchange_id: string) {
-    return this.adminGrowService.removeExchange(exchange_id);
-  }
-
-  @Delete('grow/exchange/remove-all')
-  @ApiOperation({ summary: 'Remove all exchanges' })
-  async removeAllExchanges() {
-    return this.adminGrowService.removeAllExchanges();
-  }
-
-  @Post('grow/exchange/update/:exchange_id')
-  @ApiOperation({ summary: 'Update an exchange' })
-  @ApiBody({ type: GrowdataExchangeDto })
-  async updateExchange(
-    @Param('exchange_id') exchange_id: string,
-    @Body() modifications: Partial<GrowdataExchangeDto>,
-  ) {
-    return this.adminGrowService.updateExchange(exchange_id, modifications);
-  }
-
-  // SimplyGrow token endpoints
-  @Post('grow/simply-grow/add')
-  @ApiOperation({ summary: 'Add a new SimplyGrow token' })
-  @ApiBody({ type: GrowdataSimplyGrowTokenDto })
-  async addSimplyGrowToken(@Body() tokenDto: GrowdataSimplyGrowTokenDto) {
-    return this.adminGrowService.addSimplyGrowToken(tokenDto);
-  }
-
-  @Delete('grow/simply-grow/remove/:asset_id')
-  @ApiOperation({ summary: 'Remove a SimplyGrow token' })
-  async removeSimplyGrowToken(@Param('asset_id') asset_id: string) {
-    return this.adminGrowService.removeSimplyGrowToken(asset_id);
-  }
-
-  @Delete('grow/simply-grow/remove-all')
-  @ApiOperation({ summary: 'Remove all SimplyGrow tokens' })
-  async removeAllSimplyGrowTokens() {
-    return this.adminGrowService.removeAllSimplyGrowTokens();
-  }
-
-  @Post('grow/simply-grow/update/:asset_id')
-  @ApiOperation({ summary: 'Update a SimplyGrow token' })
-  @ApiBody({ type: GrowdataSimplyGrowTokenDto })
-  async updateSimplyGrowToken(
-    @Param('asset_id') asset_id: string,
-    @Body() modifications: Partial<GrowdataSimplyGrowTokenDto>,
-  ) {
-    return this.adminGrowService.updateSimplyGrowToken(asset_id, modifications);
-  }
-
-  // Market making pair endpoints
-  @Post('grow/market-making/add')
-  @ApiOperation({ summary: 'Add a new market making pair' })
-  @ApiBody({ type: GrowdataMarketMakingPairDto })
-  async addMarketMakingPair(@Body() pairDto: GrowdataMarketMakingPairDto) {
-    return this.adminGrowService.addMarketMakingPair(pairDto);
-  }
-
-  @Delete('grow/market-making/remove/:id')
-  @ApiOperation({ summary: 'Remove a market making pair' })
-  async removeMarketMakingPair(@Param('id') id: string) {
-    return this.adminGrowService.removeMarketMakingPair(id);
-  }
-
-  @Delete('grow/market-making/remove-all')
-  @ApiOperation({ summary: 'Remove all market making pairs' })
-  async removeAllMarketMakingPairs() {
-    return this.adminGrowService.removeAllMarketMakingPairs();
-  }
-
-  @Post('grow/market-making/update/:id')
-  @ApiOperation({ summary: 'Update a market making pair' })
-  @ApiBody({ type: GrowdataMarketMakingPairDto })
-  async updateMarketMakingPair(
-    @Param('id') id: string,
-    @Body() modifications: Partial<GrowdataMarketMakingPairDto>,
-  ) {
-    return this.adminGrowService.updateMarketMakingPair(id, modifications);
-  }
-
-  // Arbitrage pair endpoints
-  @Post('grow/arbitrage/add')
-  @ApiOperation({ summary: 'Add a new arbitrage pair' })
-  @ApiBody({ type: GrowdataArbitragePairDto })
-  async addArbitragePair(@Body() pairDto: GrowdataArbitragePairDto) {
-    return this.adminGrowService.addArbitragePair(pairDto);
-  }
-
-  @Delete('grow/arbitrage/remove/:id')
-  @ApiOperation({ summary: 'Remove an arbitrage pair' })
-  async removeArbitragePair(@Param('id') id: string) {
-    return this.adminGrowService.removeArbitragePair(id);
-  }
-
-  @Delete('grow/arbitrage/remove-all')
-  @ApiOperation({ summary: 'Remove all arbitrage pairs' })
-  async removeAllArbitragePairs() {
-    return this.adminGrowService.removeAllArbitragePairs();
-  }
-
-  @Post('grow/arbitrage/update/:id')
-  @ApiOperation({ summary: 'Update an arbitrage pair' })
-  @ApiBody({ type: GrowdataArbitragePairDto })
-  async updateArbitragePair(
-    @Param('id') id: string,
-    @Body() modifications: Partial<GrowdataArbitragePairDto>,
-  ) {
-    return this.adminGrowService.updateArbitragePair(id, modifications);
-  }
-
-  // Spot trading pair endpoints
-  @Post('spot/trading-pair/add')
-  @ApiOperation({ summary: 'Add a new spot trading pair' })
-  @ApiBody({ type: SpotdataTradingPairDto })
-  async addTradingPair(@Body() pairDto: SpotdataTradingPairDto) {
-    return this.adminSpotService.addTradingPair(pairDto);
-  }
-
-  @Delete('spot/trading-pair/remove/:id')
-  @ApiOperation({ summary: 'Remove a spot trading pair' })
-  async removeTradingPair(@Param('id') id: string) {
-    return this.adminSpotService.removeTradingPair(id);
-  }
-
-  @Delete('spot/trading-pair/remove-all')
-  @ApiOperation({ summary: 'Remove all spot trading pairs' })
-  async removeAllTradingPairs() {
-    return this.adminSpotService.removeAllTradingPairs();
-  }
-
-  @Post('spot/trading-pair/update/:id')
-  @ApiOperation({ summary: 'Update a spot trading pair' })
-  @ApiBody({ type: SpotdataTradingPairDto })
-  async updateTradingPair(
-    @Param('id') id: string,
-    @Body() modifications: Partial<SpotdataTradingPairDto>,
-  ) {
-    return this.adminSpotService.updateTradingPair(id, modifications);
-  }
 }

@@ -1,8 +1,8 @@
 // exchange.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExchangeController } from './exchange.controller';
-import { ExchangeService } from './exchange.service';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { ExchangeController } from './adminExchange.controller';
+import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 describe('ExchangeController', () => {
   let controller: ExchangeController;

@@ -14,11 +14,11 @@
 <div class="text-xl font-bold">{$_("actions")}</div>
 
 <!-- Actions Section -->
-<div class="grid grid-cols-3 gap-4">
+<div class="grid grid-cols-5 gap-4">
   {#each items as item}
   <div class="stats shadow">
     <div class="stat">
-      <button class="stat-value my-1 mr-2 text-lg" on:click={()=>{item.fn()}}>
+      <button class="stat-value my-1 mr-2 text-base" on:click={()=>{item.fn()}}>
           {$_(item.name)}
         </button>
       </div>

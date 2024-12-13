@@ -9,7 +9,6 @@ import {
   MixinReleaseHistory,
   MixinReleaseToken,
 } from 'src/common/entities/mixin-release.entity';
-import { ExchangeController } from './exchange.controller';
 import { ExchangeUserController } from './exchange-client.controller';
 
 @Module({
@@ -23,6 +22,6 @@ import { ExchangeUserController } from './exchange-client.controller';
   ],
   providers: [ExchangeService, ExchangeRepository],
   exports: [ExchangeService, ExchangeRepository],
-  controllers: [ExchangeController, ExchangeUserController],
+  controllers: [ExchangeUserController],
 })
 export class ExchangeModule {}
