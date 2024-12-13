@@ -6,7 +6,7 @@
   import { getAllBalances } from '$lib/helpers/hufi/admin/rebalance';
   import BalancesComplexCard from '$lib/components/admin/rebalance/balance/balancsComplexCard.svelte';
 
-  let isRefresh = false;
+  let isRefresh = 'false';
   let balancesLoading = false;
   let balances = [];
 
@@ -21,7 +21,7 @@
       const resp = await getAllBalances(token, isRefresh);
       balances = resp.data;
       balancesLoading = false;
-      if (isRefresh) {
+      if (isRefresh == 'true') {
         toast.success(`${$_("refresh_success")}! (cache: 15s)`);
       }
     } else {
@@ -43,8 +43,8 @@
       <div class="text-xl font-bold">{$_("balance")}</div>
     </div>
     <div class="tooltip tooltip-bottom" data-tip={$_("refresh")}>
-      <button class="btn btn-ghost btn-circle" on:click={() => {isRefresh = true; refreshBalances()}}>
-        {#if balancesLoading && isRefresh}
+      <button class="btn btn-ghost btn-circle" on:click={() => {isRefresh = 'true'; refreshBalances()}}>
+        {#if balancesLoading && isRefresh == 'true'}
           <span class="loading loading-spinner loading-sm" />
         {:else}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">

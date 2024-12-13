@@ -18,13 +18,14 @@ export class AdminRebalanceService {
   private cachingTTL = 15; // 15 seconds
 
   // 1. Get all balances
-  async getAllBalances(disableCache: boolean) {
+  async getAllBalances(disableCache: string) {
     const cacheKey = `admin-rebalance-balances`;
-    if (!disableCache) {
+    this.logger.debug('Getting all balances disableCache: ' + disableCache);
+    if (disableCache == 'false') {
       this.logger.debug('Getting all balances from cache');
       const cachedData = await this.cacheService.get(cacheKey);
       if (cachedData) {
-        this.logger.debug('Balances retrieved from cache');
+        this.logger.debug('Balances retrieved from cache ' + cachedData);
         return cachedData;
       }
     }
@@ -84,7 +85,7 @@ export class AdminRebalanceService {
     amount: string;
   }) {
     this.logger.log(`Depositing to ${params.destination}`);
-    // TODO: Implement deposit logic
+    
   }
 
   // 7. Withdraw from mixin or exchange

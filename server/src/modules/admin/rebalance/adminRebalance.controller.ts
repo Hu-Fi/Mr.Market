@@ -11,6 +11,7 @@ import { AdminRebalanceService } from 'src/modules/admin/rebalance/adminRebalanc
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -25,7 +26,8 @@ export class AdminRebalanceController {
   @ApiOperation({ summary: 'Get all balances' })
   @ApiResponse({ status: 200, description: 'Balances retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getAllBalances(@Param('disableCache') disableCache: boolean = false) {
+  @ApiQuery({ name: 'disableCache', type: String, required: false })
+  async getAllBalances(@Query('disableCache') disableCache: string) {
     try {
       const result = await this.adminRebalanceService.getAllBalances(
         disableCache,

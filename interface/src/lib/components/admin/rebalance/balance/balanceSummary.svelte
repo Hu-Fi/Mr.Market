@@ -14,7 +14,7 @@
     const token = localStorage.getItem('admin-access-token');
     if (token) {
       balanceLoading = true;
-      const resp = await getAllBalances(token);
+      const resp = await getAllBalances(token, 'false');
       balance = resp.data;
       balances.set(balance);
     }

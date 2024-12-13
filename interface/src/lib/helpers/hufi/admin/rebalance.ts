@@ -2,7 +2,7 @@ import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
 // Get all balances
-export const getAllBalances = async (token: string, disableCache = false): Promise<unknown> => {
+export const getAllBalances = async (token: string, disableCache: string = 'false'): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/all-balances?disableCache=${disableCache}`, {
       method: 'GET',
