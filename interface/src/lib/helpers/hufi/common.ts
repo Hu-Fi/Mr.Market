@@ -10,9 +10,17 @@ export const handleApiResponse = async (response: Response) => {
     tokenExpired();
     throw new Error('Unauthorized access - possibly invalid token');
   }
+  if (response.status === 400) {
+    const errorText = await response.json();
+    throw new Error(`Bad request: ${errorText.message}`);
+  }
+  if (response.status === 500) {
+    const errorText = await response.json();
+    throw new Error(`Internal server error: ${errorText.message}`);
+  }
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Network response was not ok: ${errorText}`);
+    const errorText = await response.json();
+    throw new Error(`Network response was not ok: ${errorText.message}`);
   }
   return response.json();
 };

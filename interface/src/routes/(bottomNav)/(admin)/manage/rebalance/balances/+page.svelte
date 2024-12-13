@@ -18,7 +18,8 @@
     const token = localStorage.getItem('admin-access-token');
     if (token) {
       balancesLoading = true;
-      balances = await getAllBalances(token, isRefresh);
+      const resp = await getAllBalances(token, isRefresh);
+      balances = resp.data;
       balancesLoading = false;
       if (isRefresh) {
         toast.success(`${$_("refresh_success")}! (cache: 15s)`);

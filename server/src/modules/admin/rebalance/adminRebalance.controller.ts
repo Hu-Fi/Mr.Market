@@ -21,13 +21,25 @@ import {
 @ApiBearerAuth()
 export class AdminRebalanceController {
   constructor(private readonly adminRebalanceService: AdminRebalanceService) {}
-
   @Get('all-balances')
   @ApiOperation({ summary: 'Get all balances' })
   @ApiResponse({ status: 200, description: 'Balances retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getAllBalances(@Param('disableCache') disableCache: boolean = false) {
-    return this.adminRebalanceService.getAllBalances(disableCache);
+    try {
+      const result = await this.adminRebalanceService.getAllBalances(
+        disableCache,
+      );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving balances: ${e.message}`,
+      };
+    }
   }
 
   @Get('balance/:keyLabel')
