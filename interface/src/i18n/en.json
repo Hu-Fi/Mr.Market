@@ -362,5 +362,7 @@
   "welcome_to_admin_panel": "Welcome to the admin panel!",
   "rebalance_records": "Rebalance records",
   "source": "Source",
-  "destination": "Destination"
+  "destination": "Destination",
+  "refresh_success": "Refresh success",
+  "refresh_failed": "Refresh failed"
 }

@@ -1,9 +1,9 @@
 import { Cache } from 'cache-manager';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
 import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
 import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class GrowdataService {
     } catch (error) {
       this.logger.error('Error fetching grow data', error.stack);
       return {
-        statusCode: 500,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Internal server error',
         error: error.message,
       };

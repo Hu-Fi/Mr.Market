@@ -67,7 +67,7 @@ describe('HealthService', () => {
   describe('getExchangeHealth', () => {
     it('should return health status of a specific exchange', async () => {
       const healthStatus = await service.getExchangeHealth('binance');
-      expect(healthStatus).toEqual({ statusCode: 200, message: 'alive' });
+      expect(healthStatus).toEqual({ code: 200, message: 'alive' });
     });
 
     it('should throw BadRequestException if exchange not found', async () => {

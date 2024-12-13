@@ -176,6 +176,6 @@ export class HealthService {
         `Exchange ${exchange.name} is dead`,
       );
     }
-    return { statusCode: 200, message: 'alive' as HEALTH_STATE };
+    return { code: 200, message: 'alive' as HEALTH_STATE };
   }
 }

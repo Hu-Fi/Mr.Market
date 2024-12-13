@@ -82,7 +82,7 @@ export class CustomLogger extends Logger {
         content: `${level} [${this.context}]: ${message}`,
       });
     } catch (error) {
-      super.error('Failed to send log to Discord', error.message);
+      super.error(`Failed to send log to Discord: ${error.message}`);
     }
   }
 
@@ -97,7 +97,7 @@ export class CustomLogger extends Logger {
         data: message,
       });
     } catch (error) {
-      super.error('Failed to send log to Mixin Group', error.message);
+      super.error(`Failed to send log to Mixin Group: ${error.message}`);
     }
   }
 

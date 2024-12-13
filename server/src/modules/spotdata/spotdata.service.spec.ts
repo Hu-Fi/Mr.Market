@@ -170,7 +170,7 @@ describe('SpotdataService', () => {
 
       const result = await service.getSpotData();
       expect(result).toEqual({
-        statusCode: 500,
+        code: 500,
         message: 'Internal server error',
         error: 'Database error',
       });

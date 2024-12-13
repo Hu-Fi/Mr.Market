@@ -1,5 +1,5 @@
 import { Cache } from 'cache-manager';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
@@ -27,7 +27,7 @@ export class SpotdataService {
     } catch (error) {
       this.logger.error('Failed to get spot data', error.message);
       return {
-        statusCode: 500,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Internal server error',
         error: error.message,
       };

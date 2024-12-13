@@ -1,5 +1,12 @@
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { Controller, Get, Param, UseGuards, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { AdminRebalanceService } from 'src/modules/admin/rebalance/adminRebalance.service';
 import {
   ApiBearerAuth,
@@ -19,8 +26,8 @@ export class AdminRebalanceController {
   @ApiOperation({ summary: 'Get all balances' })
   @ApiResponse({ status: 200, description: 'Balances retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getAllBalances() {
-    return this.adminRebalanceService.getAllBalances();
+  async getAllBalances(@Param('disableCache') disableCache: boolean = false) {
+    return this.adminRebalanceService.getAllBalances(disableCache);
   }
 
   @Get('balance/:keyLabel')

@@ -10,14 +10,6 @@ export async function load() {
     const pairs = getSpotTradingPairs()
     const growInfo = getGrowBasicInfo()
     const spotInfo = getSpotInfo()
-    console.log (
-      {
-        market,
-        pairs,
-        growInfo,
-        spotInfo
-      }
-    )
     return {
       market,
       pairs,

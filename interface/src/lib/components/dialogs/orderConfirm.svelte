@@ -77,7 +77,7 @@
     var interval = setInterval(async () => {
       const orderDetail = await getOrderById(trace);
       totalTime += ORDER_STATE_FETCH_INTERVAL;
-      if (orderDetail.statusCode === 500) {
+      if (orderDetail.code === 500) {
         return;
       } else if (orderDetail.orderId) {
         clearInterval(interval);

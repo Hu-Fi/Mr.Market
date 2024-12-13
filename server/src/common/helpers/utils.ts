@@ -1,9 +1,4 @@
-import {
-  PairsMapKey,
-  PairsMapValue,
-  SymbolAssetIdMapKey,
-  SymbolAssetIdMapValue,
-} from 'src/common/types/pairs/pairs';
+import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 import BigNumber from 'bignumber.js';
 import {
   PAIRS_MAP,

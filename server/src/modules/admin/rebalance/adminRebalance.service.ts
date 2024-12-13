@@ -1,5 +1,7 @@
 // Admin Rebalance service
-import { Injectable } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
@@ -8,17 +10,33 @@ import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service'
 export class AdminRebalanceService {
   private readonly logger = new CustomLogger(AdminRebalanceService.name);
   constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
   ) {}
 
+  private cachingTTL = 15; // 15 seconds
+
   // 1. Get all balances
-  async getAllBalances() {
-    this.logger.debug('Getting all balances');
+  async getAllBalances(disableCache: boolean) {
+    const cacheKey = `admin-rebalance-balances`;
+    if (!disableCache) {
+      this.logger.debug('Getting all balances from cache');
+      const cachedData = await this.cacheService.get(cacheKey);
+      if (cachedData) {
+        this.logger.debug('Balances retrieved from cache');
+        return cachedData;
+      }
+    }
+    this.logger.debug('Getting all balances from database');
     const snapshot = await this.snapshotService.getAllAssetBalancesCCXT();
     const exchange = await this.exchangeService.getAllAPIKeysBalance();
-    exchange.push(snapshot);
-    return exchange;
+    const result = [snapshot, ...exchange];
+    if (result) {
+      this.logger.debug('Caching all balances');
+      await this.cacheService.set(cacheKey, result, this.cachingTTL);
+    }
+    return result;
   }
 
   // 2. Get balance by key label
