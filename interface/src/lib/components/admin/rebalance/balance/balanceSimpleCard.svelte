@@ -1,6 +1,7 @@
 <script>
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import emptyToken from '$lib/images/empty-token.svg';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   export let info = {
     "key_id": 2,
@@ -29,20 +30,19 @@
 </script>
 
 <div class="tooltip tooltip-top" data-tip={`ID: ${info.key_id}`}>
-  <button class="text-left stats shadow" on:click={() => {goto(`/manage/rebalance/balances/${info.name}`)}}>
-    <div class="stat">
-      <div class="stat-value">{info.name}</div>
-      <div class="stat-title">
-        {Object.keys(info.balance.total).length} {$_("assets")}
-      </div>
-
-      <div class="stat-figure text-secondary pl-6">
+  <button class="stats shadow" on:click={() => {goto(`/manage/rebalance/balances/${info.name}`)}}>
+    <div class="stat text-left">
+      <div class="stat-figure text-green-500">
         <div class="avatar">
-          <div class="w-12 rounded-full">
-            <img src={findExchangeIconByIdentifier(info.exchange)} alt="" />
+          <div class="mask mask-squircle w-8 h-8">
+            <img src={findExchangeIconByIdentifier(info.exchange) || emptyToken} alt="" />
           </div>
         </div>
       </div>
+      <div class="stat-title">
+        <span class="capitalize">{info.name}</span>
+      </div>
+      <div class="stat-value my-1 mr-2">{Object.keys(info.balance.total).length} assets</div>
     </div>
   </button>
 </div>

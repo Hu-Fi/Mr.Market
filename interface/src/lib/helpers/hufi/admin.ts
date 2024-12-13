@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { goto } from "$app/navigation";
+import toast from 'svelte-french-toast';
 import { HUFI_BACKEND_URL } from "../constants"
 import type { AdminPasswordResp } from "$lib/types/hufi/admin"
 import { submitted, checked, correct } from "$lib/stores/admin";
@@ -60,5 +61,13 @@ export const exit = () => {
   correct.set(false);
   localStorage.removeItem('admin-password')
   localStorage.removeItem('admin-access-token')
+  toast.error('Session expired', {position:'top-center', duration: 2000})
+  goto('/manage')
+}
+
+export const tokenExpired = () => {
+  correct.set(false);
+  submitted.set(false);
+  checked.set(false);
   goto('/manage')
 }

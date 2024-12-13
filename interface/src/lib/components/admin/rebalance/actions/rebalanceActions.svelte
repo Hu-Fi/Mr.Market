@@ -14,7 +14,7 @@
 <div class="text-xl font-bold">{$_("actions")}</div>
 
 <!-- Actions Section -->
-<div class="grid grid-cols-5 gap-4">
+<div class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-5 justify-center items-center gap-4">
   {#each items as item}
   <div class="stats shadow">
     <div class="stat">

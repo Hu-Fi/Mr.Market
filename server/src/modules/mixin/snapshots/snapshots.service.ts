@@ -30,6 +30,7 @@ import {
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from 'src/common/helpers/mixin/memo';
+import { getSymbolByAssetID } from 'src/common/helpers/utils';
 
 @Injectable()
 export class SnapshotsService {
@@ -387,21 +388,48 @@ export class SnapshotsService {
         return acc;
       }, {});
 
-      // Calculate total balance for each asset
-      const assetBalances = Object.entries(groupedByAssetId).reduce(
+      // Calculate total balance for each asset and map to symbols
+      const symbolBalances = Object.entries(groupedByAssetId).reduce(
         (acc, [assetId, outputs]) => {
           // @ts-expect-error types
           const totalBalance = getTotalBalanceFromOutputs(outputs);
-          acc[assetId] = totalBalance.toString(); // Assuming you want the balance as a string
+          const symbol = getSymbolByAssetID(assetId); // Convert asset ID to symbol
+          if (symbol) {
+            acc[symbol] = totalBalance.toString(); // Assuming you want the balance as a string
+          } else {
+            this.logger.warn(`Symbol not found for asset ID: ${assetId}`);
+          }
           return acc;
         },
         {},
       );
 
-      // map of AssetID: Balance
-      return assetBalances;
+      // map of Symbol: Balance
+      return symbolBalances;
     } catch (error) {
       this.logger.error(`Error fetching asset balances: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async getAllAssetBalancesCCXT() {
+    try {
+      const symbolBalances = await this.getAllAssetBalances();
+
+      const formattedBalances = {
+        balance: {
+          free: symbolBalances,
+          total: symbolBalances,
+          used: {},
+        },
+        exchange: 'mixin',
+        key_id: 0,
+        name: 'Mixin',
+      };
+
+      return formattedBalances;
+    } catch (error) {
+      this.logger.error(`Error formatting balances to CCXT: ${error.message}`);
       throw error;
     }
   }

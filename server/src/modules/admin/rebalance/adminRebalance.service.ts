@@ -2,21 +2,28 @@
 import { Injectable } from '@nestjs/common';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
+import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 
 @Injectable()
 export class AdminRebalanceService {
   private readonly logger = new CustomLogger(AdminRebalanceService.name);
-  constructor(private exchangeService: ExchangeService) {}
+  constructor(
+    private exchangeService: ExchangeService,
+    private snapshotService: SnapshotsService,
+  ) {}
 
   // 1. Get all balances
   async getAllBalances() {
-    this.logger.log('Getting all balances');
-    return await this.exchangeService.getAllAPIKeysBalance();
+    this.logger.debug('Getting all balances');
+    const snapshot = await this.snapshotService.getAllAssetBalancesCCXT();
+    const exchange = await this.exchangeService.getAllAPIKeysBalance();
+    exchange.push(snapshot);
+    return exchange;
   }
 
   // 2. Get balance by key label
   async getBalanceByKeyLabel(keyLabel: string) {
-    this.logger.log(`Getting balance for key label: ${keyLabel}`);
+    this.logger.debug(`Getting balance for key label: ${keyLabel}`);
     return await this.exchangeService.getBalanceByKeyLabel(keyLabel);
   }
 

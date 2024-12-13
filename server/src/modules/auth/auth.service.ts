@@ -87,7 +87,7 @@ export class AuthService {
     }
 
     const payload = { username: 'admin' };
-    return this.jwtService.sign(payload, { expiresIn: '120m' });
+    return this.jwtService.sign(payload, { expiresIn: '1d' });
   }
 
   /**

@@ -44,7 +44,7 @@ export class CampaignService {
       this.logger.log('Finished getting HuFi campaigns');
       return data;
     } catch (error) {
-      this.logger.error('Error getting HuFi campaigns', error.message);
+      this.logger.error(`Error getting HuFi campaigns: ${error.message}`);
       return [];
     }
   }

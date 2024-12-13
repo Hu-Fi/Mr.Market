@@ -19,26 +19,26 @@ export class AdminSpotController {
   constructor(private readonly adminSpotService: AdminSpotService) {}
 
   // Spot trading pair endpoints
-  @Post('spot/trading-pair/add')
+  @Post('trading-pair/add')
   @ApiOperation({ summary: 'Add a new spot trading pair' })
   @ApiBody({ type: SpotdataTradingPairDto })
   async addTradingPair(@Body() pairDto: SpotdataTradingPairDto) {
     return this.adminSpotService.addTradingPair(pairDto);
   }
 
-  @Delete('spot/trading-pair/remove/:id')
+  @Delete('trading-pair/remove/:id')
   @ApiOperation({ summary: 'Remove a spot trading pair' })
   async removeTradingPair(@Param('id') id: string) {
     return this.adminSpotService.removeTradingPair(id);
   }
 
-  @Delete('spot/trading-pair/remove-all')
+  @Delete('trading-pair/remove-all')
   @ApiOperation({ summary: 'Remove all spot trading pairs' })
   async removeAllTradingPairs() {
     return this.adminSpotService.removeAllTradingPairs();
   }
 
-  @Post('spot/trading-pair/update/:id')
+  @Post('trading-pair/update/:id')
   @ApiOperation({ summary: 'Update a spot trading pair' })
   @ApiBody({ type: SpotdataTradingPairDto })
   async updateTradingPair(

@@ -29,12 +29,14 @@ import { AdminSpotController } from './spotData/adminSpot.controller';
 import { AdminGrowController } from './growdata/adminGrow.controller';
 import { AdminMixinMessageController } from './mixinMessage/adminMixinMessage.controller';
 import { MixinMessageModule } from '../mixin/message/message.module';
+import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
 
 @Module({
   imports: [
     ExchangeInitModule,
     GrowdataModule,
     SpotdataModule,
+    SnapshotsModule,
     TypeOrmModule.forFeature([
       MarketMakingHistory,
       ArbitrageHistory,

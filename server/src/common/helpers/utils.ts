@@ -50,10 +50,8 @@ export const getAssetIDBySymbol = (value: PairsMapValue) => {
   };
 };
 
-export const getSymbolByAssetID = (
-  asset_id: SymbolAssetIdMapValue,
-): SymbolAssetIdMapKey => {
-  return SYMBOL_ASSET_ID_MAP[asset_id] || '';
+export const getSymbolByAssetID = (asset_id: string): string => {
+  return ASSET_ID_SYMBOL_MAP[asset_id] || '';
 };
 
 export const getRFC3339Timestamp = () => {
