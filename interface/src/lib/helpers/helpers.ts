@@ -73,8 +73,12 @@ export const findExchangeIconByIdentifier = (identifier: string) => {
 // Input symbol to get Mixin image link
 export const findCoinIconBySymbol = (symbol: string) => {
   if (!symbol) return emptyToken;
-  // @ts-expect-error ingore import from json file
-  return mixinIcons[symbol.toUpperCase()];
+  symbol = symbol.toUpperCase();
+  if (symbol.includes('@')) {
+    symbol = symbol.split('@')[0];
+  }
+  // @ts-expect-error ignore import from json file
+  return mixinIcons[symbol] || emptyToken;
 }
 
 export const growPathChecker = ($page: Page, type: string) => {

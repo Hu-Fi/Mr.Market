@@ -14,7 +14,7 @@
 <main class="!px-0 !py-0 h-[100vh]">
   {#if $correct}
     <SideBar />
-    <div class="lg:ml-64">
+    <div class="lg:ml-64 h-full">
       <slot />
     </div>
   {:else}

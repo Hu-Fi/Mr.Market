@@ -5,9 +5,10 @@
   import Loading from '$lib/components/common/loading.svelte';
   import { getAllBalances } from '$lib/helpers/hufi/admin/rebalance';
   import BalancesComplexCard from '$lib/components/admin/rebalance/balance/balancsComplexCard.svelte';
+  import { balancesLoading } from '$lib/stores/admin';
+  import { get } from 'svelte/store';
 
   let isRefresh = 'false';
-  let balancesLoading = false;
   let balances = [];
 
   onMount(async () => {
@@ -17,10 +18,10 @@
   async function refreshBalances() {
     const token = localStorage.getItem('admin-access-token');
     if (token) {
-      balancesLoading = true;
+      balancesLoading.set(true);
       const resp = await getAllBalances(token, isRefresh);
       balances = resp.data;
-      balancesLoading = false;
+      balancesLoading.set(false);
       if (isRefresh == 'true') {
         toast.success(`${$_("refresh_success")}! (cache: 15s)`);
       }
@@ -44,7 +45,7 @@
     </div>
     <div class="tooltip tooltip-bottom" data-tip={$_("refresh")}>
       <button class="btn btn-ghost btn-circle" on:click={() => {isRefresh = 'true'; refreshBalances()}}>
-        {#if balancesLoading && isRefresh == 'true'}
+        {#if $balancesLoading && isRefresh == 'true'}
           <span class="loading loading-spinner loading-sm" />
         {:else}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
@@ -54,7 +55,7 @@
       </button>
     </div>
   </div>
-  {#if balancesLoading}
+  {#if $balancesLoading}
     <div class="flex justify-center items-center h-screen">
       <Loading />
     </div>

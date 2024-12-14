@@ -19,7 +19,6 @@
       balances.set(balance);
     }
     balanceLoading = false;
-    console.log(balance);
   });
 </script>
 

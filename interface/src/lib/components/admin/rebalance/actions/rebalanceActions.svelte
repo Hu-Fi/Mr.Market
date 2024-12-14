@@ -1,12 +1,13 @@
 <script>
+    import { goto } from "$app/navigation";
   import { _ } from "svelte-i18n";
 
   const items = [
-    {'name': 'transfer', fn: () => {console.log('transfer')}},
-    {'name': 'deposit', fn: () => {console.log('deposit')}},
-    {'name': 'withdraw', fn: () => {console.log('withdraw')}},
-    {'name': 'info', fn: () => {console.log('info')}},
-    {'name': 'settings', fn: () => {console.log('settings')}},
+    {'name': 'transfer', fn: () => {goto('/manage/rebalance/transfer')}},
+    {'name': 'deposit', fn: () => {goto('/manage/rebalance/deposit')}},
+    {'name': 'withdraw', fn: () => {goto('/manage/rebalance/withdraw')}},
+    {'name': 'info', fn: () => {goto('/manage/rebalance/info')}},
+    {'name': 'settings', fn: () => {goto('/manage/rebalance/settings')}},
   ];
 </script>
 

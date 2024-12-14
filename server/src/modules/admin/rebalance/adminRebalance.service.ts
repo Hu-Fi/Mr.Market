@@ -46,34 +46,9 @@ export class AdminRebalanceService {
     return await this.exchangeService.getBalanceByKeyLabel(keyLabel);
   }
 
-  // 3. Transfer from mixin to exchange
-  async transferMixinToExchange(params: {
-    assetId: string;
-    amount: string;
-    exchange: string;
-  }) {
-    this.logger.log('Transferring from Mixin to exchange');
-    // TODO: Implement transfer logic
-  }
-
-  // 4. Transfer from exchange to mixin
-  async transferExchangeToMixin(params: {
-    assetId: string;
-    amount: string;
-    exchange: string;
-  }) {
-    this.logger.log('Transferring from exchange to Mixin');
-    // TODO: Implement transfer logic
-  }
-
-  // 5. Transfer from exchange to exchange
-  async transferExchangeToExchange(params: {
-    assetId: string;
-    amount: string;
-    sourceExchange: string;
-    destinationExchange: string;
-  }) {
-    this.logger.log('Transferring between exchanges');
+  // 3. Transfer from mixin/exchange to exchange/mixin
+  async transfer() {
+    this.logger.log('Transferring between mixin and exchange');
     // TODO: Implement transfer logic
   }
 
@@ -85,7 +60,6 @@ export class AdminRebalanceService {
     amount: string;
   }) {
     this.logger.log(`Depositing to ${params.destination}`);
-    
   }
 
   // 7. Withdraw from mixin or exchange
