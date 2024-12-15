@@ -47,30 +47,34 @@ export class AdminRebalanceService {
   }
 
   // 3. Transfer from mixin/exchange to exchange/mixin
-  async transfer() {
-    this.logger.log('Transferring between mixin and exchange');
+  async transfer(
+    fromKeyId: string,
+    toKeyId: string,
+    fromExchange: string,
+    toExchange: string,
+    symbol: string,
+    chain: string,
+    amount: string,
+  ) {
+    this.logger.log(
+      `Transferring from ${fromKeyId} ${fromExchange} to ${toKeyId} ${toExchange} ${symbol} ${chain} ${amount}`,
+    );
     // TODO: Implement transfer logic
   }
 
-  // 6. Deposit to mixin or exchange
-  async deposit(params: {
-    destination: string;
-    symbol: string;
-    chain: string;
-    amount: string;
-  }) {
-    this.logger.log(`Depositing to ${params.destination}`);
-  }
-
-  // 7. Withdraw from mixin or exchange
-  async withdraw(params: {
-    source: string;
-    symbol: string;
-    chain: string;
-    amount: string;
-    address: string;
-  }) {
-    this.logger.log(`Withdrawing from ${params.source}`);
+  // Withdraw from mixin or exchange
+  async withdraw(
+    key_id: string,
+    exchange: string,
+    symbol: string,
+    chain: string,
+    amount: string,
+    address: string,
+    memo: string,
+  ) {
+    this.logger.log(
+      `Withdrawing from ${key_id} ${exchange} ${symbol} ${chain} ${amount} ${address} ${memo}`,
+    );
     // TODO: Implement withdrawal logic
   }
 

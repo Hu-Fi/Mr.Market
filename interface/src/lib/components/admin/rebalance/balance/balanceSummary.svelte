@@ -2,23 +2,22 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import { balances } from "$lib/stores/admin";
+  import { balances, balancesLoading } from "$lib/stores/admin";
   import BalanceCard from './balanceSimpleCard.svelte';
   import Loading from "$lib/components/common/loading.svelte";
   import { getAllBalances } from "$lib/helpers/hufi/admin/rebalance";
 
   let balance = [];
-  let balanceLoading = false;
 
   onMount(async () => {
     const token = localStorage.getItem('admin-access-token');
     if (token) {
-      balanceLoading = true;
+      balancesLoading.set(true);
       const resp = await getAllBalances(token, 'false');
       balance = resp.data;
       balances.set(balance);
+      balancesLoading.set(false);
     }
-    balanceLoading = false;
   });
 </script>
 
@@ -39,7 +38,7 @@
 
   <!-- Top Balances Section -->
   <div class="flex flex-wrap items-center gap-4">
-    {#if balanceLoading}
+    {#if $balancesLoading}
       <Loading />
     {:else if balance.length > 0}
       {#each balance as info}

@@ -98,6 +98,13 @@ export const mixinTopAssets = async () => {
   return result.data ? result.data.data : {};
 }
 
+export const mixinAssetSearch = async (keyword: string) => {
+  const result = await axios
+    .get(MIXIN_API_BASE_URL + `/network/assets/search/${keyword}`);
+
+  return result.data ? result.data.data : {};
+}
+
 export const mixinAsset = async (asset_id: string) => {
   const result = await axios
     .get(MIXIN_API_BASE_URL + `/network/assets/${asset_id}`);

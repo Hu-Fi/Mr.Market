@@ -1,12 +1,13 @@
 <script>
+  //@ts-expect-error types
+  import { cleave } from "svelte-cleavejs";
+  import { maskOption } from "$lib/helpers/constants";
+
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { BN } from "$lib/helpers/utils";
   import { balances, balancesLoading } from "$lib/stores/admin";
   import { findCoinIconBySymbol, findExchangeIconByIdentifier } from "$lib/helpers/helpers";
-  //@ts-expect-error types
-  import { cleave } from "svelte-cleavejs"; // Import cleave directive
-  import { maskOption } from "$lib/helpers/constants";
 
   let exchangeOptions = [];
   let selectedFromExchange = "";
@@ -19,8 +20,8 @@
   let toExchangeMenuOpen = false;
   let fromAssetMenuOpen = false;
 
-  // Extract exchange and asset information from balances
   onMount(() => {
+    // TODO: If not $balances and not $balancesLoading, get all balances
     if ($balances) {
       exchangeOptions = $balances.map(balance => ({
         name: balance.name,
@@ -46,10 +47,6 @@
     } else {
       alert("Please select all options and enter an amount for transfer.");
     }
-  }
-
-  function toggleMenu(menu) {
-    menu = !menu;
   }
 
   function selectOption(type, value) {

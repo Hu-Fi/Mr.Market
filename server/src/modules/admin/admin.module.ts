@@ -28,15 +28,16 @@ import { UserModule } from '../mixin/user/user.module';
 import { AdminSpotController } from './spotData/adminSpot.controller';
 import { AdminGrowController } from './growdata/adminGrow.controller';
 import { AdminMixinMessageController } from './mixinMessage/adminMixinMessage.controller';
-import { MixinMessageModule } from '../mixin/message/message.module';
-import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
+import { MixinModule } from '../mixin/mixin.module';
+// import { MixinMessageModule } from '../mixin/message/message.module';
+// import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
 
 @Module({
   imports: [
     ExchangeInitModule,
     GrowdataModule,
     SpotdataModule,
-    SnapshotsModule,
+    // SnapshotsModule,
     TypeOrmModule.forFeature([
       MarketMakingHistory,
       ArbitrageHistory,
@@ -50,7 +51,8 @@ import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
     ExchangeModule,
     LoggerModule,
     UserModule,
-    MixinMessageModule,
+    // MixinMessageModule,
+    MixinModule,
   ],
   controllers: [
     AdminController,

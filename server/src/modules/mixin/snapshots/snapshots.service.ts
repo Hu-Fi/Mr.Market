@@ -64,24 +64,41 @@ export class SnapshotsService {
 
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
-    this.logger.debug(this.enableCron);
+    this.logger.debug(
+      `${SnapshotsService.name} enableCron: ${this.enableCron}`,
+    );
   }
 
-  async depositAddress(asset_id: string) {
-    try {
-      const chain_id = (await this.client.network.fetchAsset(asset_id))
-        .chain_id;
-      const entities = await this.client.safe.depositEntries({
-        members: [this.keystore.app_id],
-        threshold: 1,
-        chain_id,
-      });
+  async getDepositAddress(asset_id: string) {
+    const chain_id = (await this.client.network.fetchAsset(asset_id)).chain_id;
+    this.logger.debug(`getDepositAddress() chain_id: ${chain_id}`);
+    const entities = await this.client.safe.depositEntries({
+      members: [this.keystore.app_id],
+      threshold: 1,
+      chain_id,
+    });
+
+    this.logger.debug(
+      `getDepositAddress() entities: ${JSON.stringify(entities)}`,
+    );
+
+    const primaryEntity = entities.find((entity) => entity.is_primary);
+
+    if (primaryEntity) {
+      return {
+        address: primaryEntity.destination,
+        memo: primaryEntity.tag,
+      };
+    } else if (entities.length > 0) {
       return {
         address: entities[0].destination,
         memo: entities[0].tag,
       };
-    } catch (error) {
-      this.logger.error(`Failed to get deposit address: ${error.message}`);
+    } else {
+      this.logger.warn(
+        `No primary deposit entry found for asset_id: ${asset_id}`,
+      );
+      return null;
     }
   }
 
@@ -146,7 +163,6 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         memo,
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
 
@@ -181,7 +197,6 @@ export class SnapshotsService {
         'withdrawal-fee-memo',
         [ref],
       );
-      // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
 
       const txId = randomUUID();
@@ -197,10 +212,8 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const signedFeeRaw = signSafeTransaction(
-        // @ts-expect-error type
         feeTx,
         txs[1].views,
         this.spendKey,
@@ -266,7 +279,6 @@ export class SnapshotsService {
         [undefined, ...ghosts],
         'withdrawal-memo',
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
@@ -277,7 +289,6 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const res = await this.client.utxo.sendTransactions([
         {
@@ -333,7 +344,6 @@ export class SnapshotsService {
       })),
     );
     const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
-    // @ts-expect-error type
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -345,7 +355,6 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
-      // @ts-expect-error type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -379,7 +388,6 @@ export class SnapshotsService {
 
       // Group outputs by asset ID
       const groupedByAssetId = outputs.reduce((acc, output) => {
-        // @ts-expect-error SDK type is wrong
         const assetId = output.asset_id;
         if (!acc[assetId]) {
           acc[assetId] = [];

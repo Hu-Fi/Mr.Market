@@ -61,7 +61,7 @@ export const exit = () => {
   correct.set(false);
   localStorage.removeItem('admin-password')
   localStorage.removeItem('admin-access-token')
-  toast.error('Session expired', {position:'top-center', duration: 2000})
+  toast.success('Logout successfully', {position:'top-center', duration: 2000})
   goto('/manage')
 }
 
@@ -69,5 +69,7 @@ export const tokenExpired = () => {
   correct.set(false);
   submitted.set(false);
   checked.set(false);
+  localStorage.removeItem('admin-access-token')
+  toast.error('Token expired', {position:'top-center', duration: 2000})
   goto('/manage')
 }

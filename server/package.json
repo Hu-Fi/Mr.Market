@@ -30,7 +30,7 @@
     "migration:init": "yarn run migration:run && yarn run migration:seed"
   },
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^7.0.8",
+    "@mixin.dev/mixin-node-sdk": "^7.2.1",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "10.3.3",

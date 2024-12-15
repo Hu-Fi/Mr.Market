@@ -6,15 +6,18 @@ import {
   Body,
   Param,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import {
   ExchangeAPIKeysConfigDto,
@@ -29,7 +32,10 @@ import {
 export class AdminExchangeController {
   private readonly logger = new CustomLogger(AdminExchangeController.name);
 
-  constructor(private readonly exchagneService: ExchangeService) {}
+  constructor(
+    private readonly exchangeService: ExchangeService,
+    private readonly snapshotsService: SnapshotsService,
+  ) {}
 
   @Post('withdrawal/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })
@@ -37,7 +43,7 @@ export class AdminExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async createWithdrawal(data: ExchangeWithdrawalDto) {
     try {
-      const result = await this.exchagneService.createWithdrawal(data);
+      const result = await this.exchangeService.createWithdrawal(data);
       return {
         code: HttpStatus.OK,
         message: 'Withdrawal created successfully',
@@ -53,24 +59,48 @@ export class AdminExchangeController {
     }
   }
 
-  @Post('deposit/create')
+  @Post('deposit/exchange/create')
   @ApiOperation({ summary: 'Get deposit address with api key' })
   @ApiResponse({ status: 200, description: 'Get deposit address' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getDepositAddress(data: ExchangeDepositDto) {
     try {
-      const result = await this.exchagneService.getDepositAddress(data);
+      const result = await this.exchangeService.getDepositAddress(data);
       return {
         code: HttpStatus.OK,
-        message: 'Deposit address retrieved successfully',
         data: result,
       };
     } catch (e) {
       this.logger.error(`Get deposit address error: ${e.message}`);
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error retrieving deposit address',
-        error: e.message,
+        message: `Error retrieving deposit address: ${e.message}`,
+      };
+    }
+  }
+
+  @Get('deposit/mixin/create')
+  @ApiOperation({ summary: 'Get deposit address with asset id' })
+  @ApiResponse({ status: 200, description: 'Get mixin deposit address' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getMixinDepositAddress(@Query('asset_id') asset_id: string) {
+    if (!asset_id) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Asset ID is required',
+      };
+    }
+    try {
+      const result = await this.snapshotsService.getDepositAddress(asset_id);
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get mixin deposit address error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving deposit address: ${e.message}`,
       };
     }
   }
@@ -78,7 +108,7 @@ export class AdminExchangeController {
   @Get('spot-orders')
   async getAllSpotOrders() {
     try {
-      const result = await this.exchagneService.getAllSpotOrders();
+      const result = await this.exchangeService.getAllSpotOrders();
       return {
         code: HttpStatus.OK,
         message: 'Spot orders retrieved successfully',
@@ -100,7 +130,7 @@ export class AdminExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async addApiKey(@Body() data: ExchangeAPIKeysConfigDto) {
     try {
-      const result = await this.exchagneService.addApiKey(data);
+      const result = await this.exchangeService.addApiKey(data);
       return {
         code: HttpStatus.OK,
         message: 'API key added successfully',
@@ -124,7 +154,7 @@ export class AdminExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getAllApiKeys() {
     try {
-      const result = await this.exchagneService.readAllAPIKeys();
+      const result = await this.exchangeService.readAllAPIKeys();
       return {
         code: HttpStatus.OK,
         data: result,
@@ -139,13 +169,13 @@ export class AdminExchangeController {
     }
   }
 
-  @Post('api-key/remove/:keyId')
+  @Get('api-key/remove/:keyId')
   @ApiOperation({ summary: 'Remove exchange API key' })
   @ApiResponse({ status: 200, description: 'API key removed successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async removeApiKey(@Param('keyId') keyId: string) {
     try {
-      const result = await this.exchagneService.removeAPIKey(keyId);
+      const result = await this.exchangeService.removeAPIKey(keyId);
       return {
         code: HttpStatus.OK,
         message: 'API key removed successfully',

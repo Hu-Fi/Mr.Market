@@ -123,7 +123,11 @@ export class ExchangeService {
     private exchangeRepository: ExchangeRepository,
     private eventEmitter: EventEmitter2,
   ) {
-    this.loadAPIKeys();
+    try {
+      this.loadAPIKeys();
+    } catch (error) {
+      this.logger.error(`Error loading API keys: ${error.message}`);
+    }
   }
 
   private async loadAPIKeys() {
@@ -133,18 +137,37 @@ export class ExchangeService {
       return;
     }
     for (const key of apiKeys) {
-      const keyId = key.key_id;
-      const exchangeName = key.exchange;
-      const apiKey = key.api_key;
-      const apiSecret = key.api_secret;
-
-      if (!this.exchangeInstances[keyId]) {
-        this.exchangeInstances[keyId] = new ccxt[exchangeName]({
-          apiKey,
-          secret: apiSecret,
-        });
+      const instance = this.handleInstanceInit(key);
+      if (!instance) {
+        continue;
       }
+      this.exchangeInstances[key.exchange] = instance;
     }
+  }
+
+  private handleInstanceInit(key: exchangeAPIKeysConfig) {
+    const requiredFields = Object.entries(
+      new ccxt[key.exchange]().requiredCredentials,
+    )
+      .filter(([, value]) => value)
+      .map(([key]) => key);
+    this.logger.debug(
+      `Initializing ${key.exchange} instance: ${JSON.stringify(
+        requiredFields,
+      )}`,
+    );
+    this.logger.debug(`key: ${JSON.stringify(key)}`);
+    if ('password' in requiredFields) {
+      return new ccxt[key.exchange]({
+        apiKey: key.api_key,
+        secret: key.api_secret,
+        password: key.api_extra,
+      });
+    }
+    return new ccxt[key.exchange]({
+      apiKey: key.api_key,
+      secret: key.api_secret,
+    });
   }
 
   async readAllAPIKeys() {
