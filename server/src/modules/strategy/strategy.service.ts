@@ -256,6 +256,7 @@ export class StrategyService {
         );
       } else {
         // Otherwise, create a new instance
+        const exchange = this.exchangeInitService.getExchange(exchangeAName);
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -263,10 +264,14 @@ export class StrategyService {
           strategyType: 'arbitrage',
           parameters: strategyParamsDto,
           status: 'running',
+          startPrice: await exchange
+            .fetchTicker(pair)
+            .then((ticker) => ticker.last),
         });
         await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
+
     const exchangeA = this.exchangeInitService.getExchange(exchangeAName);
     const exchangeB = this.exchangeInitService.getExchange(exchangeBName);
 
@@ -390,6 +395,7 @@ export class StrategyService {
         );
       } else {
         // Create a new instance if none exists
+        const exchange = this.exchangeInitService.getExchange(exchangeName);
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -405,11 +411,15 @@ export class StrategyService {
             userId,
             clientId,
           },
+          startPrice: await exchange
+            .fetchTicker(symbol)
+            .then((ticker) => ticker.last),
           status: 'running',
         });
         await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
+
     try {
       const exchangeAccount1 = this.exchangeInitService.getExchange(
         exchangeName,
@@ -651,6 +661,8 @@ export class StrategyService {
         );
       } else {
         // Create a new instance if none exists
+        const exchange = this.exchangeInitService.getExchange(exchangeName);
+
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -658,6 +670,9 @@ export class StrategyService {
           strategyType: 'pureMarketMaking',
           parameters: strategyParamsDto,
           status: 'running',
+          startPrice: await exchange
+            .fetchTicker(strategyParamsDto.pair)
+            .then((ticker) => ticker.last),
         });
         await this.strategyInstanceRepository.save(strategyInstance);
       }
