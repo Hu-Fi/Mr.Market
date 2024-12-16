@@ -11,7 +11,6 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -53,8 +52,7 @@ export class AdminExchangeController {
       this.logger.error(`Create withdrawal error: ${e.message}`);
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error creating withdrawal',
-        error: e.message,
+        message: `Error creating withdrawal: ${e.message}`,
       };
     }
   }

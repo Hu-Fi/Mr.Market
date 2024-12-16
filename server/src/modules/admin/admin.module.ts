@@ -23,7 +23,7 @@ import { ExchangeModule } from '../mixin/exchange/exchange.module';
 import { LoggerModule } from '../logger/logger.module';
 import { AdminExchangeController } from './exchange/adminExchange.controller';
 import { AdminRebalanceController } from './rebalance/adminRebalance.controller';
-import { AdminUserController } from './user/user.controller';
+import { AdminUserController } from './user/adminUser.controller';
 import { UserModule } from '../mixin/user/user.module';
 import { AdminSpotController } from './spotData/adminSpot.controller';
 import { AdminGrowController } from './growdata/adminGrow.controller';

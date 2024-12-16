@@ -78,7 +78,7 @@ export const findCoinIconBySymbol = (symbol: string) => {
     symbol = symbol.split('@')[0];
   }
   // @ts-expect-error ignore import from json file
-  return mixinIcons[symbol] || emptyToken;
+  return mixinIcons[symbol];
 }
 
 export const growPathChecker = ($page: Page, type: string) => {

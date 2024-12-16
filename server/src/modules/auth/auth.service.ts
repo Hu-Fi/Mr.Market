@@ -42,11 +42,14 @@ import {
 } from '@nestjs/common';
 import { getUserMe } from 'src/common/helpers/mixin/user';
 import { UserService } from '../mixin/user/user.service';
+import { CustomLogger } from '../logger/logger.service';
 
 @Injectable()
 export class AuthService {
   private secret: string;
   private adminPassword: string;
+  private adminTokenDuration: string = '2h';
+  private readonly logger = new CustomLogger(AuthService.name);
 
   constructor(
     private jwtService: JwtService,
@@ -87,7 +90,9 @@ export class AuthService {
     }
 
     const payload = { username: 'admin' };
-    return this.jwtService.sign(payload, { expiresIn: '1d' });
+    return this.jwtService.sign(payload, {
+      expiresIn: this.adminTokenDuration,
+    });
   }
 
   /**
@@ -115,8 +120,12 @@ export class AuthService {
       });
 
       const accessToken = response.data.data.access_token;
+      const userResp = await getUserMe(accessToken);
 
-      const user = await getUserMe(accessToken);
+      this.logger.debug(
+        `await getUserMe user: ${JSON.stringify(userResp.data)}`,
+      );
+      const user = userResp.data;
       if (user) {
         await this.userService.checkAndUpdateUserToken(
           user,

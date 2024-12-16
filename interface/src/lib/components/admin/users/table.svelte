@@ -1,103 +1,112 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
+  import { onMount } from "svelte";
+  import Loading from "$lib/components/common/loading.svelte";
+  import { fetchAllUsers } from "$lib/helpers/hufi/admin/users";
   import SingleUser from "$lib/components/admin/users/singleUser.svelte";
 
-  let users: UserResponse[] = [
-    {
-      type: "user",
-      user_id: "27788c37-9139-4b6f-b535-488bda185dc1",
-      identity_number: "25566",
-      phone: "",
-      full_name: "Human",
-      biography: "",
-      avatar_url:
-        "https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128",
-      relationship: "",
-      mute_until: "",
-      created_at: "2023-01-27 21:23:42",
-      is_verified: false,
-      is_scam: false,
-    },
-    {
-      type: "user",
-      user_id: "27788c37-9139-4b6f-b535-488bda185dc1",
-      identity_number: "25566",
-      phone: "",
-      full_name: "Human",
-      biography: "",
-      avatar_url:
-        "https://mixin-images.zeromesh.net/96l-LTbahgBXnKfLRHtiQybyk9kpA-eVIMYnzs4twATFtIq3Ayvw5zRfhGrt5IOGqUxxJuFXINJMTNkRlWpnFVbsA4Ep6FAn0pWP=s128",
-      relationship: "",
-      mute_until: "",
-      created_at: "2023-01-27 21:23:42",
-      is_verified: false,
-      is_scam: false,
-    },
-    {
-      type: "user",
-      user_id: "27788c37-9139-4b6f-b535-488bda185dc1",
-      identity_number: "25566",
-      phone: "",
-      full_name: "Human",
-      biography: "",
-      avatar_url:
-        "https://mixin-images.zeromesh.net/-oE4Jsi3aMIkxUPUsvDozyL8D0ccmPkggIdIDu1z8THDQyJcCIsbNwC4amFBiRlkQiLNNjiuMBsNw8sAnehTuI0=s128",
-      relationship: "",
-      mute_until: "",
-      created_at: "2023-01-27 21:23:42",
-      is_verified: false,
-      is_scam: false,
-    },
-    {
-      type: "user",
-      user_id: "27788c37-9139-4b6f-b535-488bda185dc1",
-      identity_number: "25566",
-      phone: "",
-      full_name: "Human",
-      biography: "",
-      avatar_url:
-        "https://mixin-images.zeromesh.net/T0pGzs4lg7sIKIEIb1diV_8kbrG5R96dOQD7ukTwBmSxE_xwYayRihxQ2but5Ed3zOor9zcQ5Qq4bpyzVaj6FPxymRSc7fjC_l_E=s128",
-      relationship: "",
-      mute_until: "",
-      created_at: "2023-01-27 21:23:42",
-      is_verified: false,
-      is_scam: false,
-    },
-    {
-      type: "user",
-      user_id: "27788c37-9139-4b6f-b535-488bda185dc1",
-      identity_number: "25566",
-      phone: "",
-      full_name: "Human",
-      biography: "",
-      avatar_url:
-        "https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128",
-      relationship: "",
-      mute_until: "",
-      created_at: "2023-01-27 21:23:42",
-      is_verified: false,
-      is_scam: false,
-    },
-  ];
+  let users: {
+    user_id: string;
+    type: string;
+    identity_number: string;
+    phone: string;
+    full_name: string;
+    avatar_url: string;
+    jwt_token: string;
+    created_at: string;
+    last_updated: string;
+    contributions: any[];
+    walletAddress?: string | null;
+  }[] = [];
+  let isLoading = true;
+  let isError = false;
+  let search = '';
+
+  const fetchUsers = async () => {
+    search = '';
+    isLoading = true;
+    isError = false;
+    try {
+      const token = localStorage.getItem('admin-access-token');
+      if (token) {
+        const res = await fetchAllUsers(token);
+        users = res;
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      isError = true;
+    } finally {
+      isLoading = false;
+    }
+  };
+
+  $: filteredUsers = users.filter(user => 
+    user.full_name.toLowerCase().includes(search.toLowerCase()) || 
+    user.user_id.toLowerCase().includes(search.toLowerCase()) || 
+    user.identity_number.toLowerCase().includes(search.toLowerCase())
+  );
+
+  onMount(fetchUsers);
 </script>
 
-<div class="overflow-x-auto">
-  <table class="table">
-    <!-- head -->
-    <thead>
-      <tr>
-        <th></th>
-        <th>{$_("name")}</th>
-        <th>{$_("last_update")}</th>
-        <th>{$_("volume")}</th>
-        <th>{$_("actions")}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each users as user}
-        <SingleUser {user} />
-      {/each}
-    </tbody>
-  </table>
+<div class="flex">
+  <div class="join border rounded-xl w-full">
+    <button
+      class="btn join-item btn-square border-none shadow-none no-animation focus:bg-base-100 bg-base-100"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+      </svg>
+    </button>
+    <input
+      type="text"
+      bind:value={search}
+      placeholder='Search by user name, mixin id, user id'
+      class="input join-item block w-full bg-base-100 border-l-0 pl-0 focus:outline-none focus:border-0"
+    />
+  </div>
 </div>
+
+{#if isLoading}
+  <div class="flex flex-col space-y-4 justify-center items-center py-36">
+    <Loading />
+  </div>
+{:else if isError}
+  <div class="flex flex-col space-y-4 justify-center items-center py-36">
+    <span class="opacity-60">
+      {$_("error_loading_users")}
+    </span>
+    <button class="btn" on:click={fetchUsers}>
+      {$_("retry")}
+    </button>
+  </div>
+{:else if filteredUsers && filteredUsers.length > 0}
+  <div class="overflow-x-auto">
+    <table class="table">
+      <!-- head -->
+      <thead>
+        <tr>
+          <th></th>
+          <th>{$_("name")}</th>
+          <th>{$_("last_update")}</th>
+          <th>{$_("mixin_id")}</th>
+          <th>{$_("actions")}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each filteredUsers as user}
+          <SingleUser {user} />
+        {/each}
+      </tbody>
+    </table>
+  </div>
+{:else}
+  <div class="flex flex-col space-y-4 justify-center items-center py-36">
+    <span class="opacity-60">
+      {$_("no_result_found")}
+    </span>
+    <button class="btn" on:click={fetchUsers}>
+      {$_("refresh")}
+    </button>
+  </div>
+{/if}

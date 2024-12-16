@@ -28,7 +28,7 @@
         <span> {$user.full_name} </span>
       </div>
       <div>
-        <span class="text-xs !text-[11px] font-medium"> {$_('mixin_id', {values: {id: $user.identity_number} })} </span>
+        <span class="text-xs !text-[11px] font-medium"> {$_('mixin_id_with_number', {values: {id: $user.identity_number} })} </span>
       </div>
     </div>
   </div>
