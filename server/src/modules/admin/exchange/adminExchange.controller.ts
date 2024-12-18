@@ -85,7 +85,7 @@ export class AdminExchangeController {
     if (!asset_id) {
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: 'Asset ID is required',
+        message: 'asset_id is required',
       };
     }
     try {
@@ -109,15 +109,13 @@ export class AdminExchangeController {
       const result = await this.exchangeService.getAllSpotOrders();
       return {
         code: HttpStatus.OK,
-        message: 'Spot orders retrieved successfully',
         data: result,
       };
     } catch (e) {
       this.logger.error(`Get spot orders error: ${e.message}`);
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error retrieving spot orders',
-        error: e.message,
+        message: `Error retrieving spot orders: ${e.message}`,
       };
     }
   }
@@ -137,8 +135,7 @@ export class AdminExchangeController {
     } catch (error) {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error adding API key',
-        error: error.message,
+        message: `Error adding API key: ${error.message}`,
       };
     }
   }
@@ -161,8 +158,7 @@ export class AdminExchangeController {
       this.logger.error(`Get API keys error: ${e.message}`);
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error retrieving API keys',
-        error: e.message,
+        message: `Error retrieving API keys: ${e.message}`,
       };
     }
   }
@@ -183,8 +179,7 @@ export class AdminExchangeController {
       this.logger.error(`Remove API key error: ${e.message}`);
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error removing API key',
-        error: e.message,
+        message: `Error removing API key: ${e.message}`,
       };
     }
   }

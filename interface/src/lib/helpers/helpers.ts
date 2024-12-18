@@ -86,3 +86,7 @@ export const growPathChecker = ($page: Page, type: string) => {
   const pathSegments = $page.url.pathname.split('/').filter(Boolean);
     return pathSegments.length === 3 && pathSegments[0] === 'grow' && pathSegments[1] === type && uuidRegex.test(pathSegments[2]);
 };
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+}

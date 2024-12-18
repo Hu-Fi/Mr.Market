@@ -156,7 +156,7 @@ export class ExchangeService {
         requiredFields,
       )}`,
     );
-    this.logger.debug(`key: ${JSON.stringify(key)}`);
+
     if ('password' in requiredFields) {
       return new ccxt[key.exchange]({
         apiKey: key.api_key,

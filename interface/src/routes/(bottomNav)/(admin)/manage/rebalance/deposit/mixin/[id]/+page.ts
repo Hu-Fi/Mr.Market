@@ -1,4 +1,4 @@
-import { mixinAsset } from '$lib/helpers/mixin.js';
+import { mixinAsset } from '$lib/helpers/mixin';
 
 export const load = async ({ params }) => {
   const asset = await mixinAsset(params.id);

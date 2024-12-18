@@ -70,30 +70,36 @@ export class SnapshotsService {
   }
 
   async getDepositAddress(asset_id: string) {
-    const chain_id = (await this.client.network.fetchAsset(asset_id)).chain_id;
-    this.logger.debug(`getDepositAddress() chain_id: ${chain_id}`);
+    const asset = await this.client.network.fetchAsset(asset_id);
+    // @ts-expect-error sdk type error
+    const dust = asset.dust;
+    const confirmations = asset.confirmations;
+    const chain_id = asset.chain_id;
+
     const entities = await this.client.safe.depositEntries({
       members: [this.keystore.app_id],
       threshold: 1,
       chain_id,
     });
 
+    this.logger.debug(`getDepositAddress() chain_id: ${chain_id}`);
     this.logger.debug(
       `getDepositAddress() entities: ${JSON.stringify(entities)}`,
     );
 
-    const primaryEntity = entities.find((entity) => entity.is_primary);
+    const primaryEntity = entities.map((entity) => {
+      if (entity.is_primary) {
+        return {
+          address: entity.destination,
+          memo: entity.tag,
+          minium_deposit_amount: dust,
+          confirmations,
+        };
+      }
+    });
 
     if (primaryEntity) {
-      return {
-        address: primaryEntity.destination,
-        memo: primaryEntity.tag,
-      };
-    } else if (entities.length > 0) {
-      return {
-        address: entities[0].destination,
-        memo: entities[0].tag,
-      };
+      return primaryEntity[0];
     } else {
       this.logger.warn(
         `No primary deposit entry found for asset_id: ${asset_id}`,

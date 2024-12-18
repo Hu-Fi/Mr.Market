@@ -53,16 +53,20 @@ export class AdminRebalanceController {
       const result = await this.adminRebalanceService.getBalanceByKeyLabel(
         keyLabel,
       );
+      if (!result) {
+        return {
+          code: HttpStatus.BAD_REQUEST,
+          message: `Balance not found for key label: ${keyLabel}`,
+        };
+      }
       return {
         code: HttpStatus.OK,
-        message: 'Balance retrieved successfully',
         data: result,
       };
     } catch (e) {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Error retrieving balance',
-        error: e.message,
+        message: `Error retrieving balance: ${e.message}`,
       };
     }
   }

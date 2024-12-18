@@ -274,6 +274,8 @@
   "enter_password": "Enter password",
   "dashboard": "Dashboard",
   "users": "Users",
+  "error_loading_users": "Error loading users",
+  "error_loading_deposit_info": "Failed to load deposit information",
   "database": "Database",
   "config": "Config",
   "exit": "Exit",
@@ -366,5 +368,12 @@
   "source": "Source",
   "destination": "Destination",
   "refresh_success": "Refresh success",
-  "refresh_failed": "Refresh failed"
+  "refresh_failed": "Refresh failed",
+  "network": "Network",
+  "address": "Address",
+  "memo": "Memo",
+  "minium_deposit_amount": "Minium deposit amount",
+  "confirmations": "Confirmations",
+  "copy": "Copy",
+  "copied": "Copied"
 }

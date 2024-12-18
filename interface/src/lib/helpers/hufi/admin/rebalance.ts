@@ -28,3 +28,28 @@ export const getBalanceByKeyLabel = async (keyLabel: string, token: string): Pro
     throw error;
   }
 }
+
+export async function getMixinDepositAddress(assetId: string, token: string) {
+  if (!assetId) {
+    throw new Error('asset_id is required');
+  }
+
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/deposit/mixin/create?asset_id=${encodeURIComponent(assetId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error fetching deposit address:', error);
+    throw error;
+  }
+}

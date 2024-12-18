@@ -22,7 +22,7 @@ export const AdminPassword = async (password: string): Promise<AdminPasswordResp
     return await response.json();
   } catch (error) {
     console.error('Error during fetch:', error);
-    throw error; // Or handle the error as appropriate for your application
+    throw error;
   }
 };
 

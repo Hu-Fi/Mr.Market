@@ -22,6 +22,7 @@
     "@fontsource/inter": "^5.0.16",
     "@playwright/experimental-ct-svelte": "^1.40.1",
     "@playwright/test": "^1.47.2",
+    "@svelte-put/qr": "^2.1.0",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-static": "^3.0.5",
     "@sveltejs/kit": "^2.0.0",
@@ -45,7 +46,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^6.1.1",
+    "@mixin.dev/mixin-node-sdk": "^7.2.1",
     "autoprefixer": "^10.4.16",
     "axios": "^1.6.3",
     "bignumber.js": "^9.1.2",
