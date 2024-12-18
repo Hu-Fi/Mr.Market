@@ -45,7 +45,7 @@
     </div>
 
     <div class="mx-8 mb-4">
-      <input type="text" class="input input-bordered w-full" placeholder={$_("search")}
+      <input type="text" class="input input-bordered w-full focus:outline-none rounded-lg" placeholder={$_("search")}
         bind:value={search} on:keyup={async () => { 
           if (filteredAssets.length === 0) { 
             searchingAsset = true;
@@ -58,15 +58,15 @@
     </div>
   
     {#if filteredAssets.length > 0}
-      <div class="flex flew-row flex-wrap gap-4 p-8 pt-2">
+      <div class="flex flew-row flex-wrap gap-5 p-8 pt-2">
         {#each filteredAssets as asset}
-            <button class="flex flex-row items-center justify-center gap-4 p-4 bg-base-100 rounded-lg shadow-md" 
+            <button class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-full shadow-md"
               on:click={() => {
                 goto(`/manage/rebalance/deposit/mixin/${asset.asset_id}`);
               }}>
               <AssetIcon assetIcon={asset.icon_url} chainIcon={findChainIcon(asset.chain_id)} clazz="size-8" />
               <div class="flex flex-col items-start justify-center">
-                <span class="text-lg font-bold text-center">{asset.symbol}</span>
+                <span class="text-base font-bold text-center">{asset.symbol}</span>
                 <span class="text-xs text-center opacity-60">{asset.name}</span>
               </div>
             </button>
@@ -78,15 +78,15 @@
           <Loading />
         </div>
       {:else if searchAssets.length > 0}
-        <div class="flex flex-wrap gap-4 p-8 pt-2">
+        <div class="flex flew-row flex-wrap gap-5 p-8 pt-2">
           {#each searchAssets as asset}
-              <button class="flex flex-row items-center justify-center gap-4 p-4 bg-base-100 rounded-lg shadow-md" 
+              <button class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-full shadow-md" 
                 on:click={() => {
-                  goto(`/manage/rebalance/deposit/${asset.asset_id}`);
+                  goto(`/manage/rebalance/deposit/mixin/${asset.asset_id}`);
                 }}>
                 <AssetIcon assetIcon={asset.icon_url} chainIcon={findChainIcon(asset.chain_id)} clazz="size-8" />
                 <div class="flex flex-col items-start justify-center">
-                  <span class="text-lg font-bold text-center">{asset.symbol}</span>
+                  <span class="text-base font-bold text-center">{asset.symbol}</span>
                   <span class="text-xs text-center opacity-60">{asset.name}</span>
                 </div>
               </button>

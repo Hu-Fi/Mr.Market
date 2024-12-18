@@ -2,9 +2,9 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
   import { getMixinDepositAddress } from "$lib/helpers/hufi/admin/rebalance";
   import MixinDepositCard from "$lib/components/admin/rebalance/deposit/mixinDepositCard.svelte";
-    import { goto } from "$app/navigation";
 
   let asset;
   let chain;
@@ -17,12 +17,8 @@
   let failure = false;
   asset = $page.data.asset;
   chain = $page.data.chain;
-  console.log(asset);
-  console.log(chain);
 
   onMount(async () => {
-    console.log(asset);
-    console.log(chain);
     const token = localStorage.getItem('admin-access-token');
     if (!token) {
       return;
@@ -30,7 +26,10 @@
     loading = true;
     try {
       const result = await getMixinDepositAddress(asset.asset_id, token);
-      console.log('getMixinDepositAddress', result.data);
+      if (result.code === 500) {
+        failure = true;
+        console.error(result.message);
+      }
       const data = result.data;
       if (data) {
         depositAddress = data.address;
@@ -75,7 +74,9 @@
   {:else if loaded}
     <MixinDepositCard
       assetSymbol={asset.symbol}
+      assetIcon={asset.icon_url}
       chainSymbol={chain.symbol}
+      chainIcon={chain.icon_url}
       depositAddress={depositAddress}
       depositMemo={depositMemo}
       miniumDepositAmount={minDepositAmount}

@@ -1,14 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { qr } from '@svelte-put/qr/img';
-  import colors from "tailwindcss/colors";
   import { onMount } from 'svelte';
-  import emptyToken from '$lib/images/empty-token.svg';
   import { createQrSvgString } from "@svelte-put/qr";
   import { copyToClipboard, findCoinIconBySymbol } from "$lib/helpers/helpers";
 
   export let assetSymbol: string;
+  export let assetIcon: string;
   export let chainSymbol: string;
+  export let chainIcon: string;
   export let depositAddress: string;
   export let depositMemo: string;
   export let miniumDepositAmount: string;
@@ -43,7 +42,7 @@
       <span class="text-base font-bold text-base-content">{assetSymbol}</span>
     </div>
 
-    <img src={findCoinIconBySymbol(assetSymbol)} alt='' class="size-8" />
+    <img src={assetIcon} alt='' class="size-8" />
   </div>
   
   {#if chainSymbol != assetSymbol}
@@ -54,7 +53,7 @@
         <span class="text-base font-bold text-base-content">{chainSymbol}</span>
       </div>
 
-      <img src={findCoinIconBySymbol(chainSymbol)} alt='' class="size-8" />
+      <img src={chainIcon} alt='' class="size-8" />
     </div>
   {/if}
   
@@ -93,7 +92,7 @@
     <div class="flex flex-row justify-center items-center w-full">
       <div class="relative rounded-2xl border p-1">
         <div class="absolute inset-0 flex items-center justify-center">
-          <img src={findCoinIconBySymbol(assetSymbol)} alt='' class="size-8" />
+          <img src={assetIcon} alt='' class="size-8" />
         </div>
         {@html memoQrSrc}
       </div>
@@ -134,7 +133,7 @@
   <div class="flex flex-row justify-center items-center w-full">
     <div class="relative rounded-2xl border p-1">
       <div class="absolute inset-0 flex items-center justify-center">
-        <img src={findCoinIconBySymbol(assetSymbol)} alt='' class="size-8" />
+        <img src={assetIcon} alt='' class="size-8" />
       </div>
       {@html addressQrSrc}
     </div>
