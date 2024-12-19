@@ -7,8 +7,6 @@ import { CustomLogger } from '../logger/logger.service';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  private readonly logger = new CustomLogger(AuthController.name);
-
   constructor(private authService: AuthService) {}
 
   @Post('login')

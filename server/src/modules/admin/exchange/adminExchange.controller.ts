@@ -57,11 +57,33 @@ export class AdminExchangeController {
     }
   }
 
+  @Get('deposit/exchange/all-tokens')
+  @ApiOperation({ summary: 'Get all tokens' })
+  @ApiResponse({ status: 200, description: 'Get all tokens' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get all tokens error' })
+  async getAllTokens(@Query('keyId') keyId: string) {
+    try {
+      const result = await this.exchangeService.getAllTokens(keyId);
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get all tokens error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving all tokens: ${e.message}`,
+      };
+    }
+  }
+
   @Post('deposit/exchange/create')
   @ApiOperation({ summary: 'Get deposit address with api key' })
   @ApiResponse({ status: 200, description: 'Get deposit address' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getDepositAddress(data: ExchangeDepositDto) {
+  @ApiResponse({ status: 500, description: 'Get deposit address error' })
+  async getDepositAddress(@Body() data: ExchangeDepositDto) {
     try {
       const result = await this.exchangeService.getDepositAddress(data);
       return {
@@ -124,12 +146,24 @@ export class AdminExchangeController {
   @ApiOperation({ summary: 'Add exchange API key' })
   @ApiResponse({ status: 200, description: 'API key added successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Add API key error' })
   async addApiKey(@Body() data: ExchangeAPIKeysConfigDto) {
+    if (
+      !data.api_key ||
+      !data.api_secret ||
+      !data.exchange ||
+      !data.name ||
+      !data.key_id
+    ) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'api_key, api_secret, exchange, name, and key_id are required',
+      };
+    }
     try {
       const result = await this.exchangeService.addApiKey(data);
       return {
         code: HttpStatus.OK,
-        message: 'API key added successfully',
         data: result,
       };
     } catch (error) {
@@ -146,7 +180,7 @@ export class AdminExchangeController {
     status: 200,
     description: 'Retrieved all API keys successfully',
   })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get all API keys error' })
   async getAllApiKeys() {
     try {
       const result = await this.exchangeService.readAllAPIKeys();
@@ -167,7 +201,14 @@ export class AdminExchangeController {
   @ApiOperation({ summary: 'Remove exchange API key' })
   @ApiResponse({ status: 200, description: 'API key removed successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Remove API key error' })
   async removeApiKey(@Param('keyId') keyId: string) {
+    if (!keyId) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'keyId is required',
+      };
+    }
     try {
       const result = await this.exchangeService.removeAPIKey(keyId);
       return {
@@ -180,6 +221,39 @@ export class AdminExchangeController {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: `Error removing API key: ${e.message}`,
+      };
+    }
+  }
+
+  @Get('api-key/all-currencies/:keyId')
+  @ApiOperation({ summary: 'Get all currencies by keyId' })
+  @ApiResponse({ status: 200, description: 'Get all currencies' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get all currencies error' })
+  async getAllCurrenciesByKeyId(@Param('keyId') keyId: string) {
+    if (!keyId) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'keyId is required',
+      };
+    }
+    if (typeof keyId !== 'string' || keyId.split(' ').length > 10) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'keyId must be a string with a maximum of 10 words',
+      };
+    }
+    try {
+      const result = await this.exchangeService.getAllCurrenciesByKeyId(keyId);
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get all currencies error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving all currencies: ${e.message}`,
       };
     }
   }

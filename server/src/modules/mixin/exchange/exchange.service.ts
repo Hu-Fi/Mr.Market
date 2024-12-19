@@ -171,7 +171,12 @@ export class ExchangeService {
   }
 
   async readAllAPIKeys() {
-    return await this.exchangeRepository.readAllAPIKeys();
+    const apiKeys = await this.exchangeRepository.readAllAPIKeys();
+    return apiKeys.map((key) => {
+      delete key.api_secret;
+      delete key.api_extra;
+      return key;
+    });
   }
 
   async getAllAPIKeysBalance() {
@@ -301,6 +306,18 @@ export class ExchangeService {
       );
       throw error;
     }
+  }
+
+  async getAllCurrenciesByKeyId(keyId: string) {
+    const key = await this.readAPIKey(keyId);
+    if (!key) {
+      return;
+    }
+    const e = new ccxt[key.exchange]({
+      apiKey: key.api_key,
+      secret: key.api_secret,
+    });
+    return await e.fetchCurrencies();
   }
 
   async getDepositAddress(data: ExchangeDepositDto) {

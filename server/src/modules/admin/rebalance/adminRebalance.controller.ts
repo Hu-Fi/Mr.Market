@@ -26,6 +26,7 @@ export class AdminRebalanceController {
   @ApiOperation({ summary: 'Get all balances' })
   @ApiResponse({ status: 200, description: 'Balances retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get all balances error' })
   @ApiQuery({ name: 'disableCache', type: String, required: false })
   async getAllBalances(@Query('disableCache') disableCache: string) {
     try {
