@@ -65,6 +65,7 @@ import {
 import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
+import { MetricsModule } from './modules/metrics/metrics/metrics.module';
 
 dotenv.config();
 
@@ -144,6 +145,7 @@ dotenv.config();
     AdminModule,
     CampaignModule,
     Web3Module,
+    MetricsModule,
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger],
