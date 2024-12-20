@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class MetricsService {
+  private readonly logger = new CustomLogger(MetricsService.name);
+
   constructor(
     @InjectRepository(MarketMakingHistory)
     private readonly orderRepository: Repository<MarketMakingHistory>,
