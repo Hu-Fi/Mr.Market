@@ -24,9 +24,6 @@ export class ExchangeWithdrawalDto {
 }
 
 export class ExchangeDepositDto {
-  @ApiProperty({ description: 'The name of exchange' })
-  exchange: string;
-
   @ApiProperty({ description: 'The id of api key' })
   apiKeyId: string;
 

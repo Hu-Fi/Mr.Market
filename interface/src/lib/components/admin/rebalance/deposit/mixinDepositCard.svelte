@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
   import { onMount } from 'svelte';
   import { createQrSvgString } from "@svelte-put/qr";
-  import { copyToClipboard, findCoinIconBySymbol } from "$lib/helpers/helpers";
+  import { copyToClipboard } from "$lib/helpers/helpers";
 
   export let assetSymbol: string;
   export let assetIcon: string;

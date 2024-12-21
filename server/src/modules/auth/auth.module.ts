@@ -6,12 +6,14 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from 'src/modules/auth/auth.controller';
 import { UserModule } from '../mixin/user/user.module';
+import { MixinMessageModule } from '../mixin/message/message.module';
 
 @Module({
   imports: [
     PassportModule,
     ConfigModule,
     UserModule,
+    MixinMessageModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

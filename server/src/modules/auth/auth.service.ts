@@ -43,6 +43,7 @@ import {
 import { getUserMe } from 'src/common/helpers/mixin/user';
 import { UserService } from '../mixin/user/user.service';
 import { CustomLogger } from '../logger/logger.service';
+import { MessageService } from '../mixin/message/message.service';
 
 @Injectable()
 export class AuthService {
@@ -55,6 +56,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private userService: UserService,
+    private mixinMessageService: MessageService,
   ) {
     this.secret = this.configService.get<string>('admin.jwt_secret');
     this.adminPassword = this.configService.get<string>('admin.pass');
@@ -131,6 +133,10 @@ export class AuthService {
           user,
           user.user_id,
           accessToken,
+        );
+        await this.mixinMessageService.sendTextMessage(
+          user.user_id,
+          '🎉 You have signed in to Mr.Market successfully!',
         );
       }
       return { token: accessToken };

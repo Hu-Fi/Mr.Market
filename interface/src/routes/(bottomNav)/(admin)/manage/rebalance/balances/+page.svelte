@@ -2,11 +2,10 @@
   import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import toast from 'svelte-french-toast';
+  import { balancesLoading } from '$lib/stores/admin';
   import Loading from '$lib/components/common/loading.svelte';
   import { getAllBalances } from '$lib/helpers/hufi/admin/rebalance';
   import BalancesComplexCard from '$lib/components/admin/rebalance/balance/balancsComplexCard.svelte';
-  import { balancesLoading } from '$lib/stores/admin';
-  import { get } from 'svelte/store';
 
   let isRefresh = 'false';
   let balances = [];
@@ -23,7 +22,7 @@
       balances = resp.data;
       balancesLoading.set(false);
       if (isRefresh == 'true') {
-        toast.success(`${$_("refresh_success")}! (cache: 15s)`);
+        toast.success(`${$_("refresh_success")}!`);
       }
     } else {
       toast.error(`${$_("refresh_failed")}!`);
@@ -45,18 +44,14 @@
     </div>
     <div class="tooltip tooltip-bottom" data-tip={$_("refresh")}>
       <button class="btn btn-ghost btn-circle" on:click={() => {isRefresh = 'true'; refreshBalances()}}>
-        {#if $balancesLoading && isRefresh == 'true'}
-          <span class="loading loading-spinner loading-sm" />
-        {:else}
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-          </svg>
-        {/if}
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
       </button>
     </div>
   </div>
   {#if $balancesLoading}
-    <div class="flex justify-center items-center h-screen">
+    <div class="flex justify-center items-center h-[calc(100vh-100px)]">
       <Loading />
     </div>
   {:else}

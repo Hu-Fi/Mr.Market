@@ -48,7 +48,7 @@
 </script>
 
 <!-- Header -->
-<div class="flex items-center gap-2 p-4 bg-white">
+<div class="flex items-center gap-2 p-4 bg-base-100">
   <!-- Arrow left -->
   <button class="btn btn-ghost btn-circle" on:click={() => { goto('/manage/rebalance/deposit') }}>
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">

@@ -170,13 +170,21 @@ export class ExchangeService {
     });
   }
 
-  async readAllAPIKeys() {
-    const apiKeys = await this.exchangeRepository.readAllAPIKeys();
+  private removeSensitiveData(apiKeys: exchangeAPIKeysConfig[]) {
     return apiKeys.map((key) => {
       delete key.api_secret;
       delete key.api_extra;
       return key;
     });
+  }
+
+  private async readAllAPIKeys() {
+    return await this.exchangeRepository.readAllAPIKeys();
+  }
+
+  async readAllAPIKeysWithoutSecret() {
+    const apiKeys = await this.exchangeRepository.readAllAPIKeys();
+    return this.removeSensitiveData(apiKeys);
   }
 
   async getAllAPIKeysBalance() {
@@ -313,11 +321,17 @@ export class ExchangeService {
     if (!key) {
       return;
     }
+    // Some exchange like okx requires credentials to fetch currencies
     const e = new ccxt[key.exchange]({
       apiKey: key.api_key,
       secret: key.api_secret,
+      password: key.api_extra || '',
     });
-    return await e.fetchCurrencies();
+    const currencies = await e.fetchCurrencies();
+    this.logger.debug(
+      `Fetched ${currencies.length} currencies for ${key.exchange}`,
+    );
+    return currencies;
   }
 
   async getDepositAddress(data: ExchangeDepositDto) {
@@ -325,10 +339,17 @@ export class ExchangeService {
     if (!key) {
       return;
     }
+    this.logger.debug(
+      `Get deposit address for ${key.exchange} ${data.symbol} ${data.network}`,
+      `key: ${key.exchange} ${key.api_key} ${key.api_secret}`,
+      `data: ${data.symbol} ${data.network}`,
+    );
     return await this._getDepositAddress({
       ...data,
+      exchange: key.exchange,
       apiKey: key.api_key,
       apiSecret: key.api_secret,
+      apiExtra: key.api_extra || '',
     });
   }
 
@@ -338,16 +359,19 @@ export class ExchangeService {
     apiSecret,
     symbol,
     network,
+    apiExtra,
   }: {
     exchange: string;
-    apiKey: string;
-    apiSecret: string;
     symbol: string;
     network: string;
+    apiKey: string;
+    apiSecret: string;
+    apiExtra?: string;
   }) {
     const e = new ccxt[exchange]({
       apiKey,
       secret: apiSecret,
+      password: apiExtra || '',
     });
     if (!e.has['fetchDepositAddress']) {
       this.logger.error(`${exchange} doesn't support fetchDepositAddress()`);
@@ -356,10 +380,14 @@ export class ExchangeService {
     try {
       // The network parameter needs a map. It's case sensitive
       const depositAddress = await e.fetchDepositAddress(symbol, { network });
-
+      this.logger.debug(
+        `fetchDepositAddress: ${JSON.stringify(depositAddress)}`,
+      );
       return {
+        currency: symbol,
         address: depositAddress['address'],
         memo: depositAddress['tag'] || '',
+        network: depositAddress['network'] || '',
       };
     } catch (error) {
       if (error instanceof ccxt.InvalidAddress) {
@@ -383,8 +411,10 @@ export class ExchangeService {
               const depositAddress = await e.fetchDepositAddress(symbol);
 
               return {
+                currency: symbol,
                 address: depositAddress['address'],
                 memo: depositAddress['tag'] || '',
+                network: depositAddress['network'] || '',
               };
             } catch (e) {
               this.logger.error(
@@ -406,6 +436,7 @@ export class ExchangeService {
           `There was an error while fetching deposit address for ${symbol} ${error.constructor.name} ${error.message}`,
         );
       }
+      throw error;
     }
   }
 

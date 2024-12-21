@@ -64,7 +64,7 @@ export class AdminExchangeController {
   @ApiResponse({ status: 500, description: 'Get all tokens error' })
   async getAllTokens(@Query('keyId') keyId: string) {
     try {
-      const result = await this.exchangeService.getAllTokens(keyId);
+      const result = await this.exchangeService.getAllCurrenciesByKeyId(keyId);
       return {
         code: HttpStatus.OK,
         data: result,
@@ -183,7 +183,7 @@ export class AdminExchangeController {
   @ApiResponse({ status: 500, description: 'Get all API keys error' })
   async getAllApiKeys() {
     try {
-      const result = await this.exchangeService.readAllAPIKeys();
+      const result = await this.exchangeService.readAllAPIKeysWithoutSecret();
       return {
         code: HttpStatus.OK,
         data: result,
@@ -237,10 +237,10 @@ export class AdminExchangeController {
         message: 'keyId is required',
       };
     }
-    if (typeof keyId !== 'string' || keyId.split(' ').length > 10) {
+    if (typeof keyId !== 'string' || keyId.split(' ').length > 12) {
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: 'keyId must be a string with a maximum of 10 words',
+        message: 'keyId must be a string with a maximum of 12 words',
       };
     }
     try {

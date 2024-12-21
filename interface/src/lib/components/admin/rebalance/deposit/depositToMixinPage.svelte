@@ -1,6 +1,6 @@
 <script>
   import { _ } from "svelte-i18n";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { findChainIcon } from "$lib/helpers/utils";
   import Loading from "$lib/components/common/loading.svelte";

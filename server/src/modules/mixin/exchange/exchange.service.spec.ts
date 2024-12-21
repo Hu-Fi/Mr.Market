@@ -157,7 +157,6 @@ describe('ExchangeService', () => {
       service.readAPIKey = jest.fn().mockResolvedValue(mockAPIKey);
 
       const result = await service.getDepositAddress({
-        exchange: 'okx',
         apiKeyId: '1',
         symbol: 'BTC',
         network: 'Bitcoin',
