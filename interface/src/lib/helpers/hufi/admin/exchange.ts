@@ -34,7 +34,7 @@ export const getDepositAddressByKeyIdAndCurrency = async (token: string, data: {
   apiKeyId: string;
   symbol: string;
   network: string;
-}): Promise<unknown> => {
+}) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/deposit/exchange/create`, {
       method: 'POST',

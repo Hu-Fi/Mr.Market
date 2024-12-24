@@ -53,10 +53,12 @@ export interface AdminCCXTCurrency {
           precision: number;
           limits: {
               deposit: {
-                  min: string;
+                  min?: string;
+                  max?: string;
               };
               withdraw: {
-                  min: string;
+                  min?: string;
+                  max?: string;
               };
           };
           info: Record<string, unknown>;

@@ -62,6 +62,11 @@
               <li>
                 <button on:click={() => {
                   goto(`${$page.url.pathname}/${currency.id}/${network.id}`);
+                  console.log(`${network.id} deposit min: ${network.limits.deposit.min}`);
+                  console.log(`${network.id} deposit max: ${network.limits.deposit.max}`);
+                  console.log(`${network.id} withdraw min: ${network.limits.withdraw.min}`);
+                  console.log(`${network.id} withdraw max: ${network.limits.withdraw.max}`);
+                  console.log(`${network.id} fee: ${network.fee}`);
                 }}>
                   <span class="text-sm font-bold text-left">{network.id}</span>
                 </button>
