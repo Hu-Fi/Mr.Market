@@ -608,6 +608,7 @@ export class StrategyService {
       clientId,
       pair,
       exchangeName,
+      oracleExchangeName, // <-- New optional param
       bidSpread,
       askSpread,
       orderAmount,
@@ -619,37 +620,38 @@ export class StrategyService {
       ceilingPrice,
       floorPrice,
     } = strategyParamsDto;
+  
     const strategyKey = createStrategyKey({
       type: 'pureMarketMaking',
       user_id: userId,
       client_id: clientId,
     });
-
+  
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.error(`Strategy ${strategyKey} is already running.`);
       return;
     }
-
-    // Check if a running instance already exists
+  
+    // Find or create the strategy instance
     let strategyInstance = await this.strategyInstanceRepository.findOne({
       where: { strategyKey, status: 'running' },
     });
-
+  
     if (!strategyInstance) {
       strategyInstance = await this.strategyInstanceRepository.findOne({
         where: { strategyKey },
       });
-
+  
       if (strategyInstance) {
         await this.strategyInstanceRepository.update(
           { strategyKey },
           { status: 'running', updatedAt: new Date() },
         );
       } else {
-        // Create a new instance if none exists
-        const exchange = this.exchangeInitService.getExchange(exchangeName);
-
+        // The exchange we place orders on
+        const executionExchange = this.exchangeInitService.getExchange(exchangeName);
+  
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -657,13 +659,19 @@ export class StrategyService {
           strategyType: 'pureMarketMaking',
           parameters: strategyParamsDto,
           status: 'running',
-          startPrice: await exchange
-            .fetchTicker(strategyParamsDto.pair)
-            .then((ticker) => ticker.last),
+          // For startPrice, we fetch from the oracle exchange if provided, else the executionExchange
+          startPrice: await (async () => {
+            const priceExchange = oracleExchangeName
+              ? this.exchangeInitService.getExchange(oracleExchangeName)
+              : executionExchange;
+            const ticker = await priceExchange.fetchTicker(pair);
+            return ticker.last;
+          })(),
         });
         await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
+  
     // Start the strategy
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
     const intervalId = setInterval(async () => {
@@ -671,7 +679,7 @@ export class StrategyService {
         await this.manageMarketMakingOrdersWithLayers(
           userId,
           clientId,
-          exchangeName,
+          exchangeName,     // We'll still execute trades on 'exchangeName'
           pair,
           bidSpread,
           askSpread,
@@ -682,23 +690,25 @@ export class StrategyService {
           amountChangeType,
           ceilingPrice,
           floorPrice,
+          oracleExchangeName // Pass along to retrieve price from a different exchange if provided
         );
       } catch (error) {
         this.logger.error(
           `Error executing pure market making strategy for ${strategyKey}: ${error.message}`,
         );
-        await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying or moving on
+        await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }, orderRefreshTime);
-
+  
     // Track the strategy instance
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
+  
 
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
     clientId: string,
-    exchangeName: string,
+    executionExchangeName: string,
     pair: string,
     bidSpread: number,
     askSpread: number,
@@ -709,18 +719,26 @@ export class StrategyService {
     amountChangeType: 'fixed' | 'percentage',
     ceilingPrice?: number,
     floorPrice?: number,
+    oracleExchangeName?: string, // optional
   ) {
-    // Fetch the current market price based on the specified price source type
+    // 1. Determine which exchange to use for pricing
+    const priceExchange = oracleExchangeName
+      ? this.exchangeInitService.getExchange(oracleExchangeName)
+      : this.exchangeInitService.getExchange(executionExchangeName);
+  
+    // 2. Execution exchange is always the main exchangeName
+    const executionExchange = this.exchangeInitService.getExchange(executionExchangeName);
+  
+    // 3. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
-      exchangeName,
+      priceExchange.id, // use priceExchange for data
       pair,
       priceSourceType,
     );
-    const exchange = this.exchangeInitService.getExchange(exchangeName);
-
-    // Cancel all existing orders for this strategy
+  
+    // 4. Cancel all existing orders on the execution exchange, but still use the same strategyKey
     await this.cancelAllOrders(
-      exchange,
+      executionExchange,
       pair,
       createStrategyKey({
         type: 'pureMarketMaking',
@@ -728,13 +746,13 @@ export class StrategyService {
         client_id: clientId,
       }),
     );
-
-    // Mark all open orders not canceled as closed
+  
+    // Mark all open orders not canceled as closed in DB
     await this.orderRepository.update(
       {
         userId,
         clientId,
-        exchange: exchangeName,
+        exchange: executionExchangeName,
         pair,
         strategy: 'pureMarketMaking',
         status: 'open',
@@ -743,97 +761,93 @@ export class StrategyService {
         status: 'closed',
       },
     );
-
+  
     let currentOrderAmount = baseOrderAmount;
-
+  
     for (let layer = 1; layer <= numberOfLayers; layer++) {
       if (layer > 1) {
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
-          currentOrderAmount +=
-            currentOrderAmount * (amountChangePerLayer / 100);
+          currentOrderAmount += currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
-
+  
       const layerBidSpreadPercentage = bidSpread * layer;
       const layerAskSpreadPercentage = askSpread * layer;
-
+  
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
-
-      // Conditionally place buy and sell orders based on ceiling and floor price logic
+  
+      // 5. Place buy orders on the execution exchange, if below the ceiling
       if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
-        // Place buy orders as market price is not above the ceiling
         const {
           adjustedAmount: adjustedBuyAmount,
           adjustedPrice: adjustedBuyPrice,
         } = await this.adjustOrderParameters(
-          exchange,
+          executionExchange,
           pair,
           currentOrderAmount,
           buyPrice,
         );
-
+  
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
-          exchange: exchangeName,
+          exchange: executionExchangeName,
           symbol: pair,
           side: 'buy',
           amount: parseFloat(adjustedBuyAmount),
           price: parseFloat(adjustedBuyPrice),
         });
-
-        // Create and save the order entity
+  
+        // Persist
         const orderEntity = this.orderRepository.create({
           userId,
           clientId,
-          exchange: exchangeName,
+          exchange: executionExchangeName,
           pair,
           side: 'buy',
           amount: parseFloat(adjustedBuyAmount),
           price: parseFloat(adjustedBuyPrice),
           orderId: order.id,
-          executedAt: new Date(), // Assuming immediate execution; adjust as necessary
+          executedAt: new Date(),
           status: 'open',
           strategy: 'pureMarketMaking',
         });
-
         await this.orderRepository.save(orderEntity);
       } else {
         this.logger.log(
-          `Skipping buy order for ${pair} as price source ${priceSource} is above the ceiling price ${ceilingPrice}.`,
+          `Skipping buy order for ${pair} as price source ${priceSource} exceeds ceiling ${ceilingPrice}.`,
         );
       }
-
+  
+      // 6. Place sell orders on the execution exchange, if above the floor
       if (floorPrice === undefined || priceSource >= floorPrice) {
-        // Place sell orders as market price is not below the floor
         const {
           adjustedAmount: adjustedSellAmount,
           adjustedPrice: adjustedSellPrice,
         } = await this.adjustOrderParameters(
-          exchange,
+          executionExchange,
           pair,
           currentOrderAmount,
           sellPrice,
         );
-
+  
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
-          exchange: exchangeName,
+          exchange: executionExchangeName,
           symbol: pair,
           side: 'sell',
           amount: parseFloat(adjustedSellAmount),
           price: parseFloat(adjustedSellPrice),
         });
-
-        // Create and save the order entity
+  
         const orderEntity = this.orderRepository.create({
           userId,
           clientId,
-          exchange: exchangeName,
+          exchange: executionExchangeName,
           pair,
           side: 'sell',
           amount: parseFloat(adjustedSellAmount),
@@ -843,15 +857,15 @@ export class StrategyService {
           status: 'open',
           strategy: 'pureMarketMaking',
         });
-
         await this.orderRepository.save(orderEntity);
       } else {
         this.logger.log(
-          `Skipping sell order for ${pair} as price source ${priceSource} is below the floor price ${floorPrice}.`,
+          `Skipping sell order for ${pair} as price source ${priceSource} is below floor ${floorPrice}.`,
         );
       }
     }
   }
+  
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,

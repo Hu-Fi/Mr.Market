@@ -1,6 +1,6 @@
 // strategy.dto.ts
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 
 export class JoinStrategyDto {
@@ -88,11 +88,18 @@ export class PureMarketMakingStrategyDto {
   @ApiProperty({ description: 'Client ID' })
   clientId: string;
 
-  @ApiProperty({ description: 'Trading pair', example: 'BTC/USD' })
+  @ApiProperty({ description: 'Trading pair', example: 'BTC/USDT' })
   pair: string;
 
-  @ApiProperty({ description: 'Exchange name', example: 'binance' })
+  @ApiProperty({ description: 'Exchange name used for execution', example: 'binance' })
   exchangeName: string;
+
+  @ApiPropertyOptional({
+    description:
+      'If provided, this exchange is used as an oracle for price data instead of `exchangeName`',
+    example: 'mexc',
+  })
+  oracleExchangeName?: string; // <--- NEW optional param
 
   @ApiProperty({ description: 'Bid spread as a percentage', example: 0.1 })
   bidSpread: number;
@@ -117,14 +124,15 @@ export class PureMarketMakingStrategyDto {
 
   @ApiProperty({
     description:
-      'Price source type (mid_price, best_bid, best_ask, last_price)',
-    example: 'mid_price',
+      'Price source type (MID_PRICE, BEST_BID, BEST_ASK, LAST_PRICE)',
+    example: 'MID_PRICE',
+    enum: PriceSourceType,
   })
   priceSourceType: PriceSourceType;
 
   @ApiProperty({
     description:
-      'Amount that increases on each layer, Set to 0 for same amount',
+      'Amount that increases on each layer, set to 0 for same amount',
     example: 1,
   })
   amountChangePerLayer: number; // This can be a fixed amount or a percentage
@@ -137,14 +145,16 @@ export class PureMarketMakingStrategyDto {
   amountChangeType: 'fixed' | 'percentage';
 
   @ApiProperty({
-    description: 'Ceiling Price, No orders above this price',
+    description: 'Ceiling Price, no buy orders above this price',
     example: '0',
+    required: false,
   })
   ceilingPrice?: number;
 
   @ApiProperty({
-    description: 'Floor price, No orders below this price.',
+    description: 'Floor price, no sell orders below this price.',
     example: '0',
+    required: false,
   })
   floorPrice?: number;
 }

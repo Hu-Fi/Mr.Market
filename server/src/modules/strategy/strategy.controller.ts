@@ -267,23 +267,22 @@ export class StrategyController {
     return await this.strategyService.getUserOrders(userId);
   }
 
-  @Post('/execute-pure-market-making')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Execute pure market making strategy for a user' })
-  @ApiResponse({
-    status: 200,
-    description:
-      'The pure market making strategy has been initiated for the user.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  async executePureMarketMaking(
-    @Body() strategyParamsDto: PureMarketMakingStrategyDto,
-  ) {
-    // Assuming strategyParamsDto includes all necessary parameters for the market making strategy
-    return this.strategyService.executePureMarketMakingStrategy(
-      strategyParamsDto,
-    );
-  }
+@Post('/execute-pure-market-making')
+@HttpCode(HttpStatus.OK)
+@ApiOperation({ summary: 'Execute pure market making strategy for a user' })
+@ApiResponse({
+  status: 200,
+  description:
+    'The pure market making strategy has been initiated for the user. An optional oracle exchange can be specified to fetch pricing from a different source.',
+})
+@ApiResponse({ status: 400, description: 'Bad request.' })
+async executePureMarketMaking(
+  @Body() strategyParamsDto: PureMarketMakingStrategyDto,
+) {
+  // Passing the entire DTO to the service
+  return this.strategyService.executePureMarketMakingStrategy(strategyParamsDto);
+}
+
 
   @Get('/stop-marketmaking')
   @HttpCode(HttpStatus.OK)
