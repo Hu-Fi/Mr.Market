@@ -152,6 +152,7 @@ describe('AdminStrategyService', () => {
           numTrades: 5,
           userId: 'user123',
           clientId: 'client123',
+          pricePushRate:0
         },
       };
 
@@ -166,6 +167,7 @@ describe('AdminStrategyService', () => {
         startStrategyDto.volumeParams.numTrades,
         startStrategyDto.volumeParams.userId,
         startStrategyDto.volumeParams.clientId,
+        startStrategyDto.volumeParams.pricePushRate
       );
     });
 

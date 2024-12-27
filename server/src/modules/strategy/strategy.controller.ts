@@ -267,23 +267,22 @@ export class StrategyController {
     return await this.strategyService.getUserOrders(userId);
   }
 
-  @Post('/execute-pure-market-making')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Execute pure market making strategy for a user' })
-  @ApiResponse({
-    status: 200,
-    description:
-      'The pure market making strategy has been initiated for the user.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  async executePureMarketMaking(
-    @Body() strategyParamsDto: PureMarketMakingStrategyDto,
-  ) {
-    // Assuming strategyParamsDto includes all necessary parameters for the market making strategy
-    return this.strategyService.executePureMarketMakingStrategy(
-      strategyParamsDto,
-    );
-  }
+@Post('/execute-pure-market-making')
+@HttpCode(HttpStatus.OK)
+@ApiOperation({ summary: 'Execute pure market making strategy for a user' })
+@ApiResponse({
+  status: 200,
+  description:
+    'The pure market making strategy has been initiated for the user. An optional oracle exchange can be specified to fetch pricing from a different source.',
+})
+@ApiResponse({ status: 400, description: 'Bad request.' })
+async executePureMarketMaking(
+  @Body() strategyParamsDto: PureMarketMakingStrategyDto,
+) {
+  // Passing the entire DTO to the service
+  return this.strategyService.executePureMarketMakingStrategy(strategyParamsDto);
+}
+
 
   @Get('/stop-marketmaking')
   @HttpCode(HttpStatus.OK)
@@ -310,24 +309,43 @@ export class StrategyController {
 
   @Post('/execute-volume-strategy')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Execute volume strategy' })
+  @ApiOperation({ 
+    summary: 'Execute volume strategy', 
+    description: `Starts a volume trading strategy between two accounts on the same exchange. 
+      This strategy can randomly vary the trade amount, push the price upward by a specified rate after 
+      each trade, and ensure that orders execute by placing a limit order at the current best bid/ask 
+      and immediately placing a matching order from the other account.`
+  })
   @ApiResponse({
     status: 200,
-    description: 'The volume strategy has been started.',
+    description: 'The volume strategy has been started and will ensure execution of trades.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async executeVolumeStrategy(
     @Body() executeVolumeStrategyDto: ExecuteVolumeStrategyDto,
   ) {
+    const {
+      exchangeName,
+      symbol,
+      incrementPercentage,
+      intervalTime,
+      tradeAmount,
+      numTrades,
+      userId,
+      clientId,
+      pricePushRate,
+    } = executeVolumeStrategyDto;
+  
     return this.strategyService.executeVolumeStrategy(
-      executeVolumeStrategyDto.exchangeName,
-      executeVolumeStrategyDto.symbol,
-      executeVolumeStrategyDto.incrementPercentage,
-      executeVolumeStrategyDto.intervalTime,
-      executeVolumeStrategyDto.tradeAmount,
-      executeVolumeStrategyDto.numTrades,
-      executeVolumeStrategyDto.userId,
-      executeVolumeStrategyDto.clientId,
+      exchangeName,
+      symbol,
+      incrementPercentage,
+      intervalTime,
+      tradeAmount,
+      numTrades,
+      userId,
+      clientId,
+      pricePushRate, 
     );
   }
 
