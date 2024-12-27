@@ -396,8 +396,11 @@ export class StrategyService {
         try {
           // 1. Fetch the current order book for reference
           const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
-          const bestBid = orderBook.bids.length ? orderBook.bids[0][0] : 0;
-          const bestAsk = orderBook.asks.length ? orderBook.asks[0][0] : Infinity;
+          if (!orderBook.bids.length || !orderBook.asks.length) {
+             throw new Error(`Order book data is incomplete for ${symbol}`);
+            }
+            const bestBid = orderBook.bids[0][0];
+            const bestAsk = orderBook.asks[0][0];
   
           this.logger.log(`Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`);
   
@@ -433,15 +436,20 @@ export class StrategyService {
           );
   
           // 5. Place the maker (BUY) order with postOnly to remain on the order book
-          const makerOrder = await makerExchange.createOrder(
-            symbol,
-            'limit',
-            'buy',
-            amount,
-            makerPrice,
-            { postOnly: true },
-          );
-  
+          let makerOrder;
+          try {
+            makerOrder = await makerExchange.createOrder(
+              symbol,
+              'limit',
+              'buy',
+              amount,
+              makerPrice,
+              { postOnly: true },
+            );
+          } catch (error) {
+            this.logger.error(`Failed to create maker order: ${error.message}`);
+            throw error;
+          }
           // 6. Wait briefly to ensure maker order is posted in the order book
           await new Promise((resolve) => setTimeout(resolve, 2000));
   
@@ -790,6 +798,9 @@ export class StrategyService {
           currentOrderAmount,
           buyPrice,
         );
+        if (!adjustedBuyAmount || !adjustedBuyPrice) {
+            throw new Error(`Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`);
+          }
   
         const order = await this.tradeService.executeLimitTrade({
           userId,
