@@ -185,6 +185,7 @@ export class StrategyService {
           parameters.numTrades,
           parameters.userId,
           parameters.clientId,
+          parameters.pricePushRate
         );
         break;
       default:
@@ -360,199 +361,185 @@ export class StrategyService {
   async executeVolumeStrategy(
     exchangeName: string,
     symbol: string,
-    baseIncrementPercentage: number,
+    baseIncrementPercentage: number,  // Used to offset from midPrice initially
     baseIntervalTime: number,
     baseTradeAmount: number,
     numTrades: number,
     userId: string,
     clientId: string,
+    pricePushRate: number, 
   ) {
     const strategyKey = createStrategyKey({
       type: 'volume',
       user_id: userId,
       client_id: clientId,
     });
-
-    if (this.strategyInstances.has(strategyKey)) {
-      this.logger.log(`Strategy ${strategyKey} is already running.`);
-      return;
-    }
-
-    // Check if a running instance already exists
-    let strategyInstance = await this.strategyInstanceRepository.findOne({
-      where: { strategyKey, status: 'running' },
-    });
-
-    if (!strategyInstance) {
-      strategyInstance = await this.strategyInstanceRepository.findOne({
-        where: { strategyKey },
-      });
-
-      if (strategyInstance) {
-        await this.strategyInstanceRepository.update(
-          { strategyKey },
-          { status: 'running', updatedAt: new Date() },
-        );
-      } else {
-        // Create a new instance if none exists
-        const exchange = this.exchangeInitService.getExchange(exchangeName);
-        strategyInstance = this.strategyInstanceRepository.create({
-          strategyKey,
-          userId,
-          clientId,
-          strategyType: 'volume',
-          parameters: {
-            exchangeName,
-            symbol,
-            baseIncrementPercentage,
-            baseIntervalTime,
-            baseTradeAmount,
-            numTrades,
-            userId,
-            clientId,
-          },
-          startPrice: await exchange
-            .fetchTicker(symbol)
-            .then((ticker) => ticker.last),
-          status: 'running',
-        });
-        await this.strategyInstanceRepository.save(strategyInstance);
-      }
-    }
-
+  
     try {
-      const exchangeAccount1 = this.exchangeInitService.getExchange(
-        exchangeName,
-        'default',
-      );
-      const exchangeAccount2 = this.exchangeInitService.getExchange(
-        exchangeName,
-        'account2',
-      );
-
-      let useAccount1 = true;
+      const exchangeAccount1 = this.exchangeInitService.getExchange(exchangeName, 'default');
+      const exchangeAccount2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
+  
+      let useAccount1AsMaker = true;
       let tradesExecuted = 0;
-
+  
+      // Track our "target maker price" across trades.
+      // We'll set it after the *first* trade is established (based on midPrice).
+      let currentMakerPrice: number | null = null;
+  
       const executeTrade = async () => {
         if (tradesExecuted >= numTrades) {
           this.logger.log(`Volume strategy ${strategyKey} completed.`);
           this.strategyInstances.delete(strategyKey);
           return;
         }
-
+  
         try {
-          // Randomly decide whether to pause the strategy
-          if (Math.random() > 0.91 && tradesExecuted > 5) {
-            // 9% chance to pause after a trade
-            const pauseDuration = Math.floor(Math.random() * 4) + 1; // Pause for 1 to 4 minutes
-            this.logger.log(`Pausing strategy for ${pauseDuration} minutes.`);
-            await new Promise((resolve) =>
-              setTimeout(resolve, pauseDuration * 60000),
-            ); // Pause execution
-          }
-
-          // Fetch the order book to calculate the initial price
+          // 1. Fetch the current order book for reference
           const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
-          let highestBid = orderBook.bids[0][0];
-          let lowestAsk = orderBook.asks[0][0];
-
-          this.logger.log(`Initial highest bid for ${symbol} is ${highestBid}`);
-          this.logger.log(`Initial lowest ask for ${symbol} is ${lowestAsk}`);
-
-          const buyExchange = useAccount1 ? exchangeAccount1 : exchangeAccount2;
-          const sellExchange = useAccount1
-            ? exchangeAccount2
-            : exchangeAccount1;
-
-          // Randomize the price adjustment percentage
-          const variableIncrementPercentage =
-            baseIncrementPercentage * (1 + (Math.random() - 0.5) / 20); // Varies by ±2.5%
-
-          // Determine the start price for the current trade
-          let currentPrice;
-          if (useAccount1) {
-            currentPrice = highestBid * (1 + variableIncrementPercentage / 100);
+          const bestBid = orderBook.bids.length ? orderBook.bids[0][0] : 0;
+          const bestAsk = orderBook.asks.length ? orderBook.asks[0][0] : Infinity;
+  
+          this.logger.log(`Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`);
+  
+          // 2. Decide maker / taker accounts
+          const makerExchange = useAccount1AsMaker ? exchangeAccount1 : exchangeAccount2;
+          const takerExchange = useAccount1AsMaker ? exchangeAccount2 : exchangeAccount1;
+  
+          // 3. Randomize the trade amount ±5% around baseTradeAmount
+          //    Range: [0.95 * baseTradeAmount, 1.05 * baseTradeAmount]
+          const randomFactor = 1 + (Math.random() * 0.1 - 0.05); 
+          const amount = baseTradeAmount * randomFactor;
+  
+          // 4. Determine the maker price
+          //    - If first trade, base it on the midPrice with a small increment factor.
+          //    - After each success, push the price up by 'pricePushRate' (e.g. +1%).
+          if (currentMakerPrice == null) {
+            // For the first trade, pick a price in the spread
+            const midPrice = (bestBid + bestAsk) / 2;
+            const baseFactor = 1 + baseIncrementPercentage / 100;
+            currentMakerPrice = midPrice * baseFactor;
           } else {
-            currentPrice = lowestAsk * (1 - variableIncrementPercentage / 100);
+            // For subsequent trades, push the price up slowly
+            // Example: If pricePushRate = 1, it goes up by 1% each successful trade
+            currentMakerPrice *= (1 + pricePushRate / 100);
           }
-
-          // Randomize the trade amount
-          const variableTradeAmount =
-            baseTradeAmount * (1 + (Math.random() - 0.5) / 10); // Varies by ±5%
-
-          // Place buy order on the selected exchange
-          const buyOrder = await buyExchange.createLimitBuyOrder(
-            symbol,
-            variableTradeAmount,
-            currentPrice,
-          );
+  
+          // Ensure we do NOT exceed the bestAsk - small offset
+          const makerPrice = Math.min(currentMakerPrice, bestAsk - 0.000001);
+  
           this.logger.log(
-            `Buy order placed on ${buyExchange.id}: ${buyOrder.id} at price ${currentPrice} with amount ${variableTradeAmount}`,
+            `Maker placing limit BUY: ${amount.toFixed(6)} ${symbol} ` +
+            `@ ${makerPrice.toFixed(6)} on ${makerExchange.id}`,
           );
-
-          // Place sell order on the other exchange
-          const sellOrder = await sellExchange.createLimitSellOrder(
+  
+          // 5. Place the maker (BUY) order with postOnly to remain on the order book
+          const makerOrder = await makerExchange.createOrder(
             symbol,
-            variableTradeAmount,
-            currentPrice,
+            'limit',
+            'buy',
+            amount,
+            makerPrice,
+            { postOnly: true },
           );
+  
+          // 6. Wait briefly to ensure maker order is posted in the order book
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+  
+          // 7. Taker places a LIMIT SELL at exactly makerPrice to cross that order
           this.logger.log(
-            `Sell order placed on ${sellExchange.id}: ${sellOrder.id} at price ${currentPrice} with amount ${variableTradeAmount}`,
+            `Taker placing limit SELL: ${amount.toFixed(6)} ${symbol} ` +
+            `@ ${makerPrice.toFixed(6)} on ${takerExchange.id}`,
           );
-
-          // Optionally, wait for orders to be filled or perform additional checks here
-          await this.waitForOrderFill(buyExchange, buyOrder.id, symbol);
-          await this.waitForOrderFill(sellExchange, sellOrder.id, symbol);
-
-          // Increment the price by the specified percentage for the next trade
-          if (useAccount1) {
-            highestBid = currentPrice;
+          const takerOrder = await takerExchange.createOrder(
+            symbol,
+            'limit',
+            'sell',
+            amount,
+            makerPrice,
+          );
+  
+          // 8. Check final statuses (optional but recommended)
+          const makerResult = await makerExchange.fetchOrder(makerOrder.id, symbol);
+          const takerResult = await takerExchange.fetchOrder(takerOrder.id, symbol);
+  
+          if (makerResult.status === 'closed' || makerResult.status === 'filled') {
+            this.logger.log(
+              `Maker order on ${makerExchange.id} filled successfully at ${makerPrice}`,
+            );
           } else {
-            lowestAsk = currentPrice;
+            this.logger.warn(
+              `Maker order on ${makerExchange.id} is still ${makerResult.status}.`,
+            );
           }
-
-          // Alternate the account usage
-          useAccount1 = !useAccount1;
+  
+          if (takerResult.status === 'closed' || takerResult.status === 'filled') {
+            this.logger.log(
+              `Taker order on ${takerExchange.id} filled successfully at ${makerPrice}`,
+            );
+          } else {
+            this.logger.warn(
+              `Taker order on ${takerExchange.id} is still ${takerResult.status}.`,
+            );
+          }
+  
+          // 9. One trade completed
           tradesExecuted++;
-
-          // Randomize the interval time for the next trade
-          const randomInterval =
-            baseIntervalTime + Math.floor(Math.random() * baseIntervalTime);
-          setTimeout(executeTrade, randomInterval * 1000); // Execute the next trade after a random interval
+          // Flip the roles for next trade
+          useAccount1AsMaker = !useAccount1AsMaker;
+  
+          // 10. Determine the next trade delay randomly in [baseIntervalTime, 1.5 * baseIntervalTime]
+          const minInterval = baseIntervalTime;
+          const maxInterval = baseIntervalTime * 1.5;
+          const randomInterval = minInterval + Math.random() * (maxInterval - minInterval);
+  
+          // Optionally, round the delay to a whole number of seconds:
+          const delaySeconds = Math.floor(randomInterval); 
+          this.logger.log(
+            `Scheduling next trade in ${delaySeconds} seconds (range: ${minInterval} - ${maxInterval}).`,
+          );
+  
+          setTimeout(executeTrade, delaySeconds * 1000);
+  
         } catch (error) {
-          this.logger.error(`Error executing trade: ${error.message}`);
-          // Even if there's an error, wait before trying the next trade
-          const randomInterval =
-            baseIntervalTime + Math.floor(Math.random() * baseIntervalTime);
-          setTimeout(executeTrade, randomInterval * 1000);
+          this.logger.error(`Error executing trade: ${error.stack || error}`);
+          
+          // Retry also in that [baseIntervalTime, 1.5 * baseIntervalTime] range
+          const minInterval = baseIntervalTime;
+          const maxInterval = baseIntervalTime * 1.5;
+          const retryInterval = minInterval + Math.random() * (maxInterval - minInterval);
+          const delaySeconds = Math.floor(retryInterval);
+  
+          this.logger.log(`Retrying in ${delaySeconds} seconds.`);
+          setTimeout(executeTrade, delaySeconds * 1000);
         }
       };
-
-      // Start the first trade execution
+  
+      // Start the process
       this.strategyInstances.set(strategyKey, {
         isRunning: true,
         intervalId: null,
       });
       this.logger.log(`Volume strategy ${strategyKey} started.`);
-      executeTrade(); // Start the execution loop
+      executeTrade();
     } catch (error) {
       this.logger.error(`Failed to execute volume strategy: ${error.message}`);
     }
   }
-
+  
+  
+  
+  
   private async waitForOrderFill(
     exchange: ccxt.Exchange,
     orderId: string,
     symbol: string,
   ) {
-    // Wait for the order to be filled (implementation can vary based on your requirements)
     let order = await exchange.fetchOrder(orderId, symbol);
-    while (order.status !== 'closed') {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before checking again
+    while (order.status !== 'closed' && order.status !== 'filled') {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       order = await exchange.fetchOrder(orderId, symbol);
     }
   }
-
   stopVolumeStrategy(userId: string, clientId: string) {
     const strategyKey = createStrategyKey({
       type: 'volume',

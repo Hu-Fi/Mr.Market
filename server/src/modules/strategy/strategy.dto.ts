@@ -149,6 +149,7 @@ export class PureMarketMakingStrategyDto {
   floorPrice?: number;
 }
 
+
 export class ExecuteVolumeStrategyDto {
   @ApiProperty({ description: 'Name of the exchange' })
   exchangeName: string;
@@ -156,16 +157,16 @@ export class ExecuteVolumeStrategyDto {
   @ApiProperty({ description: 'Symbol to trade' })
   symbol: string;
 
-  @ApiProperty({ description: 'Percentage increment for each trade' })
+  @ApiProperty({ description: 'Percentage increment for offsetting from midPrice (initial offset)' })
   incrementPercentage: number;
 
-  @ApiProperty({ description: 'Time interval between trade execution' })
+  @ApiProperty({ description: 'Time interval (in seconds) between each trade execution' })
   intervalTime: number;
 
-  @ApiProperty({ description: 'Amount to trade per order' })
+  @ApiProperty({ description: 'Base amount to trade per order' })
   tradeAmount: number;
 
-  @ApiProperty({ description: 'Number of trades to execute' })
+  @ApiProperty({ description: 'Number of total trades to execute' })
   numTrades: number;
 
   @ApiProperty({ description: 'User ID' })
@@ -173,6 +174,12 @@ export class ExecuteVolumeStrategyDto {
 
   @ApiProperty({ description: 'Client ID' })
   clientId: string;
+
+  @ApiProperty({
+    description: 'Rate at which to push the price upward after each successful trade, in percent',
+    example: 1,
+  })
+  pricePushRate: number; // <--- NEW PARAM to push price after each trade
 }
 
 export class StopVolumeStrategyDto {

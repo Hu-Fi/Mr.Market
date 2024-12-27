@@ -310,24 +310,43 @@ export class StrategyController {
 
   @Post('/execute-volume-strategy')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Execute volume strategy' })
+  @ApiOperation({ 
+    summary: 'Execute volume strategy', 
+    description: `Starts a volume trading strategy between two accounts on the same exchange. 
+      This strategy can randomly vary the trade amount, push the price upward by a specified rate after 
+      each trade, and ensure that orders execute by placing a limit order at the current best bid/ask 
+      and immediately placing a matching order from the other account.`
+  })
   @ApiResponse({
     status: 200,
-    description: 'The volume strategy has been started.',
+    description: 'The volume strategy has been started and will ensure execution of trades.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async executeVolumeStrategy(
     @Body() executeVolumeStrategyDto: ExecuteVolumeStrategyDto,
   ) {
+    const {
+      exchangeName,
+      symbol,
+      incrementPercentage,
+      intervalTime,
+      tradeAmount,
+      numTrades,
+      userId,
+      clientId,
+      pricePushRate,
+    } = executeVolumeStrategyDto;
+  
     return this.strategyService.executeVolumeStrategy(
-      executeVolumeStrategyDto.exchangeName,
-      executeVolumeStrategyDto.symbol,
-      executeVolumeStrategyDto.incrementPercentage,
-      executeVolumeStrategyDto.intervalTime,
-      executeVolumeStrategyDto.tradeAmount,
-      executeVolumeStrategyDto.numTrades,
-      executeVolumeStrategyDto.userId,
-      executeVolumeStrategyDto.clientId,
+      exchangeName,
+      symbol,
+      incrementPercentage,
+      intervalTime,
+      tradeAmount,
+      numTrades,
+      userId,
+      clientId,
+      pricePushRate, 
     );
   }
 
