@@ -363,22 +363,34 @@ export class ExchangeInitService {
 
   private startKeepAlive() {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
-
+  
     setInterval(async () => {
       this.logger.log('Running keep-alive checks for all exchanges...');
       for (const [exchangeName, accounts] of this.exchanges) {
+        // Only do special logic for ProBit
         if (exchangeName === 'probit') {
           for (const [label, exchange] of accounts) {
             try {
-              if (exchange.has['signIn']) {
-                await exchange.signIn().then(() => {
-                  this.logger.log(`ProBit ${label} re-signed in successfully.`);
-                }); // Explicitly refresh the session
-              } else {
+              // If the exchange does not have signIn, skip
+              if (!exchange.has['signIn']) {
                 this.logger.log(
                   `ProBit ${label} does not support signIn. Skipping...`,
                 );
+                continue;
               }
+  
+              // Check for open orders
+              const openOrders = await exchange.fetchOpenOrders();
+              if (openOrders.length > 0) {
+                this.logger.log(
+                  `ProBit ${label} has open orders. Skipping signIn to avoid resetting them.`,
+                );
+                continue; // Do not signIn
+              }
+  
+              // Otherwise, signIn if no open orders
+              await exchange.signIn();
+              this.logger.log(`ProBit ${label} re-signed in successfully.`);
             } catch (error) {
               this.logger.error(
                 `ProBit ${label} keep-alive signIn failed: ${error.message}`,
@@ -386,9 +398,12 @@ export class ExchangeInitService {
             }
           }
         }
+        // other exchange keep-alive logic if needed...
       }
     }, intervalMs);
   }
+
+  
 
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
