@@ -35,9 +35,6 @@ export class ExchangeDepositDto {
 }
 
 export class ExchangeAPIKeysConfigDto {
-  @ApiProperty({ description: 'The UUID used for identity API key' })
-  key_id: string;
-
   @ApiProperty({ description: 'The ccxt identifier of exchange' })
   exchange: string;
 

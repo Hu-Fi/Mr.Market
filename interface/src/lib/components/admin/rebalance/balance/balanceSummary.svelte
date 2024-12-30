@@ -17,7 +17,7 @@
 </script>
 
 <!-- Balances Section -->
-<div class="py-4 space-y-4">
+<div class="py-4 pt-0 space-y-4">
   <!-- Title -->
    <div class="flex justify-between items-center">
     <div class="text-xl font-bold">{$_("balance")}</div>

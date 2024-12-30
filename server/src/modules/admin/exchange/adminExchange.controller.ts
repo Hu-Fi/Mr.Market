@@ -173,23 +173,20 @@ export class AdminExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Add API key error' })
   async addApiKey(@Body() data: ExchangeAPIKeysConfigDto) {
-    if (
-      !data.api_key ||
-      !data.api_secret ||
-      !data.exchange ||
-      !data.name ||
-      !data.key_id
-    ) {
+    if (!data.api_key || !data.api_secret || !data.exchange || !data.name) {
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: 'api_key, api_secret, exchange, name, and key_id are required',
+        message: 'api_key, api_secret, exchange, name are required',
       };
     }
     try {
-      const result = await this.exchangeService.addApiKey(data);
+      await this.exchangeService.addApiKey(data);
+
       return {
         code: HttpStatus.OK,
-        data: result,
+        data: {
+          message: 'API key added successfully',
+        },
       };
     } catch (error) {
       return {

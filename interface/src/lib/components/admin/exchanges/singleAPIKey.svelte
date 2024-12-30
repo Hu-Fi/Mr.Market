@@ -1,14 +1,35 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import toast from "svelte-french-toast";
   import type { AdminSingleKey } from "$lib/types/hufi/admin";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+  import { removeExchangeApiKey } from "$lib/helpers/hufi/admin/exchange";
   
   export let key: AdminSingleKey;
+  let loading = false;
   let deleteConfirm = false;
 
-  const deleteAPIKey = (key_id: number) => {
-    console.log('delete api key', key_id)
-    deleteConfirm = false;
+  const deleteAPIKey = async (key_id: string) => {
+    loading = true;
+    const token = localStorage.getItem("admin-access-token");
+    if (!token) {
+      return;
+    }
+
+    try {
+      loading = false;
+      const res = await removeExchangeApiKey(token, key_id);
+      if (res.code === 200) {
+        toast.success(`${res.message}`);
+      } else {
+        toast.error(`${res.message}`);
+      }
+    } catch (e: any) {
+      toast.error(`${e.message}`);
+      loading = false;
+      deleteConfirm = false;
+    }
+    return;
   }
 </script>
 

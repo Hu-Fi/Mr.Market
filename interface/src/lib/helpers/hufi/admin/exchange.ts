@@ -1,5 +1,6 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import type { ExchangeAPIKeysConfig } from "$lib/types/hufi/exchanges";
 
 // Get all API keys
 export const getAllAPIKeys = async (token: string): Promise<unknown> => {
@@ -47,3 +48,30 @@ export const getDepositAddressByKeyIdAndCurrency = async (token: string, data: {
     throw error;
   }
 }
+
+export const addExchangeApiKey = async (token: string, data: ExchangeAPIKeysConfig): Promise<unknown> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/api-key/add`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error adding API key:', error);
+    throw error;
+  }
+};
+
+export const removeExchangeApiKey = async (token: string, keyId: string): Promise<unknown> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/api-key/remove/${keyId}`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error removing API key:', error);
+    throw error;
+  }
+};

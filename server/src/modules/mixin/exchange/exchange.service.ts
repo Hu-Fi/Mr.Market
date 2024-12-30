@@ -111,7 +111,11 @@ import {
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { exchangeAPIKeysConfig } from 'src/common/entities/exchange-api-keys.entity';
-import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
+import {
+  ExchangeAPIKeysConfigDto,
+  ExchangeDepositDto,
+  ExchangeWithdrawalDto,
+} from './exchange.dto';
 import { AggregatedBalances } from 'src/common/types/rebalance/map';
 
 @Injectable()
@@ -630,8 +634,22 @@ export class ExchangeService {
   }
 
   // DB related
-  async addApiKey(key: exchangeAPIKeysConfig) {
-    return await this.exchangeRepository.addAPIKey(key);
+  async addApiKey(key: ExchangeAPIKeysConfigDto) {
+    const exchangeInstance = new ccxt[key.exchange]({
+      apiKey: key.api_key,
+      secret: key.api_secret,
+      password: key.api_extra || '',
+    });
+
+    const balance = await exchangeInstance.fetchBalance();
+    if (balance) {
+      return await this.exchangeRepository.addAPIKey({
+        ...key,
+        key_id: '1',
+      });
+    } else {
+      throw new Error('Invalid API key or secret');
+    }
   }
 
   async readAPIKey(keyId: string) {

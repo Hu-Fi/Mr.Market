@@ -33,3 +33,12 @@ export interface OHLCVData {
   low: number
   volume: number
 }
+
+export interface ExchangeAPIKeysConfig {
+  key_id: string;
+  exchange: string;
+  name: string;
+  api_key: string;
+  api_secret: string;
+  api_extra?: string;
+}
