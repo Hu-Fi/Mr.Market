@@ -8,3 +8,4 @@ export const loginLoading = writable(false);
 // /manage/rebalance
 export const balances = writable()
 export const balancesLoading = writable(false)
+export const balancesLoaded = writable(false)

@@ -135,19 +135,8 @@
     </div>
   </div>
 
-  <!-- Minium Deposit Amount -->
-  <div class="flex flex-row justify-between items-center w-full">
-    <div class="flex flex-col items-start space-y-1">
-      <span class="text-xs text-base-content/60">{$_("minium_deposit_amount")}</span>
-      <span class="text-base font-bold text-base-content">{miniumDepositAmount}</span>
-    </div>
-  </div>
-
-  <!-- Confirmations -->
-  <div class="flex flex-row justify-between items-center w-full">
-    <div class="flex flex-col items-start space-y-1">
-      <span class="text-xs text-base-content/60">{$_("confirmations")}</span>
-      <span class="text-base font-bold text-base-content">{confirmations}</span>
-    </div>
+  <div class="flex flex-col space-y-2 text-xs font-extralight text-base-content text-opacity-60 !mt-10 !mb-3">
+    <span>- {$_("deposit_will_arrive", { values: { number: confirmations } })}</span>
+    <span>- {$_("minium_deposit_amount", { values: { amount: miniumDepositAmount, symbol: currencyId } })}</span>
   </div>
 </div>

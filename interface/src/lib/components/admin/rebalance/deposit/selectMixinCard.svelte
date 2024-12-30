@@ -1,12 +1,14 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import mixinIcon from '$lib/images/mixin.png';
-    import { goto } from "$app/navigation";
+
+  export let path = '';
 </script>
 
 <div class="tooltip tooltip-top" data-tip="ID: 0">
   <button class="stats shadow select-none min-w-60 h-full" on:click={() => {
-    goto('/manage/rebalance/deposit/mixin');
+    goto(path);
   }}>
     <div class="stat text-left h-full">
       <div class="stat-figure text-green-500">

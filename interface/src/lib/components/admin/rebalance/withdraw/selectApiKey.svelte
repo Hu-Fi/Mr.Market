@@ -23,8 +23,8 @@
 
 <!-- Display all available api keys -->
 <div class="flex flex-wrap gap-4 p-8">
-  <SelectMixinCard path="/manage/rebalance/deposit/mixin/" />
+  <SelectMixinCard path="/manage/rebalance/withdraw/mixin/" />
   {#each apiKeys as key}
-    <SelectApiKeyCard info={key} path="/manage/rebalance/deposit/exchange/" />
+    <SelectApiKeyCard info={key} path="/manage/rebalance/withdraw/exchange/" />
   {/each}
 </div>

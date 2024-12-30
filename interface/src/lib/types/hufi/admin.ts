@@ -23,10 +23,10 @@ export interface AdminSwapOrder {
 }
 
 export interface AdminSingleKey {
+  key_id: number,
   exchange: string,
-  state: string,
-  last_update: string,
-  key: string,
+  name: string,
+  api_key: string,
 }
 
 export interface AdminCCXTCurrency {

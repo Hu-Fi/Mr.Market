@@ -3,6 +3,7 @@
   import { BN } from "$lib/helpers/utils";
   import emptyToken from '$lib/images/empty-token.svg';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
+    import { goto } from "$app/navigation";
   export let info: {
     key_id: number;
     exchange: string;
@@ -13,12 +14,13 @@
       total: Record<string, number>;
     };
   };
+  export let path = '';
 </script>
 
 <div class="tooltip tooltip-top" data-tip={
   `${info.exchange}: ${info.key_id}`
 }>
-  <div class="stats shadow">
+  <button class="stats shadow" on:click={() => goto(path)}>
     <div class="stat text-left">
       <div class="stat-figure text-green-500">
         <div class="avatar">
@@ -34,5 +36,5 @@
         <div class="stat-desc my-1 mr-2">{asset}: {BN(info.balance.total[asset]).toString(10)}</div>
       {/each}
     </div>
-  </div>
+  </button>
 </div>

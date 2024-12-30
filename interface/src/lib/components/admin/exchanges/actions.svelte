@@ -1,5 +1,6 @@
 <script>
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
 
   const items = [
     {
@@ -7,15 +8,7 @@
       name: $_("add_api_key"),
       keey: "add api key",
       fn: () => {
-        console.log("add api key");
-      },
-    },
-    {
-      key: "rm",
-      name: $_("remove_api_key"),
-      keey: "remove api key",
-      fn: () => {
-        console.log("remove api key");
+        goto('/manage/exchanges/add')
       },
     },
   ];

@@ -9,11 +9,12 @@
     key_id: number;
     name: string;
   };
+  export let path = ''
 </script>
 
 <div class="tooltip tooltip-top" data-tip={`ID: ${info.key_id}`}>
   <button class="stats shadow select-none min-w-80 h-full" on:click={() => {
-    goto(`/manage/rebalance/deposit/exchange/${info.key_id}`);
+    goto(`${path}${info.key_id}`);
   }}>
     <div class="stat text-left">
       <div class="stat-figure text-green-500">

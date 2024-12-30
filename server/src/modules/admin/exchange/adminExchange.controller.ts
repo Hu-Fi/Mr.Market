@@ -23,6 +23,7 @@ import {
   ExchangeDepositDto,
   ExchangeWithdrawalDto,
 } from 'src/modules/mixin/exchange/exchange.dto';
+import { CreateMixinWithdrawalDto } from 'src/modules/mixin/snapshots/snapshots.dto';
 
 @ApiTags('admin/exchange')
 @Controller('admin/exchange')
@@ -36,16 +37,40 @@ export class AdminExchangeController {
     private readonly snapshotsService: SnapshotsService,
   ) {}
 
-  @Post('withdrawal/create')
+  @Post('withdrawal/mixin/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })
   @ApiResponse({ status: 200, description: 'Create withdrawal' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async createWithdrawal(data: ExchangeWithdrawalDto) {
+  async createMixinWithdrawal(data: CreateMixinWithdrawalDto) {
+    try {
+      const result = await this.snapshotsService.withdrawal(
+        data.asset_id,
+        data.destination,
+        data.memo,
+        data.amount,
+      );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Create withdrawal error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error creating withdrawal: ${e.message}`,
+      };
+    }
+  }
+
+  @Post('withdrawal/exchange/create')
+  @ApiOperation({ summary: 'Create withdrawal with api key' })
+  @ApiResponse({ status: 200, description: 'Create withdrawal' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async createExchangeWithdrawal(data: ExchangeWithdrawalDto) {
     try {
       const result = await this.exchangeService.createWithdrawal(data);
       return {
         code: HttpStatus.OK,
-        message: 'Withdrawal created successfully',
         data: result,
       };
     } catch (e) {

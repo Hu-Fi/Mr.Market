@@ -2,13 +2,12 @@
   import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import toast from 'svelte-french-toast';
-  import { balancesLoading } from '$lib/stores/admin';
   import Loading from '$lib/components/common/loading.svelte';
-  import { getAllBalances } from '$lib/helpers/hufi/admin/rebalance';
+  import { getAllBalancesWp } from '$lib/helpers/hufi/admin/rebalance';
+  import { balances, balancesLoaded, balancesLoading } from '$lib/stores/admin';
   import BalancesComplexCard from '$lib/components/admin/rebalance/balance/balancsComplexCard.svelte';
 
   let isRefresh = 'false';
-  let balances = [];
 
   onMount(async () => {
     refreshBalances();
@@ -17,10 +16,7 @@
   async function refreshBalances() {
     const token = localStorage.getItem('admin-access-token');
     if (token) {
-      balancesLoading.set(true);
-      const resp = await getAllBalances(token, isRefresh);
-      balances = resp.data;
-      balancesLoading.set(false);
+      await getAllBalancesWp(token, isRefresh);
       if (isRefresh == 'true') {
         toast.success(`${$_("refresh_success")}!`);
       }
@@ -56,9 +52,13 @@
     </div>
   {:else}
     <div class="flex flex-wrap items-center gap-4">
-      {#each balances as balance}
-        <BalancesComplexCard info={balance} />
-      {/each}
+      {#if $balancesLoaded && $balances.length > 0}
+        {#each $balances as balance}
+          <BalancesComplexCard info={balance} path={`/manage/rebalance/balances/${balance.key_id}`} />
+        {/each}
+      {:else}
+        <div class="text-center text-base-300">{$_("no_balance_in_wallet")}</div>
+      {/if}
     </div>
   {/if}
 </div>
