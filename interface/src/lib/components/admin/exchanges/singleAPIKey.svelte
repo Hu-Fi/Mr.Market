@@ -3,7 +3,7 @@
   import toast from "svelte-french-toast";
   import type { AdminSingleKey } from "$lib/types/hufi/admin";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
-  import { removeExchangeApiKey } from "$lib/helpers/hufi/admin/exchange";
+  import { loadExchangeApiKeys, removeExchangeApiKey } from "$lib/helpers/hufi/admin/exchange";
   
   export let key: AdminSingleKey;
   let loading = false;
@@ -29,7 +29,9 @@
       loading = false;
       deleteConfirm = false;
     }
-    return;
+    setTimeout(async () => {
+      await loadExchangeApiKeys();
+    }, 500);
   }
 </script>
 
@@ -64,7 +66,7 @@
             </svg>
           </button>
 
-          <button class="flex items-center justify-center rounded-full p-0 h-5 w-5" on:click={()=>deleteAPIKey(key.key_id)}>
+          <button class="flex items-center justify-center rounded-full p-0 h-5 w-5" on:click={()=>deleteAPIKey(key.key_id.toString())}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             </svg>

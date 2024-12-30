@@ -1,6 +1,26 @@
+import toast from "svelte-french-toast";
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import { exchangeApiKeys, exchangeApiKeysLoading } from "$lib/stores/admin";
 import type { ExchangeAPIKeysConfig } from "$lib/types/hufi/exchanges";
+
+// Wrapper
+export const loadExchangeApiKeys = async () => {
+  exchangeApiKeysLoading.set(true);
+  const token = localStorage.getItem('admin-access-token');
+  if (!token) {
+    exchangeApiKeysLoading.set(false);
+    return;
+  }
+  const res = await getAllAPIKeys(token);
+  if (!res || !res.data) {
+    toast.error('Failed to load all api keys');
+    exchangeApiKeysLoading.set(false);
+    return;
+  }
+  exchangeApiKeys.set(res.data);
+  exchangeApiKeysLoading.set(false);
+}
 
 // Get all API keys
 export const getAllAPIKeys = async (token: string): Promise<unknown> => {

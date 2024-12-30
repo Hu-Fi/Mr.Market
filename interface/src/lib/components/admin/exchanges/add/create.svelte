@@ -6,7 +6,7 @@
   import type { ExchangeAPIKeysConfig } from "$lib/types/hufi/exchanges";
 
   let loading = false;
-  let items: { key: keyof ExchangeAPIKeysConfig, value: string, info: string }[] = [
+  let items = [
     { key: 'name', value: '', info: $_('name_info') },
     { key: 'exchange', value: '', info: $_('exchange_info') },
     { key: 'api_key', value: '', info: $_('api_key_info') },
@@ -43,8 +43,9 @@
     } catch (e: any) {
       toast.error(`${e.message}`);
       loading = false;
+    } finally {
+      loading = false;
     }
-    return;
   }
 </script>
 
@@ -67,12 +68,21 @@
           <span class="text-sm"> {key} </span>
           <!-- <span class="text-xs text-gray-500"> {info} </span> -->
         </div>
-        <input
-          type="text"
-          placeholder={info}
-          bind:value={items[index].value}
-          class="input input-bordered w-full max-w-xs focus:outline-none"
-        />
+        {#if key === 'api_secret' || key === 'api_extra'}
+          <input
+            type="password"
+            placeholder={info}
+            bind:value={items[index].value}
+            class="input input-bordered w-full max-w-xs focus:outline-none"
+          />
+        {:else}
+          <input
+            type="text"
+            placeholder={info}
+            bind:value={items[index].value}
+            class="input input-bordered w-full max-w-xs focus:outline-none"
+          />
+        {/if}
       </div>
     {/each}
 
