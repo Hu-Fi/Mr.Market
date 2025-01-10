@@ -9,7 +9,7 @@
   export let depositAddress: string;
   export let depositMemo: string;
   export let miniumDepositAmount: string;
-  export let confirmations: string;
+  export let maxiumDepositAmount: string;
 
   let addressCopied = false;
   let memoCopied = false;
@@ -39,8 +39,6 @@
       <span class="text-xs text-base-content/60">{$_("asset")}</span>
       <span class="text-base font-bold text-base-content">{currencyId}</span>
     </div>
-
-    <!-- <img src={assetIcon} alt='' class="size-8" /> -->
   </div>
   
   <!-- Network -->
@@ -49,8 +47,6 @@
       <span class="text-xs text-base-content/60">{$_("network")}</span>
       <span class="text-base font-bold text-base-content">{chainSymbol}</span>
     </div>
-
-    <!-- <img src={chainIcon} alt='' class="size-8" /> -->
   </div>
   
   {#if depositMemo}
@@ -136,7 +132,12 @@
   </div>
 
   <div class="flex flex-col space-y-2 text-xs font-extralight text-base-content text-opacity-60 !mt-10 !mb-3">
-    <span>- {$_("deposit_will_arrive", { values: { number: confirmations } })}</span>
-    <span>- {$_("minium_deposit_amount", { values: { amount: miniumDepositAmount, symbol: currencyId } })}</span>
+    {#if miniumDepositAmount && maxiumDepositAmount && ( maxiumDepositAmount !== '0' || miniumDepositAmount !== '0' )}
+      <span>- {$_("deposit_amount_range", { values: { min: miniumDepositAmount, max: maxiumDepositAmount, symbol: currencyId } })}</span>
+    {:else if miniumDepositAmount}
+      <span>- {$_("minium_deposit_amount", { values: { amount: miniumDepositAmount, symbol: currencyId } })}</span>
+    {:else if maxiumDepositAmount}
+      <span>- {$_("maxium_deposit_amount", { values: { amount: maxiumDepositAmount, symbol: currencyId } })}</span>
+    {/if}
   </div>
 </div>

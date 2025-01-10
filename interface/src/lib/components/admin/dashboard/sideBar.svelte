@@ -13,6 +13,7 @@
     "exchanges",
     "rebalance",
     // "revenue",
+    "strategies",
     "health",
     "message",
     "settings",

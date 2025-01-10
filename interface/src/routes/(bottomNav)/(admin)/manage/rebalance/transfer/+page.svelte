@@ -6,14 +6,14 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { BN } from "$lib/helpers/utils";
+  import emptyToken from "$lib/images/empty-token.svg";
   import { balances, balancesLoading } from "$lib/stores/admin";
   import { findCoinIconBySymbol, findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
-  let exchangeOptions = [];
+  $: exchangeOptions = [];
   let selectedFromExchange = "";
   let selectedToExchange = "";
   let selectedFromAsset = "";
-  let selectedToAsset = "";
   let amount = "";
 
   let fromExchangeMenuOpen = false;
@@ -41,27 +41,33 @@
   }
 
   function handleTransfer() {
-    if (selectedFromExchange && selectedToExchange && selectedFromAsset && selectedToAsset && amount) {
-      console.log(`Transfer ${amount} from ${selectedFromExchange} (${selectedFromAsset}) to ${selectedToExchange} (${selectedToAsset})`);
+    if (selectedFromExchange && selectedToExchange && selectedFromAsset && amount) {
+      console.log(`Transfer ${amount} from ${selectedFromExchange} (${selectedFromAsset}) to ${selectedToExchange}`);
       // Implement transfer logic here
     } else {
       alert("Please select all options and enter an amount for transfer.");
     }
   }
 
-  function selectOption(type, value) {
-    if (type === "fromExchange") {
-      selectedFromExchange = value;
-      selectedFromAsset = "";
-      fromExchangeMenuOpen = false;
-    } else if (type === "toExchange") {
-      selectedToExchange = value;
-      selectedToAsset = "";
-      toExchangeMenuOpen = false;
-    } else if (type === "fromAsset") {
-      selectedFromAsset = value;
-      fromAssetMenuOpen = false;
+  const selectFromExchange = (value) => {
+    if (value.id === selectedToExchange.id) {
+      selectedToExchange = selectedFromExchange;
     }
+    selectedFromExchange = value;``
+    selectedFromAsset = "";
+    fromExchangeMenuOpen = false;
+    console.log("selectedToExchange", selectedToExchange);
+    console.log("value", value);
+  }
+  const selectFromAsset = (value) => {
+    // Load fee
+    // Load currency info in exchange
+    selectedFromAsset = value;
+    fromAssetMenuOpen = false;
+  }
+  const selectToExchange = (value) => {
+    selectedToExchange = value;
+    toExchangeMenuOpen = false;
   }
 </script>
 
@@ -74,13 +80,13 @@
     <!-- Header -->
     <div class="flex items-center gap-2 p-4 bg-white">
       <!-- Arrow left -->
-      <button class="btn btn-ghost btn-circle" on:click={() => { history.back() }}>
+      <button class="btn btn-ghost btn-circle no-animation" on:click={() => { history.back() }}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
       </button>
       <!-- Title -->
-      <h1 class="text-xl font-bold">{$_("transfer")}</h1>
+      <span class="text-xl font-bold">{$_("transfer")}</span>
     </div>
 
     <!-- Transfer Form -->
@@ -112,7 +118,7 @@
               {#if fromExchangeMenuOpen}
                 <ul class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded shadow-lg max-h-60 overflow-auto">
                   {#each exchangeOptions.filter(item => item.id !== selectedFromExchange.id) as item}
-                    <button class="w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost" on:click={() => selectOption('fromExchange', item)}>
+                    <button class="no-animation w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost" on:click={() => selectFromExchange(item)}>
                       <img src={findExchangeIconByIdentifier(item.exchange)} alt={item.exchange} class="w-6 h-6" />
                       <span class="ml-2">{item.name} ({item.exchange}-{item.id})</span>
                     </button>
@@ -135,7 +141,7 @@
               >
                 <div class="flex items-center justify-start">
                   {#if selectedFromAsset}
-                    <img src={findCoinIconBySymbol(selectedFromAsset)} alt={selectedFromAsset} class="w-6 h-6" />
+                    <img src={findCoinIconBySymbol(selectedFromAsset) || emptyToken} alt={selectedFromAsset} class="w-6 h-6" />
                     <span class="ml-2">{selectedFromAsset} ({getBalance(selectedFromExchange, selectedFromAsset)})</span>
                   {:else}
                     {$_("select_asset")}
@@ -149,10 +155,10 @@
                 <ul class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded shadow-lg max-h-60 overflow-auto">
                   {#each exchangeOptions.find(e => e.id === selectedFromExchange.id).assets as asset}
                     <button
-                      class="w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost"
-                      on:click={() => selectOption('fromAsset', asset)}
+                      class="no-animation w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost"
+                      on:click={() => selectFromAsset(asset)}
                     >
-                      <img src={findCoinIconBySymbol(asset)} alt={asset} class="w-6 h-6" />
+                      <img src={findCoinIconBySymbol(asset) || emptyToken} alt={asset} class="w-6 h-6" />
                       <span class="ml-2">{asset} ({getBalance(selectedFromExchange, asset)})</span>
                     </button>
                   {/each}
@@ -187,8 +193,8 @@
                 <ul class="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded shadow-lg max-h-60 overflow-auto">
                   {#each exchangeOptions.filter(item => item.id !== selectedFromExchange.id) as item}
                     <button
-                      class="w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost"
-                      on:click={() => selectOption('toExchange', item)}
+                      class="no-animation w-full px-4 py-2 flex items-center justify-start hover:bg-gray-100 btn btn-ghost"
+                      on:click={() => selectToExchange(item)}
                     >
                       <img src={findExchangeIconByIdentifier(item.exchange)} alt={item.exchange} class="w-6 h-6" />
                       <span class="ml-2">{item.name} ({item.exchange}-{item.id})</span>

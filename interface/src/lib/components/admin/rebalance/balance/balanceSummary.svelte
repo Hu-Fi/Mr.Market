@@ -34,7 +34,9 @@
   <!-- Top Balances Section -->
   <div class="flex flex-wrap items-center gap-4">
     {#if $balancesLoading}
+    <div class="flex justify-center items-center py-8 w-full">
       <Loading />
+    </div>
     {:else if $balancesLoaded && $balances.length > 0}
       {#each $balances as info}
         <BalanceCard {info} />

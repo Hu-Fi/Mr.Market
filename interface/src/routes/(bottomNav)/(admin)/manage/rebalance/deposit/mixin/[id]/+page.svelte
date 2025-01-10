@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import toast from "svelte-french-toast";
   import { getMixinDepositAddress } from "$lib/helpers/hufi/admin/rebalance";
   import MixinDepositCard from "$lib/components/admin/rebalance/deposit/mixinDepositCard.svelte";
 
@@ -28,6 +29,7 @@
       const result = await getMixinDepositAddress(asset.asset_id, token);
       if (result.code === 500) {
         failure = true;
+        toast.error(result.message);
         console.error(result.message);
       }
       const data = result.data;

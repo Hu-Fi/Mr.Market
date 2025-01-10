@@ -1,5 +1,6 @@
 // Admin Rebalance service
 import { Cache } from 'cache-manager';
+import { BigNumber } from 'bignumber.js';
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -46,36 +47,159 @@ export class AdminRebalanceService {
     return await this.exchangeService.getBalanceByKeyLabel(keyLabel);
   }
 
-  // 3. Transfer from mixin/exchange to exchange/mixin
-  async transfer(
-    fromKeyId: string,
-    toKeyId: string,
-    fromExchange: string,
-    toExchange: string,
-    symbol: string,
-    chain: string,
-    amount: string,
-  ) {
-    this.logger.log(
-      `Transferring from ${fromKeyId} ${fromExchange} to ${toKeyId} ${toExchange} ${symbol} ${chain} ${amount}`,
-    );
-    // TODO: Implement transfer logic
+  // 3. Get balance by mixin
+  async getBalanceByMixin() {
+    this.logger.debug(`Getting balance for mixin`);
+    return await this.snapshotService.getAllAssetBalances();
   }
 
-  // Withdraw from mixin or exchange
-  async withdraw(
-    key_id: string,
-    exchange: string,
+  // Get transfer info
+  // async getTransferInfo(
+  //   fromKeyId: string,
+  //   toKeyId: string,
+  //   symbol: string,
+  //   chain: string,
+  //   amount: string,
+  // ) {
+  //   const fromExchangeKey = await this.exchangeService.readAPIKey(fromKeyId);
+  //   const fromExchange = fromExchangeKey.exchange;
+  //   const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
+  //     fromExchangeKey.api_key,
+  //     fromExchangeKey.api_secret,
+  //     fromExchangeKey.api_extra,
+  //     fromExchange,
+  //     symbol,
+  //   );
+  //   const fromExchangeMinWithdrawalAmount =
+  //     fromExchangeCurrencyInfo.withdrawal_min_size;
+  //   const fromExchangeFee = fromExchangeCurrencyInfo.fee;
+  //   const toExchangeKey = await this.exchangeService.readAPIKey(toKeyId);
+  //   const toExchange = toExchangeKey.exchange;
+  //   const toExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
+  //     toExchangeKey.api_key,
+  //     toExchangeKey.api_secret,
+  //     toExchangeKey.api_extra,
+  //     toExchange,
+  //     symbol,
+  //   );
+  //   const toExchangeMinDepositAmount = toExchangeCurrencyInfo.deposit_min_size;
+  // }
+
+  // 3. Transfer from mixin/exchange to exchange/mixin
+  async transferBetweenExchanges(
+    fromKeyId: string,
+    toKeyId: string,
     symbol: string,
     chain: string,
     amount: string,
-    address: string,
-    memo: string,
   ) {
     this.logger.log(
-      `Withdrawing from ${key_id} ${exchange} ${symbol} ${chain} ${amount} ${address} ${memo}`,
+      `Transferring from ${fromKeyId} to ${toKeyId} ${symbol} ${chain} ${amount}`,
     );
-    // TODO: Implement withdrawal logic
+    // Minium withdrawal amount of fromExchange
+    // If amount is less than minium withdrawal amount, return error
+    const fromExchangeKey = await this.exchangeService.readAPIKey(fromKeyId);
+    const fromExchange = fromExchangeKey.exchange;
+    const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
+      fromExchangeKey.api_key,
+      fromExchangeKey.api_secret,
+      fromExchangeKey.api_extra,
+      fromExchange,
+      symbol,
+    );
+
+    const toExchangeKey = await this.exchangeService.readAPIKey(toKeyId);
+    const toExchange = toExchangeKey.exchange;
+    const toExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
+      toExchangeKey.api_key,
+      toExchangeKey.api_secret,
+      toExchangeKey.api_extra,
+      toExchange,
+      symbol,
+    );
+
+    this.logger.debug(
+      `From exchange currency info: ${JSON.stringify(
+        fromExchangeCurrencyInfo,
+      )}`,
+    );
+
+    if (!fromExchangeCurrencyInfo.networks[chain]) {
+      throw new Error(`Chain ${chain} not supported by fromExchange`);
+    }
+    if (!toExchangeCurrencyInfo.networks[chain]) {
+      throw new Error(`Chain ${chain} not supported by toExchange`);
+    }
+
+    const fromExchangeMinWithdrawalAmount =
+      fromExchangeCurrencyInfo.networks[chain].limits.withdraw.min;
+    const fromExchangeMaxWithdrawalAmount =
+      fromExchangeCurrencyInfo.networks[chain].limits.withdraw.max;
+    const fromExchangeWithdrawalFee =
+      fromExchangeCurrencyInfo.networks[chain].fee;
+    const fromExchangeWithdrawalEnabled =
+      fromExchangeCurrencyInfo.networks[chain].withdraw;
+    if (new BigNumber(amount).isLessThan(fromExchangeMinWithdrawalAmount)) {
+      throw new Error(`Amount is less than the minimum withdrawal amount`);
+    }
+
+    const toExchangeMinDepositAmount =
+      toExchangeCurrencyInfo.networks[chain].limits.deposit.min;
+    const toExchangeMaxDepositAmount =
+      toExchangeCurrencyInfo.networks[chain].limits.deposit.max;
+    const toExchangeDepositFee = toExchangeCurrencyInfo.networks[chain].fee;
+    const toExchangeDepositEnabled =
+      toExchangeCurrencyInfo.networks[chain].deposit;
+
+    if (new BigNumber(amount).isLessThan(toExchangeMinDepositAmount)) {
+      throw new Error(`Amount is less than the minimum deposit amount`);
+    }
+
+    const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
+      fromKeyId,
+    );
+    if (new BigNumber(fromExchangeBalance).isLessThan(amount)) {
+      throw new Error(`Insufficient balance in fromExchange`);
+    }
+
+    const toExchangeDepositAddress =
+      await this.exchangeService.getDepositAddress({
+        apiKeyId: toKeyId,
+        symbol,
+        network: chain,
+      });
+
+    if (!toExchangeDepositAddress) {
+      throw new Error(`Deposit address not found for toExchange`);
+    }
+
+    try {
+      await this.exchangeService.createWithdrawal({
+        apiKeyId: fromKeyId,
+        symbol,
+        network: chain,
+        exchange: fromExchange,
+        address: toExchangeDepositAddress.address,
+        amount,
+        tag: '',
+      });
+      this.logger.log(`Transfer successful from ${fromKeyId} to ${toKeyId}`);
+      // Write to rebalance history
+    } catch (error) {
+      this.logger.error(`Transfer failed: ${error.message}`);
+      // Write to rebalance history
+      throw new Error(`Transfer failed: ${error.message}`);
+    }
+  }
+
+  async transferFromMixin(transferDto: any) {
+    this.logger.log(`Transferring from mixin to exchange ${transferDto}`);
+    // TODO: Implement transfer from mixin to exchange
+  }
+
+  async transferFromExchange(transferDto: any) {
+    this.logger.log(`Transferring from exchange to mixin ${transferDto}`);
+    // TODO: Implement transfer from exchange to mixin
   }
 
   // 8. Read pending deposits
@@ -91,12 +215,10 @@ export class AdminRebalanceService {
   }
 
   // 10. Read rebalance history
-  async getRebalanceHistory(params: {
-    type?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
-    this.logger.log('Getting rebalance history');
+  async getRebalanceHistory(type: string, startDate: string, endDate: string) {
+    this.logger.log(
+      `Getting rebalance history ${type} ${startDate} ${endDate}`,
+    );
     // TODO: Implement rebalance history retrieval
   }
 }

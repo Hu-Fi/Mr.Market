@@ -137,6 +137,12 @@ export class AdminExchangeController {
     }
     try {
       const result = await this.snapshotsService.getDepositAddress(asset_id);
+      if (!result) {
+        return {
+          code: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Failed to get deposit address',
+        };
+      }
       return {
         code: HttpStatus.OK,
         data: result,

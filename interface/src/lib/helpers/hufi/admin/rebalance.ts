@@ -8,7 +8,6 @@ export const getAllBalancesWp = async (token: string, disableCache: string = 'fa
   try {
     balancesLoading.set(true);
     const resp = await getAllBalances(token, disableCache);
-    console.log(resp)
     if (resp.code != 200) {
       throw Error(resp.message);
     }
@@ -36,15 +35,29 @@ export const getAllBalances = async (token: string, disableCache: string = 'fals
 }
 
 // Get balance by key label
-export const getBalanceByKeyLabel = async (keyLabel: string, token: string): Promise<unknown> => {
+export const getBalanceByKeyLabel = async (token: string, keyLabel: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/${keyLabel}`, {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/exchange/${keyLabel}`, {
       method: 'GET',
       headers: getHeaders(token),
     });
     return await handleApiResponse(response);
   } catch (error) {
     console.error(`Error fetching balance for key label ${keyLabel}:`, error);
+    throw error;
+  }
+}
+
+// Get mixin balance
+export const getMixinBalance = async (token: string): Promise<unknown> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/mixin`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error(`Error fetching mixin balance:`, error);
     throw error;
   }
 }

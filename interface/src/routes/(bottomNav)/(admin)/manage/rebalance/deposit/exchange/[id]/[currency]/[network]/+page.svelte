@@ -10,7 +10,9 @@
   $: depositAddress = '';
   $: depositMemo = '';
   $: minDepositAmount = '';
-  $: confirmations = '';
+  $: minWithdrawalAmount = '';
+  $: maxDepositAmount = '';
+  $: maxWithdrawalAmount = '';
   let loading = false;
   let loaded = false;
   let failure = false;
@@ -40,7 +42,9 @@
         depositAddress = data.address;
         depositMemo = data.memo;
         minDepositAmount = data.minium_deposit_amount;
-        confirmations = data.confirmations;
+        minWithdrawalAmount = data.minium_withdrawal_amount;
+        maxDepositAmount = data.max_deposit_amount;
+        maxWithdrawalAmount = data.max_withdrawal_amount;
         loaded = true;
       }
     } catch (error) {
@@ -83,7 +87,7 @@
       depositAddress={depositAddress}
       depositMemo={depositMemo}
       miniumDepositAmount={minDepositAmount}
-      confirmations={confirmations}
+      maxiumDepositAmount={maxDepositAmount}
     />
   {/if}
 </div>

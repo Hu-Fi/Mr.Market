@@ -56,75 +56,71 @@ export class ExchangeListener {
     event: ExchangePlaceSpotEvent;
     mixinEvent: MixinReleaseTokenEvent;
   }) {
-    const { event, mixinEvent } = payload;
-    const exchangeName = event.exchangeName;
-
-    let [baseSymbol, targetSymbol] = event.symbol.split('/');
-    if (baseSymbol.includes('USDT')) {
-      baseSymbol = 'USDT';
-    }
-    if (targetSymbol.includes('USDT')) {
-      targetSymbol = 'USDT';
-    }
-    const orderTypeBuy = event.type.endsWith('B');
-    const assetSymbol = orderTypeBuy ? targetSymbol : baseSymbol;
-
-    const key = await this.exchangeService.pickAPIKeyOnDemand(
-      exchangeName,
-      assetSymbol,
-      event.amount,
-    );
-    if (key.type === 'error') {
-      await this.exchangeService.updateSpotOrderState(
-        event.orderId,
-        STATE_TEXT_MAP['EXCHANGE_BALANCE_NOT_ENOUGH'],
-      );
-      return;
-    }
-    const orderTypeLimit = event.type.endsWith('L');
-    const checkAssetId = orderTypeBuy ? event.baseAssetId : event.targetAssetId;
-    const estimateReceiveAmount = await this.exchangeService.estimateSpotAmount(
-      exchangeName,
-      event.symbol,
-      orderTypeBuy,
-      event.amount,
-      orderTypeLimit ? event.limitPrice : undefined,
-    );
-    if (
-      !(await this.snapshotService.checkMixinBalanceEnough(
-        checkAssetId,
-        estimateReceiveAmount,
-      ))
-    ) {
-      await this.exchangeService.updateSpotOrderState(
-        event.orderId,
-        STATE_TEXT_MAP['MIXIN_BALANCE_NOT_ENOUGH'],
-      );
-      return;
-    }
-
-    // Place order
-    await this.exchangeService.placeOrder(
-      event.orderId,
-      exchangeName,
-      orderTypeLimit,
-      orderTypeBuy,
-      key.id,
-      key.api_key,
-      key.secret,
-      `${baseSymbol}/${targetSymbol}`,
-      event.amount,
-    );
-
-    await this.exchangeService.addMixinReleaseToken({
-      orderId: mixinEvent.orderId,
-      userId: mixinEvent.userId,
-      assetId: mixinEvent.assetId,
-      state: STATE_TEXT_MAP['MIXIN_RELEASE_INIT'],
-      amount: mixinEvent.amount,
-      createdAt: mixinEvent.createdAt,
-      updatedAt: mixinEvent.updatedAt,
-    });
-    // Jump to step 3, update order state (exchange.service.ts)
+    // const { event, mixinEvent } = payload;
+    // const exchangeName = event.exchangeName;
+    // let [baseSymbol, targetSymbol] = event.symbol.split('/');
+    // if (baseSymbol.includes('USDT')) {
+    //   baseSymbol = 'USDT';
+    // }
+    // if (targetSymbol.includes('USDT')) {
+    //   targetSymbol = 'USDT';
+    // }
+    // const orderTypeBuy = event.type.endsWith('B');
+    // const assetSymbol = orderTypeBuy ? targetSymbol : baseSymbol;
+    // const key = await this.exchangeService.pickAPIKeyOnDemand(
+    //   exchangeName,
+    //   assetSymbol,
+    //   event.amount,
+    // );
+    // if (key.type === 'error') {
+    //   await this.exchangeService.updateSpotOrderState(
+    //     event.orderId,
+    //     STATE_TEXT_MAP['EXCHANGE_BALANCE_NOT_ENOUGH'],
+    //   );
+    //   return;
+    // }
+    // const orderTypeLimit = event.type.endsWith('L');
+    // const checkAssetId = orderTypeBuy ? event.baseAssetId : event.targetAssetId;
+    // const estimateReceiveAmount = await this.exchangeService.estimateSpotAmount(
+    //   exchangeName,
+    //   event.symbol,
+    //   orderTypeBuy,
+    //   event.amount,
+    //   orderTypeLimit ? event.limitPrice : undefined,
+    // );
+    // if (
+    //   !(await this.snapshotService.checkMixinBalanceEnough(
+    //     checkAssetId,
+    //     estimateReceiveAmount,
+    //   ))
+    // ) {
+    //   await this.exchangeService.updateSpotOrderState(
+    //     event.orderId,
+    //     STATE_TEXT_MAP['MIXIN_BALANCE_NOT_ENOUGH'],
+    //   );
+    //   return;
+    // }
+    // // Place order
+    // await this.exchangeService.placeOrder(
+    //   event.orderId,
+    //   exchangeName,
+    //   orderTypeLimit,
+    //   orderTypeBuy,
+    //   key.id,
+    //   key.api_key,
+    //   key.secret,
+    //   `${baseSymbol}/${targetSymbol}`,
+    //   event.amount,
+    // );
+    // await this.exchangeService.addMixinReleaseToken({
+    //   orderId: mixinEvent.orderId,
+    //   userId: mixinEvent.userId,
+    //   assetId: mixinEvent.assetId,
+    //   state: STATE_TEXT_MAP['MIXIN_RELEASE_INIT'],
+    //   amount: mixinEvent.amount,
+    //   createdAt: mixinEvent.createdAt,
+    //   updatedAt: mixinEvent.updatedAt,
+    // });
+    // // Jump to step 3, update order state (exchange.service.ts)
   }
 }

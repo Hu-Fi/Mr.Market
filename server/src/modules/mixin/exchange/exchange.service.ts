@@ -101,10 +101,6 @@ import {
 } from 'src/common/types/orders/states';
 import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
 import {
-  ErrorResponse,
-  SuccessResponse,
-} from 'src/common/types/exchange/exchange';
-import {
   MixinReleaseHistory,
   MixinReleaseToken,
 } from 'src/common/types/exchange/mixinRelease';
@@ -257,8 +253,21 @@ export class ExchangeService {
 
   async getBalanceByKeyLabel(keyLabel: string) {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
-    const apiKey = apiKeys.find((key) => key.name === keyLabel);
+    this.logger.debug(
+      `getBalanceByKeyLabel: Getting balance for key label: ${keyLabel}`,
+    );
+    this.logger.debug(
+      `getBalanceByKeyLabel: API keys: ${JSON.stringify(apiKeys)}`,
+    );
+
+    const apiKey = apiKeys.find((key) => key.key_id.toString() === keyLabel);
+    this.logger.debug(
+      `getBalanceByKeyLabel: API key: ${JSON.stringify(apiKey)}`,
+    );
     if (!apiKey) {
+      this.logger.error(
+        `getBalanceByKeyLabel: Key label not found: ${keyLabel}`,
+      );
       return null;
     }
     return await this.getBalance(
@@ -299,14 +308,16 @@ export class ExchangeService {
   }
 
   async getBalanceBySymbol(
-    exchange: string,
     apiKey: string,
     apiSecret: string,
+    apiExtra: string,
+    exchange: string,
     symbol: string,
   ): Promise<any> {
     const e = new ccxt[exchange]({
       apiKey,
       secret: apiSecret,
+      password: apiExtra || '',
     });
 
     try {
@@ -336,6 +347,38 @@ export class ExchangeService {
       `Fetched ${currencies.length} currencies for ${key.exchange}`,
     );
     return currencies;
+  }
+
+  async getCurrencyInfo(
+    apiKey: string,
+    apiSecret: string,
+    apiExtra: string,
+    exchange: string,
+    symbol: string,
+  ) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+      password: apiExtra || '',
+    });
+    const currencyInfo = await e.fetchCurrencies()[symbol];
+    return currencyInfo;
+  }
+
+  async getTicker(
+    apiKey: string,
+    apiSecret: string,
+    apiExtra: string,
+    exchange: string,
+    symbol: string,
+  ) {
+    const e = new ccxt[exchange]({
+      apiKey,
+      secret: apiSecret,
+      password: apiExtra || '',
+    });
+    const ticker = await e.fetchTicker(symbol);
+    return ticker;
   }
 
   async getDepositAddress(data: ExchangeDepositDto) {
@@ -382,13 +425,41 @@ export class ExchangeService {
       return;
     }
     try {
-      // The network parameter needs a map. It's case sensitive
+      const currencies = await e.fetchCurrencies();
+      const currencyInfo = currencies[symbol];
+      this.logger.debug(
+        `Fetched currency info: ${JSON.stringify(currencyInfo)}`,
+      );
+
+      let networkInfo;
+      let minium_deposit_amount = '0';
+      let minium_withdrawal_amount = '0';
+      let maxium_deposit_amount = '0';
+      let maxium_withdrawal_amount = '0';
+
+      if (currencyInfo['networks']) {
+        networkInfo = currencyInfo['networks'][network];
+      }
+
+      if (networkInfo && networkInfo['limits']) {
+        minium_deposit_amount = networkInfo['limits']['deposit']['min'] || '0';
+        minium_withdrawal_amount =
+          networkInfo['limits']['withdraw']['min'] || '0';
+        maxium_deposit_amount = networkInfo['limits']['deposit']['max'] || '0';
+        maxium_withdrawal_amount =
+          networkInfo['limits']['withdraw']['max'] || '0';
+      }
+
       const depositAddress = await e.fetchDepositAddress(symbol, { network });
       this.logger.debug(
         `fetchDepositAddress: ${JSON.stringify(depositAddress)}`,
       );
       return {
         currency: symbol,
+        minium_deposit_amount,
+        minium_withdrawal_amount,
+        maxium_deposit_amount,
+        maxium_withdrawal_amount,
         address: depositAddress['address'],
         memo: depositAddress['tag'] || '',
         network: depositAddress['network'] || '',
@@ -444,6 +515,20 @@ export class ExchangeService {
     }
   }
 
+  async getWithdrawalFee(data: ExchangeWithdrawalDto) {
+    const key = await this.readAPIKey(data.apiKeyId);
+    if (!key) {
+      return;
+    }
+    const e = new ccxt[key.exchange]({
+      apiKey: key.api_key,
+      secret: key.api_secret,
+      password: key.api_extra || '',
+    });
+    const fee = await e.fetchWithdrawalFee(data.symbol, data.network);
+    return fee;
+  }
+
   async createWithdrawal(data: ExchangeWithdrawalDto) {
     const key = await this.readAPIKey(data.apiKeyId);
     if (!key) {
@@ -453,6 +538,7 @@ export class ExchangeService {
       ...data,
       apiKey: key.api_key,
       apiSecret: key.api_secret,
+      apiExtra: key.api_extra || '',
     });
   }
 
@@ -460,6 +546,7 @@ export class ExchangeService {
     exchange,
     apiKey,
     apiSecret,
+    apiExtra,
     symbol,
     network,
     address,
@@ -469,6 +556,7 @@ export class ExchangeService {
     exchange: string;
     apiKey: string;
     apiSecret: string;
+    apiExtra: string;
     symbol: string;
     network: string;
     address: string;
@@ -478,6 +566,7 @@ export class ExchangeService {
     const e = new ccxt[exchange]({
       apiKey,
       secret: apiSecret,
+      password: apiExtra || '',
     });
 
     if (!e.has['withdraw']) {
@@ -524,61 +613,56 @@ export class ExchangeService {
     }
   }
 
-  async checkExchangeBalanceEnough(
-    exchange: string,
-    apiKey: string,
-    apiSecret: string,
-    symbol: string,
-    amount: string,
-  ) {
-    const balance = await this.getBalanceBySymbol(
-      exchange,
-      apiKey,
-      apiSecret,
-      symbol,
-    );
-    return BigNumber(amount).isLessThan(balance);
-  }
+  // async checkExchangeBalanceEnough(
+  //   exchange: string,
+  //   apiKey: string,
+  //   apiSecret: string,
+  //   symbol: string,
+  //   amount: string,
+  // ) {
+  //   const balance = await this.getBalanceBySymbol(
+  //     exchange,
+  //     apiKey,
+  //     apiSecret,
+  //     symbol,
+  //   );
+  //   return BigNumber(amount).isLessThan(balance);
+  // }
 
-  async pickAPIKeyOnDemand(
-    exchange: string,
-    asset_id: string,
-    amount: string,
-  ): Promise<SuccessResponse | ErrorResponse> {
-    const symbol = getSymbolByAssetID(asset_id);
-    const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
-      exchange,
-    );
-    apiKeys.forEach(async (key) => {
-      if (
-        await this.checkExchangeBalanceEnough(
-          key.exchange,
-          key.api_key,
-          key.api_secret,
-          amount,
-          symbol,
-        )
-      ) {
-        return {
-          type: 'success',
-          exchange,
-          id: key.key_id,
-          api_key: key.api_key,
-          secret: key.api_secret,
-        };
-      }
-    });
-    return {
-      type: 'error',
-      error: `no API key available (${exchange}:${
-        symbol || asset_id
-      }:${amount})`,
-    };
-  }
-
-  // async pickAPIKeyForRebalance(symbol: string, mixinAmount: string) {
-  // Get an api key with sufficient balance
-  // symbol, amount;
+  // async pickAPIKeyOnDemand(
+  //   exchange: string,
+  //   asset_id: string,
+  //   amount: string,
+  // ): Promise<SuccessResponse | ErrorResponse> {
+  //   const symbol = getSymbolByAssetID(asset_id);
+  //   const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
+  //     exchange,
+  //   );
+  //   apiKeys.forEach(async (key) => {
+  //     if (
+  //       await this.checkExchangeBalanceEnough(
+  //         key.exchange,
+  //         key.api_key,
+  //         key.api_secret,
+  //         amount,
+  //         symbol,
+  //       )
+  //     ) {
+  //       return {
+  //         type: 'success',
+  //         exchange,
+  //         id: key.key_id,
+  //         api_key: key.api_key,
+  //         secret: key.api_secret,
+  //       };
+  //     }
+  //   });
+  //   return {
+  //     type: 'error',
+  //     error: `no API key available (${exchange}:${
+  //       symbol || asset_id
+  //     }:${amount})`,
+  //   };
   // }
 
   async estimateSpotAmount(

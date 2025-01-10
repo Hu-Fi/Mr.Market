@@ -2,9 +2,11 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import BigNumber from "bignumber.js";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
   import type { AdminCCXTCurrency } from "$lib/types/hufi/admin";
+  import { getBalanceByKeyLabel } from "$lib/helpers/hufi/admin/rebalance";
   import { getAllCurrenciesByKeyId } from "$lib/helpers/hufi/admin/exchange";
   
   // Fetch balance
@@ -12,8 +14,9 @@
   let search = "";
   let currenciesLoading = false;
   let currencies: AdminCCXTCurrency[] = [];
-  $: filteredCurrencies = currencies.filter((c: AdminCCXTCurrency) => {
-    return c.code.toLowerCase().includes(search.toLowerCase()) || c.name.toLowerCase().includes(search.toLowerCase());
+  let balances: any[] = [];
+  $: filteredBalances = balances.filter((c: any) => {
+    return c.name.toLowerCase().includes(search.toLowerCase());
   });
   
   onMount(async () => {
@@ -23,12 +26,25 @@
       return;
     }
     const keyId = $page.params.id;
-    const res = (await getAllCurrenciesByKeyId(token, keyId)) as { data: Record<string, any> };
+    
+    const res = await getBalanceByKeyLabel(token, keyId);
     if (!res || !res.data) {
-      toast.error('Failed to fetch all currencies')
+      toast.error(`Failed to fetch balance: ${res.message}`)
       return;
     }
-    const crrs = Object.values(res.data) as AdminCCXTCurrency[];
+    console.log('balance by label:', res);
+    balances = Object.entries(res.data.free).map(([name, amount]) => ({
+      name: name,
+      amount: new BigNumber(amount).toFixed(),
+    }));
+    console.log('balances:', balances);
+
+    const ress = await getAllCurrenciesByKeyId(token, keyId);
+    if (!ress) {
+      toast.error('Failed to fetch currencies')
+      return;
+    }
+    const crrs = Object.values(ress.data) as AdminCCXTCurrency[];
     currencies = crrs.filter((c: AdminCCXTCurrency) => {
       return c.deposit === true && c.networks;
     });
@@ -49,20 +65,22 @@
       bind:value={search}
     />
   </div>
-  {#if filteredCurrencies.length > 0}
+  {#if filteredBalances.length > 0}
     <div class="flex flew-row flex-wrap gap-6 p-8 pt-2">
-      {#each filteredCurrencies as currency}
+      {#each filteredBalances as balance}
         <details class="dropdown">
           <summary class="flex flex-row items-center justify-center gap-2 px-6 py-2 bg-base-100 rounded-full shadow-md cursor-pointer">
             <div class="flex flex-col items-center justify-center">
-              <span class="text-base font-bold text-center">{currency.code}</span>
-              <span class="text-xs text-center opacity-60">{currency.name}</span>
+              <span class="text-base font-bold text-center">
+                {balance.name}
+              </span>
+              <span class="text-xs text-center opacity-60">{balance.amount}</span>
             </div>
           </summary>
           <!-- Select Network dropdown -->
           <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-1">
             <span class="text-xs opacity-60 m-4 my-2"> {$_('network')}</span>
-            {#each Object.values(currency.networks) as network}
+            <!-- {#each Object.values(currency.networks) as network}
               <li>
                 <button on:click={() => {
                   goto(`${$page.url.pathname}/${currency.id}/${network.id}`);
@@ -75,7 +93,7 @@
                   <span class="text-sm font-bold text-left">{network.id}</span>
                 </button>
               </li>
-            {/each}
+            {/each} -->
           </ul>
         </details>
       {/each}

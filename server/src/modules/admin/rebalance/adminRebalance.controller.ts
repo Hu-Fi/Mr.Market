@@ -6,6 +6,8 @@ import {
   UseGuards,
   HttpStatus,
   Query,
+  Body,
+  Post,
 } from '@nestjs/common';
 import { AdminRebalanceService } from 'src/modules/admin/rebalance/adminRebalance.service';
 import {
@@ -45,7 +47,7 @@ export class AdminRebalanceController {
     }
   }
 
-  @Get('balance/:keyLabel')
+  @Get('balance/exchange/:keyLabel')
   @ApiOperation({ summary: 'Get balance by key label' })
   @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -70,5 +72,81 @@ export class AdminRebalanceController {
         message: `Error retrieving balance: ${e.message}`,
       };
     }
+  }
+
+  @Get('balance/mixin')
+  @ApiOperation({ summary: 'Get balance by mixin' })
+  @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async getBalanceByMixin() {
+    try {
+      const result = await this.adminRebalanceService.getBalanceByMixin();
+      if (!result) {
+        return {
+          code: HttpStatus.BAD_REQUEST,
+          message: `Balance not found for mixin`,
+        };
+      }
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving balance: ${e.message}`,
+      };
+    }
+  }
+
+  @Get('/transfer/info')
+  @ApiOperation({ summary: 'Get transfer info' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transfer info retrieved successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get transfer info error' })
+  async getTransferInfo(@Body() transferDto: any) {
+    // return this.adminRebalanceService.getTransferInfo(
+    //   transferDto.fromKeyId,
+    //   transferDto.toKeyId,
+    //   transferDto.symbol,
+    //   transferDto.chain,
+    //   transferDto.amount,
+    // );
+  }
+
+  @Post('transfer/exchanges')
+  @ApiOperation({ summary: 'Transfer between exchanges' })
+  @ApiResponse({ status: 200, description: 'Transfer successful' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Transfer error' })
+  async transferBetweenExchanges(@Body() transferDto: any) {
+    return this.adminRebalanceService.transferBetweenExchanges(
+      transferDto.fromKeyId,
+      transferDto.toKeyId,
+      transferDto.symbol,
+      transferDto.chain,
+      transferDto.amount,
+    );
+  }
+
+  @Post('transfer/mixin/exchange')
+  @ApiOperation({ summary: 'Transfer from mixin to exchange' })
+  @ApiResponse({ status: 200, description: 'Transfer successful' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Transfer error' })
+  async transferFromMixin(@Body() transferDto: any) {
+    return this.adminRebalanceService.transferFromMixin(transferDto);
+  }
+
+  @Post('transfer/exchange/mixin')
+  @ApiOperation({ summary: 'Transfer from exchange to mixin' })
+  @ApiResponse({ status: 200, description: 'Transfer successful' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Transfer error' })
+  async transferFromExchange(@Body() transferDto: any) {
+    return this.adminRebalanceService.transferFromExchange(transferDto);
   }
 }
