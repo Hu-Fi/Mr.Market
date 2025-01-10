@@ -307,6 +307,20 @@ export class SnapshotsService {
     }
   }
 
+  async getWithdrawalInfo(asset_id: string) {
+    const asset = await this.client.network.fetchAsset(asset_id);
+    const fee = asset.fee;
+    const chain =
+      asset.chain_id === asset.asset_id
+        ? asset
+        : await this.client.network.fetchAsset(asset.chain_id);
+    const chainSymbol = chain.symbol;
+    return {
+      chain_symbol: chainSymbol,
+      fee: fee,
+    };
+  }
+
   async sendMixinTx(
     opponent_id: string,
     asset_id: string,

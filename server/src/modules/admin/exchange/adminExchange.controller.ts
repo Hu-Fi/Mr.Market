@@ -82,6 +82,33 @@ export class AdminExchangeController {
     }
   }
 
+  @Post('withdrawal/mixin/info')
+  @ApiOperation({ summary: 'Get mixin withdrawal info' })
+  @ApiResponse({ status: 200, description: 'Get withdrawal info' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get withdrawal info error' })
+  async getMixinWithdrawalInfo(@Body() asset_id: string) {
+    try {
+      const result = await this.snapshotsService.getWithdrawalInfo(asset_id);
+      if (!result) {
+        return {
+          code: HttpStatus.BAD_REQUEST,
+          message: 'Error retrieving withdrawal info',
+        };
+      }
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      this.logger.error(`Get withdrawal info error: ${e.message}`);
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving withdrawal info: ${e.message}`,
+      };
+    }
+  }
+
   @Get('deposit/exchange/all-tokens')
   @ApiOperation({ summary: 'Get all tokens' })
   @ApiResponse({ status: 200, description: 'Get all tokens' })

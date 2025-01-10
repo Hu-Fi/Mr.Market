@@ -5,22 +5,18 @@
   import BigNumber from "bignumber.js";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
-  import type { AdminCCXTCurrency } from "$lib/types/hufi/admin";
   import { getBalanceByKeyLabel } from "$lib/helpers/hufi/admin/rebalance";
-  import { getAllCurrenciesByKeyId } from "$lib/helpers/hufi/admin/exchange";
   
-  // Fetch balance
-  // Show balance and amount
   let search = "";
-  let currenciesLoading = false;
-  let currencies: AdminCCXTCurrency[] = [];
+  let balancesLoading = false;
+  
   let balances: any[] = [];
   $: filteredBalances = balances.filter((c: any) => {
     return c.name.toLowerCase().includes(search.toLowerCase());
   });
-  
+
   onMount(async () => {
-    currenciesLoading = true;
+    balancesLoading = true;
     const token = localStorage.getItem('admin-access-token');
     if (!token) {
       return;
@@ -32,27 +28,16 @@
       toast.error(`Failed to fetch balance: ${res.message}`)
       return;
     }
-    console.log('balance by label:', res);
     balances = Object.entries(res.data.free).map(([name, amount]) => ({
       name: name,
       amount: new BigNumber(amount).toFixed(),
     }));
     console.log('balances:', balances);
-
-    const ress = await getAllCurrenciesByKeyId(token, keyId);
-    if (!ress) {
-      toast.error('Failed to fetch currencies')
-      return;
-    }
-    const crrs = Object.values(ress.data) as AdminCCXTCurrency[];
-    currencies = crrs.filter((c: AdminCCXTCurrency) => {
-      return c.deposit === true && c.networks;
-    });
-    currenciesLoading = false;
+    balancesLoading = false;
   });
 </script>
 
-{#if currenciesLoading}
+{#if balancesLoading}
   <div class="flex items-center justify-center h-[calc(100vh-100px)]">
     <span class="loading loading-spinner loading-md"></span>
   </div>
@@ -68,34 +53,19 @@
   {#if filteredBalances.length > 0}
     <div class="flex flew-row flex-wrap gap-6 p-8 pt-2">
       {#each filteredBalances as balance}
-        <details class="dropdown">
-          <summary class="flex flex-row items-center justify-center gap-2 px-6 py-2 bg-base-100 rounded-full shadow-md cursor-pointer">
-            <div class="flex flex-col items-center justify-center">
-              <span class="text-base font-bold text-center">
-                {balance.name}
-              </span>
-              <span class="text-xs text-center opacity-60">{balance.amount}</span>
-            </div>
-          </summary>
-          <!-- Select Network dropdown -->
-          <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-1">
-            <span class="text-xs opacity-60 m-4 my-2"> {$_('network')}</span>
-            <!-- {#each Object.values(currency.networks) as network}
-              <li>
-                <button on:click={() => {
-                  goto(`${$page.url.pathname}/${currency.id}/${network.id}`);
-                  console.log(`${network.id} deposit min: ${network.limits.deposit.min}`);
-                  console.log(`${network.id} deposit max: ${network.limits.deposit.max}`);
-                  console.log(`${network.id} withdraw min: ${network.limits.withdraw.min}`);
-                  console.log(`${network.id} withdraw max: ${network.limits.withdraw.max}`);
-                  console.log(`${network.id} fee: ${network.fee}`);
-                }}>
-                  <span class="text-sm font-bold text-left">{network.id}</span>
-                </button>
-              </li>
-            {/each} -->
-          </ul>
-        </details>
+        <button 
+          class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-2xl shadow-md"
+          on:click={() => { goto(`/manage/rebalance/withdraw/exchange/${$page.params.id}/${balance.name}`) }}
+        >
+          <div class="flex flex-col items-start justify-center min-w-24 space-y-0.5">
+            <span class="text-xs text-left opacity-80">
+              {balance.name}
+            </span>
+            <span class="text-xl font-medium text-center">
+              {balance.amount}
+            </span>
+          </div>
+        </button>
       {/each}
     </div>
   {/if}

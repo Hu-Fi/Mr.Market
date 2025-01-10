@@ -269,8 +269,8 @@
   "withdraw_info": "Withdraw token from {grow_type}",
   "deposit_will_arrive": "Deposit will be confirmed after {number} block confirmations",
   "deposit_amount_range": "Deposit amount range is {min} to {max} {symbol}",
-  "minium_deposit_amount": "Minium deposit amount is {amount} {symbol}",
-  "maxium_deposit_amount": "Maxium deposit amount is {amount} {symbol}",
+  "minium_deposit_amount": "Minimum deposit amount is {amount} {symbol}",
+  "maxium_deposit_amount": "Maximum deposit amount is {amount} {symbol}",
   "delete_info":"Delete this {grow_type}, all tokens will be refunded.",
   "asks": "Asks",
   "bids": "Bids",
@@ -383,5 +383,6 @@
   "memo": "Memo",
   "confirmations": "Confirmations",
   "copy": "Copy",
-  "copied": "Copied"
+  "copied": "Copied",
+  "minimum_amount": "Minimum amount"
 }

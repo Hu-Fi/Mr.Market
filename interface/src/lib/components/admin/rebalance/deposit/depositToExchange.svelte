@@ -58,10 +58,14 @@
     <div class="flex flew-row flex-wrap gap-6 p-8 pt-2">
       {#each filteredCurrencies as currency}
         <details class="dropdown">
-          <summary class="flex flex-row items-center justify-center gap-2 px-6 py-2 bg-base-100 rounded-full shadow-md cursor-pointer">
-            <div class="flex flex-col items-center justify-center">
-              <span class="text-base font-bold text-center">{currency.code}</span>
-              <span class="text-xs text-center opacity-60">{currency.name}</span>
+          <summary class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-2xl shadow-md cursor-pointer">
+            <div class="flex flex-col items-start justify-center min-w-24 space-y-0.5">
+              <span class="text-xs text-left opacity-80">
+                {currency.code}
+              </span>
+              <span class="text-xl font-medium text-center">
+                {currency.name}
+              </span>
             </div>
           </summary>
           <!-- Select Network dropdown -->

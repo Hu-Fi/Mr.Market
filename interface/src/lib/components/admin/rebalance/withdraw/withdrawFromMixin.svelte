@@ -52,12 +52,16 @@
   {#if filteredBalances.length > 0}
     <div class="flex flew-row flex-wrap gap-6 p-8 pt-2">
       {#each filteredBalances as balance}
-        <div class="flex flex-row items-center justify-center gap-2 px-6 py-2 bg-base-100 rounded-full shadow-md cursor-pointer">
-          <div class="flex flex-col items-center justify-center">
-            <span class="text-base font-bold text-center">{balance.name}</span>
-            <span class="text-xs text-center opacity-60">{balance.amount}</span>
+        <button class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-2xl shadow-md">
+          <div class="flex flex-col items-start justify-center min-w-24 space-y-0.5">
+            <span class="text-xs text-left opacity-80">
+              {balance.name}
+            </span>
+            <span class="text-xl font-medium text-center">
+              {balance.amount}
+            </span>
           </div>
-        </div>
+        </button>
       {/each}
     </div>
   {/if}

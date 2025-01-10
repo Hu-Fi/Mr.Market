@@ -613,58 +613,6 @@ export class ExchangeService {
     }
   }
 
-  // async checkExchangeBalanceEnough(
-  //   exchange: string,
-  //   apiKey: string,
-  //   apiSecret: string,
-  //   symbol: string,
-  //   amount: string,
-  // ) {
-  //   const balance = await this.getBalanceBySymbol(
-  //     exchange,
-  //     apiKey,
-  //     apiSecret,
-  //     symbol,
-  //   );
-  //   return BigNumber(amount).isLessThan(balance);
-  // }
-
-  // async pickAPIKeyOnDemand(
-  //   exchange: string,
-  //   asset_id: string,
-  //   amount: string,
-  // ): Promise<SuccessResponse | ErrorResponse> {
-  //   const symbol = getSymbolByAssetID(asset_id);
-  //   const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
-  //     exchange,
-  //   );
-  //   apiKeys.forEach(async (key) => {
-  //     if (
-  //       await this.checkExchangeBalanceEnough(
-  //         key.exchange,
-  //         key.api_key,
-  //         key.api_secret,
-  //         amount,
-  //         symbol,
-  //       )
-  //     ) {
-  //       return {
-  //         type: 'success',
-  //         exchange,
-  //         id: key.key_id,
-  //         api_key: key.api_key,
-  //         secret: key.api_secret,
-  //       };
-  //     }
-  //   });
-  //   return {
-  //     type: 'error',
-  //     error: `no API key available (${exchange}:${
-  //       symbol || asset_id
-  //     }:${amount})`,
-  //   };
-  // }
-
   async estimateSpotAmount(
     exchange: string,
     symbol: string,
