@@ -91,10 +91,7 @@ import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  getRFC3339Timestamp,
-  getSymbolByAssetID,
-} from 'src/common/helpers/utils';
+import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 import {
   STATE_TEXT_MAP,
   SpotOrderStatus,
@@ -534,12 +531,16 @@ export class ExchangeService {
     if (!key) {
       return;
     }
-    await this._createWithdrawal({
+    const withdrawResult = await this._createWithdrawal({
       ...data,
       apiKey: key.api_key,
       apiSecret: key.api_secret,
       apiExtra: key.api_extra || '',
     });
+    if (!withdrawResult) {
+      return;
+    }
+    return await this.exchangeRepository.addWithdrawalRecord({});
   }
 
   async _createWithdrawal({
@@ -578,7 +579,7 @@ export class ExchangeService {
       const withdrawal = await e.withdraw(symbol, amount, address, tag, {
         network,
       });
-      return withdrawal; // This will return the response from the exchange, which usually includes a transaction ID.
+      return withdrawal;
     } catch (error) {
       if (error instanceof ccxt.NetworkError) {
         this.logger.error(

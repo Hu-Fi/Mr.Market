@@ -70,19 +70,26 @@ export async function getMixinDepositAddress(assetId: string, token: string) {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/deposit/mixin/create?asset_id=${encodeURIComponent(assetId)}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: getHeaders(token),
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     return await handleApiResponse(response);
   } catch (error) {
     console.error('Error fetching deposit address:', error);
+    throw error;
+  }
+}
+
+// Create withdrawal
+export const createWithdrawal = async (token: string, data: any): Promise<unknown> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/withdrawal/exchange/create`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error creating withdrawal:', error);
     throw error;
   }
 }

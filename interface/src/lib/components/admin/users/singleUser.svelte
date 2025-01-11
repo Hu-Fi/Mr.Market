@@ -18,11 +18,7 @@
 </script>
 
 <tr>
-  <th>
-    <label>
-      <input type="checkbox" class="checkbox checkbox-sm" />
-    </label>
-  </th>
+  <th />
   <td>
     <div class="flex items-center gap-3">
       <div class="avatar">

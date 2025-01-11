@@ -57,7 +57,7 @@
             <span class="text-xs text-left opacity-80">
               {balance.name}
             </span>
-            <span class="text-xl font-medium text-center">
+            <span class="text-xl font-semibold text-center">
               {balance.amount}
             </span>
           </div>

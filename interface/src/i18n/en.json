@@ -113,6 +113,7 @@
   "route": "Route",
   "no_fees": "No fees",
   "no_fees_detail": "We don't charge a service fee, you get 100% profit from trades.",
+  "withdrawal_fee": "Withdrawal fee",
   "about_arbitrage": "About arbitrage",
   "create_arbitrage": "Create arbitrage",
   "invite": "Invite",
@@ -305,6 +306,7 @@
   "save": "Save",
   "please_login": "Please login",
   "please_login_info": "Click here to login",
+  "logout_successfully": "Logout successfully",
   "message_count": "Message count",
   "broadcast_message": "Boardcast message",
   "private_message": "Private message",
@@ -378,11 +380,16 @@
   "destination": "Destination",
   "refresh_success": "Refresh success",
   "refresh_failed": "Refresh failed",
+  "failed_to_fetch_balance": "Failed to fetch balance",
+  "fee_exceeds_balance": "Fee exceeds balance",
+  "insufficient_balance": "Insufficient balance",
+  "withdrawal_disabled": "Withdrawal disabled by exchange",
   "network": "Network",
   "address": "Address",
   "memo": "Memo",
   "confirmations": "Confirmations",
   "copy": "Copy",
   "copied": "Copied",
-  "minimum_amount": "Minimum amount"
+  "minimum_amount": "Minimum amount",
+  "unable_to_withdraw_asset": "Unable to withdraw asset"
 }

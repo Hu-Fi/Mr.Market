@@ -56,12 +56,6 @@ import {
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from './common/entities/grow-data.entity';
-import {
-  RebalanceExchange,
-  RebalanceHistory,
-  RebalanceToken,
-  RebalanceTokenExchange,
-} from './common/entities/rebalance-asset.entity';
 import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
@@ -105,17 +99,9 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
-        RebalanceToken,
-        RebalanceExchange,
-        RebalanceTokenExchange,
-        RebalanceHistory,
         ArbitrageOrder,
         MarketMakingOrder,
         PaymentState,
-        RebalanceToken,
-        RebalanceExchange,
-        RebalanceHistory,
-        RebalanceTokenExchange,
         MarketMakingOrder,
         ArbitrageOrder,
         SimplyGrowOrder,

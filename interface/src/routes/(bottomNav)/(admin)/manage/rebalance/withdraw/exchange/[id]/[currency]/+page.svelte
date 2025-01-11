@@ -1,9 +1,11 @@
 <script lang="ts">
+  import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
+  import { withdrawBalances } from "$lib/stores/admin";
   import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import type { AdminCCXTCurrency } from "$lib/types/hufi/admin";
@@ -17,6 +19,9 @@
   let address: string;
   let memo: string;
   let amount: string;
+  let balance: number = 0;
+  let errorMessage: string = '';
+  let isWithdrawEnabled: boolean = false;
 
   onMount(async () => {
     currenciesLoading = true;
@@ -35,7 +40,42 @@
       return c.withdraw === true && c.networks && c.code === currency;
     });
     currenciesLoading = false;
+
+    balance = $withdrawBalances.find((b: any) => b.name === currency)?.amount || undefined;
+    isWithdrawEnabled = currencies.length > 0 && currencies[0].networks[network]?.withdraw;
   });
+
+  function validateWithdrawal() {
+    const fee = currencies.length > 0 ? currencies[0].networks[network]?.fee : 0;
+    const minAmount = currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : 0;
+
+    if (parseFloat(amount) > balance) {
+      errorMessage = $_('insufficient_balance');
+      return false;
+    }
+    if (fee > balance) {
+      errorMessage = $_('fee_exceeds_balance');
+      return false;
+    }
+    if (!isWithdrawEnabled) {
+      errorMessage = $_('withdrawal_disabled');
+      return false;
+    }
+    if (parseFloat(amount) < minAmount) {
+      errorMessage = $_('amount_below_minimum');
+      return false;
+    }
+    errorMessage = '';
+    return true;
+  }
+
+  function handleWithdraw() {
+    if (validateWithdrawal()) {
+      console.log(network, amount, address, memo);
+    } else {
+      toast.error(errorMessage);
+    }
+  }
 </script>
 
 <div class="flex flex-col min-h-screen bg-base-100">
@@ -56,14 +96,19 @@
     </div>
   {:else}
     {#if currencies.length > 0}
-      <div class="flex flex-col items-center justify-center">
-        <div class="flex flex-col mx-6 space-y-6 w-96 p-8">
+      <div class="flex flex-col items-center justify-center mb-24">
+        <div class="flex flex-col mx-6 space-y-6 min-w-96 max-w-md p-8 card shadow-xl">
           <div class="flex flex-row items-center justify-between">
             <div class="flex flex-col space-y-2">
               <span class="text-xs font-light"> {$_('symbol')}</span>
-              <span class="text-lg font-semibold"> {currencies[0].info.symbol}</span>
+              <span class="text-lg font-semibold"> {currencies[0].code}</span>
             </div>
-            <img src={findCoinIconBySymbol(currencies[0].info.symbol) || emptyToken} alt={currencies[0].info.symbol} class="w-10 h-10" />
+            <img src={findCoinIconBySymbol(currencies[0].code) || emptyToken} alt={currencies[0].code} class="w-10 h-10" />
+          </div>
+
+          <div class="flex flex-col space-y-2">
+            <span class="text-xs font-light"> {$_('balance')}</span>
+            <span class={clsx("text-lg font-semibold", !balance && 'text-base text-red-700 opacity-70')}> {balance ? balance : $_('failed_to_fetch_balance')}</span>
           </div>
 
           <div class="flex flex-col space-y-2">
@@ -74,50 +119,39 @@
               {/each}
             </select>
           </div>
+
           <div class="flex flex-col space-y-2">
             <span class="text-xs font-light"> {$_('address')}</span>
             <input type="text" class="input input-bordered w-full focus:outline-none rounded-lg" placeholder={$_('address')} bind:value={address} />
           </div>
+
           <div class="flex flex-col space-y-2">
             <span class="text-xs font-light"> {$_('memo')}</span>
             <input type="text" class="input input-bordered w-full focus:outline-none rounded-lg" placeholder={$_('memo')} bind:value={memo} />
           </div>
+
           <div class="flex flex-col space-y-2">
             <span class="text-xs font-light"> {$_('amount')}</span>
             <input type="text" class="input input-bordered w-full focus:outline-none rounded-lg" placeholder={$_('amount')} bind:value={amount} />
           </div>
 
-          <div class="flex flex-col items-start justify-center bg-base-100 rounded-lg p-2 space-y-1 text-xs font-light opacity-60">
+          <div class="flex flex-col items-start justify-center bg-base-100 rounded-lg py-2 space-y-1 text-xs font-light opacity-60">
             <span>
-              {$_('fee')}: {currencies.length > 0 ? currencies[0].networks[network]?.fee : ''}
+              - {$_('withdrawal_fee')}: {currencies.length > 0 ? currencies[0].networks[network]?.fee : ''}
             </span>
             <span>
-              {$_('minimum_amount')}: {currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : ''}
+              - {$_('minimum_amount')}: {currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : ''}
             </span>
           </div>
-          <button class="btn btn-base-300" on:click={() => {
-            console.log(network, amount, address, memo);
-          }}>
+          <button class="btn btn-base-300 no-animation" on:click={handleWithdraw}>
             {$_('withdraw')}
           </button>
         </div>
       </div>
     {:else}
       <div class="flex items-center justify-center h-[calc(100vh-100px)]">
-        <h2 class="text-lg"> {$_('no_result_found')}</h2>
+        <h2 class="text-lg"> {$_('unable_to_withdraw_asset')}</h2>
       </div>
     {/if}
-
-    <!-- {#each currencies as currency}
-      {#each Object.values(currency.networks) as network}
-        <div class="p-4 border-b">
-          <h2 class="text-lg font-bold">{currency.info.symbol}</h2>
-          <p>Network: {network.network} </p>
-          <p>Withdrawal Fee: {network.fee}</p>
-          <p>Minimum Withdrawal Amount: {network.limits.withdraw.min}</p>
-          <p>Is Withdraw Allowed: {network.withdraw ? 'Yes' : 'No'}</p>
-        </div>
-      {/each}
-    {/each} -->
   {/if}
 </div>

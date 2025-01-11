@@ -4,6 +4,8 @@ import toast from 'svelte-french-toast';
 import { HUFI_BACKEND_URL } from "../constants"
 import type { AdminPasswordResp } from "$lib/types/hufi/admin"
 import { submitted, checked, correct } from "$lib/stores/admin";
+import { _ } from "svelte-i18n";
+import { get } from "svelte/store";
 
 export const AdminPassword = async (password: string): Promise<AdminPasswordResp> => {
   try {
@@ -61,7 +63,7 @@ export const exit = () => {
   correct.set(false);
   localStorage.removeItem('admin-password')
   localStorage.removeItem('admin-access-token')
-  toast.success('Logout successfully', {position:'top-center', duration: 2000})
+  toast.success(get(_)('logout_successfully'), {position:'top-center', duration: 2000})
   goto('/manage')
 }
 

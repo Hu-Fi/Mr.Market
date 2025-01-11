@@ -5,6 +5,7 @@
   import BigNumber from "bignumber.js";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
+  import { withdrawBalances } from "$lib/stores/admin";
   import { getBalanceByKeyLabel } from "$lib/helpers/hufi/admin/rebalance";
   
   let search = "";
@@ -32,7 +33,7 @@
       name: name,
       amount: new BigNumber(amount).toFixed(),
     }));
-    console.log('balances:', balances);
+    withdrawBalances.set(balances);
     balancesLoading = false;
   });
 </script>
@@ -61,7 +62,7 @@
             <span class="text-xs text-left opacity-80">
               {balance.name}
             </span>
-            <span class="text-xl font-medium text-center">
+            <span class="text-xl font-semibold text-center">
               {balance.amount}
             </span>
           </div>

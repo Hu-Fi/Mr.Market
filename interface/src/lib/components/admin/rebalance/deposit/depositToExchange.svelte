@@ -63,7 +63,7 @@
               <span class="text-xs text-left opacity-80">
                 {currency.code}
               </span>
-              <span class="text-xl font-medium text-center">
+              <span class="text-xl font-semibold text-center">
                 {currency.name}
               </span>
             </div>

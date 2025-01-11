@@ -7,11 +7,11 @@
 </script>
 
 <div class="tooltip tooltip-top" data-tip="ID: 0">
-  <button class="stats shadow select-none min-w-60 h-full" on:click={() => {
+  <button class="stats shadow select-none min-w-80 h-full" on:click={() => {
     goto(path);
   }}>
     <div class="stat text-left h-full">
-      <div class="stat-figure text-green-500">
+      <div class="stat-figure">
         <div class="avatar">
           <div class="mask mask-squircle w-8 h-8">
             <img src={mixinIcon} alt="" />
@@ -24,6 +24,7 @@
       <div class="stat-value">
         <span class="capitalize">Mixin</span>
       </div>
+      <div class="stat-desc mt-0.5 max-w-64 truncate" />
     </div>
   </button>
 </div>

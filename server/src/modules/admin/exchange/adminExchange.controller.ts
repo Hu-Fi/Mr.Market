@@ -69,6 +69,12 @@ export class AdminExchangeController {
   async createExchangeWithdrawal(data: ExchangeWithdrawalDto) {
     try {
       const result = await this.exchangeService.createWithdrawal(data);
+      if (!result) {
+        return {
+          code: HttpStatus.BAD_REQUEST,
+          message: 'Error creating withdrawal',
+        };
+      }
       return {
         code: HttpStatus.OK,
         data: result,

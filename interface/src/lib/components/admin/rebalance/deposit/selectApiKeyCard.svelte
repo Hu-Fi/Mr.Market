@@ -17,7 +17,7 @@
     goto(`${path}${info.key_id}`);
   }}>
     <div class="stat text-left">
-      <div class="stat-figure text-green-500">
+      <div class="stat-figure">
         <div class="avatar">
           <div class="mask mask-squircle w-8 h-8">
             <img src={findExchangeIconByIdentifier(info.exchange) || emptyToken} alt="" />
@@ -30,7 +30,9 @@
       <div class="stat-value">
         <span class="capitalize">{info.exchange}</span>
       </div>
-      <div class="stat-desc">{info.api_key}</div>
+      <div class="stat-desc mt-0.5 max-w-64 truncate">
+        <span class="text-xs text-base-content/80">{info.api_key}</span>
+      </div>
     </div>
   </button>
 </div>
