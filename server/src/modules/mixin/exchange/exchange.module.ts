@@ -10,6 +10,11 @@ import {
   MixinReleaseToken,
 } from 'src/common/entities/mixin-release.entity';
 import { ExchangeUserController } from './exchange-client.controller';
+import {
+  DepositRecord,
+  TransferRecord,
+  WithdrawalRecord,
+} from 'src/common/entities/rebalance.entity';
 
 @Module({
   imports: [
@@ -18,6 +23,9 @@ import { ExchangeUserController } from './exchange-client.controller';
       SpotOrder,
       MixinReleaseToken,
       MixinReleaseHistory,
+      TransferRecord,
+      DepositRecord,
+      WithdrawalRecord,
     ]),
   ],
   providers: [ExchangeService, ExchangeRepository],

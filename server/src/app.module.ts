@@ -59,6 +59,11 @@ import {
 import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
+import {
+  TransferRecord,
+  DepositRecord,
+  WithdrawalRecord,
+} from './common/entities/rebalance.entity';
 
 dotenv.config();
 
@@ -110,6 +115,9 @@ dotenv.config();
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,
+        TransferRecord,
+        DepositRecord,
+        WithdrawalRecord,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',

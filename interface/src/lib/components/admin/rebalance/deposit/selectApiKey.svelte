@@ -2,8 +2,8 @@
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
   import { getAllAPIKeys } from "$lib/helpers/hufi/admin/exchange";
-  import SelectApiKeyCard from "$lib/components/admin/rebalance/deposit/selectApiKeyCard.svelte";
   import SelectMixinCard from "$lib/components/admin/rebalance/deposit/selectMixinCard.svelte";
+  import SelectApiKeyCard from "$lib/components/admin/rebalance/deposit/selectApiKeyCard.svelte";
 
   let apiKeys = [];
 
