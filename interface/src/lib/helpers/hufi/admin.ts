@@ -72,6 +72,6 @@ export const tokenExpired = () => {
   submitted.set(false);
   checked.set(false);
   localStorage.removeItem('admin-access-token')
-  toast.error('Token expired', {position:'top-center', duration: 2000})
+  toast.error(get(_)('login_timeout'), {position:'top-center', duration: 2000})
   goto('/manage')
 }

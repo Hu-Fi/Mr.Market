@@ -15,4 +15,4 @@ export const exchangeApiKeys = writable<AdminSingleKey[]>([])
 export const exchangeApiKeysLoading = writable(true)
 
 // /manage/rebalance/withdraw/exchange/[id]/[currency]
-export const withdrawBalances = writable()
+export const withdrawBalances = writable<{name: string, amount: number}[]>([])

@@ -391,5 +391,11 @@
   "copy": "Copy",
   "copied": "Copied",
   "minimum_amount": "Minimum amount",
-  "unable_to_withdraw_asset": "Unable to withdraw asset"
+  "unable_to_withdraw_asset": "Unable to withdraw asset",
+  "withdrawal_enabled": "Withdrawal enabled",
+  "login_timeout": "Login timeout",
+  "amount_is_required": "Amount is required",
+  "address_is_required": "Address is required",
+  "withdraw_success": "Withdraw success",
+  "withdraw_error": "Withdraw error"
 }

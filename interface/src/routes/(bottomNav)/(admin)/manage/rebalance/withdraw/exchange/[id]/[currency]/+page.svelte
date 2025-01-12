@@ -5,6 +5,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
+  import { BN } from "$lib/helpers/utils";
   import { withdrawBalances } from "$lib/stores/admin";
   import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
@@ -20,8 +21,12 @@
   let memo: string;
   let amount: string;
   let balance: number = 0;
-  let errorMessage: string = '';
+  let validateErrorMessage: string = '';
   let isWithdrawEnabled: boolean = false;
+  let withdrawLoading: boolean = false;
+  let withdrawSuccess: boolean = false;
+  let withdrawError: boolean = false;
+  let withdrawErrorMessage: string = '';
 
   onMount(async () => {
     currenciesLoading = true;
@@ -42,40 +47,52 @@
     currenciesLoading = false;
 
     balance = $withdrawBalances.find((b: any) => b.name === currency)?.amount || undefined;
-    isWithdrawEnabled = currencies.length > 0 && currencies[0].networks[network]?.withdraw;
   });
 
   function validateWithdrawal() {
-    const fee = currencies.length > 0 ? currencies[0].networks[network]?.fee : 0;
-    const minAmount = currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : 0;
-
-    if (parseFloat(amount) > balance) {
-      errorMessage = $_('insufficient_balance');
+    if (!address) {
+      validateErrorMessage = $_('address_is_required');
       return false;
     }
-    if (fee > balance) {
-      errorMessage = $_('fee_exceeds_balance');
+    if (!amount) {
+      validateErrorMessage = $_('amount_is_required');
+      return false;
+    }
+    if (parseFloat(amount) > balance) {
+      validateErrorMessage = $_('insufficient_balance');
+      return false;
+    }
+    if (withdrawalFee > balance) {
+      validateErrorMessage = $_('fee_exceeds_balance');
       return false;
     }
     if (!isWithdrawEnabled) {
-      errorMessage = $_('withdrawal_disabled');
+      validateErrorMessage = $_('withdrawal_disabled');
       return false;
     }
-    if (parseFloat(amount) < minAmount) {
-      errorMessage = $_('amount_below_minimum');
+    if (BN(amount).lt(BN(minAmount))) {
+      validateErrorMessage = $_('amount_below_minimum');
       return false;
     }
-    errorMessage = '';
+    validateErrorMessage = '';
     return true;
   }
 
   function handleWithdraw() {
     if (validateWithdrawal()) {
-      console.log(network, amount, address, memo);
+      withdrawLoading = true;
+      toast.success(`${network}, ${amount}, ${address}, ${memo}`);
     } else {
-      toast.error(errorMessage);
+      toast.error(validateErrorMessage);
     }
+    setTimeout(() => {
+      withdrawLoading = false;
+    }, 3000);
   }
+
+  $: isWithdrawEnabled = currencies.length > 0 && currencies[0].networks[network]?.withdraw === true;
+  $: withdrawalFee = currencies.length > 0 ? currencies[0].networks[network]?.fee : 0;
+  $: minAmount = currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : 0;
 </script>
 
 <div class="flex flex-col min-h-screen bg-base-100">
@@ -108,7 +125,7 @@
 
           <div class="flex flex-col space-y-2">
             <span class="text-xs font-light"> {$_('balance')}</span>
-            <span class={clsx("text-lg font-semibold", !balance && 'text-base text-red-700 opacity-70')}> {balance ? balance : $_('failed_to_fetch_balance')}</span>
+            <span class={clsx("text-lg font-semibold select-text", !balance && 'text-base text-red-700 opacity-70')}> {balance ? balance : $_('failed_to_fetch_balance')}</span>
           </div>
 
           <div class="flex flex-col space-y-2">
@@ -135,18 +152,38 @@
             <input type="text" class="input input-bordered w-full focus:outline-none rounded-lg" placeholder={$_('amount')} bind:value={amount} />
           </div>
 
-          <div class="flex flex-col items-start justify-center bg-base-100 rounded-lg py-2 space-y-1 text-xs font-light opacity-60">
+          <div class="flex flex-col items-start justify-center bg-base-100 rounded-lg py-0 space-y-1 text-xs font-light opacity-60">
             <span>
-              - {$_('withdrawal_fee')}: {currencies.length > 0 ? currencies[0].networks[network]?.fee : ''}
+              - {$_('withdrawal_enabled')}: {isWithdrawEnabled ? '✅' : '❎'}
             </span>
             <span>
-              - {$_('minimum_amount')}: {currencies.length > 0 ? currencies[0].networks[network]?.limits.withdraw.min : ''}
+              - {$_('withdrawal_fee')}: {withdrawalFee}
+            </span>
+            <span>
+              - {$_('minimum_amount')}: {minAmount}
             </span>
           </div>
-          <button class="btn btn-base-300 no-animation" on:click={handleWithdraw}>
-            {$_('withdraw')}
+          <button class="btn btn-base-300 no-animation" on:click={handleWithdraw} disabled={withdrawLoading}>
+            {#if withdrawLoading}
+              <span class="loading loading-spinner loading-md" />
+            {:else}
+              {$_('withdraw')}
+            {/if}
           </button>
         </div>
+
+        {#if withdrawSuccess || withdrawError}
+          <div class="mt-4 card">
+            <div class="flex flex-col items-center justify-center card-body bg-base-100 shadow-lg rounded-2xl w-96">
+              {#if withdrawSuccess}
+                <span class="text-sm"> {$_('withdraw_success')}</span>
+              {:else if withdrawError}
+                <span class="text-sm"> {$_('withdraw_error')}</span>
+                <span class="text-sm"> {withdrawErrorMessage}</span>
+              {/if}
+            </div>
+          </div>
+        {/if}
       </div>
     {:else}
       <div class="flex items-center justify-center h-[calc(100vh-100px)]">
