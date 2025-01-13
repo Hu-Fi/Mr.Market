@@ -154,7 +154,7 @@
 
           <div class="flex flex-col items-start justify-center bg-base-100 rounded-lg py-0 space-y-1 text-xs font-light opacity-60">
             <span>
-              - {$_('withdrawal_enabled')}: {isWithdrawEnabled ? '✅' : '❎'}
+              - {$_('withdrawal_allowed')}: {isWithdrawEnabled ? '✅' : '❎'}
             </span>
             <span>
               - {$_('withdrawal_fee')}: {withdrawalFee}

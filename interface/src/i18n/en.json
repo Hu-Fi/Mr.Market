@@ -392,7 +392,7 @@
   "copied": "Copied",
   "minimum_amount": "Minimum amount",
   "unable_to_withdraw_asset": "Unable to withdraw asset",
-  "withdrawal_enabled": "Withdrawal enabled",
+  "withdrawal_allowed": "Withdrawal allowed",
   "login_timeout": "Login timeout",
   "amount_is_required": "Amount is required",
   "address_is_required": "Address is required",
