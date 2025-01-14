@@ -16,6 +16,7 @@
     "strategies",
     "health",
     "message",
+    "supported_assets",
     "settings",
     "exit",
   ];

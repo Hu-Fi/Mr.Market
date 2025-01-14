@@ -1,9 +1,9 @@
 <script>
-  import { _ } from "svelte-i18n";
+  import StrategyInstanceList from "$lib/components/admin/strategies/instanceList.svelte";
+  import StrategyActions from "$lib/components/admin/strategies/strategyActions.svelte";
 </script>
 
-<div>
-  <h1>{$_("strategies")}</h1>
-
-  This page is the UI for controling the running strategies.
+<div class="flex flex-col space-y-8 p-8">
+  <StrategyInstanceList />
+  <StrategyActions />
 </div>

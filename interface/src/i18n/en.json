@@ -234,6 +234,7 @@
   "pay_from_account": "Pay from account",
   "receive_to_account": "Receive to account",
   "supported": "Supported",
+  "supported_assets": "Supported assets",
   "supported_exchanges": "Supported exchanges",
   "supported_exchanges_info": "We support leading exchanges to provide best liquidity for trading",
   "exchange": "Exchange",
@@ -397,5 +398,8 @@
   "amount_is_required": "Amount is required",
   "address_is_required": "Address is required",
   "withdraw_success": "Withdraw success",
-  "withdraw_error": "Withdraw error"
+  "withdraw_error": "Withdraw error",
+  "strategy_instances": "Strategy Instances",
+  "no_strategy_instance": "No strategy instance",
+  "strategy_actions": "Strategy Actions"
 }

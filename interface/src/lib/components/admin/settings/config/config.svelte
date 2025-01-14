@@ -21,7 +21,7 @@
 </script>
 
 <div class="flex flex-col space-y-8">
-    <div id="amount" class="flex flex-col space-y-2">
+    <!-- <div id="amount" class="flex flex-col space-y-2">
       <span>
         {$_('max_amount_to_keep_in_bot')}
       </span>
@@ -29,7 +29,7 @@
         <input type="text" class="input input-bordered focus:outline-none" bind:value={max_amount_to_keep_in_bot} />
       </div>
     </div>
-  
+   -->
     <div id="amount" class="flex flex-col space-y-2">
       <span>
         {$_('spot_fee')}

@@ -321,6 +321,11 @@ export class SnapshotsService {
     };
   }
 
+  async getWithdrawalFee(asset_id: string, destination: string) {
+    const fee = await this.client.safe.fetchFee(asset_id, destination);
+    return fee;
+  }
+
   async sendMixinTx(
     opponent_id: string,
     asset_id: string,
