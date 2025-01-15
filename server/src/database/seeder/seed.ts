@@ -17,6 +17,8 @@ import {
   defaultSpotdataTradingPairs,
 } from './defaultSeedValues';
 import { SpotdataTradingPair } from '../../common/entities/spot-data.entity';
+import { appendFileSync } from 'fs';
+import { randomBytes } from 'crypto';
 
 async function connectToDatabase() {
   dotenv.config();
@@ -108,6 +110,18 @@ async function seedGrowdataSimplyGrowToken(
   console.log('Seeding GrowdataSimplyGrowToken complete!');
 }
 
+async function seedJwtSecretEnv() {
+  if (!process.env.JWT_SECRET) {
+    const newSecret = randomBytes(32).toString('hex'); // Generates a 64-character string
+    appendFileSync('.env', `\nJWT_SECRET=${newSecret}`);
+    console.log(
+      'JWT_SECRET was not set. A new secret has been generated and added to .env',
+    );
+  } else {
+    console.log('JWT_SECRET is already set, skip seeding');
+  }
+}
+
 async function run() {
   const dataSource = await connectToDatabase();
   await seedSpotdataTradingPair(dataSource.getRepository(SpotdataTradingPair));
@@ -121,6 +135,7 @@ async function run() {
   await seedGrowdataSimplyGrowToken(
     dataSource.getRepository(GrowdataSimplyGrowToken),
   );
+  await seedJwtSecretEnv();
   await dataSource.destroy();
 }
 

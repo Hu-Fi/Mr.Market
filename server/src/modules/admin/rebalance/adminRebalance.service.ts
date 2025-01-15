@@ -95,7 +95,6 @@ export class AdminRebalanceService {
     };
   }
 
-  // Transfer between exchanges
   async transferBetweenExchanges(
     fromKeyId: string,
     toKeyId: string,
@@ -199,21 +198,25 @@ export class AdminRebalanceService {
     }
   }
 
-  // Transfer from mixin to exchange
-  async transferFromMixin(assetId: string, amount: string, toKeyId: string) {
+  async transferFromMixinToExchange(
+    assetId: string,
+    amount: string,
+    toKeyId: string,
+  ) {
     this.logger.log(
       `Transferring from mixin to exchange with assetId: ${assetId}, amount: ${amount}, toKeyId: ${toKeyId}`,
     );
 
-    const mixinBalance = await this.snapshotService.getBalanceByAssetId(
-      assetId,
-    );
+    // Check amount > balance in mixin
+    const mixinBalance = await this.snapshotService.getAssetBalance(assetId);
     if (new BigNumber(mixinBalance).isLessThan(amount)) {
       throw new Error(`Insufficient balance in mixin`);
     }
 
-    const symbol = await this.snapshotService.getSymbolByAssetId(assetId);
-    const chainId = await this.snapshotService.getChainIdByAssetId(assetId);
+    // Get symbol and chainId
+    const asset = await this.snapshotService.getAsset(assetId);
+    const symbol = asset.symbol;
+    const chainId = asset.chain_id;
 
     if (new BigNumber(mixinBalance).isLessThan(withdrawalFee)) {
       throw new Error(`Insufficient balance to cover withdrawal fee`);
@@ -253,11 +256,10 @@ export class AdminRebalanceService {
   }
 
   // Transfer from exchange to mixin
-  async transferFromExchange(
+  async transferFromExchangeToMixin(
     fromKeyId: string,
     symbol: string,
     network: string,
-    memo: string,
     amount: string,
   ) {
     this.logger.log(

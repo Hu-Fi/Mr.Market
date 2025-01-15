@@ -467,7 +467,11 @@ export class SnapshotsService {
     }
   }
 
-  async getAssetBalance(asset_id: SymbolAssetIdMapValue): Promise<string> {
+  async getAsset(asset_id: string) {
+    return await this.client.network.fetchAsset(asset_id);
+  }
+
+  async getAssetBalance(asset_id: string): Promise<string> {
     try {
       return await this.client.utxo.safeAssetBalance({ asset: asset_id });
     } catch (e) {

@@ -108,13 +108,12 @@ export class AdminRebalanceController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Get transfer info error' })
   async getTransferInfo(@Body() transferDto: any) {
-    // return this.adminRebalanceService.getTransferInfo(
-    //   transferDto.fromKeyId,
-    //   transferDto.toKeyId,
-    //   transferDto.symbol,
-    //   transferDto.chain,
-    //   transferDto.amount,
-    // );
+    return this.adminRebalanceService.getTransferInfo(
+      transferDto.fromKeyId,
+      transferDto.toKeyId,
+      transferDto.symbol,
+      transferDto.chain,
+    );
   }
 
   @Post('transfer/exchanges')
@@ -129,6 +128,7 @@ export class AdminRebalanceController {
       transferDto.symbol,
       transferDto.chain,
       transferDto.amount,
+      transferDto.memo,
     );
   }
 
@@ -138,7 +138,11 @@ export class AdminRebalanceController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Transfer error' })
   async transferFromMixin(@Body() transferDto: any) {
-    return this.adminRebalanceService.transferFromMixin(transferDto);
+    return this.adminRebalanceService.transferFromMixinToExchange(
+      transferDto.assetId,
+      transferDto.amount,
+      transferDto.toKeyId,
+    );
   }
 
   @Post('transfer/exchange/mixin')
@@ -147,6 +151,11 @@ export class AdminRebalanceController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Transfer error' })
   async transferFromExchange(@Body() transferDto: any) {
-    return this.adminRebalanceService.transferFromExchange(transferDto);
+    return this.adminRebalanceService.transferFromExchangeToMixin(
+      transferDto.fromKeyId,
+      transferDto.symbol,
+      transferDto.network,
+      transferDto.amount,
+    );
   }
 }
