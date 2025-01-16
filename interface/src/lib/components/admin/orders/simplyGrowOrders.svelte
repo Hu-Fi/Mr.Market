@@ -1,7 +1,7 @@
 <script>
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import SingleMarketMaking from "./singleMarketMaking.svelte";
+  import SingleSimplyGrow from "./singleSimplyGrow.svelte";
 
   let orders = [];
 </script>
@@ -9,9 +9,9 @@
 <div class="overflow-x-auto">
   <div class="flex items-center">
     <button class="btn btn-xs btn-ghost hover:bg-base-100" on:click={()=>{
-      //goto('/manage/orders/market_making')
+      //goto('/manage/orders/simply_grow')
     }}>
-      <span class="font-semibold text-base"> {$_('market_making')} </span>
+      <span class="font-semibold text-base"> {$_('simply_grow')} </span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
         <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd" />
       </svg>      
@@ -36,13 +36,13 @@
           <th>{$_("user_id")}</th>
           <th>{$_("order_id")}</th>
           <th>{$_("time")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each orders as order}
-            <SingleMarketMaking {order} />
-          {/each}
+        </tr>
+      </thead>
+      <tbody>
+        {#each orders as order}
+          <SingleSimplyGrow {order} />
+        {/each}
         </tbody>
-    </table>
+      </table>
   {/if}
 </div>

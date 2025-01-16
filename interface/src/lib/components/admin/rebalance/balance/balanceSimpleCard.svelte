@@ -16,7 +16,7 @@
 </script>
 
 <div class="tooltip tooltip-top" data-tip={`ID: ${info.key_id}`}>
-  <button class="stats shadow select-none">
+  <button class="stats shadow select-none" on:click={() => goto(`/manage/rebalance/balances/${info.key_id}`)}>
     <div class="stat text-left">
       <div class="stat-figure text-green-500">
         <div class="avatar">

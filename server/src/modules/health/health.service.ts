@@ -1,36 +1,3 @@
-/**
- * HealthService
- *
- * This service manages the health checks for various components of the application,
- * including database tables and cryptocurrency exchanges using the CCXT library.
- * It provides methods to check the overall health status, individual exchange health,
- * and database table health.
- *
- * Dependencies:
- * - EntityManager: TypeORM's EntityManager for database operations.
- * - CustomLogger: Custom logging service for recording errors and log information.
- * - ccxt: Cryptocurrency exchange trading library.
- *
- * Methods:
- * - constructor: Initializes the service with the injected EntityManager and sets up exchanges.
- * - initializeExchange(): Initializes the cryptocurrency exchanges with API keys and secrets.
- * - checkApiKeys(): Validates the presence of required API keys and secrets in environment variables.
- * - ping(): Returns a simple 'pong' response to verify service availability.
- * - checkDbHealth(): Checks the health of various database tables by counting the number of records.
- * - getAllHealth(): Checks the health of all configured exchanges by fetching their balances.
- * - getExchangeHealth(exchangeName: string): Checks the health of a specific exchange by name.
- *
- * Error Handling:
- * - Throws InternalServerErrorException for missing or invalid API keys.
- * - Throws BadRequestException if the requested exchange is not found.
- * - Logs errors and health statuses using the CustomLogger.
- *
- * Notes:
- * - The service uses caching to manage API rate limits and improve performance.
- * - Health statuses are stored in a Map and returned as an array of objects.
- * - If all exchanges are found to be 'dead', an InternalServerErrorException is thrown.
- */
-
 import {
   BadRequestException,
   Injectable,

@@ -4,7 +4,6 @@
     { name: "ping", state: "alive" },
     { name: "exchanges", state: "alive" },
     { name: "API keys", state: "alive" },
-    { name: "errors", state: "alive" },
   ];
 </script>
 

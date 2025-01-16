@@ -47,19 +47,17 @@ export class AdminRebalanceController {
     }
   }
 
-  @Get('balance/exchange/:keyLabel')
+  @Get('balance/exchange/:keyId')
   @ApiOperation({ summary: 'Get balance by key label' })
   @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getBalanceByKeyLabel(@Param('keyLabel') keyLabel: string) {
+  async getBalanceByKey(@Param('keyId') keyId: string) {
     try {
-      const result = await this.adminRebalanceService.getBalanceByKeyLabel(
-        keyLabel,
-      );
+      const result = await this.adminRebalanceService.getBalanceByKey(keyId);
       if (!result) {
         return {
           code: HttpStatus.BAD_REQUEST,
-          message: `Balance not found for key label: ${keyLabel}`,
+          message: `Balance not found for key label: ${keyId}`,
         };
       }
       return {
@@ -108,12 +106,23 @@ export class AdminRebalanceController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Get transfer info error' })
   async getTransferInfo(@Body() transferDto: any) {
-    return this.adminRebalanceService.getTransferInfo(
-      transferDto.fromKeyId,
-      transferDto.toKeyId,
-      transferDto.symbol,
-      transferDto.chain,
-    );
+    try {
+      const result = await this.adminRebalanceService.getTransferInfo(
+        transferDto.fromKeyId,
+        transferDto.toKeyId,
+        transferDto.symbol,
+        transferDto.chain,
+      );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving transfer info: ${e.message}`,
+      };
+    }
   }
 
   @Post('transfer/exchanges')
@@ -121,40 +130,99 @@ export class AdminRebalanceController {
   @ApiResponse({ status: 200, description: 'Transfer successful' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Transfer error' })
-  async transferBetweenExchanges(@Body() transferDto: any) {
-    return this.adminRebalanceService.transferBetweenExchanges(
-      transferDto.fromKeyId,
-      transferDto.toKeyId,
-      transferDto.symbol,
-      transferDto.chain,
-      transferDto.amount,
-    );
+  async transferBetweenExchanges(
+    @Body()
+    transferDto: {
+      fromKeyId: string;
+      toKeyId: string;
+      symbol: string;
+      chain: string;
+      amount: string;
+    },
+  ) {
+    try {
+      const result = await this.adminRebalanceService.transferBetweenExchanges(
+        transferDto.fromKeyId,
+        transferDto.toKeyId,
+        transferDto.symbol,
+        transferDto.chain,
+        transferDto.amount,
+      );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error transferring between exchanges: ${e.message}`,
+      };
+    }
   }
 
-  @Post('transfer/mixin/exchange')
+  @Post('transfer/mixin-to-exchange')
   @ApiOperation({ summary: 'Transfer from mixin to exchange' })
   @ApiResponse({ status: 200, description: 'Transfer successful' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Transfer error' })
-  async transferFromMixin(@Body() transferDto: any) {
-    return this.adminRebalanceService.transferFromMixinToExchange(
-      transferDto.assetId,
-      transferDto.amount,
-      transferDto.toKeyId,
-    );
+  async transferFromMixin(
+    @Body()
+    transferDto: {
+      assetId: string;
+      amount: string;
+      toKeyId: string;
+    },
+  ) {
+    try {
+      const result =
+        await this.adminRebalanceService.transferFromMixinToExchange(
+          transferDto.assetId,
+          transferDto.amount,
+          transferDto.toKeyId,
+        );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error transferring from mixin to exchange: ${e.message}`,
+      };
+    }
   }
 
-  @Post('transfer/exchange/mixin')
+  @Post('transfer/exchange-to-mixin')
   @ApiOperation({ summary: 'Transfer from exchange to mixin' })
   @ApiResponse({ status: 200, description: 'Transfer successful' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Transfer error' })
-  async transferFromExchange(@Body() transferDto: any) {
-    return this.adminRebalanceService.transferFromExchangeToMixin(
-      transferDto.fromKeyId,
-      transferDto.symbol,
-      transferDto.network,
-      transferDto.amount,
-    );
+  async transferFromExchange(
+    @Body()
+    transferDto: {
+      fromKeyId: string;
+      symbol: string;
+      network: string;
+      amount: string;
+    },
+  ) {
+    try {
+      const result =
+        await this.adminRebalanceService.transferFromExchangeToMixin(
+          transferDto.fromKeyId,
+          transferDto.symbol,
+          transferDto.network,
+          transferDto.amount,
+        );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error transferring from exchange to mixin: ${e.message}`,
+      };
+    }
   }
 }

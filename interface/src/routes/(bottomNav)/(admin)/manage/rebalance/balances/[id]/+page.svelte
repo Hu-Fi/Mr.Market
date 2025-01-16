@@ -1,6 +1,6 @@
 <script>
+  import { _ } from "svelte-i18n";
   import { page } from '$app/stores';
-  
 </script>
 
 

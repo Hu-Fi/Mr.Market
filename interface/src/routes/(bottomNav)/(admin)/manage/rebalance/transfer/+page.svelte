@@ -52,21 +52,22 @@
     if (value.id === selectedToExchange.id) {
       selectedToExchange = selectedFromExchange;
     }
-    selectedFromExchange = value;``
+    selectedFromExchange = value;
     selectedFromAsset = "";
     fromExchangeMenuOpen = false;
-    console.log("selectedToExchange", selectedToExchange);
-    console.log("value", value);
+    console.log("selectedFromExchange", JSON.stringify(selectedFromExchange));
   }
   const selectFromAsset = (value) => {
     // Load fee
     // Load currency info in exchange
     selectedFromAsset = value;
     fromAssetMenuOpen = false;
+    console.log("selectedFromAsset", JSON.stringify(selectedFromAsset));
   }
   const selectToExchange = (value) => {
     selectedToExchange = value;
     toExchangeMenuOpen = false;
+    console.log("selectedToExchange", JSON.stringify(selectedToExchange));
   }
 </script>
 

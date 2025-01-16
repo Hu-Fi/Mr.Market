@@ -3,11 +3,9 @@
   import { _ } from "svelte-i18n";
 
   const items = [
-    {'name': 'transfer', fn: () => {goto('/manage/rebalance/transfer')}},
+    // {'name': 'transfer', fn: () => {goto('/manage/rebalance/transfer')}},
     {'name': 'deposit', fn: () => {goto('/manage/rebalance/deposit')}},
     {'name': 'withdraw', fn: () => {goto('/manage/rebalance/withdraw')}},
-    // {'name': 'info', fn: () => {goto('/manage/rebalance/info')}},
-    // {'name': 'settings', fn: () => {goto('/manage/rebalance/settings')}},
   ];
 </script>
 

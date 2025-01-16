@@ -18,11 +18,11 @@
   export let path = '';
 </script>
 
-<div class="tooltip tooltip-top" data-tip={
+<div class="tooltip tooltip-top h-full" data-tip={
   `${info.exchange}: ${info.key_id}`
 }>
-  <button class="stats shadow h-full" on:click={() => goto(path)}>
-    <div class="stat text-left">
+  <button class="stats shadow h-full" on:click={() => goto(path)} >
+    <div class="stat text-left h-full">
       <div class="stat-figure text-green-500">
         <div class="avatar">
           <div class="mask mask-squircle w-8 h-8">
@@ -30,11 +30,11 @@
           </div>
         </div>
       </div>
-      <div class="stat-title mb-2">
+      <div class="mb-2">
         <span class="capitalize text-base-content">{info.name}</span>
       </div>
       {#each Object.keys(info.balance.total) as asset}
-        <div class="stat-desc my-1 mr-2">{asset}: {BN(info.balance.total[asset]).toString(10)}</div>
+        <div class="text-xs font-light opacity-60 my-1 mr-2">{asset}: {BN(info.balance.total[asset]).toString(10)}</div>
       {/each}
     </div>
   </button>

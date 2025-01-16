@@ -18,7 +18,6 @@ export class AdminRebalanceService {
 
   private cachingTTL = 15; // 15 seconds
 
-  // 1. Get all balances
   async getAllBalances(disableCache: string) {
     const cacheKey = `admin-rebalance-balances`;
     this.logger.debug('Getting all balances disableCache: ' + disableCache);
@@ -41,13 +40,11 @@ export class AdminRebalanceService {
     return result;
   }
 
-  // 2. Get balance by key label
-  async getBalanceByKeyLabel(keyLabel: string) {
-    this.logger.debug(`Getting balance for key label: ${keyLabel}`);
-    return await this.exchangeService.getBalanceByKeyLabel(keyLabel);
+  async getBalanceByKey(keyId: string) {
+    this.logger.debug(`Getting balance for key label: ${keyId}`);
+    return await this.exchangeService.getBalanceByKey(keyId);
   }
 
-  // 3. Get balance by mixin
   async getBalanceByMixin() {
     this.logger.debug(`Getting balance for mixin`);
     return await this.snapshotService.getAllAssetBalances();
@@ -60,6 +57,12 @@ export class AdminRebalanceService {
     symbol: string,
     chain: string,
   ) {
+    if (!fromKeyId || !toKeyId || !symbol || !chain) {
+      throw new Error('Invalid parameters');
+    }
+    if (fromKeyId === toKeyId) {
+      throw new Error('Must transfer between different exchanges');
+    }
     const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
       fromKeyId,
       symbol,
@@ -70,20 +73,21 @@ export class AdminRebalanceService {
       symbol,
     );
 
+    const fromChain = fromExchangeCurrencyInfo.networks[chain];
+    const toChain = toExchangeCurrencyInfo.networks[chain];
+    const toDepositAddress = await this.exchangeService.getDepositAddress({
+      apiKeyId: toKeyId,
+      symbol,
+      network: chain,
+    });
+
     return {
-      fromMinWithdrawalAmount:
-        fromExchangeCurrencyInfo.networks[chain].limits.withdraw.min,
-      fromWithdrawalFee: fromExchangeCurrencyInfo.networks[chain].fee,
-      toMinDepositAmount:
-        toExchangeCurrencyInfo.networks[chain].limits.deposit.min,
-      toDepositAddress: await this.exchangeService.getDepositAddress({
-        apiKeyId: toKeyId,
-        symbol,
-        network: chain,
-      }),
-      toDepositMemo: toExchangeCurrencyInfo.networks[chain].memo || null,
-      toDepositConfirmations:
-        toExchangeCurrencyInfo.networks[chain].confirmations,
+      from_min_withdrawal_amount: fromChain.limits.withdraw.min,
+      from_withdrawal_fee: fromChain.fee,
+      to_min_deposit_amount: toChain.limits.deposit.min,
+      to_deposit_address: toDepositAddress.address,
+      to_deposit_memo: toDepositAddress.memo || '',
+      to_deposit_confirmations: toChain.confirmations,
     };
   }
 
@@ -97,9 +101,15 @@ export class AdminRebalanceService {
     this.logger.log(
       `Transferring from ${fromKeyId} to ${toKeyId} ${symbol} ${chain} ${amount}`,
     );
-    // 1. Check if all parameters are provided
+    // 1. Check all parameters
     if (!fromKeyId || !toKeyId || !symbol || !chain || !amount) {
       throw new Error('Invalid parameters');
+    }
+    if (fromKeyId === toKeyId) {
+      throw new Error('Must transfer between different exchanges');
+    }
+    if (new BigNumber(amount).isLessThanOrEqualTo(0)) {
+      throw new Error('Amount must be greater than 0');
     }
 
     // 2. Get exchange with id
@@ -131,7 +141,7 @@ export class AdminRebalanceService {
     }
 
     // 4. Check amount > balance in from_exchange
-    const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
+    const fromExchangeBalance = await this.exchangeService.getBalanceByKey(
       fromKeyId,
     );
     if (new BigNumber(fromExchangeBalance).isLessThan(amount)) {
@@ -319,7 +329,7 @@ export class AdminRebalanceService {
     );
 
     // 3. Check amount > balance in from_exchange
-    const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
+    const fromExchangeBalance = await this.exchangeService.getBalanceByKey(
       fromKeyId,
     );
     if (new BigNumber(fromExchangeBalance).isLessThan(amount)) {

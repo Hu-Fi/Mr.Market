@@ -161,23 +161,17 @@ export class ExchangeService {
     }, {});
   }
 
-  async getBalanceByKeyLabel(keyLabel: string) {
+  async getBalanceByKey(keyId: string) {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
     this.logger.debug(
-      `getBalanceByKeyLabel: Getting balance for key label: ${keyLabel}`,
+      `getBalanceByKey: Getting balance for key label: ${keyId}`,
     );
-    this.logger.debug(
-      `getBalanceByKeyLabel: API keys: ${JSON.stringify(apiKeys)}`,
-    );
+    this.logger.debug(`getBalanceByKey: API keys: ${JSON.stringify(apiKeys)}`);
 
-    const apiKey = apiKeys.find((key) => key.key_id.toString() === keyLabel);
-    this.logger.debug(
-      `getBalanceByKeyLabel: API key: ${JSON.stringify(apiKey)}`,
-    );
+    const apiKey = apiKeys.find((key) => key.key_id.toString() === keyId);
+    this.logger.debug(`getBalanceByKey: API key: ${JSON.stringify(apiKey)}`);
     if (!apiKey) {
-      this.logger.error(
-        `getBalanceByKeyLabel: Key label not found: ${keyLabel}`,
-      );
+      this.logger.error(`getBalanceByKey: Key label not found: ${keyId}`);
       return null;
     }
     return await this.getBalance(

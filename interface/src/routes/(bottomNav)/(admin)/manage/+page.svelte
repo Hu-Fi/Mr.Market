@@ -6,11 +6,13 @@
 <div class="flex flex-col gap-4 justify-center items-center h-[100vh]">
   <span class="text-2xl font-bold">{$_("welcome_to_admin_panel")}</span>
   <button
-    class="btn"
+    class="btn rounded-full btn-md"
     on:click={() => {
-      goto("/manage/dashboard");
+      goto("/manage/exchanges");
     }}
     >
-    {$_("dashboard")}
+    <span class="text-sm">
+      {$_("explore")}
+    </span>
   </button>
 </div>
