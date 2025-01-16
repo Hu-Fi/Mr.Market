@@ -22,7 +22,7 @@
 </script>
 
 <!-- Display all available api keys -->
-<div class="flex flex-wrap gap-4 p-8">
+<div class="flex flex-wrap gap-4 p-8 pt-4">
   <SelectMixinCard path="/manage/rebalance/withdraw/mixin/" />
   {#each apiKeys as key}
     <SelectApiKeyCard info={key} path="/manage/rebalance/withdraw/exchange/" />

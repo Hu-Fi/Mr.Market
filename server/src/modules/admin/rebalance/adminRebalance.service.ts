@@ -60,21 +60,13 @@ export class AdminRebalanceService {
     symbol: string,
     chain: string,
   ) {
-    const fromExchangeKey = await this.exchangeService.readAPIKey(fromKeyId);
     const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
-      fromExchangeKey.api_key,
-      fromExchangeKey.api_secret,
-      fromExchangeKey.api_extra,
-      fromExchangeKey.exchange,
+      fromKeyId,
       symbol,
     );
 
-    const toExchangeKey = await this.exchangeService.readAPIKey(toKeyId);
     const toExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
-      toExchangeKey.api_key,
-      toExchangeKey.api_secret,
-      toExchangeKey.api_extra,
-      toExchangeKey.exchange,
+      toKeyId,
       symbol,
     );
 
@@ -101,50 +93,66 @@ export class AdminRebalanceService {
     symbol: string,
     chain: string,
     amount: string,
-    memo: string,
   ) {
     this.logger.log(
       `Transferring from ${fromKeyId} to ${toKeyId} ${symbol} ${chain} ${amount}`,
     );
+    // 1. Check if all parameters are provided
+    if (!fromKeyId || !toKeyId || !symbol || !chain || !amount) {
+      throw new Error('Invalid parameters');
+    }
 
-    const fromExchangeKey = await this.exchangeService.readAPIKey(fromKeyId);
+    // 2. Get exchange with id
     const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
-      fromExchangeKey.api_key,
-      fromExchangeKey.api_secret,
-      fromExchangeKey.api_extra,
-      fromExchangeKey.exchange,
+      fromKeyId,
       symbol,
     );
-
-    const toExchangeKey = await this.exchangeService.readAPIKey(toKeyId);
     const toExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
-      toExchangeKey.api_key,
-      toExchangeKey.api_secret,
-      toExchangeKey.api_extra,
-      toExchangeKey.exchange,
+      toKeyId,
       symbol,
     );
 
-    if (!fromExchangeCurrencyInfo.networks[chain]) {
+    const fromCurrency = fromExchangeCurrencyInfo;
+    const toCurrency = toExchangeCurrencyInfo;
+
+    const fromChain = fromCurrency.networks[chain];
+    const toChain = toCurrency.networks[chain];
+    if (!fromChain) {
       throw new Error(`Chain ${chain} not supported by fromExchange`);
     }
-    if (!toExchangeCurrencyInfo.networks[chain]) {
+    if (!toChain) {
       throw new Error(`Chain ${chain} not supported by toExchange`);
     }
 
-    const fromExchangeMinWithdrawalAmount =
-      fromExchangeCurrencyInfo.networks[chain].limits.withdraw.min;
-    const fromExchangeWithdrawalFee =
-      fromExchangeCurrencyInfo.networks[chain].fee;
-    const fromExchangeWithdrawalEnabled =
-      fromExchangeCurrencyInfo.networks[chain].withdraw;
+    // 3. Check if withdrawal is enabled
+    const fromExchangeWithdrawalEnabled = fromCurrency.networks[chain].withdraw;
+    if (!fromExchangeWithdrawalEnabled) {
+      throw new Error(`Withdrawal is not enabled for fromExchange`);
+    }
+
+    // 4. Check amount > balance in from_exchange
+    const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
+      fromKeyId,
+    );
+    if (new BigNumber(fromExchangeBalance).isLessThan(amount)) {
+      throw new Error(`Insufficient balance in fromExchange`);
+    }
+
+    // 5. Check balance > withdrawal fee
+    const fromExchangeWithdrawalFee = fromCurrency.networks[chain].fee;
+    if (new BigNumber(amount).isLessThan(fromExchangeWithdrawalFee)) {
+      throw new Error(`Insufficient balance to cover withdrawal fee`);
+    }
+
+    // 6. Check balance > min withdraw amount
+    const fromExchangeMinWithdrawalAmount = fromChain.limits.withdraw.min;
     if (new BigNumber(amount).isLessThan(fromExchangeMinWithdrawalAmount)) {
       throw new Error(`Amount is less than the minimum withdrawal amount`);
     }
 
+    // 7. Check amount - fee > min deposit
     const toExchangeMinDepositAmount =
-      toExchangeCurrencyInfo.networks[chain].limits.deposit.min;
-
+      toCurrency.networks[chain].limits.deposit.min;
     if (
       new BigNumber(amount)
         .minus(fromExchangeWithdrawalFee)
@@ -155,13 +163,7 @@ export class AdminRebalanceService {
       );
     }
 
-    const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
-      fromKeyId,
-    );
-    if (new BigNumber(fromExchangeBalance).isLessThan(amount)) {
-      throw new Error(`Insufficient balance in fromExchange`);
-    }
-
+    // 8. Get deposit address
     const toExchangeDepositAddress =
       await this.exchangeService.getDepositAddress({
         apiKeyId: toKeyId,
@@ -169,24 +171,21 @@ export class AdminRebalanceService {
         network: chain,
       });
 
+    // 9. Check address not null
     if (!toExchangeDepositAddress) {
       throw new Error(`Deposit address not found for toExchange`);
     }
 
-    if (toExchangeDepositAddress.memo && !memo) {
-      throw new Error(`Memo is required for this transaction`);
-    }
+    // 10. Check if memo required
+    const memo = toExchangeDepositAddress.memo || '';
 
-    if (!fromExchangeWithdrawalEnabled) {
-      throw new Error(`Withdrawal is not enabled for fromExchange`);
-    }
-
+    // 11. Initiate withdrawal
     try {
       await this.exchangeService.createWithdrawal({
         apiKeyId: fromKeyId,
         symbol,
         network: chain,
-        exchange: fromExchangeKey.exchange,
+        exchange: fromCurrency.exchange.id,
         address: toExchangeDepositAddress.address,
         amount,
         tag: memo,
@@ -207,45 +206,79 @@ export class AdminRebalanceService {
       `Transferring from mixin to exchange with assetId: ${assetId}, amount: ${amount}, toKeyId: ${toKeyId}`,
     );
 
-    // Check amount > balance in mixin
+    // 1. Validate parameters
+    if (!assetId || !amount || !toKeyId) {
+      throw new Error(`Invalid parameters`);
+    }
+    if (new BigNumber(amount).isLessThanOrEqualTo(0)) {
+      throw new Error(`Amount must be greater than 0`);
+    }
+
+    // 2. Check amount > balance in mixin
     const mixinBalance = await this.snapshotService.getAssetBalance(assetId);
     if (new BigNumber(mixinBalance).isLessThan(amount)) {
       throw new Error(`Insufficient balance in mixin`);
     }
 
-    // Get symbol and chainId
+    // 3. Get withdrawal fee, symbol, chain id
     const asset = await this.snapshotService.getAsset(assetId);
     const symbol = asset.symbol;
     const chainId = asset.chain_id;
 
-    if (new BigNumber(mixinBalance).isLessThan(withdrawalFee)) {
-      throw new Error(`Insufficient balance to cover withdrawal fee`);
-    }
+    // 4. Get chain asset, get chain symbol
+    const chainAsset = await this.snapshotService.getAsset(chainId);
+    const chainSymbol = chainAsset.symbol;
 
+    // 5. Get deposit address
     const toExchangeDepositAddress =
       await this.exchangeService.getDepositAddress({
         apiKeyId: toKeyId,
         symbol,
-        network: chainId,
+        network: chainSymbol,
       });
 
+    // 6. Check address not null
     if (!toExchangeDepositAddress) {
       throw new Error(`Deposit address not found for toExchange`);
     }
 
+    // 7. Check balance > withdrawal fee
     const withdrawalFee = await this.snapshotService.getWithdrawalFee(
       assetId,
       toExchangeDepositAddress.address,
-    );
-    if (toExchangeDepositAddress.memo) {
-      // Handle memo logic if required
+    )[0];
+    if (new BigNumber(mixinBalance).isLessThan(withdrawalFee)) {
+      throw new Error(`Insufficient balance to cover withdrawal fee`);
     }
 
+    // 8. Get min deposit amount
+    const toExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
+      toKeyId,
+      symbol,
+    );
+    const toExchangeMinDepositAmount =
+      toExchangeCurrencyInfo.networks[chainId].limits.deposit.min;
+
+    // 9. Check amount - fee > min deposit
+    if (
+      new BigNumber(amount)
+        .minus(withdrawalFee)
+        .isLessThan(toExchangeMinDepositAmount)
+    ) {
+      throw new Error(
+        `Amount after fee is less than the minimum deposit amount`,
+      );
+    }
+
+    // 10. Check if memo required
+    const memo = toExchangeDepositAddress.memo || '';
+
+    // 11. Initiate withdrawal
     try {
       await this.snapshotService.withdrawal(
         assetId,
         toExchangeDepositAddress.address,
-        toExchangeDepositAddress.memo || '',
+        memo,
         amount,
       );
       this.logger.log(`Transfer from mixin to exchange successful`);
@@ -255,7 +288,6 @@ export class AdminRebalanceService {
     }
   }
 
-  // Transfer from exchange to mixin
   async transferFromExchangeToMixin(
     fromKeyId: string,
     symbol: string,
@@ -266,15 +298,27 @@ export class AdminRebalanceService {
       `Transferring from exchange to mixin with fromKeyId: ${fromKeyId}, symbol: ${symbol}, network: ${network}, amount: ${amount}`,
     );
 
-    const mixinDepositFee = await this.snapshotService.getDepositFee(
-      symbol,
-      network,
-    );
+    // 0. Get mixin deposit fee
+    // const mixinDepositFee = await this.snapshotService.getDepositFee(
+    //   symbol,
+    //   network,
+    // );
+
+    // 1. Validate parameters
+    if (!fromKeyId || !symbol || !network || !amount) {
+      throw new Error(`Invalid parameters`);
+    }
+    if (new BigNumber(amount).isLessThanOrEqualTo(0)) {
+      throw new Error(`Amount must be greater than 0`);
+    }
+
+    // 2. Map symbol and network to asset id
     const assetId = await this.snapshotService.mapSymbolAndNetworkToAssetId(
       symbol,
       network,
     );
 
+    // 3. Check amount > balance in from_exchange
     const fromExchangeBalance = await this.exchangeService.getBalanceByKeyLabel(
       fromKeyId,
     );
@@ -282,39 +326,53 @@ export class AdminRebalanceService {
       throw new Error(`Insufficient balance in fromExchange`);
     }
 
+    // 4. Get withdrawal fee
     const fromExchangeCurrencyInfo = await this.exchangeService.getCurrencyInfo(
       fromKeyId,
       symbol,
-      network,
     );
-
     const fromExchangeWithdrawalFee =
       fromExchangeCurrencyInfo.networks[network].fee;
-    const fromExchangeMinWithdrawalAmount =
-      fromExchangeCurrencyInfo.networks[network].limits.withdraw.min;
 
+    // 5. Check balance > withdrawal fee
     if (
       new BigNumber(fromExchangeBalance).isLessThan(fromExchangeWithdrawalFee)
     ) {
       throw new Error(`Insufficient balance to cover withdrawal fee`);
     }
 
+    // // 6. Get deposit fee usd
+    // const depositFeeUsd = mixinDepositFee.usd; // Assuming mixinDepositFee has a usd property
+
+    // // 7. Check amount usd > fee usd
+    // const amountUsd = new BigNumber(amount).multipliedBy(fromExchangeCurrencyInfo.priceUsd); // Assuming priceUsd is available
+    // if (amountUsd.isLessThan(depositFeeUsd)) {
+    //   throw new Error(`Amount in USD is less than the deposit fee in USD`);
+    // }
+
+    // 8. Get min withdrawal amount
+    const fromExchangeMinWithdrawalAmount =
+      fromExchangeCurrencyInfo.networks[network].limits.withdraw.min;
+
+    // 9. Check balance > min withdraw amount
     if (new BigNumber(amount).isLessThan(fromExchangeMinWithdrawalAmount)) {
       throw new Error(`Amount is less than the minimum withdrawal amount`);
     }
 
+    // 10. Get deposit address
     const mixinDepositAddress = await this.snapshotService.getDepositAddress(
       assetId,
     );
 
+    // 11. Check address not null
     if (!mixinDepositAddress) {
       throw new Error(`Deposit address not found for mixin`);
     }
 
-    if (mixinDepositAddress.memo && !memo) {
-      throw new Error(`Memo is required for this transaction`);
-    }
+    // 12. Check if memo required
+    const memo = mixinDepositAddress.memo || '';
 
+    // 13. Initiate withdrawal
     try {
       await this.exchangeService.createWithdrawal({
         apiKeyId: fromKeyId,

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
   import { BN } from "$lib/helpers/utils";
   import emptyToken from '$lib/images/empty-token.svg';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
-    import { goto } from "$app/navigation";
+
   export let info: {
     key_id: number;
     exchange: string;
@@ -20,7 +21,7 @@
 <div class="tooltip tooltip-top" data-tip={
   `${info.exchange}: ${info.key_id}`
 }>
-  <button class="stats shadow" on:click={() => goto(path)}>
+  <button class="stats shadow h-full" on:click={() => goto(path)}>
     <div class="stat text-left">
       <div class="stat-figure text-green-500">
         <div class="avatar">

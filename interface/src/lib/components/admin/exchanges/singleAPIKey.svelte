@@ -35,7 +35,7 @@
   }
 </script>
 
-<div class="flex items-center justify-between p-4 border-b border-x first:border-t last:border-b">
+<div class="flex items-center justify-between p-4 px-6 border-b border-x first:rounded-t-2xl last:rounded-b-2xl first:border-t last:border-b">
   <div class="flex items-center space-x-4">
     <div class="avatar">
       <div class="mask mask-squircle w-8 h-8">
@@ -55,7 +55,7 @@
     <!-- Actions -->
     <div class="flex items-center justify-center">
       {#if !deleteConfirm}
-        <button class="btn btn-sm" on:click={()=>{deleteConfirm=true}}>
+        <button class="btn btn-sm rounded-2xl px-4 no-animation" on:click={()=>{deleteConfirm=true}}>
           <span>{$_('delete')}</span>
         </button>
       {:else}

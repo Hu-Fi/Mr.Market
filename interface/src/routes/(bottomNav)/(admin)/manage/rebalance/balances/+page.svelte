@@ -51,7 +51,7 @@
       <Loading />
     </div>
   {:else}
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="flex flex-wrap items-start gap-4 h-full">
       {#if $balancesLoaded && $balances.length > 0}
         {#each $balances as balance}
           <BalancesComplexCard info={balance} path={`/manage/rebalance/balances/${balance.key_id}`} />

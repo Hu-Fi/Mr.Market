@@ -1,11 +1,10 @@
 <script>
-  //@ts-expect-error types
-  import { cleave } from "svelte-cleavejs";
-  import { maskOption } from "$lib/helpers/constants";
-
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import { BN } from "$lib/helpers/utils";
+  import { cleave } from "svelte-cleavejs";
+  import { maskOption } from "$lib/helpers/constants";
   import emptyToken from "$lib/images/empty-token.svg";
   import { balances, balancesLoading } from "$lib/stores/admin";
   import { findCoinIconBySymbol, findExchangeIconByIdentifier } from "$lib/helpers/helpers";
@@ -80,7 +79,7 @@
     <!-- Header -->
     <div class="flex items-center gap-2 p-4 bg-white">
       <!-- Arrow left -->
-      <button class="btn btn-ghost btn-circle no-animation" on:click={() => { history.back() }}>
+      <button class="btn btn-ghost btn-circle no-animation" on:click={() => { goto("/manage/rebalance") }}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
@@ -212,7 +211,7 @@
             </label>
             <input
               type="text"
-              class="input input-bordered w-full"
+              class="input input-bordered w-full focus:outline-none"
               bind:value={amount}
               use:cleave={maskOption}
               placeholder={$_("enter_amount")}
@@ -220,7 +219,10 @@
           </div>
 
           <!-- Transfer Button -->
-          <button class="btn bg-base-content hover:bg-base-content/80 text-base-100 mt-6" on:click={handleTransfer} disabled={!selectedToExchange || !selectedFromExchange || !selectedFromAsset || !amount}>
+          <button 
+            class="btn bg-base-content hover:bg-base-content/80 text-base-100 mt-6 no-animation" 
+            on:click={handleTransfer} disabled={!selectedToExchange || !selectedFromExchange || !selectedFromAsset || !amount}
+          >
             {$_("transfer")}
           </button>
         </div>

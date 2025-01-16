@@ -22,6 +22,7 @@ import {
   ExchangeWithdrawalDto,
 } from './exchange.dto';
 import { AggregatedBalances } from 'src/common/types/rebalance/map';
+import { Currencies } from 'ccxt/js/src/base/types';
 
 @Injectable()
 export class ExchangeService {
@@ -258,20 +259,18 @@ export class ExchangeService {
     return currencies;
   }
 
-  async getCurrencyInfo(
-    apiKey: string,
-    apiSecret: string,
-    apiExtra: string,
-    exchange: string,
-    symbol: string,
-  ) {
-    const e = new ccxt[exchange]({
-      apiKey,
-      secret: apiSecret,
-      password: apiExtra || '',
+  async getCurrencyInfo(keyId: string, symbol: string): Promise<Currencies> {
+    const key = await this.readAPIKey(keyId);
+    if (!key) {
+      return;
+    }
+    const e = new ccxt[key.exchange]({
+      apiKey: key.api_key,
+      secret: key.api_secret,
+      password: key.api_extra || '',
     });
-    const currencyInfo = await e.fetchCurrencies()[symbol];
-    return currencyInfo;
+    const currencies = await e.fetchCurrencies();
+    return currencies[symbol];
   }
 
   async getTicker(

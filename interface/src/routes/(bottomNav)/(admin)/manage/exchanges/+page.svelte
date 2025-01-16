@@ -8,7 +8,6 @@
   import Actions from "$lib/components/admin/exchanges/actions.svelte";
   import KeyList from "$lib/components/admin/exchanges/keyList.svelte";
   import ExchangeStats from "$lib/components/admin/exchanges/exchangeStats.svelte";
-  import ExchangeBalances from "$lib/components/admin/exchanges/exchangeBalances.svelte";
   import { exchangeApiKeys, exchangeApiKeysLoading } from "$lib/stores/admin";
 
   onMount(async () => {
@@ -31,7 +30,6 @@
   {:else}
     <ExchangeStats keys={$exchangeApiKeys} />
     <Actions />
-    <ExchangeBalances />
     <KeyList keys={$exchangeApiKeys} />
   {/if}
 </div>

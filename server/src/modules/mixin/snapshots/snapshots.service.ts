@@ -69,6 +69,17 @@ export class SnapshotsService {
     );
   }
 
+  async mapSymbolAndNetworkToAssetId(symbol: string, network: string) {
+    // Make a json map to store the symbol and network to asset id
+    // Find a way to automate this from mixin top assets api
+    return symbol + network;
+  }
+
+  async getDepositFee(asset_id: string) {
+    this.logger.log(`getDepositFee() asset_id: ${asset_id}`);
+    return 0;
+  }
+
   async getDepositAddress(asset_id: string) {
     const asset = await this.client.network.fetchAsset(asset_id);
     // @ts-expect-error sdk type error
@@ -322,8 +333,7 @@ export class SnapshotsService {
   }
 
   async getWithdrawalFee(asset_id: string, destination: string) {
-    const fee = await this.client.safe.fetchFee(asset_id, destination);
-    return fee;
+    return await this.client.safe.fetchFee(asset_id, destination);
   }
 
   async sendMixinTx(

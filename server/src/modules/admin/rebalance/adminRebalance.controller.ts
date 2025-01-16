@@ -128,7 +128,6 @@ export class AdminRebalanceController {
       transferDto.symbol,
       transferDto.chain,
       transferDto.amount,
-      transferDto.memo,
     );
   }
 
