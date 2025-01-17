@@ -1,3 +1,4 @@
+<!-- Balance card in balance details page with asset list -->
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";

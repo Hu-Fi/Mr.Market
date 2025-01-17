@@ -34,16 +34,16 @@ export const getAllBalances = async (token: string, disableCache: string = 'fals
   }
 }
 
-// Get balance by key label
-export const getBalanceByKeyLabel = async (token: string, keyLabel: string): Promise<unknown> => {
+// Get balance by key Id
+export const getBalanceByKeyId = async (token: string, keyId: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/exchange/${keyLabel}`, {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/exchange/${keyId}`, {
       method: 'GET',
       headers: getHeaders(token),
     });
     return await handleApiResponse(response);
   } catch (error) {
-    console.error(`Error fetching balance for key label ${keyLabel}:`, error);
+    console.error(`Error fetching balance for key Id ${keyId}:`, error);
     throw error;
   }
 }

@@ -388,7 +388,7 @@ export class AdminRebalanceService {
         apiKeyId: fromKeyId,
         symbol,
         network,
-        exchange: fromExchangeCurrencyInfo.exchange,
+        exchange: fromExchangeCurrencyInfo.exchange.id,
         address: mixinDepositAddress.address,
         amount,
         tag: memo,
@@ -413,11 +413,8 @@ export class AdminRebalanceService {
   }
 
   // 10. Read rebalance history
-  async getRebalanceHistory(type: string, startDate: string, endDate: string) {
-    this.logger.log(
-      `Getting rebalance history ${type} ${startDate} ${endDate}`,
-    );
-    // TODO: Implement rebalance history retrieval
+  async getAllRebalanceHistory() {
+    this.logger.log(`Getting all rebalance history`);
   }
 }
 

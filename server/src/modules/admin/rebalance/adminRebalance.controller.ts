@@ -47,13 +47,41 @@ export class AdminRebalanceController {
     }
   }
 
+  @Get('history/all')
+  @ApiOperation({ summary: 'Get all rebalance history' })
+  @ApiResponse({
+    status: 200,
+    description: 'All rebalance history retrieved successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 500, description: 'Get rebalance history error' })
+  async getAllRebalanceHistory() {
+    try {
+      const result = await this.adminRebalanceService.getAllRebalanceHistory();
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (e) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving rebalance history: ${e.message}`,
+      };
+    }
+  }
+
   @Get('balance/exchange/:keyId')
   @ApiOperation({ summary: 'Get balance by key label' })
   @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getBalanceByKey(@Param('keyId') keyId: string) {
     try {
-      const result = await this.adminRebalanceService.getBalanceByKey(keyId);
+      let result;
+      if (keyId == '0') {
+        result = await this.adminRebalanceService.getBalanceByMixin();
+      } else {
+        result = await this.adminRebalanceService.getBalanceByKey(keyId);
+      }
       if (!result) {
         return {
           code: HttpStatus.BAD_REQUEST,

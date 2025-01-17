@@ -6,7 +6,7 @@
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
   import { withdrawBalances } from "$lib/stores/admin";
-  import { getBalanceByKeyLabel } from "$lib/helpers/hufi/admin/rebalance";
+  import { getBalanceByKeyId } from "$lib/helpers/hufi/admin/rebalance";
   
   let search = "";
   let balancesLoading = false;
@@ -24,7 +24,7 @@
     }
     const keyId = $page.params.id;
     
-    const res = await getBalanceByKeyLabel(token, keyId);
+    const res = await getBalanceByKeyId(token, keyId);
     if (!res || !res.data) {
       toast.error(`Failed to fetch balance: ${res.message}`)
       return;

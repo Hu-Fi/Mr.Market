@@ -12,7 +12,6 @@
     "orders",
     "users",
     // "dashboard",
-    // "revenue",
     // "message",
     "strategies",
     "health",

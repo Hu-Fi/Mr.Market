@@ -18,13 +18,9 @@
       localStorage.setItem("admin-password", pass);
       localStorage.setItem("admin-access-token", accessToken);
       loginLoading.set(false);
-      goto("/manage/dashboard");
+      goto("/manage/");
       return true;
     }
-    // submitted.set(true);
-    // checked.set(true);
-    // correct.set(false);
-    // return false;
   };
 </script>
 
