@@ -78,7 +78,7 @@ export class AdminRebalanceController {
     try {
       let result;
       if (keyId == '0') {
-        result = await this.adminRebalanceService.getBalanceByMixin();
+        result = await this.adminRebalanceService.getBalanceByMixin('map');
       } else {
         result = await this.adminRebalanceService.getBalanceByKey(keyId);
       }
@@ -104,9 +104,9 @@ export class AdminRebalanceController {
   @ApiOperation({ summary: 'Get balance by mixin' })
   @ApiResponse({ status: 200, description: 'Balance retrieved successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getBalanceByMixin() {
+  async getBalanceByMixin(@Query('type') type: 'map' | 'list') {
     try {
-      const result = await this.adminRebalanceService.getBalanceByMixin();
+      const result = await this.adminRebalanceService.getBalanceByMixin(type);
       if (!result) {
         return {
           code: HttpStatus.BAD_REQUEST,

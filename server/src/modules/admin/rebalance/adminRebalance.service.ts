@@ -6,6 +6,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
+import { AdminRebalanceRepository } from './adminRebalance.repository';
 
 @Injectable()
 export class AdminRebalanceService {
@@ -14,6 +15,7 @@ export class AdminRebalanceService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private exchangeService: ExchangeService,
     private snapshotService: SnapshotsService,
+    private adminRebalanceRepository: AdminRebalanceRepository,
   ) {}
 
   private cachingTTL = 15; // 15 seconds
@@ -45,9 +47,9 @@ export class AdminRebalanceService {
     return await this.exchangeService.getBalanceByKey(keyId);
   }
 
-  async getBalanceByMixin() {
+  async getBalanceByMixin(type: 'map' | 'list') {
     this.logger.debug(`Getting balance for mixin`);
-    return await this.snapshotService.getAllAssetBalances();
+    return await this.snapshotService.getAllAssetBalances(type);
   }
 
   // Get transfer info
@@ -415,23 +417,15 @@ export class AdminRebalanceService {
   // 10. Read rebalance history
   async getAllRebalanceHistory() {
     this.logger.log(`Getting all rebalance history`);
+    const withdrawalHistory =
+      await this.adminRebalanceRepository.getAllWithdrawalHistory();
+    const depositHistory =
+      await this.adminRebalanceRepository.getAllDepositHistory();
+    const transferHistory =
+      await this.adminRebalanceRepository.getAllTransferHistory();
+    return [...withdrawalHistory, ...depositHistory, ...transferHistory];
   }
 }
-
-// Endpoints to have
-// 1. Get all balances
-// 2. Get balance by exchange
-
-// 3. Transfer from mixin to exchange
-// 4. Transfer from exchange to mixin
-// 5. Transfer from exchange to exchange
-
-// 6. Deposit to mixin or exchange by symbol and chain
-// 7. Withdraw from mixin or exchange by symbol and chain
-
-// 8. Read pending deposits
-// 9. Read auto rebalance parameters
-// 10. Read rebalance history
 
 // 11. history type: transfer, deposit, withdraw, auto_rebalance
 

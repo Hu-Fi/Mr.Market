@@ -318,17 +318,20 @@ export class SnapshotsService {
     }
   }
 
-  async getWithdrawalInfo(asset_id: string) {
-    const asset = await this.client.network.fetchAsset(asset_id);
-    const fee = asset.fee;
+  async getWithdrawalInfo(asset_id: string, destination: string) {
+    const fee = await this.getWithdrawalFee(asset_id, destination);
+    const asset = await this.client.safe.fetchAsset(asset_id);
     const chain =
       asset.chain_id === asset.asset_id
         ? asset
-        : await this.client.network.fetchAsset(asset.chain_id);
-    const chainSymbol = chain.symbol;
+        : await this.client.safe.fetchAsset(asset.chain_id);
+    const balance = await this.getAssetBalance(asset_id);
     return {
-      chain_symbol: chainSymbol,
-      fee: fee,
+      asset,
+      chain,
+      destination,
+      fee,
+      balance,
     };
   }
 
@@ -416,7 +419,7 @@ export class SnapshotsService {
     }
   }
 
-  async getAllAssetBalances() {
+  async getAllAssetBalances(type: 'map' | 'list') {
     try {
       // Fetch all outputs
       const outputs = await this.client.utxo.safeOutputs({});
@@ -432,23 +435,37 @@ export class SnapshotsService {
       }, {});
 
       // Calculate total balance for each asset and map to symbols
-      const symbolBalances = Object.entries(groupedByAssetId).reduce(
-        (acc, [assetId, outputs]) => {
-          // @ts-expect-error types
-          const totalBalance = getTotalBalanceFromOutputs(outputs);
-          const symbol = getSymbolByAssetID(assetId); // Convert asset ID to symbol
-          if (symbol) {
-            acc[symbol] = totalBalance.toString(); // Assuming you want the balance as a string
-          } else {
-            this.logger.warn(`Symbol not found for asset ID: ${assetId}`);
-          }
-          return acc;
-        },
-        {},
-      );
-
-      // map of Symbol: Balance
-      return symbolBalances;
+      // Map of { symbol: balance_amount }
+      if (type === 'map') {
+        return Object.entries(groupedByAssetId).reduce(
+          (acc, [assetId, outputs]) => {
+            // @ts-expect-error types
+            const totalBalance = getTotalBalanceFromOutputs(outputs);
+            const symbol = getSymbolByAssetID(assetId); // Convert asset ID to symbol
+            if (symbol) {
+              acc[symbol] = totalBalance.toString(); // Assuming you want the balance as a string
+            } else {
+              this.logger.warn(`Symbol not found for asset ID: ${assetId}`);
+            }
+            return acc;
+          },
+          {},
+        );
+      } else {
+        return Object.entries(groupedByAssetId).reduce(
+          (acc, [assetId, outputs]) => {
+            // @ts-expect-error types
+            const totalBalance = getTotalBalanceFromOutputs(outputs);
+            acc.push({
+              asset_id: assetId,
+              balance: totalBalance.toString(),
+              symbol: getSymbolByAssetID(assetId),
+            });
+            return acc;
+          },
+          [],
+        );
+      }
     } catch (error) {
       this.logger.error(`Error fetching asset balances: ${error.message}`);
       throw error;
@@ -457,7 +474,7 @@ export class SnapshotsService {
 
   async getAllAssetBalancesCCXT() {
     try {
-      const symbolBalances = await this.getAllAssetBalances();
+      const symbolBalances = await this.getAllAssetBalances('map');
 
       const formattedBalances = {
         balance: {

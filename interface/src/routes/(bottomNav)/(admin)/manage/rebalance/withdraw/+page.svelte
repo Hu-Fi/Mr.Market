@@ -14,7 +14,7 @@
       </svg>
     </button>
     <!-- Title -->
-    <h1 class="text-xl font-bold">{$_("withdraw")}</h1>
+    <h1 class="text-xl font-bold">{$_("withdraw_from")}</h1>
   </div>
 
   <SelectApiKey />

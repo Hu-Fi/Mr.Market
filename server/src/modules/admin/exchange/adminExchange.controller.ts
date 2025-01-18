@@ -93,9 +93,14 @@ export class AdminExchangeController {
   @ApiResponse({ status: 200, description: 'Get withdrawal info' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Get withdrawal info error' })
-  async getMixinWithdrawalInfo(@Body() asset_id: string) {
+  async getMixinWithdrawalInfo(
+    @Body() data: { asset_id: string; destination: string },
+  ) {
     try {
-      const result = await this.snapshotsService.getWithdrawalInfo(asset_id);
+      const result = await this.snapshotsService.getWithdrawalInfo(
+        data.asset_id,
+        data.destination,
+      );
       if (!result) {
         return {
           code: HttpStatus.BAD_REQUEST,

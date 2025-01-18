@@ -15,10 +15,10 @@
       if (!resp) {
         throw Error("Failed to fetch strategies");
       }
-      if (resp.data.length === 0) {
+      if (resp.length === 0) {
         return;
       }
-      strategies = resp.data;
+      strategies = resp;
     } catch (error) {
       console.error("Error fetching strategies:", error);
     }

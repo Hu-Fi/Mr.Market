@@ -13,6 +13,7 @@
     "users",
     // "dashboard",
     // "message",
+    // "campaigns",
     "strategies",
     "health",
     "supported_assets",

@@ -1,4 +1,4 @@
-export type SupportedExchanges = 'mexc' | 'bitfinex' | 'okx' | 'gate' | 'lbank' 
+export type SupportedExchanges = 'mexc' | 'bitfinex' | 'okx' | 'gate' | 'lbank' | 'bigone'
 export type SupportedPairs = 'BTC/USDT' | 'ETH/USDT' | 'HMT/USDT' | 'BNB/USDT' | 'UNI/USDT' | 'CRV/USDT' | 'SOL/USDT' | 'SUI/USDT'
 export type SupportedTimeFrame = '1s' | '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '24h' | '1d' | '2d' | '3d' | '5d' | '1w' | '1M' | '3M'
 export type TokenChartTimeFrame = '1h'|'24h'|'1w'|'1m'|'1y'|'all'

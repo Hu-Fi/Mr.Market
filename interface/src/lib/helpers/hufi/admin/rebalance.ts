@@ -49,15 +49,29 @@ export const getBalanceByKeyId = async (token: string, keyId: string): Promise<u
 }
 
 // Get mixin balance
-export const getMixinBalance = async (token: string): Promise<unknown> => {
+export const getMixinBalance = async (token: string, type: 'map' | 'list'): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/mixin`, {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/rebalance/balance/mixin?type=${type}`, {
       method: 'GET',
       headers: getHeaders(token),
     });
     return await handleApiResponse(response);
   } catch (error) {
     console.error(`Error fetching mixin balance:`, error);
+    throw error;
+  }
+}
+
+export const getMixinWithdrawInfo = async (token: string, assetId: string): Promise<unknown> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/withdrawal/mixin/info`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify({ asset_id: assetId }),
+    });
+    return await handleApiResponse(response);
+  } catch (error) {
+    console.error('Error fetching withdrawal info:', error);
     throw error;
   }
 }

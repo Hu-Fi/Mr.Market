@@ -3,16 +3,26 @@
   import { _ } from "svelte-i18n";
 </script>
 
-<div class="flex flex-col gap-4 justify-center items-center h-[100vh]">
-  <span class="text-2xl font-bold">{$_("welcome_to_admin_panel")}</span>
-  <button
-    class="btn rounded-full btn-md"
-    on:click={() => {
-      goto("/manage/exchanges");
-    }}
-    >
-    <span class="text-sm">
-      {$_("explore")}
-    </span>
-  </button>
+<div class="flex flex-col gap-4 justify-center items-center h-[100vh] space-y-16">
+  <span class="text-3xl font-bold">{$_("welcome_to_admin_panel")}</span>
+
+  <div class="flex flex-row gap-4">
+    {#each ["exchanges", "strategies", "campaigns"] as item}
+      <button
+        class="btn rounded-2xl w-64 h-60 flex flex-col items-start justify-between"
+        on:click={() => {
+          goto(`/manage/${item}`);
+        }}
+      >
+        <div class="flex flex-row justify-end w-full mt-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 opacity-60">
+            <path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+          </svg>          
+        </div>
+        <span class="text-base mb-6 ml-2 font-semibold">
+          {$_("manage_something", { values: { name: item } })}
+        </span>
+      </button>
+    {/each}
+  </div>
 </div>

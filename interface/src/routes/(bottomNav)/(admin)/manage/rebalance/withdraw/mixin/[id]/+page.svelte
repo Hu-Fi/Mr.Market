@@ -1,9 +1,8 @@
 <script>
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
 
-  const asset_id = $page.params.id;
+  import MixinWithdrawCard from "$lib/components/admin/rebalance/withdraw/mixinWithdrawCard.svelte";
 </script>
 
 <div class="flex flex-col min-h-screen bg-base-100">
@@ -19,7 +18,5 @@
     <h1 class="text-xl font-bold">{$_("withdraw")}</h1>
   </div>
 
-  <div class="flex flex-col items-center justify-center h-[calc(100vh-100px)]">
-    <span class="loading loading-spinner loading-md"></span>
-  </div>
+  <MixinWithdrawCard />
 </div>

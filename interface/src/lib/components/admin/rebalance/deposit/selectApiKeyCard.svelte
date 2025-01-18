@@ -31,7 +31,7 @@
         <span class="capitalize">{info.exchange}</span>
       </div>
       <div class="stat-desc mt-0.5 max-w-64 truncate">
-        <span class="text-xs text-base-content/80">{info.api_key}</span>
+        <span class="text-xs text-base-content/60">{info.api_key}</span>
       </div>
     </div>
   </button>

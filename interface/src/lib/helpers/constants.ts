@@ -255,6 +255,7 @@ export const SUPPORTED_PAIRS: {
   mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT', 'HMT/USDT'],
   gate: ['HMT/USDT'],
   lbank: ['HMT/USDT'],
+  bigone: ['BTC/USDT'],
 }
 export const SUPPORTED_UNIQUE_PAIRS: string[] = Array.from(new Set(Object.values(SUPPORTED_PAIRS).flatMap(pairs => pairs)));
 export const SUPPORTED_EXCHANGES = Object.keys(SUPPORTED_PAIRS);

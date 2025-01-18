@@ -1,11 +1,11 @@
+import { _ } from "svelte-i18n";
+import { get } from "svelte/store";
 import { createHash } from "crypto";
 import { goto } from "$app/navigation";
 import toast from 'svelte-french-toast';
 import { HUFI_BACKEND_URL } from "../constants"
 import type { AdminPasswordResp } from "$lib/types/hufi/admin"
 import { submitted, checked, correct } from "$lib/stores/admin";
-import { _ } from "svelte-i18n";
-import { get } from "svelte/store";
 
 export const AdminPassword = async (password: string): Promise<AdminPasswordResp> => {
   try {

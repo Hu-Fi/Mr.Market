@@ -12,9 +12,9 @@
   // Show balance and amount
   let search = "";
   let currenciesLoading = false;
-  let balances: { name: string, amount: string }[] = [];
-  $: filteredBalances = balances.filter((c: { name: string, amount: string }) => {
-    return c.name.toLowerCase().includes(search.toLowerCase());
+  let balances: { symbol: string, asset_id: string, amount: string }[] = [];
+  $: filteredBalances = balances.filter((c: { symbol: string, asset_id: string, amount: string }) => {
+    return c.symbol.toLowerCase().includes(search.toLowerCase());
   });
   
   onMount(async () => {
@@ -23,14 +23,16 @@
     if (!token) {
       return;
     }
-    const res = await getMixinBalance(token);
-    if (!res) {
+    const res = await getMixinBalance(token, 'list');
+    if (!res || !res.data) {
       toast.error('Failed to fetch balance')
       return;
     }
-    balances = Object.entries(res.data).map(([name, amount]) => ({
-      name: name,
-      amount: new BigNumber(amount).toFixed(),
+    console.log(res.data);
+    balances = res.data.map(({ symbol, asset_id, balance }) => ({
+      symbol: symbol,
+      asset_id: asset_id,
+      amount: new BigNumber(balance).toFixed(),
     }));
     currenciesLoading = false;
   });
@@ -52,10 +54,15 @@
   {#if filteredBalances.length > 0}
     <div class="flex flew-row flex-wrap gap-6 p-8 pt-2">
       {#each filteredBalances as balance}
-        <button class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-2xl shadow-md">
+        <button 
+          class="flex flex-row items-center justify-center gap-2 px-4 py-2 bg-base-100 rounded-2xl shadow-md"
+          on:click={() => {
+            goto(`/manage/rebalance/withdraw/mixin/${balance.asset_id}`);
+          }}
+        >
           <div class="flex flex-col items-start justify-center min-w-24 space-y-0.5">
             <span class="text-xs text-left opacity-80">
-              {balance.name}
+              {balance.symbol}
             </span>
             <span class="text-xl font-semibold text-center">
               {balance.amount}

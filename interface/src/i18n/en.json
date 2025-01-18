@@ -267,6 +267,7 @@
   "transfer": "Transfer",
   "deposit": "Deposit",
   "withdraw": "Withdraw",
+  "withdraw_from": "Withdraw from",
   "deposit_info": "Deposit more token for {grow_type}",
   "withdraw_info": "Withdraw token from {grow_type}",
   "deposit_will_arrive": "Deposit will be confirmed after {number} block confirmations",
@@ -401,5 +402,8 @@
   "withdraw_error": "Withdraw error",
   "strategy_instances": "Strategy Instances",
   "no_strategy_instance": "No strategy instance",
-  "strategy_actions": "Strategy Actions"
+  "strategy_actions": "Strategy Actions",
+  "campaigns": "Campaigns",
+  "manage_something": "Manage {name}",
+  "fee_asset": "Fee asset"
 }
