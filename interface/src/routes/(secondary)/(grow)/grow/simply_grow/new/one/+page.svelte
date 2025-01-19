@@ -57,7 +57,7 @@
     <!-- Token -->
     <div class="px-2 w-full !mt-6">
       <div class="grid grid-cols-2 gap-3 w-full overflow-y-auto">
-        {#each growInfo.simply_grow.tokens as item, i}
+        {#each growInfo.data.simply_grow.tokens as item, i}
           {#if item.enable && ($createSimplyGrowSearch.length === 0 || item.symbol.toUpperCase().includes($createSimplyGrowSearch.toUpperCase()) || item.name.toUpperCase().includes($createSimplyGrowSearch.toUpperCase()))}
             <button
               class={clsx(

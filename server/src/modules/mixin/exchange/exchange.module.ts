@@ -11,7 +11,6 @@ import {
 } from 'src/common/entities/mixin-release.entity';
 import { ExchangeUserController } from './exchange-client.controller';
 import {
-  DepositRecord,
   TransferRecord,
   WithdrawalRecord,
 } from 'src/common/entities/rebalance.entity';
@@ -24,7 +23,6 @@ import {
       MixinReleaseToken,
       MixinReleaseHistory,
       TransferRecord,
-      DepositRecord,
       WithdrawalRecord,
     ]),
   ],

@@ -61,7 +61,6 @@ import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
 import {
   TransferRecord,
-  DepositRecord,
   WithdrawalRecord,
 } from './common/entities/rebalance.entity';
 
@@ -116,7 +115,6 @@ dotenv.config();
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,
         TransferRecord,
-        DepositRecord,
         WithdrawalRecord,
       ],
       synchronize: false,

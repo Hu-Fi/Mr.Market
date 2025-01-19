@@ -1,21 +1,15 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { getHeaders, handleApiResponse } from "../common";
 
-export async function fetchAllUsers(token: string) {
+export const fetchAllUsers = async (token: string) => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/user/all`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: getHeaders(token),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.data;
+    // console.log(await response.json())
+    return await handleApiResponse(response);
   } catch (error) {
     console.error('Error fetching users:', error);
     throw error;

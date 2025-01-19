@@ -50,7 +50,7 @@
     {:then growInfo}
       <!-- Pairs -->
       <div class="grid grid-cols-1 gap-2 w-full overflow-y-auto">
-        {#each growInfo.arbitrage.pairs as item, i}
+        {#each growInfo.data.arbitrage.pairs as item, i}
           {#if item.enable && ($createArbPairSearch.length === 0 || item.symbol.toUpperCase().includes($createArbPairSearch.toUpperCase()))}
             <button
               class={clsx(

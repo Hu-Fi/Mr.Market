@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   WithdrawalRecord,
   TransferRecord,
-  DepositRecord,
 } from 'src/common/entities/rebalance.entity';
 
 @Injectable()
@@ -14,8 +13,6 @@ export class AdminRebalanceRepository {
     private readonly withdrawalRecordRepository: Repository<WithdrawalRecord>,
     @InjectRepository(TransferRecord)
     private readonly transferRecordRepository: Repository<TransferRecord>,
-    @InjectRepository(DepositRecord)
-    private readonly depositRecordRepository: Repository<DepositRecord>,
   ) {}
 
   async getWithdrawalRecord(id: string): Promise<WithdrawalRecord | null> {
@@ -26,19 +23,11 @@ export class AdminRebalanceRepository {
     return this.transferRecordRepository.findOne({ where: { id } });
   }
 
-  async getDepositRecord(id: string): Promise<DepositRecord | null> {
-    return this.depositRecordRepository.findOne({ where: { id } });
-  }
-
   async getAllWithdrawalHistory(): Promise<WithdrawalRecord[]> {
     return this.withdrawalRecordRepository.find();
   }
 
   async getAllTransferHistory(): Promise<TransferRecord[]> {
     return this.transferRecordRepository.find();
-  }
-
-  async getAllDepositHistory(): Promise<DepositRecord[]> {
-    return this.depositRecordRepository.find();
   }
 }

@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
+// Market making order is in strategy-user.entity.ts
+
 @Entity()
 export class MarketMakingHistory {
   @PrimaryGeneratedColumn()

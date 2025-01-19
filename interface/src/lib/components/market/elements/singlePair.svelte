@@ -10,13 +10,13 @@
 </script>
 
 <button class="flex items-center justify-between w-full p-4" on:click={() => {
-    goto(`/spot/${pair.exchange}/${pair.symbol.replace('/', '-')}`);
-    console.log(`/spot/${pair.exchange}/${pair.symbol.replace('/', '-')}`)
+    goto(`/spot/${pair.exchange_id}/${pair.symbol.replace('/', '-')}`);
+    console.log(`/spot/${pair.exchange_id}/${pair.symbol.replace('/', '-')}`)
   }
 }>
   <div class="flex space-x-3 items-center">
     <!-- Icon -->
-    <img class="w-8 h-8" src={findExchangeIconByIdentifier(pair.exchange)} alt={pair.exchange} />
+    <img class="w-8 h-8" src={findExchangeIconByIdentifier(pair.exchange_id)} alt={pair.exchange_id} />
 
     <!-- Title -->
     <div class="flex flex-col text-start">
@@ -24,7 +24,7 @@
         <span class="text-md font-semibold">{pair.symbol.split('/')[0]}</span><span class="text-xs opacity-50">/{pair.symbol.split('/')[1]}</span>
       </div>
       <span class="text-xs opacity-40 capitalize">
-        {pair.exchange}
+        {pair.exchange_id}
       </span>
     </div>
   </div>

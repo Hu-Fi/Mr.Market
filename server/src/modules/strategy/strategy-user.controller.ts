@@ -106,7 +106,7 @@ export class StrategyUserController {
   //   return await this.strategyUserService.getUserArbitrageHistory(userId);
   // }
 
-  @Get('/market_making/all')
+  @Get('/market-making/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -119,7 +119,7 @@ export class StrategyUserController {
     return await this.strategyUserService.findMarketMakingByUserId(userId);
   }
 
-  @Get('/market_making/:id')
+  @Get('/market-making/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })

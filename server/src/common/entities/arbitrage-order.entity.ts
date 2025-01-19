@@ -1,6 +1,8 @@
 // src/entities/arbitrage-order.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
+// Arbitrage order is in strategy-user.entity.ts
+
 @Entity()
 export class ArbitrageHistory {
   @PrimaryGeneratedColumn()

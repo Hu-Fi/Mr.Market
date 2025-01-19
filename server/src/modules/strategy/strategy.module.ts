@@ -23,6 +23,7 @@ import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { AlpacaStratService } from './alpacastrat.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { AdminModule } from '../admin/admin.module';
+import { StrategyUserController } from './strategy-user.controller';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { AdminModule } from '../admin/admin.module';
       MarketMakingHistory,
     ]),
   ],
-  controllers: [StrategyController],
+  controllers: [StrategyController, StrategyUserController],
   providers: [
     StrategyService,
     StrategyUserService,

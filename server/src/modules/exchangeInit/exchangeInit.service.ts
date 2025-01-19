@@ -366,6 +366,89 @@ export class ExchangeInitService {
     );
   }
 
+  private async newInitExchanges() {
+    const exchangeConfigs = [
+      {
+        name: 'okx',
+        accounts: [
+          {
+            label: 'default',
+            apiKey: process.env.OKX_API_KEY,
+            secret: process.env.OKX_SECRET,
+          },
+          {
+            label: 'account2',
+            apiKey: process.env.OKX_API_KEY_2,
+            secret: process.env.OKX_SECRET_2,
+          },
+          {
+            label: 'read-only',
+            apiKey: process.env.OKX_API_KEY_READ_ONLY,
+            secret: process.env.OKX_SECRET_READ_ONLY,
+          },
+        ],
+        class: ccxt.pro.okx,
+      },
+    ];
+
+    await Promise.all(
+      exchangeConfigs.map(async (config) => {
+        const exchangeMap = new Map<string, ccxt.Exchange>();
+        await Promise.all(
+          config.accounts.map(async (account) => {
+            try {
+              if (!account.apiKey || !account.secret) {
+                this.logger.warn(
+                  `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
+                );
+                return;
+              }
+
+              const exchange = new config.class({
+                apiKey: account.apiKey,
+                secret: account.secret,
+              });
+
+              // Load markets
+              await exchange.loadMarkets();
+
+              // Call signIn only for ProBit accounts
+              if (config.name === 'probit' && exchange.has['signIn']) {
+                try {
+                  await exchange.signIn();
+                  this.logger.log(
+                    `${config.name} ${account.label} signed in successfully.`,
+                  );
+                } catch (error) {
+                  this.logger.error(
+                    `ProBit ${account.label} sign-in failed: ${error.message}`,
+                  );
+                }
+              }
+
+              // Save the initialized exchange
+              exchangeMap.set(account.label, exchange);
+              this.logger.log(
+                `${config.name} ${account.label} initialized successfully.`,
+              );
+
+              // Save the default account reference
+              if (account.label === 'default') {
+                this.defaultAccounts.set(config.name, exchange);
+              }
+            } catch (error) {
+              this.logger.error(
+                `Failed to initialize ${config.name} ${account.label}: ${error.message}`,
+              );
+            }
+          }),
+        );
+
+        this.exchanges.set(config.name, exchangeMap);
+      }),
+    );
+  }
+
   private startKeepAlive() {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
 

@@ -9,7 +9,7 @@
     import type { SimplyGrowToken, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
     import { addSimplyGrowToken, updateSimplyGrowToken, removeSimplyGrowToken } from "$lib/helpers/hufi/admin/growdata";
   
-    $: simplyGrowTokens = $page.data.growInfo.simply_grow.tokens as SimplyGrowToken[];
+    $: simplyGrowTokens = $page.data.growInfo.data.simply_grow.tokens as SimplyGrowToken[];
   
     let AddNewAssetId = "";
     let AddNewName = "";

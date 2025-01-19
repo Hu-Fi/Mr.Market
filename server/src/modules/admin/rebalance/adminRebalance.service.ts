@@ -419,15 +419,13 @@ export class AdminRebalanceService {
     this.logger.log(`Getting all rebalance history`);
     const withdrawalHistory =
       await this.adminRebalanceRepository.getAllWithdrawalHistory();
-    const depositHistory =
-      await this.adminRebalanceRepository.getAllDepositHistory();
     const transferHistory =
       await this.adminRebalanceRepository.getAllTransferHistory();
-    return [...withdrawalHistory, ...depositHistory, ...transferHistory];
+    return [...withdrawalHistory, ...transferHistory];
   }
 }
 
-// 11. history type: transfer, deposit, withdraw, auto_rebalance
+// 11. history type: transfer, withdraw, auto_rebalance
 
 // 12. Rebalance record: {
 //     id: string;

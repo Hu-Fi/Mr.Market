@@ -1,4 +1,4 @@
-import { getCoingeckoMarket, getSpotTradingPairs } from '$lib/helpers/hufi/coin';
+import { getCoingeckoMarket } from '$lib/helpers/hufi/coin';
 import { getGrowBasicInfo } from '$lib/helpers/hufi/grow';
 import { getSpotInfo } from '$lib/helpers/hufi/spot';
 export const ssr = false;
@@ -7,12 +7,10 @@ export const ssr = false;
 export async function load() {
   try {
     const market = getCoingeckoMarket('all', 1)
-    const pairs = getSpotTradingPairs()
     const growInfo = getGrowBasicInfo()
     const spotInfo = getSpotInfo()
     return {
       market,
-      pairs,
       growInfo,
       spotInfo
     }

@@ -11,6 +11,10 @@ export async function load({params}) {
 	if (!exchange && !pair) {
 		return
 	}
+	if (!/^[a-zA-Z0-9]+$/.test(exchange)) {
+		return
+	}
+
 	exchange = String(exchange).toLowerCase();
 	pair = String(pair).replace('-', "/").toUpperCase();
 	

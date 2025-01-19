@@ -29,6 +29,19 @@ import { AdminSpotController } from './spotData/adminSpot.controller';
 import { AdminGrowController } from './growdata/adminGrow.controller';
 import { AdminMixinMessageController } from './mixinMessage/adminMixinMessage.controller';
 import { MixinModule } from '../mixin/mixin.module';
+import { AdminRebalanceRepository } from './rebalance/adminRebalance.repository';
+import {
+  TransferRecord,
+  WithdrawalRecord,
+} from 'src/common/entities/rebalance.entity';
+import { AdminOrdersController } from './orders/adminOrders.controller';
+import { AdminOrdersService } from './orders/adminOrders.service';
+import { AdminOrdersRepository } from './orders/adminOrders.repository';
+import {
+  ArbitrageOrder,
+  MarketMakingOrder,
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
 // import { MixinMessageModule } from '../mixin/message/message.module';
 // import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
 
@@ -45,6 +58,11 @@ import { MixinModule } from '../mixin/mixin.module';
       MixinUser,
       Contribution,
       Performance,
+      TransferRecord,
+      WithdrawalRecord,
+      ArbitrageOrder,
+      MarketMakingOrder,
+      SimplyGrowOrder,
     ]),
     TradeModule,
     Web3Module,
@@ -62,10 +80,14 @@ import { MixinModule } from '../mixin/mixin.module';
     AdminGrowController,
     AdminUserController,
     AdminMixinMessageController,
+    AdminOrdersController,
   ],
   providers: [
+    AdminOrdersService,
     AdminStrategyService,
     AdminRebalanceService,
+    AdminRebalanceRepository,
+    AdminOrdersRepository,
     StrategyService,
     PerformanceService,
     TradeService,
@@ -78,6 +100,8 @@ import { MixinModule } from '../mixin/mixin.module';
     AdminGrowService,
     AdminSpotService,
     AdminRebalanceService,
+    AdminRebalanceRepository,
+    AdminOrdersService,
   ],
 })
 export class AdminModule {}

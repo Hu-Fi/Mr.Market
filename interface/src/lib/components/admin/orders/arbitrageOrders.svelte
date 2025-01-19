@@ -9,7 +9,7 @@
 <div class="overflow-x-auto">
   <div class="flex items-center">
     <button class="btn btn-xs btn-ghost hover:bg-base-100" on:click={()=>{
-      //goto('/manage/orders/arbitrage')
+      goto('/manage/orders/arbitrage')
     }}>
       <span class="font-semibold text-base"> {$_('arbitrage')} </span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">

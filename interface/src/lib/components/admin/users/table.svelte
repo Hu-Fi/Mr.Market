@@ -30,7 +30,11 @@
       const token = localStorage.getItem('admin-access-token');
       if (token) {
         const res = await fetchAllUsers(token);
-        users = res;
+        if (!res.data) {
+          isError = true;
+          return;
+        }
+        users = res.data;
       }
     } catch (error) {
       console.error('Error fetching users:', error);

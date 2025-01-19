@@ -110,6 +110,7 @@ export class SpotdataService {
               sell_decimal_digits: pair.sell_decimal_digits,
               enable: pair.enable,
               change: tickers[pair.symbol]?.percentage || '0',
+              price: tickers[pair.symbol]?.last || '0',
             }));
         } catch (error) {
           this.logger.warn(
@@ -132,6 +133,7 @@ export class SpotdataService {
               sell_decimal_digits: pair.sell_decimal_digits,
               enable: pair.enable,
               change: '0',
+              price: '0',
             }));
         }
       },

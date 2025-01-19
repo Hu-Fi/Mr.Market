@@ -22,9 +22,11 @@
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let resolved = false;
-  $page.data.pairs
+  $page.data.spotInfo
     .then((x) => {
-      (resolved = true), (defaultsPairs = x);
+      console.log('x', x);
+      resolved = true;
+      defaultsPairs = x.data.trading_pairs;
     })
     .catch((e) => {
       console.log(e);
@@ -45,13 +47,13 @@
       {/if}
 
       <tbody class="h-full">
-      {#if sortedPairs.length > 0}
-        {#each sortedPairs as pair}
-          <SinglePair {pair} />
-        {/each}
-      {:else}
-        <NoResult />
-      {/if}
+        {#if sortedPairs.length > 0}
+          {#each sortedPairs as pair}
+            <SinglePair {pair} />
+          {/each}
+        {:else}
+          <NoResult />
+        {/if}
       </tbody>
     </table>
   </div>

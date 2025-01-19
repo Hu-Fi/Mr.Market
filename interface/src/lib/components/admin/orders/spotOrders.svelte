@@ -41,7 +41,7 @@
 <div class="overflow-x-auto">
   <div class="flex items-center">
     <button class="btn btn-xs btn-ghost hover:bg-base-100" on:click={()=>{
-      //goto('/manage/orders/spot')
+      goto('/manage/orders/spot')
     }}>
       <span class="font-semibold text-base"> {$_('spot')} </span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
@@ -70,7 +70,7 @@
         </span>
       </div>
     {:else}
-      <tbody>
+      <tbody class="overflow-x-auto">
         {#each orders as order}
           <SingleSpot {order} />
         {/each}

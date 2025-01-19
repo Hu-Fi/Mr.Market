@@ -15,10 +15,21 @@ export interface OrderBookData {
 }
 
 export interface PairsData {
-  symbol: SupportedPairs;
-  price: number;
-  exchange: SupportedExchanges;
-  change?: number;
+  id: string;
+  ccxt_id: string;
+  symbol: string;
+  exchange_id: string;
+  amount_significant_figures: string;
+  price_significant_figures: string;
+  buy_decimal_digits: string;
+  sell_decimal_digits: string;
+  max_buy_amount: string;
+  max_sell_amount: string;
+  base_asset_id: string;
+  quote_asset_id: string;
+  enable: boolean;
+  change: string;
+  price: string;
 }
 
 export interface TickerData extends PairsData {

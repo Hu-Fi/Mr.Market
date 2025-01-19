@@ -82,7 +82,13 @@
   onMount(async () => {
     const token = localStorage.getItem('admin-access-token');
     if (!token) return;
-    supportedExchanges = await getSupportedExchanges(token);
+    const resp = await getSupportedExchanges(token);
+    if (resp.code != 200) {
+      return;
+    }
+
+    supportedExchanges = resp.data;
+    exchanges = $page.data.growInfo.data.exchanges;
   });
 </script>
 

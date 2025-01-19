@@ -7,6 +7,6 @@ export async function load({depends}) {
     depends('admin:settings');
     return {
         growInfo: await getGrowBasicInfo(),
-        spotInfo: await getSpotInfo(),
+        spotInfo: getSpotInfo(),
     }
 }

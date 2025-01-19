@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   UseGuards,
@@ -18,12 +19,14 @@ import {
 import { AdminGrowService } from 'src/modules/admin/growdata/adminGrow.service';
 import { AdminStrategyService } from 'src/modules/admin/strategy/adminStrategy.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 
 @ApiTags('admin/grow')
 @Controller('admin/grow')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AdminGrowController {
+  private readonly logger = new CustomLogger(AdminGrowController.name);
   constructor(
     private readonly adminGrowService: AdminGrowService,
     private readonly adminStrategyService: AdminStrategyService,
@@ -40,7 +43,25 @@ export class AdminGrowController {
   @Get('exchange/supported')
   @ApiOperation({ summary: 'Get supported exchanges by backend' })
   async getSupportedExchanges() {
-    return this.adminStrategyService.getSupportedExchanges();
+    try {
+      // The reason why we use adminStrategyService is because it's under admin module
+      // so it can access the exchangeInitService without importing it
+      const supportedExchanges =
+        await this.adminStrategyService.getSupportedExchanges();
+      return {
+        code: HttpStatus.OK,
+        data: supportedExchanges,
+      };
+    } catch (error) {
+      this.logger.error(
+        'Failed to retrieve supported exchanges',
+        error.message,
+      );
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Error retrieving supported exchanges: ${error.message}`,
+      };
+    }
   }
 
   @Delete('exchange/remove/:exchange_id')

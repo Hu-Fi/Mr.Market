@@ -8,8 +8,6 @@
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
   import { addSpotTradingPair, updateSpotTradingPair, removeSpotTradingPair } from "$lib/helpers/hufi/admin/spotdata";
 
-  $: spotTradingPairs = $page.data.spotInfo.trading_pairs as SpotTradingPair[];
-
   let AddNewSymbol = "";
   let AddNewExchangeId = "";
   let AddNewCcxtId = "";
@@ -27,6 +25,7 @@
   let isUpdating = '';
   let isDeleting = '';
   let isRefreshing = false;
+  let infoLoading = true;
 
   const cleanUpStates = () => {
     isAdding = false;
@@ -98,6 +97,18 @@
       }, getRandomDelay());
     });
   }
+
+  let pairs: SpotTradingPair[] = [];
+  $page.data.spotInfo.then((resp: any) => {
+    if (resp.code != 200) return;
+    pairs = resp.data.trading_pairs as SpotTradingPair[];
+  }).catch((error: any) => {
+    pairs = [];
+  }).finally(() => {
+    infoLoading = false;
+  });
+
+  $: spotTradingPairs = pairs;
 </script>
 
   {#if !spotTradingPairs}

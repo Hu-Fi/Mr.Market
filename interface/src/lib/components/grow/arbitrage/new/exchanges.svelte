@@ -79,13 +79,13 @@
       </div>
       <div class="grid grid-cols-2 gap-4">
         {#if typeIndex === 1}
-          {#each growInfo.exchanges as exchange, i}
+          {#each growInfo.data.exchanges as exchange, i}
             {#if exchange.enable && ($createArbExchange1Search.length === 0 || exchange.exchange_id.toUpperCase().includes($createArbExchange1Search.toUpperCase()))}
               <ExchangeBtn typeIndex={1} exchangeName={exchange.exchange_id} i={i} />
             {/if}
           {/each}
         {:else if typeIndex === 2}
-          {#each growInfo.exchanges as exchange, i}
+          {#each growInfo.data.exchanges as exchange, i}
             {#if exchange.enable && (exchange.exchange_id !== $createArbExchange1) && ($createArbExchange2Search.length === 0 || exchange.exchange_id.toUpperCase().includes($createArbExchange2Search.toUpperCase()))}
               <ExchangeBtn typeIndex={2} exchangeName={exchange.exchange_id} i={i} />
             {/if}

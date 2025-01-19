@@ -73,26 +73,3 @@ export class WithdrawalRecord {
   @Column()
   created_at: string;
 }
-
-export class DepositRecord {
-  @PrimaryColumn()
-  id: string;
-
-  @Column()
-  api_key_id: string;
-
-  @Column()
-  symbol: string;
-
-  @Column()
-  network: string;
-
-  @Column()
-  amount: string;
-
-  @Column({ nullable: true })
-  tx_hash: string;
-
-  @Column()
-  created_at: string;
-}

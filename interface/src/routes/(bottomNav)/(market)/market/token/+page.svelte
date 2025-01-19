@@ -14,8 +14,8 @@
   let infiniteId = Symbol();
 	
   function infiniteHandler({ detail: { loaded, complete } }: { detail: { loaded: () => void, complete: () => void } }) {
-    // Set max page to 8, limit 2000 tokens
-    if ($marketDataPage === 8) {
+    // Set max page to 10, 250 tokens per page, limit 2500 tokens
+    if ($marketDataPage === 10) {
       complete();
       return;
     }

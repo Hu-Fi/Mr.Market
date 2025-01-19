@@ -11,7 +11,6 @@ import {
 import {
   WithdrawalRecord,
   TransferRecord,
-  DepositRecord,
 } from 'src/common/entities/rebalance.entity';
 
 @Injectable()
@@ -29,8 +28,6 @@ export class ExchangeRepository {
     private readonly withdrawalRecordRepository: Repository<WithdrawalRecord>,
     @InjectRepository(TransferRecord)
     private readonly transferRecordRepository: Repository<TransferRecord>,
-    @InjectRepository(DepositRecord)
-    private readonly depositRecordRepository: Repository<DepositRecord>,
   ) {}
 
   // API Key related methods
@@ -138,10 +135,5 @@ export class ExchangeRepository {
   async addTransferRecord(transactionData: Partial<TransferRecord>) {
     const transaction = this.transferRecordRepository.create(transactionData);
     return await this.transferRecordRepository.save(transaction);
-  }
-
-  async addDepositRecord(transactionData: Partial<DepositRecord>) {
-    const transaction = this.depositRecordRepository.create(transactionData);
-    return await this.depositRecordRepository.save(transaction);
   }
 }

@@ -10,7 +10,7 @@
     import type { MarketMakingPair, MarketMakingPairDto } from "$lib/types/hufi/grow";
     import { addMarketMakingPair, updateMarketMakingPair, removeMarketMakingPair } from "$lib/helpers/hufi/admin/growdata";
   
-    $: marketMakingPairs = $page.data.growInfo.market_making.pairs as MarketMakingPair[];
+    $: marketMakingPairs = $page.data.growInfo.data.market_making.pairs as MarketMakingPair[];
   
     let AddNewSymbol = "";
     let AddNewBaseSymbol = "";

@@ -70,7 +70,7 @@
       {#await $page.data.growInfo}
         <div />
       {:then growInfo}
-        {#each growInfo.exchanges as exchange}
+        {#each growInfo.data.exchanges as exchange}
           <button
             on:click={() => {
               if ($createMMSelectPairEasyFilter === exchange.exchange_id) {
@@ -104,7 +104,7 @@
       </div>
     {:then growInfo}
       <div class="grid grid-cols-2 gap-4 w-full overflow-y-auto">
-        {#each growInfo.market_making.pairs as item, i}
+        {#each growInfo.data.market_making.pairs as item, i}
           <!-- Filter by exchange -->
           {#if showAllExchanges || item.exchange_id.toUpperCase().match($createMMSelectPairEasyFilter.toUpperCase())}
             <!-- Filter by search -->

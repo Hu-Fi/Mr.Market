@@ -10,7 +10,7 @@
   import type { ArbitragePair, ArbitragePairDto } from "$lib/types/hufi/grow";
   import { addArbitragePair, updateArbitragePair, removeArbitragePair } from "$lib/helpers/hufi/admin/growdata";
 
-  $: arbitragePairs = $page.data.growInfo.arbitrage.pairs as ArbitragePair[];
+  $: arbitragePairs = $page.data.growInfo.data.arbitrage.pairs as ArbitragePair[];
 
   let AddNewSymbol = "";
   let AddNewBaseSymbol = "";
