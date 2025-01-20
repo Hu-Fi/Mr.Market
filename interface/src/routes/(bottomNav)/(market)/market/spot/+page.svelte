@@ -24,9 +24,14 @@
   let resolved = false;
   $page.data.spotInfo
     .then((x) => {
-      console.log('x', x);
       resolved = true;
-      defaultsPairs = x.data.trading_pairs;
+      console.log('x', x.data.trading_pairs);
+      const pairs = x.data.trading_pairs.filter((pair) => {
+        if (pair.enable) {
+          return pair
+        }
+      });
+      defaultsPairs = pairs;
     })
     .catch((e) => {
       console.log(e);

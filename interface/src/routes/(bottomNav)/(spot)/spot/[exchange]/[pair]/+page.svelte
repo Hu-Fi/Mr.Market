@@ -18,14 +18,14 @@
   import Tabs from "$lib/components/spot/manage/tabs.svelte";
   import OrderBook from "$lib/components/spot/order/orderBook.svelte";
 
-  const getRoutingParams = async () => {    
+  const getRoutingParams = async () => {
     socket.set(connectOrderBook());
     
-    switchSpotPair($socket, { 
+    switchSpotPair($socket, {
       symbol: $page.data.pair,
-      price: 0,
-      exchange: $page.data.exchange,
-    } as PairsData)
+      price: '0',
+      exchange_id: $page.data.exchange,
+    })
   }
   onDestroy(() => {
     $socket.disconnect();

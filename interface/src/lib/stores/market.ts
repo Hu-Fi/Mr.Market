@@ -26,10 +26,10 @@ export const selectedField = writable(keys[0]);
 export const spotSelectedField = writable(spotKeys[0]);
 
 // Candle
-export const CandlePair = writable<TickerData>({
+export const CandlePair = writable<Partial<TickerData>>({
   symbol: 'BTC/USDT',
-  price: 0,
-  exchange: 'okx',
+  price: '0',
+  exchange_id: 'okx',
 })
 export const CandlePairSearch = writable("")
 export const CandlePairSelectorDialog = writable(false)

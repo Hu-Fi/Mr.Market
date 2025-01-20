@@ -1,5 +1,3 @@
-import type { SupportedExchanges } from "$lib/types/hufi/exchanges";
-
 export type ArbitrageStates = 'created' | 'paused' | 'deleted' | 'refunded';
 export type ArbitrageDetailHistoryType = 'buy' | 'sell' | 'deposit' | 'withdraw' | 'stop' | 'resume' | 'delete'
 
@@ -20,5 +18,5 @@ export interface ArbitrageOrder {
 
 export interface ArbitrageDetailHistory {
   type: ArbitrageDetailHistoryType;
-  exchange: SupportedExchanges
+  exchange: string
 }

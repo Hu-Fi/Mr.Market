@@ -19,8 +19,8 @@
   </button>
 
   <button class="flex items-center" on:click={()=>sd.set(true)} data-testid="candlestick_pair_selector">
-    <img src={findExchangeIconByIdentifier($CandlePair.exchange)} alt="icon" loading="lazy" class="w-4 h-4 mr-1" />
-    <span class="font-black text-base"> {$CandlePair.symbol.split('/')[0]+"/"+$CandlePair.symbol.split('/')[1]} </span>
+    <img src={findExchangeIconByIdentifier($CandlePair.exchange_id ?? '')} alt="icon" loading="lazy" class="w-4 h-4 mr-1" />
+    <span class="font-black text-base"> {$CandlePair.symbol?.split('/')[0]+"/"+$CandlePair.symbol?.split('/')[1]} </span>
     {#if !$sd}
       <!-- Caret down Icon -->
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-4 w-4"><path xmlns="http://www.w3.org/2000/svg" d="M17 10L12 16L7 10H17Z" fill="currentColor"></path></svg>

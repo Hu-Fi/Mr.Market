@@ -13,7 +13,6 @@ export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 @Injectable()
 export class MarketdataService {
   private exchange: ccxt.Exchange;
-  private exchanges = new Map<string, ccxt.Exchange>();
   private readonly logger = new CustomLogger(MarketdataService.name);
   private activeSubscriptions = new Map<string, boolean>(); // Track active subscriptions
 
@@ -30,7 +29,8 @@ export class MarketdataService {
   }
 
   async getTickers(exchange: string, symbols: string[]) {
-    this.exchange = this.ExchangeInitService.getExchange(exchange);
+    this.exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchTickers) {
       throw new Error(
@@ -51,7 +51,8 @@ export class MarketdataService {
     since?: number,
     limit = 30,
   ): Promise<any> {
-    this.exchange = this.ExchangeInitService.getExchange(exchange);
+    this.exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchange);
 
     if (!this.exchange || !this.exchange.has.fetchOHLCV) {
       throw new Error(
@@ -140,7 +141,8 @@ export class MarketdataService {
     onData: (data: any) => void,
     limit = 14,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange || !exchange.has.watchOrderBook) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOrderBook or is not configured.`,
@@ -175,7 +177,8 @@ export class MarketdataService {
     since?: number,
     limit?: number,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange || !exchange.has.watchOHLCV) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchOHLCV or is not configured.`,
@@ -208,7 +211,8 @@ export class MarketdataService {
     symbol: string,
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -236,7 +240,8 @@ export class MarketdataService {
     symbol: string[],
     onData: (data: any) => void,
   ): Promise<void> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange || !exchange.has.watchTicker) {
       throw new Error(
         `Exchange ${exchangeName} does not support watchTicker or is not configured.`,
@@ -285,7 +290,8 @@ export class MarketdataService {
     exchangeName: string,
     symbol: string,
   ): Promise<any> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange || !exchange.has.fetchTicker) {
       throw new Error(
         'Exchange does not support fetchTicker or is not configured.',
@@ -320,7 +326,8 @@ export class MarketdataService {
   }
 
   async getSupportedSymbols(exchangeName: string): Promise<string[]> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
+    const exchange =
+      this.ExchangeInitService.getAnyInstanceByExchangeId(exchangeName);
     if (!exchange) {
       throw new Error(`Exchange ${exchangeName} is not configured.`);
     }

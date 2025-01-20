@@ -22,8 +22,8 @@
     // Load selector
     switchCandleStickPair($socket, {
       symbol: $page.data.pair,
-      price: 0,
-      exchange: $page.data.exchange,
+      price: '0',
+      exchange_id: $page.data.exchange,
     })
     // Load chart
     let candleStickChartData;

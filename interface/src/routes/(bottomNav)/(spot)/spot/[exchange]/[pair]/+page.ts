@@ -1,6 +1,3 @@
-import { goto } from '$app/navigation';
-import { SUPPORTED_EXCHANGES, SUPPORTED_UNIQUE_PAIRS } from '$lib/helpers/constants.js';
-
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */

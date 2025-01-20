@@ -29,9 +29,13 @@ export const decodeCandleStick = ( data: {data: OHLCVData} ) => {
   }
 }
 
-export const decodeCandleTicker = ( data: { data: TickerData } ) => {
+export const decodeCandleTicker = ( data: { data: {exchange: string, symbol: string, price: string, change: string} } ) => {
   CandlePriceLoaded.set(true);
-  CandlePair.set(data.data);
+  const p = data.data
+  CandlePair.set({
+    ...p,
+    exchange_id: p.exchange,
+  });
 }
 
 export const decodeCandleOrderbook = ( data: {data: OrderBookData } ) => {

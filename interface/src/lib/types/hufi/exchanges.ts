@@ -8,8 +8,8 @@ export type CandleTab = {k:string, v: SupportedTimeFrame}
 export type CandleTabs = CandleTab[]
 
 export interface OrderBookData {
-  exchange: SupportedExchanges,
-  symbol: SupportedPairs,
+  exchange: string,
+  symbol: string,
   bids: OrderBookPriceFormat[],
   asks: OrderBookPriceFormat[],
 }

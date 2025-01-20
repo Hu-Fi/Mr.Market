@@ -367,19 +367,16 @@ export class ExchangeInitService {
     );
   }
 
-  private getExchangeClassById(exchangeId: string): typeof ccxt.Exchange {
-    const useOriginal = ['bigone', 'coinlist', 'p2b', 'probit', 'digifinex'];
-    if (useOriginal.includes(exchangeId)) {
-      return ccxt[exchangeId];
-    }
-    return ccxt.pro[exchangeId];
-  }
-
   private async newInitExchanges() {
-    const apiKeys = await this.exchangeService.readAllAPIKeys();
-    this.logger.debug('apiKeys:', apiKeys);
+    const getExchangeClassById = (exchangeId: string): typeof ccxt.Exchange => {
+      const useOriginal = ['bigone', 'coinlist', 'p2b', 'probit', 'digifinex'];
+      if (useOriginal.includes(exchangeId)) {
+        return ccxt[exchangeId];
+      }
+      return ccxt.pro[exchangeId];
+    };
 
-    // exchange id (binance, okx, etc) -> { key id (0, 1, etc) -> exchange instance }
+    const apiKeys = await this.exchangeService.readAllAPIKeys();
     const exchangeMap = new Map<string, Map<string, ccxt.Exchange>>();
 
     for (const key of apiKeys) {
@@ -391,7 +388,7 @@ export class ExchangeInitService {
           continue;
         }
 
-        const ExchangeClass = this.getExchangeClassById(key.exchange);
+        const ExchangeClass = getExchangeClassById(key.exchange);
         if (!ExchangeClass) {
           this.logger.error(`Exchange class for ${key.exchange} not found.`);
           continue;
@@ -402,10 +399,6 @@ export class ExchangeInitService {
           secret: key.api_secret,
           password: key.api_extra || undefined,
         });
-        const balance = await exchange.fetchBalance();
-        this.logger.debug(
-          `${key.exchange} ${key.name} balance: ${JSON.stringify(balance)}`,
-        );
 
         await exchange.loadMarkets();
 
@@ -491,6 +484,15 @@ export class ExchangeInitService {
       throw new InternalServerErrorException('Exchange configuration error.');
     }
     return exchange;
+  }
+
+  getAnyInstanceByExchange(exchangeName: string): ccxt.Exchange {
+    const exchangeMap = this.exchanges.get(exchangeName);
+    if (!exchangeMap) {
+      this.logger.error(`Exchange ${exchangeName} is not configured.`);
+      throw new InternalServerErrorException('Exchange configuration error.');
+    }
+    return Array.from(exchangeMap.values())[0];
   }
 
   getSupportedExchanges(): string[] {

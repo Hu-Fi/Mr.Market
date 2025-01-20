@@ -5,11 +5,11 @@ import type { Socket } from "socket.io-client";
 import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
 import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/spot";
-import type { CandleTab, MarketDataType, PairsData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
+import type { CandleTab, MarketDataType, PairsData, TickerData } from "$lib/types/hufi/exchanges";
 import { CandleChartLoaded, CandleOrderBookLoaded, CandlePriceLoaded, CandlePair, CandlePairSelectorDialog, CandleTimeRange, CandleLoadingFailed } from "$lib/stores/market";
 import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/hufi/marketDataDecoder";
 
-// /spot
+// When open /spot, this function will be called to connect socket
 export const connectOrderBook = (): Socket => {
   const socket = io(`${HUFI_SOCKET_URL}/marketdata`);
 
@@ -32,32 +32,34 @@ export const connectOrderBook = (): Socket => {
 };
 
 export const subscribeOrderBook = (socket: Socket) => {
+  const p = get(pair)
   socket.emit("subscribeOrderBook", {
-    exchange: get(pair).exchange,
-    symbol: `${get(pair).symbol.split('/')[0]}/${get(pair).symbol.split('/')[1]}`,
+    exchange: p.exchange_id,
+    symbol: `${p.symbol.split('/')[0]}/${p.symbol.split('/')[1]}`,
   });
 }
 
 export const unSubscribeOrderBook = (socket: Socket) => {
+  const p = get(pair)
   socket.emit("unsubscribeData", {
     type: 'orderbook' as MarketDataType,
-    exchange: get(pair).exchange,
-    symbol: `${get(pair).symbol.split('/')[0]}/${get(pair).symbol.split('/')[1]}`,
+    exchange: p.exchange_id,
+    symbol: `${p.symbol.split('/')[0]}/${p.symbol.split('/')[1]}`,
   })
 }
 
-export const switchSpotPair = (socket: Socket, p: PairsData) => {
+export const switchSpotPair = (socket: Socket, p: Partial<PairsData>) => {
   unSubscribeOrderBook(socket);
   orderBookLoaded.set(false);
   pair.set(p);
-  goto(`/spot/${p.exchange}/${p.symbol.replace('/', '-')}`)
+  goto(`/spot/${p.exchange_id}/${p.symbol?.replace('/', '-') || ''}`)
   pairSelectorDialog.set(false);
   subscribeOrderBook(socket)
 }
 
 
 
-// /market/candle/{EXCHANGE}/{PAIR}
+// When open /market/candle/{EXCHANGE}/{PAIR}, this function will be called to connect socket
 export const connectCandleStick = (): Socket => {
   const socket = io(`${HUFI_SOCKET_URL}/marketdata`);
 
@@ -98,7 +100,7 @@ export const switchCandleStickPair = (socket: Socket, pair: TickerData) => {
   CandleOrderBookLoaded.set(false)
   CandleLoadingFailed.set(false)
   CandlePair.set(pair);
-  goto(`/market/candle/${pair.exchange}/${pair.symbol.replace('/', '-')}`)
+  goto(`/market/candle/${pair.exchange_id}/${pair.symbol.replace('/', '-')}`)
   CandlePairSelectorDialog.set(false);
   subscribeCandleStick(socket);
 }
@@ -124,43 +126,56 @@ export const switchCandleStickTimeFrame = async (socket: Socket, timeFrame: Cand
 }
 
 export const subscribeCandleStick = (socket: Socket) => {
+  const p = get(CandlePair)
+  if (!p.symbol || !p.exchange_id) {
+    return;
+  }
+  const exchange = p.exchange_id
+  const symbol = `${p.symbol?.split('/')[0]}/${p.symbol?.split('/')[1]}`
+  const timeFrame = `${get(CandleTimeRange).v}`
+  
   // CandleStick
   socket.emit("subscribeOHLCV", {
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
-    timeFrame: `${get(CandleTimeRange).v}`,
+    exchange,
+    symbol,
+    timeFrame,
   });
 
   // Price
   socket.emit("subscribeTicker", {
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    exchange,
+    symbol,
   });
 
   // OrderBook
   socket.emit("subscribeOrderBook", {
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    exchange,
+    symbol,
   });
 }
 
 export const unSubscribeCandleStick = (socket: Socket) => {
+  const p = get(CandlePair)
+  const exchange = p.exchange_id
+  const symbol = `${p.symbol?.split('/')[0]}/${p.symbol?.split('/')[1]}`
+  const timeFrame = `${get(CandleTimeRange).v}`
+
   socket.emit("unsubscribeData", {
     type: 'OHLCV' as MarketDataType,
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
-    timeFrame: `${get(CandleTimeRange).v}`,
+    exchange,
+    symbol,
+    timeFrame,
   })
 
   socket.emit("unsubscribeData", {
     type: 'ticker' as MarketDataType,
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    exchange,
+    symbol,
   });
 
   socket.emit("unsubscribeData", {
     type: 'orderbook' as MarketDataType,
-    exchange: get(CandlePair).exchange as SupportedExchanges,
-    symbol: `${get(CandlePair).symbol.split('/')[0]}/${get(CandlePair).symbol.split('/')[1]}`,
+    exchange,
+    symbol,
   });
 }

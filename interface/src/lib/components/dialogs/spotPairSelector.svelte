@@ -1,18 +1,18 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { onDestroy, onMount } from "svelte";
-  import { getSpotTradingPairs } from "$lib/helpers/hufi/coin";
   import { switchSpotPair } from "$lib/helpers/hufi/socket";
   import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
   import NoResult from "$lib/components/common/NoResult.svelte";
-  import { formatDecimals, formatUSNumber } from "$lib/helpers/utils";
+  import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
-  import { DownColorText, SUPPORTED_EXCHANGES, UpColorText } from "$lib/helpers/constants";
+  import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/spot";
 
-  let tabItems = [{ name: 'all' }, ...SUPPORTED_EXCHANGES.map(exchange => ({ name: exchange }))];
+  let tabItems = [];
 
   let pairs: PairsData[];
   $: filteredPairs = pairs ?
@@ -20,12 +20,12 @@
       return (
         $pairExchangeFilter.toUpperCase() === 'ALL' ?
         item :
-        item.exchange.toUpperCase().match($pairExchangeFilter.toUpperCase())
+        item.exchange_id.toUpperCase().match($pairExchangeFilter.toUpperCase())
       )}
     ).filter((item) => {
       return (
         item.symbol.toUpperCase().match($pairSearch.toUpperCase()) ||
-        item.exchange.toUpperCase().match($pairSearch.toUpperCase())
+        item.exchange_id.toUpperCase().match($pairSearch.toUpperCase())
       );
     })
   : []
@@ -33,15 +33,25 @@
   $: if ($pairSelectorDialog === false) {
     pairSearch.set('')
     pairExchangeFilter.set('all')
-    loadPairs()
+    loadTradingPairs()
   }
 
-  const loadPairs = async () => {
-    pairs = await getSpotTradingPairs()
-    pairSelectorLoaded.set(true)
+  const loadTradingPairs = async () => {
+    $page.data.spotInfo.then(resp => {
+      if (!resp.data.trading_pairs) return;
+      pairs = resp.data.trading_pairs;
+      pairSelectorLoaded.set(true)
+    })
+  }
+  const loadExchanges = async () => {
+    $page.data.growInfo.then(resp => {
+      if (!resp.data.exchanges) return;
+      tabItems = [{ name: 'all' }, ...resp.data.exchanges];
+    })
   }
   onMount(async ()=> {
-    await loadPairs()
+    await loadTradingPairs()
+    await loadExchanges()
   })
   onDestroy(async ()=> {
     pairSelectorLoaded.set(false)
@@ -93,7 +103,7 @@
                 switchSpotPair($socket, c);
               }}>
                 <div class="flex items-center space-x-2.5">
-                  <img src={findExchangeIconByIdentifier(c.exchange)} alt="-" loading="lazy" class="w-5 h-5" />
+                  <img src={findExchangeIconByIdentifier(c.exchange_id)} alt="-" loading="lazy" class="w-5 h-5" />
                   <span class="flex items-center font-semibold text-sm">
                     {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
                   </span>
@@ -106,8 +116,8 @@
                     </span>
                   {/if}
                   {#if c.change}
-                    <span class={clsx("text-xs !text-[10px]", c.change >= 0 ? UpColorText : DownColorText)}>
-                      {c.change >= 0 ? '+':''}{formatDecimals(c.change, 2)}%
+                    <span class={clsx("text-xs !text-[10px]", BN(c.change).gt(0) ? UpColorText : DownColorText)}>
+                      {BN(c.change).gt(0) ? '+':''}{formatDecimals(c.change, 2)}%
                     </span>
                   {/if}
                 </div>
