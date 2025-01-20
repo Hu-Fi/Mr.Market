@@ -1,7 +1,7 @@
 import { get } from "svelte/store";
 import { LIMIT_ORDERBOOK_LENGTH } from "$lib/helpers/constants";
 import { asks, bids, buy, current, usdValue } from "$lib/stores/spot";
-import type { OHLCVData, OrderBookData, TickerData } from "$lib/types/hufi/exchanges";
+import type { OHLCVData, OrderBookData } from "$lib/types/hufi/exchanges";
 import { CandleAsks, CandleBids, CandleChartLoaded, CandleNewData, CandleOrderBookLoaded, CandlePair, CandlePriceLoaded } from "$lib/stores/market";
 
 export const decodeOrderBook = ( data: {data: OrderBookData } ) => {
@@ -31,6 +31,9 @@ export const decodeCandleStick = ( data: {data: OHLCVData} ) => {
 
 export const decodeCandleTicker = ( data: { data: {exchange: string, symbol: string, price: string, change: string} } ) => {
   CandlePriceLoaded.set(true);
+  if (!data.data) {
+    return
+  }
   const p = data.data
   CandlePair.set({
     ...p,
