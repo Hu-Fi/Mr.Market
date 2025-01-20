@@ -88,7 +88,7 @@ export class ExchangeService {
     });
   }
 
-  private async readAllAPIKeys() {
+  async readAllAPIKeys() {
     return await this.exchangeRepository.readAllAPIKeys();
   }
 

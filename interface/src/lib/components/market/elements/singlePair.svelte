@@ -11,7 +11,6 @@
 
 <button class="flex items-center justify-between w-full p-4" on:click={() => {
     goto(`/spot/${pair.exchange_id}/${pair.symbol.replace('/', '-')}`);
-    console.log(`/spot/${pair.exchange_id}/${pair.symbol.replace('/', '-')}`)
   }
 }>
   <div class="flex space-x-3 items-center">

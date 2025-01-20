@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TradeController } from './trade.controller';
 import { TradeRepository } from './trade.repository';
 import { Trade } from 'src/common/entities/trade.entity';
-import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
+import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Trade])],
+  imports: [TypeOrmModule.forFeature([Trade]), ExchangeInitModule],
   controllers: [TradeController],
-  providers: [TradeService, TradeRepository, ExchangeInitService],
+  providers: [TradeService, TradeRepository],
   exports: [TradeService, TradeRepository],
 })
 export class TradeModule {}

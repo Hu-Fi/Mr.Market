@@ -19,7 +19,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
-import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { AlpacaStratService } from './alpacastrat.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { AdminModule } from '../admin/admin.module';
@@ -48,7 +47,6 @@ import { StrategyUserController } from './strategy-user.controller';
     StrategyService,
     StrategyUserService,
     StrategyUserRepository,
-    ExchangeInitService,
     AlpacaStratService,
   ],
   exports: [StrategyService, StrategyUserService, StrategyUserRepository],

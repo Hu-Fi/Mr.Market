@@ -5,6 +5,7 @@ import {
   Scope,
 } from '@nestjs/common';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { ExchangeService } from '../mixin/exchange/exchange.service';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class ExchangeInitService {
@@ -12,8 +13,8 @@ export class ExchangeInitService {
   private exchanges = new Map<string, Map<string, ccxt.Exchange>>();
   private defaultAccounts = new Map<string, ccxt.Exchange>();
 
-  constructor() {
-    this.initializeExchanges()
+  constructor(private readonly exchangeService: ExchangeService) {
+    this.newInitExchanges()
       .then(() => {
         this.logger.log('Exchanges initialized successfully.');
         this.logger.log(
@@ -366,87 +367,85 @@ export class ExchangeInitService {
     );
   }
 
+  private getExchangeClassById(exchangeId: string): typeof ccxt.Exchange {
+    const useOriginal = ['bigone', 'coinlist', 'p2b', 'probit', 'digifinex'];
+    if (useOriginal.includes(exchangeId)) {
+      return ccxt[exchangeId];
+    }
+    return ccxt.pro[exchangeId];
+  }
+
   private async newInitExchanges() {
-    const exchangeConfigs = [
-      {
-        name: 'okx',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.OKX_API_KEY,
-            secret: process.env.OKX_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.OKX_API_KEY_2,
-            secret: process.env.OKX_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.OKX_API_KEY_READ_ONLY,
-            secret: process.env.OKX_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.okx,
-      },
-    ];
+    const apiKeys = await this.exchangeService.readAllAPIKeys();
+    this.logger.debug('apiKeys:', apiKeys);
 
-    await Promise.all(
-      exchangeConfigs.map(async (config) => {
-        const exchangeMap = new Map<string, ccxt.Exchange>();
-        await Promise.all(
-          config.accounts.map(async (account) => {
-            try {
-              if (!account.apiKey || !account.secret) {
-                this.logger.warn(
-                  `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
-                );
-                return;
-              }
+    // exchange id (binance, okx, etc) -> { key id (0, 1, etc) -> exchange instance }
+    const exchangeMap = new Map<string, Map<string, ccxt.Exchange>>();
 
-              const exchange = new config.class({
-                apiKey: account.apiKey,
-                secret: account.secret,
-              });
+    for (const key of apiKeys) {
+      try {
+        if (!key.api_key || !key.api_secret) {
+          this.logger.warn(
+            `API key or secret for ${key.exchange} ${key.name} is missing. Skipping initialization.`,
+          );
+          continue;
+        }
 
-              // Load markets
-              await exchange.loadMarkets();
+        const ExchangeClass = this.getExchangeClassById(key.exchange);
+        if (!ExchangeClass) {
+          this.logger.error(`Exchange class for ${key.exchange} not found.`);
+          continue;
+        }
 
-              // Call signIn only for ProBit accounts
-              if (config.name === 'probit' && exchange.has['signIn']) {
-                try {
-                  await exchange.signIn();
-                  this.logger.log(
-                    `${config.name} ${account.label} signed in successfully.`,
-                  );
-                } catch (error) {
-                  this.logger.error(
-                    `ProBit ${account.label} sign-in failed: ${error.message}`,
-                  );
-                }
-              }
-
-              // Save the initialized exchange
-              exchangeMap.set(account.label, exchange);
-              this.logger.log(
-                `${config.name} ${account.label} initialized successfully.`,
-              );
-
-              // Save the default account reference
-              if (account.label === 'default') {
-                this.defaultAccounts.set(config.name, exchange);
-              }
-            } catch (error) {
-              this.logger.error(
-                `Failed to initialize ${config.name} ${account.label}: ${error.message}`,
-              );
-            }
-          }),
+        const exchange = new ExchangeClass({
+          apiKey: key.api_key,
+          secret: key.api_secret,
+          password: key.api_extra || undefined,
+        });
+        const balance = await exchange.fetchBalance();
+        this.logger.debug(
+          `${key.exchange} ${key.name} balance: ${JSON.stringify(balance)}`,
         );
 
-        this.exchanges.set(config.name, exchangeMap);
-      }),
-    );
+        await exchange.loadMarkets();
+
+        if (key.exchange === 'probit' && exchange.has['signIn']) {
+          try {
+            await exchange.signIn();
+            this.logger.log(
+              `${key.exchange} ${key.name} signed in successfully.`,
+            );
+          } catch (error) {
+            this.logger.error(
+              `ProBit ${key.name} sign-in failed: ${error.message}`,
+            );
+          }
+        }
+
+        if (exchangeMap.has(key.exchange)) {
+          continue;
+        }
+        const sameExchangeMap = new Map<string, ccxt.Exchange>();
+        sameExchangeMap.set(key.key_id, exchange);
+        exchangeMap.set(key.exchange, sameExchangeMap);
+        this.logger.log(
+          `${key.exchange} ${key.key_id} ${JSON.stringify(
+            sameExchangeMap,
+          )} initialized successfully.`,
+        );
+
+        // if (key.name === 'default') {
+        //   this.defaultAccounts.set(key.exchange, exchange);
+        // }
+      } catch (error) {
+        this.logger.error(
+          `Failed to initialize ${key.exchange} ${key.name}: ${error.message}`,
+        );
+      }
+    }
+
+    this.exchanges = exchangeMap;
+    this.logger.log(`Exchanges map: ${JSON.stringify(exchangeMap)}`);
   }
 
   private startKeepAlive() {
