@@ -8,8 +8,8 @@
   import SpotTrading from "$lib/components/admin/settings/spotTrading/spotTrading.svelte";
   import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
 
-  let modes = ["exchanges", "spot_trading", "arbitrage", "market_making", "simply_grow"];
-  let mode = "exchanges";
+  let modes = ["spot_trading", "arbitrage", "market_making", "simply_grow"]; // "exchanges",
+  let mode = "spot_trading";
 </script>
 
 <div class="p-8">

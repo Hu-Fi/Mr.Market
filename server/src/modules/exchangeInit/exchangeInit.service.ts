@@ -486,7 +486,7 @@ export class ExchangeInitService {
     return exchange;
   }
 
-  getAnyInstanceByExchange(exchangeName: string): ccxt.Exchange {
+  getAnyInstanceByExchangeId(exchangeName: string): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
     if (!exchangeMap) {
       this.logger.error(`Exchange ${exchangeName} is not configured.`);

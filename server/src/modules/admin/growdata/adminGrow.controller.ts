@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  GrowdataExchangeDto,
   GrowdataSimplyGrowTokenDto,
   GrowdataMarketMakingPairDto,
   GrowdataArbitragePairDto,
@@ -31,14 +30,6 @@ export class AdminGrowController {
     private readonly adminGrowService: AdminGrowService,
     private readonly adminStrategyService: AdminStrategyService,
   ) {}
-  // Admin growdata endpoints
-  // Exchange endpoints
-  @Post('exchange/add')
-  @ApiOperation({ summary: 'Add a new exchange' })
-  @ApiBody({ type: GrowdataExchangeDto })
-  async addExchange(@Body() exchangeDto: GrowdataExchangeDto) {
-    return this.adminGrowService.addExchange(exchangeDto);
-  }
 
   @Get('exchange/supported')
   @ApiOperation({ summary: 'Get supported exchanges by backend' })
@@ -64,27 +55,6 @@ export class AdminGrowController {
     }
   }
 
-  @Delete('exchange/remove/:exchange_id')
-  @ApiOperation({ summary: 'Remove an exchange' })
-  async removeExchange(@Param('exchange_id') exchange_id: string) {
-    return this.adminGrowService.removeExchange(exchange_id);
-  }
-
-  @Delete('exchange/remove-all')
-  @ApiOperation({ summary: 'Remove all exchanges' })
-  async removeAllExchanges() {
-    return this.adminGrowService.removeAllExchanges();
-  }
-
-  @Post('exchange/update/:exchange_id')
-  @ApiOperation({ summary: 'Update an exchange' })
-  @ApiBody({ type: GrowdataExchangeDto })
-  async updateExchange(
-    @Param('exchange_id') exchange_id: string,
-    @Body() modifications: Partial<GrowdataExchangeDto>,
-  ) {
-    return this.adminGrowService.updateExchange(exchange_id, modifications);
-  }
   // SimplyGrow token endpoints
   @Post('simply-grow/add')
   @ApiOperation({ summary: 'Add a new SimplyGrow token' })

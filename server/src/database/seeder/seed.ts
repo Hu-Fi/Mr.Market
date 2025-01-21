@@ -4,14 +4,12 @@
 import * as dotenv from 'dotenv';
 import { DataSource, Repository } from 'typeorm';
 import {
-  GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataArbitragePair,
   GrowdataSimplyGrowToken,
 } from '../../common/entities/grow-data.entity';
 import {
   defaultArbitragePairs,
-  defaultExchanges,
   defaultMarketMakingPairs,
   defaultSimplyGrowTokens,
   defaultSpotdataTradingPairs,
@@ -30,7 +28,6 @@ async function connectToDatabase() {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     entities: [
-      GrowdataExchange,
       GrowdataMarketMakingPair,
       GrowdataArbitragePair,
       GrowdataSimplyGrowToken,
@@ -60,18 +57,6 @@ async function seedSpotdataTradingPair(
     }
   }
   console.log('Seeding SpotdataTradingPair complete!');
-}
-
-async function seedGrowdataExchange(repository: Repository<GrowdataExchange>) {
-  for (const exchange of defaultExchanges) {
-    const exists = await repository.findOneBy({
-      exchange_id: exchange.exchange_id,
-    });
-    if (!exists) {
-      await repository.save(exchange);
-    }
-  }
-  console.log('Seeding GrowdataExchange complete!');
 }
 
 async function seedGrowdataMarketMakingPair(
@@ -125,7 +110,6 @@ async function seedJwtSecretEnv() {
 async function run() {
   const dataSource = await connectToDatabase();
   await seedSpotdataTradingPair(dataSource.getRepository(SpotdataTradingPair));
-  await seedGrowdataExchange(dataSource.getRepository(GrowdataExchange));
   await seedGrowdataMarketMakingPair(
     dataSource.getRepository(GrowdataMarketMakingPair),
   );

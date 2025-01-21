@@ -47,9 +47,9 @@
     })
   }
   const loadExchanges = async () => {
-    $page.data.growInfo.then(resp => {
+    $page.data.spotInfo.then(resp => {
       if (!resp.data.exchanges) return;
-      items = [{ name: 'all' }, ...resp.data.exchanges];
+      items = [{ name: 'all' }, ...resp.data.exchanges.map(exchange => ({ name: exchange }))];
     })
   }
   onMount(async ()=> {
@@ -57,6 +57,8 @@
     await loadExchanges()
   })
   onDestroy(async ()=> {
+    CandlePairSearch.set('')
+    CandlePairExchangeFilter.set('all')
     CandlePairSelectorLoaded.set(false)
   })
 </script>

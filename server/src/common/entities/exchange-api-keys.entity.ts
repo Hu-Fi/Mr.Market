@@ -19,4 +19,7 @@ export class exchangeAPIKeysConfig {
 
   @Column({ nullable: true })
   api_extra: string; // The extra information
+
+  @Column({ default: true })
+  enable: boolean;
 }

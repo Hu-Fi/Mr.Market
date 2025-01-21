@@ -2,21 +2,6 @@ import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
 import type { ArbitragePairDto, MarketMakingPairDto, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
-// Exchange Methods
-export const addExchange = async (exchangeDto: Record<string, unknown>, token: string): Promise<unknown> => {
-  try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/add`, {
-      method: 'POST',
-      headers: getHeaders(token),
-      body: JSON.stringify(exchangeDto),
-    });
-    return handleApiResponse(response);
-  } catch (error) {
-    console.error('Error adding exchange:', error);
-    throw error;
-  }
-};
-
 export const getSupportedExchanges = async (token: string): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/supported`, {
@@ -26,50 +11,6 @@ export const getSupportedExchanges = async (token: string): Promise<unknown> => 
     return handleApiResponse(response);
   } catch (error) {
     console.error('Error getting supported exchanges:', error);
-    throw error;
-  }
-};
-
-export const removeExchange = async (exchangeId: string, token: string): Promise<unknown> => {
-  try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove/${exchangeId}`, {
-      method: 'DELETE',
-      headers: getHeaders(token),
-    });
-    return handleApiResponse(response);
-  } catch (error) {
-    console.error('Error removing exchange:', error);
-    throw error;
-  }
-};
-
-export const removeAllExchanges = async (token: string): Promise<unknown> => {
-  try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove-all`, {
-      method: 'DELETE',
-      headers: getHeaders(token),
-    });
-    return handleApiResponse(response);
-  } catch (error) {
-    console.error('Error removing all exchanges:', error);
-    throw error;
-  }
-};
-
-export const updateExchange = async (exchangeId: string, modifications: Record<string, unknown>, token: string): Promise<string> => {
-  try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/update/${exchangeId}`, {
-      method: 'POST',
-      headers: getHeaders(token),
-      body: JSON.stringify(modifications),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Network response was not ok: ${errorText}`);
-    }
-    return 'ok';
-  } catch (error) {
-    console.error('Error updating exchange:', error);
     throw error;
   }
 };

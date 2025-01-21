@@ -19,7 +19,6 @@ describe('GrowdataService', () => {
           useValue: {
             addExchange: jest.fn(),
             findAllExchanges: jest.fn(),
-            findExchangeById: jest.fn(),
             removeExchange: jest.fn(),
             addSimplyGrowToken: jest.fn(),
             findAllSimplyGrowTokens: jest.fn(),

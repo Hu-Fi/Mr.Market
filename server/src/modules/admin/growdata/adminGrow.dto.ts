@@ -1,17 +1,5 @@
 import { IsString, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 
-// DTO for GrowdataExchange
-export class GrowdataExchangeDto {
-  @IsString()
-  exchange_id: string;
-
-  @IsString()
-  name: string;
-
-  @IsBoolean()
-  enable: boolean;
-}
-
 // DTO for GrowdataSimplyGrowToken
 export class GrowdataSimplyGrowTokenDto {
   @IsUUID()

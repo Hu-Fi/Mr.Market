@@ -9,12 +9,10 @@ import {
   StartStrategyDto,
   StopStrategyDto,
 } from './strategy/admin-strategy.dto';
-import { GrowdataExchangeDto } from './growdata/adminGrow.dto';
 
 describe('AdminController', () => {
   let controller: AdminController;
   let adminStrategyService: AdminStrategyService;
-  let adminGrowService: AdminGrowService;
   let adminSpotService: AdminSpotService;
 
   beforeEach(async () => {
@@ -73,7 +71,6 @@ describe('AdminController', () => {
     controller = module.get<AdminController>(AdminController);
     adminStrategyService =
       module.get<AdminStrategyService>(AdminStrategyService);
-    adminGrowService = module.get<AdminGrowService>(AdminGrowService);
     adminSpotService = module.get<AdminSpotService>(AdminSpotService);
   });
 
@@ -114,38 +111,6 @@ describe('AdminController', () => {
     await controller.stopStrategy(stopStrategyDto);
     expect(adminStrategyService.stopStrategy).toHaveBeenCalledWith(
       stopStrategyDto,
-    );
-  });
-
-  // Tests for AdminGrowService
-  it('should call addExchange on AdminGrowService', async () => {
-    const exchangeDto: GrowdataExchangeDto = {
-      exchange_id: 'binance',
-      name: 'Binance',
-      enable: true,
-    };
-    await controller.addExchange(exchangeDto);
-    expect(adminGrowService.addExchange).toHaveBeenCalledWith(exchangeDto);
-  });
-
-  it('should call removeExchange on AdminGrowService', async () => {
-    const exchange_id = 'binance';
-    await controller.removeExchange(exchange_id);
-    expect(adminGrowService.removeExchange).toHaveBeenCalledWith(exchange_id);
-  });
-
-  it('should call removeAllExchanges on AdminGrowService', async () => {
-    await controller.removeAllExchanges();
-    expect(adminGrowService.removeAllExchanges).toHaveBeenCalled();
-  });
-
-  it('should call updateExchange on AdminGrowService', async () => {
-    const exchange_id = 'binance';
-    const modifications = { name: 'New Binance' };
-    await controller.updateExchange(exchange_id, modifications);
-    expect(adminGrowService.updateExchange).toHaveBeenCalledWith(
-      exchange_id,
-      modifications,
     );
   });
 

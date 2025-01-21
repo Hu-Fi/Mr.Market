@@ -52,7 +52,6 @@ import { Contribution } from './common/entities/contribution.entity';
 import { GrowdataModule } from './modules/growdata/growdata.module';
 import {
   GrowdataArbitragePair,
-  GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from './common/entities/grow-data.entity';
@@ -110,7 +109,6 @@ dotenv.config();
         ArbitrageOrder,
         SimplyGrowOrder,
         SpotdataTradingPair,
-        GrowdataExchange,
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,

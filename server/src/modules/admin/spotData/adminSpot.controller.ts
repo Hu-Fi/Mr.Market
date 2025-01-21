@@ -1,3 +1,4 @@
+// TODO: add return code and data
 import {
   Controller,
   Delete,
@@ -5,6 +6,7 @@ import {
   Post,
   Body,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SpotdataTradingPairDto } from 'src/modules/admin/spotData/adminSpot.dto';
@@ -23,19 +25,52 @@ export class AdminSpotController {
   @ApiOperation({ summary: 'Add a new spot trading pair' })
   @ApiBody({ type: SpotdataTradingPairDto })
   async addTradingPair(@Body() pairDto: SpotdataTradingPairDto) {
-    return this.adminSpotService.addTradingPair(pairDto);
+    try {
+      const result = await this.adminSpotService.addTradingPair(pairDto);
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
+    }
   }
 
   @Delete('trading-pair/remove/:id')
   @ApiOperation({ summary: 'Remove a spot trading pair' })
   async removeTradingPair(@Param('id') id: string) {
-    return this.adminSpotService.removeTradingPair(id);
+    try {
+      const result = await this.adminSpotService.removeTradingPair(id);
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
+    }
   }
 
   @Delete('trading-pair/remove-all')
   @ApiOperation({ summary: 'Remove all spot trading pairs' })
   async removeAllTradingPairs() {
-    return this.adminSpotService.removeAllTradingPairs();
+    try {
+      const result = await this.adminSpotService.removeAllTradingPairs();
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
+    }
   }
 
   @Post('trading-pair/update/:id')
@@ -45,6 +80,20 @@ export class AdminSpotController {
     @Param('id') id: string,
     @Body() modifications: Partial<SpotdataTradingPairDto>,
   ) {
-    return this.adminSpotService.updateTradingPair(id, modifications);
+    try {
+      const result = await this.adminSpotService.updateTradingPair(
+        id,
+        modifications,
+      );
+      return {
+        code: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      };
+    }
   }
 }

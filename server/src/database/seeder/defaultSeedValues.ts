@@ -1,6 +1,5 @@
 import {
   GrowdataArbitragePair,
-  GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from 'src/common/entities/grow-data.entity';
@@ -67,16 +66,6 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     enable: true,
   },
-];
-
-export const defaultExchanges: GrowdataExchange[] = [
-  { exchange_id: 'okx', name: 'OKX', enable: true },
-  { exchange_id: 'mexc', name: 'MEXC', enable: true },
-  { exchange_id: 'bigone', name: 'BigONE', enable: true },
-  { exchange_id: 'kraken', name: 'Kraken', enable: true },
-  { exchange_id: 'binance', name: 'Binance', enable: true },
-  { exchange_id: 'bitget', name: 'Bitget', enable: true },
-  { exchange_id: 'bybit', name: 'Bybit', enable: true },
 ];
 
 export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [

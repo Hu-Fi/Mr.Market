@@ -583,7 +583,8 @@ export class ExchangeService {
     if (balance) {
       return await this.exchangeRepository.addAPIKey({
         ...key,
-        key_id: '1',
+        key_id: '',
+        enable: true,
       });
     } else {
       throw new Error('Invalid API key or secret');

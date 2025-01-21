@@ -5,7 +5,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { GrowdataRepository } from './growdata.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  GrowdataExchange,
   GrowdataSimplyGrowToken,
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
@@ -15,7 +14,6 @@ import {
   imports: [
     CacheModule.register(),
     TypeOrmModule.forFeature([
-      GrowdataExchange,
       GrowdataSimplyGrowToken,
       GrowdataArbitragePair,
       GrowdataMarketMakingPair,

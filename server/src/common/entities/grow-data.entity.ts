@@ -1,17 +1,5 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity('growdata_exchanges')
-export class GrowdataExchange {
-  @PrimaryColumn('')
-  exchange_id: string;
-
-  @Column()
-  name: string;
-
-  @Column({ default: true })
-  enable: boolean;
-}
-
 @Entity('growdata_simply_grow_tokens')
 export class GrowdataSimplyGrowToken {
   @PrimaryColumn('uuid')

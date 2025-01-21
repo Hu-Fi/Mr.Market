@@ -44,9 +44,9 @@
     })
   }
   const loadExchanges = async () => {
-    $page.data.growInfo.then(resp => {
+    $page.data.spotInfo.then(resp => {
       if (!resp.data.exchanges) return;
-      tabItems = [{ name: 'all' }, ...resp.data.exchanges];
+      tabItems = [{ name: 'all' }, ...resp.data.exchanges.map(exchange => ({ name: exchange }))];
     })
   }
   onMount(async ()=> {

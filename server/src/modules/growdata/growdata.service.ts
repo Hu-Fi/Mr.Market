@@ -19,13 +19,11 @@ export class GrowdataService {
 
   async getGrowData() {
     try {
-      const exchanges = await this.getAllExchanges();
       const simplyGrowTokens = await this.getAllSimplyGrowTokens();
       const arbitragePairs = await this.getAllArbitragePairs();
       const marketMakingPairs = await this.getAllMarketMakingPairs();
 
       return {
-        exchanges,
         simply_grow: {
           tokens: simplyGrowTokens,
         },
@@ -44,15 +42,6 @@ export class GrowdataService {
         error: error.message,
       };
     }
-  }
-
-  // Exchange Methods
-  async getAllExchanges() {
-    return this.growdataRepository.findAllExchanges();
-  }
-
-  async getExchangeById(exchange_id: string) {
-    return this.growdataRepository.findExchangeById(exchange_id);
   }
 
   // SimplyGrowToken Methods

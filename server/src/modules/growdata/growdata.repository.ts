@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  GrowdataExchange,
   GrowdataSimplyGrowToken,
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
@@ -11,8 +10,6 @@ import {
 @Injectable()
 export class GrowdataRepository {
   constructor(
-    @InjectRepository(GrowdataExchange)
-    private readonly exchangeRepository: Repository<GrowdataExchange>,
     @InjectRepository(GrowdataSimplyGrowToken)
     private readonly simplyGrowTokenRepository: Repository<GrowdataSimplyGrowToken>,
     @InjectRepository(GrowdataArbitragePair)
@@ -20,38 +17,6 @@ export class GrowdataRepository {
     @InjectRepository(GrowdataMarketMakingPair)
     private readonly marketMakingPairRepository: Repository<GrowdataMarketMakingPair>,
   ) {}
-
-  // Exchange Methods
-  async addExchange(exchange: GrowdataExchange) {
-    return this.exchangeRepository.save(exchange);
-  }
-
-  async findAllExchanges() {
-    return this.exchangeRepository.find();
-  }
-
-  async findExchangeById(exchange_id: string) {
-    return this.exchangeRepository.findOne({
-      where: { exchange_id },
-    });
-  }
-
-  async removeExchange(exchange_id: string) {
-    const exchange = await this.exchangeRepository.findOne({
-      where: { exchange_id },
-    });
-    if (!exchange) {
-      return;
-    }
-    return await this.exchangeRepository.remove(exchange);
-  }
-
-  async updateExchange(
-    exchange_id: string,
-    updateData: Partial<GrowdataExchange>,
-  ) {
-    return this.exchangeRepository.update({ exchange_id }, updateData);
-  }
 
   // SimplyGrowToken Methods
   async addSimplyGrowToken(token: GrowdataSimplyGrowToken) {

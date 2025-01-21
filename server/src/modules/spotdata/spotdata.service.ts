@@ -1,5 +1,5 @@
 import { Cache } from 'cache-manager';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
@@ -16,22 +16,23 @@ export class SpotdataService {
     private readonly marketdataService: MarketdataService,
   ) {}
 
-  private cachingTTL = 600; // 10 minutes
+  private cachingTTL = 5; // 5 seconds
 
   async getSpotData() {
-    try {
-      const tradingPairs = await this.getSupportedPairs();
-      return {
-        trading_pairs: tradingPairs,
-      };
-    } catch (error) {
-      this.logger.error('Failed to get spot data', error.message);
-      return {
-        code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const trading_pairs = await this.getSupportedPairs();
+
+    // Derive exchanges from trading pairs, remove duplicates
+    const exchanges = Array.from(
+      new Set(trading_pairs.map((pair) => pair.exchange_id)),
+    );
+
+    // Placeholder
+    const fee = { global: 0.002, spot: 0.002 };
+    return {
+      exchanges,
+      trading_pairs,
+      fee,
+    };
   }
 
   // TradingPair Methods
@@ -142,9 +143,7 @@ export class SpotdataService {
     const results = await Promise.all(promises);
 
     const flattenedResults = results.flat();
-    this.logger.debug(
-      `Final trading pairs: ${JSON.stringify(flattenedResults)}`,
-    );
+
     return flattenedResults;
   }
 
