@@ -11,10 +11,11 @@
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/spot";
+    import { invalidate } from "$app/navigation";
 
   let tabItems = [];
 
-  let pairs: PairsData[];
+  $: pairs = []
   $: filteredPairs = pairs ?
     pairs.filter((item)=>{
       return (
@@ -48,6 +49,13 @@
       if (!resp.data.exchanges) return;
       tabItems = [{ name: 'all' }, ...resp.data.exchanges.map(exchange => ({ name: exchange }))];
     })
+  }
+  const updateTradingPairs = async () => {
+    pairSelectorLoaded.set(false)
+    $page.data.spotInfo.then(resp => {
+      if (!resp.data.trading_pairs) return;
+      pairs = resp.data.trading_pairs;
+    }) 
   }
   onMount(async ()=> {
     await loadTradingPairs()

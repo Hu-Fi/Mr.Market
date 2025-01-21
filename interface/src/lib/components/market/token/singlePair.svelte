@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatDecimals, handleCoingeckoTokenName } from "$lib/helpers/utils";
+  import { BN, handleCoingeckoTokenName } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
 
   export let pair = {"base": "ETH","target": "USDT","market": {"name": "Binance","identifier": "binance","has_trading_incentive": false},"last": 2237.81,"volume": 812295.4703,"converted_last": {"btc": 0.05184604,"eth": 0.99926491,"usd": 2239.99},"converted_volume": {"btc": 42136,"eth": 812117,"usd": 1820473077},"trust_score": "green","bid_ask_spread_percentage": 0.010447,"timestamp": "2024-01-04T05:16:59+00:00","last_traded_at": "2024-01-04T05:16:59+00:00","last_fetch_at": "2024-01-04T05:16:59+00:00","is_anomaly": false,"is_stale": false,"trade_url": "https://www.binance.com/en/trade/ETH_USDT?ref=37754157","token_info_url": null,"coin_id": "ethereum","target_coin_id": "tether"}
@@ -23,6 +23,6 @@
 
   <!-- Price -->
   <div class="flex items-center text-sm">
-    <span class="truncate">{`${formatDecimals(pair.last, 8)} ${handleCoingeckoTokenName(pair.target)}`}</span>
+    <span class="truncate">{`${BN(pair.last).toFixed()} ${handleCoingeckoTokenName(pair.target)}`}</span>
   </div>
 </button>

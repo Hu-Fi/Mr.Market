@@ -6,7 +6,7 @@
       return;
     }
     const pairs = res.data.trading_pairs;
-    console.log('pairs', pairs)
+
     // Find BTC pairs first, 
     // if not found, find ETH pairs, 
     // if not found, find SOL pairs, 
