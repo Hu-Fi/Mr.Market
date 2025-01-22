@@ -66,7 +66,7 @@
       limit: $orderTypeLimit,
       buy: $buy,
       symbol: $pair.symbol,
-      exchange: $pair.exchange,
+      exchange: $pair.exchange_id,
       price: String($limitPrice),
       amount: String(payAmount),
       trace

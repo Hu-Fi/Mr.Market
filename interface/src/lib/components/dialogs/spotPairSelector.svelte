@@ -50,6 +50,7 @@
       tabItems = [{ name: 'all' }, ...resp.data.exchanges.map(exchange => ({ name: exchange }))];
     })
   }
+  // TODO: update trading pairs periodically
   const updateTradingPairs = async () => {
     pairSelectorLoaded.set(false)
     $page.data.spotInfo.then(resp => {

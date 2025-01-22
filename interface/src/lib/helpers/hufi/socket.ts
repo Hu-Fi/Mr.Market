@@ -93,7 +93,11 @@ export const connectCandleStick = (): Socket => {
   return socket;
 };
 
-export const switchCandleStickPair = (socket: Socket, pair: TickerData) => {
+export const switchCandleStickPair = (socket: Socket, pair: Partial<TickerData>) => {
+  if (!pair.exchange_id || !pair.symbol) {
+    console.error('Invalid pair');
+    return;
+  }
   unSubscribeCandleStick(socket);
   CandlePriceLoaded.set(false)
   CandleChartLoaded.set(false)

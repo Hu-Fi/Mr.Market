@@ -5,8 +5,8 @@
   import AppSection from "$lib/components/home/applications/appSection.svelte";
 
   const tradingApps = [
-    {name: $_("swap"), icon: "swap", fn: ()=>{goto('/swap');}},
-    {name: $_("spot"), icon: "spot", fn: ()=>{goto('/spot');}},
+    // {name: $_("swap"), icon: "swap", fn: ()=>{goto('/swap');}},
+    {name: $_("spot_trading"), icon: "spot", fn: ()=>{goto('/spot');}},
     // {name: $_("leverage"), icon: "leverage", fn: ()=>{goto('/leverage');}},
     // {name: $_("future"), icon: "future", fn: ()=>{goto('/future');}},
   ]

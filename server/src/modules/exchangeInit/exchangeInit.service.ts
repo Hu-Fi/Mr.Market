@@ -470,6 +470,7 @@ export class ExchangeInitService {
     }, intervalMs);
   }
 
+  // TODO: need to rewrite this function
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
     if (!exchangeMap) {

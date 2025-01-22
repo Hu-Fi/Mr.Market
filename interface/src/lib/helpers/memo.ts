@@ -106,6 +106,20 @@ export const encodeSimplyGrowCreateMemo = (details: {
   return base58.encode(completeBuffer);
 };
 
+export const encodeSimplyGrowDepositMemo = (
+  details: {
+    version: number;
+    tradingType: string;
+    action: string;
+    orderId: string;
+    rewardAddress: string;
+  },
+): string => {
+  // Placeholder
+  const memo = `${details.tradingType}:${details.action}:${details.orderId}:${details.rewardAddress}`
+  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+}
+
 export const encodeArbitrageCreateMemo = (
   details: {
     version: number
@@ -165,6 +179,21 @@ export const encodeArbitrageCreateMemo = (
   return base58.encode(completeBuffer);
 };
 
+export const encodeArbitrageDepositMemo = (
+  details: {
+    version: number;
+    tradingType: string;
+    action: string;
+    arbitragePairId: string;
+    orderId: string;
+    rewardAddress: string;
+  },
+): string => {
+  // Placeholder
+  const memo = `${details.tradingType}:${details.action}:${details.arbitragePairId}:${details.orderId}:${details.rewardAddress}`
+  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+}
+
 export const encodeMarketMakingCreateMemo = (
   details: {
     version: number;
@@ -223,6 +252,21 @@ export const encodeMarketMakingCreateMemo = (
   const completeBuffer = Buffer.concat([payload, checksum]);
   return base58.encode(completeBuffer);
 };
+
+export const encodeMarketMakingDepositMemo = (
+  details: {
+    version: number;
+    tradingType: string;
+    action: string;
+    marketMakingPairId: string;
+    orderId: string;
+    rewardAddress: string;
+  },
+): string => {
+  // Placeholder
+  const memo = `${details.tradingType}:${details.action}:${details.marketMakingPairId}:${details.orderId}:${details.rewardAddress}`
+  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+}
 
 export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
   let finalSymbol = symbol;

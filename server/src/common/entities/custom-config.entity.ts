@@ -1,17 +1,20 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class CustomConfigEntity {
-  @PrimaryGeneratedColumn()
-  config_id: number; // The index config, 0 by default
+  @PrimaryColumn({ default: 1 })
+  id: number; // Singleton ID
 
-  @Column()
+  // Unused
+  @Column({ nullable: true })
   max_balance_mixin_bot: string; // Max amount of money to keep in mixin bot
 
-  @Column()
+  // Unused
+  @Column({ nullable: true })
   max_balance_single_api_key: string; // Max amount of money to keep in single exchange API Key
 
-  @Column()
+  // Unused
+  @Column({ nullable: true })
   funding_account: string; // The address or info about a safe place for storing profit
 
   @Column()

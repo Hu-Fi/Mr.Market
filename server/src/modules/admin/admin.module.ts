@@ -42,6 +42,9 @@ import {
   MarketMakingOrder,
   SimplyGrowOrder,
 } from 'src/common/entities/strategy-user.entity';
+import { CustomConfigEntity } from 'src/common/entities/custom-config.entity';
+import { AdminSettingsController } from './settings/adminSettings.controller';
+import { AdminSettingsService } from './settings/adminSettings.service';
 // import { MixinMessageModule } from '../mixin/message/message.module';
 // import { SnapshotsModule } from '../mixin/snapshots/snapshots.module';
 
@@ -63,6 +66,7 @@ import {
       ArbitrageOrder,
       MarketMakingOrder,
       SimplyGrowOrder,
+      CustomConfigEntity,
     ]),
     TradeModule,
     Web3Module,
@@ -81,6 +85,7 @@ import {
     AdminUserController,
     AdminMixinMessageController,
     AdminOrdersController,
+    AdminSettingsController,
   ],
   providers: [
     AdminOrdersService,
@@ -94,6 +99,7 @@ import {
     ExchangeInitService,
     AdminGrowService,
     AdminSpotService,
+    AdminSettingsService,
   ],
   exports: [
     AdminStrategyService,
@@ -102,6 +108,7 @@ import {
     AdminRebalanceService,
     AdminRebalanceRepository,
     AdminOrdersService,
+    AdminSettingsService,
   ],
 })
 export class AdminModule {}

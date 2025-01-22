@@ -1,41 +1,3 @@
-/**
- * MixinListener
- *
- * This listener service handles events related to the release of tokens on the Mixin network.
- * It processes the 'mixin.release' event, validates event data, updates order states, and manages
- * the transaction of tokens, including recording release history.
- *
- * Dependencies:
- * - SnapshotsService: Service for interacting with Mixin snapshots.
- * - ExchangeService: Service for interacting with exchange-related data and operations.
- * - CustomConfigService: Service for reading and modifying custom configuration settings.
- * - Helper functions: Utilities for validating data, managing timestamps, and calculating fees.
- * - STATE_TEXT_MAP: Mapping of state text for various order states.
- *
- * Events:
- * - 'mixin.release': Event triggered to release tokens on the Mixin network.
- *
- * Methods:
- *
- * - constructor: Initializes the service with the injected SnapshotsService, ExchangeService, and CustomConfigService.
- *
- * - handleReleaseTokenEvent(e: MixinReleaseTokenEvent): Handles the 'mixin.release' event.
- *   Validates asset and user IDs, checks release history, subtracts fees, sends the transaction,
- *   updates order state, and records release history.
- *
- * Notes:
- * - Spot order execution process (Here is the step 5)
- *  1. Loop snapshots on mixin, find incoming transfer
- *  2. Send create spot order event to spot.listener.ts
- *  3. If basic checks are passed, send place order event, write to db in exchange.listener.ts
- *  4. Wait for state update scheduler to update order state, in exchange.service.ts
- *  5. If the state updated to succeess, send release token event to mixin.listener.ts
- *
- * - The service ensures that the event data is valid and the transaction is processed securely.
- * - Error handling is implemented to log and manage errors during the release process.
- * - The service updates the order state and records release history to maintain accurate tracking of transactions.
- */
-
 import { validate } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -44,14 +6,14 @@ import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { AdminSettingsService } from 'src/modules/admin/settings/adminSettings.service';
 
 @Injectable()
 export class MixinListener {
   constructor(
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
-    private configService: CustomConfigService,
+    private configService: AdminSettingsService,
   ) {}
 
   @OnEvent('mixin.release')
@@ -72,7 +34,7 @@ export class MixinListener {
     }
 
     // Subtract the trading fees
-    const feePercentage = await this.configService.readSpotFee();
+    const feePercentage = await this.configService.getSpotFee();
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
     // Attempt to send the transaction

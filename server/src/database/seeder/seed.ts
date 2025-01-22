@@ -17,6 +17,7 @@ import {
 import { SpotdataTradingPair } from '../../common/entities/spot-data.entity';
 import { appendFileSync } from 'fs';
 import { randomBytes } from 'crypto';
+import { CustomConfigEntity } from '../../common/entities/custom-config.entity';
 
 async function connectToDatabase() {
   dotenv.config();
@@ -32,6 +33,7 @@ async function connectToDatabase() {
       GrowdataArbitragePair,
       GrowdataSimplyGrowToken,
       SpotdataTradingPair,
+      CustomConfigEntity,
     ],
     synchronize: false,
     ssl: process.env.POSTGRES_SSL === 'true',
@@ -95,6 +97,14 @@ async function seedGrowdataSimplyGrowToken(
   console.log('Seeding GrowdataSimplyGrowToken complete!');
 }
 
+async function seedCustomConfig(repository: Repository<CustomConfigEntity>) {
+  const config = await repository.findOneBy({ id: 1 });
+  if (!config) {
+    await repository.save({ id: 1, spot_fee: '0.002' });
+  }
+  console.log('Seeding CustomConfig complete!');
+}
+
 async function seedJwtSecretEnv() {
   if (!process.env.JWT_SECRET) {
     const newSecret = randomBytes(32).toString('hex'); // Generates a 64-character string
@@ -119,6 +129,7 @@ async function run() {
   await seedGrowdataSimplyGrowToken(
     dataSource.getRepository(GrowdataSimplyGrowToken),
   );
+  await seedCustomConfig(dataSource.getRepository(CustomConfigEntity));
   await seedJwtSecretEnv();
   await dataSource.destroy();
 }

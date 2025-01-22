@@ -57,10 +57,7 @@
     if ($orderTypeMarket) {
       console.log('getAmount()=>Market')
       marketAmount.set(
-        formatDecimals(
-          BN($marketTotal).dividedBy($marketPrice).toNumber(),
-          8,
-        ) || "",
+        BN($marketTotal).dividedBy($marketPrice).toFixed(),
       );
       return;
     }

@@ -5,6 +5,8 @@ import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
 import { SpotdataRepository } from 'src/modules/spotdata/spotdata.repository';
 import { MarketdataService } from 'src/modules/marketdata/marketdata.service';
+import { ExchangeService } from '../mixin/exchange/exchange.service';
+import { AdminSettingsService } from '../admin/settings/adminSettings.service';
 
 @Injectable()
 export class SpotdataService {
@@ -14,6 +16,8 @@ export class SpotdataService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly spotdataRepository: SpotdataRepository,
     private readonly marketdataService: MarketdataService,
+    private readonly exchangeService: ExchangeService,
+    private readonly settingsService: AdminSettingsService,
   ) {}
 
   private cachingTTL = 5; // 5 seconds
@@ -21,13 +25,14 @@ export class SpotdataService {
   async getSpotData() {
     const trading_pairs = await this.getSupportedPairs();
 
-    // Derive exchanges from trading pairs, remove duplicates
-    const exchanges = Array.from(
-      new Set(trading_pairs.map((pair) => pair.exchange_id)),
-    );
+    // Derive exchanges from api keys, remove duplicates
+    const apiKeys = await this.exchangeService.readAllAPIKeys();
+    const exchanges = Array.from(new Set(apiKeys.map((key) => key.exchange)));
 
-    // Placeholder
-    const fee = { global: 0.002, spot: 0.002 };
+    // const spotFee = await this.settingsService.getSpotFee();
+    const fee = { spot: 0.002 };
+    this.logger.debug(`Fetched fee: ${JSON.stringify(fee)}`);
+
     return {
       exchanges,
       trading_pairs,
