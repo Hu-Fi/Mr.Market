@@ -23,7 +23,7 @@
             </span>
         </div>
         <button
-            class="flex items-center space-x-1 shadow-none no-animation px-0 rounded-full mb-3 w-1/2 text-base-content/80 text-success"
+            class="flex items-center space-x-1 shadow-none no-animation px-0 rounded-full mb-3 w-full text-base-content/80 text-success"
         >
             <span class="text-sm font-bold">{$_("start_now")}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
