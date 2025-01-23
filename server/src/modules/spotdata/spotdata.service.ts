@@ -29,9 +29,8 @@ export class SpotdataService {
     const apiKeys = await this.exchangeService.readAllAPIKeys();
     const exchanges = Array.from(new Set(apiKeys.map((key) => key.exchange)));
 
-    // const spotFee = await this.settingsService.getSpotFee();
-    const fee = { spot: 0.002 };
-    this.logger.debug(`Fetched fee: ${JSON.stringify(fee)}`);
+    const spotFee = await this.settingsService.getSpotFee();
+    const fee = { spot: spotFee };
 
     return {
       exchanges,

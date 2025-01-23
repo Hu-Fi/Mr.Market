@@ -2,13 +2,23 @@
   import clsx from "clsx";
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import { fetchSettings } from "$lib/helpers/hufi/admin/settings";
 
-  let spot_fee = 0.02;
+  let spot_fee = 0.002;
   let save_loading = false;
   let modify_fee = false;
 
-  const loadSettings = () => {
-    console.log('onMount load settings from server');
+  const loadSettings = async () => {
+    const token = localStorage.getItem('admin-access-token');
+    if (!token) {
+      return;
+    }
+    const settings = await fetchSettings(token);
+    console.log('onMount load settings from server', settings);
+    if (!settings || !settings.data) {
+      return;
+    }
+    spot_fee = settings.data.spot_fee;
   }
   onMount(() => {
     loadSettings();

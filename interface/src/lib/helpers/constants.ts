@@ -55,10 +55,6 @@ export const PAIRS_MAP = {
   BVSE: 'COMP/USDT-ERC20',
   FNZB: 'HMT/USDT-ERC20',
 };
-export const PAIRS_MAP_REVERSED: { [key: string]: string } = Object.entries(
-  PAIRS_MAP,
-).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
-
 
 // It must sync with server/pairs.ts
 export const SYMBOL_ASSET_ID_MAP = {

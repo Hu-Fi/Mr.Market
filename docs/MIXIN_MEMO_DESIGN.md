@@ -6,9 +6,10 @@ This document provides an overview of the memo encoding and decoding system impl
 
 The memo system supports encoding and decoding for three main types of trading operations:
 
-1. **Simply Grow Create Memo**
-2. **Arbitrage Create Memo**
-3. **Market Making Create Memo**
+1. **Spot Order Create Memo**
+2. **Simply Grow Create Memo**
+3. **Arbitrage Create Memo**
+4. **Market Making Create Memo**
 
 Each type of memo is encoded into a binary format, which is then converted to a Base58 string for transmission. The memo includes a checksum to ensure data integrity.
 
@@ -20,6 +21,27 @@ Each type of memo is encoded into a binary format, which is then converted to a 
 2. Binary Serialization: The memo details are serialized into binary format. This includes converting UUIDs and Ethereum addresses into binary buffers.
 3. Checksum Calculation: A checksum is computed using a double SHA-256 hash to ensure data integrity.
 4. Base58 Encoding: The binary data, including the checksum, is encoded into a Base58 string for easy transmission.
+
+### Spot Order Create Memo
+
+#### Create limit order
+Fields:
+
+- Version (1 byte)
+- Trading Type (1 byte, '0)
+- Action (1 byte, '1' for buy, '2' for sell)
+- Trading Pair ID (16 bytes, UUID in binary format)
+- | (1 byte, divider)
+- Limit Price (1 byte)
+- | (1 byte, divider)
+
+#### Create market order
+Fields:
+
+- Version (1 byte)
+- Trading Type (1 byte)
+- Action (1 byte, '1' for buy, '2' for sell)
+- Trading Pair ID (16 bytes, UUID in binary format)
 
 ### Simply Grow Create Memo
 

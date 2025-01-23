@@ -1,17 +1,23 @@
 <script>
   import { goto } from "$app/navigation";
   import { _ } from "svelte-i18n";
+
+  const items = [
+    { label: "exchanges", route: "/manage/exchanges" },
+    { label: "strategies", route: "/manage/strategies" },
+    { label: "settings", route: "/manage/settings" },
+  ];
 </script>
 
 <div class="flex flex-col gap-4 justify-center items-center h-[100vh] space-y-16">
   <span class="text-3xl font-bold">{$_("welcome_to_admin_panel")}</span>
 
   <div class="flex flex-row gap-4">
-    {#each ["exchanges", "strategies", "campaigns"] as item}
+    {#each items as item}
       <button
         class="btn rounded-2xl w-64 h-60 flex flex-col items-start justify-between"
         on:click={() => {
-          goto(`/manage/${item}`);
+          goto(item.route);
         }}
       >
         <div class="flex flex-row justify-end w-full mt-4">
@@ -20,7 +26,7 @@
           </svg>          
         </div>
         <span class="text-base mb-6 ml-2 font-semibold">
-          {$_("manage_something", { values: { name: item } })}
+          {$_("manage_something", { values: { name: item.label } })}
         </span>
       </button>
     {/each}

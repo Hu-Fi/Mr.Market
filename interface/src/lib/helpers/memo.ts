@@ -1,5 +1,4 @@
 import { createHash } from "crypto";
-import { PAIRS_MAP_REVERSED } from "./constants";
 import base58 from "bs58";
 
 // related to 
@@ -16,19 +15,13 @@ export const TARDING_TYPE_MAP: Record<string, string> = {
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
-  0: 'Limit Buy',
-  1: 'Limit Sell',
-  2: 'Market Buy',
-  3: 'Market Sell',
+  1: 'limit',
+  2: 'market',
 };
 
-export const SPOT_EXCHANGE_MAP: Record<string, string> = {
-  1: 'binance',
-  2: 'bitfinex',
-  3: 'mexc',
-  4: 'okx',
-  5: 'gate',
-  6: 'lbank',
+export const SPOT_ACTION_TYPE_MAP: Record<string, string> = {
+  1: 'buy',
+  2: 'sell',
 };
 
 export const ARBITRAGE_MEMO_ACTION_MAP: Record<string, string> = {
@@ -50,9 +43,6 @@ export const REVERSED_TARDING_TYPE_MAP: Record<string, string> = Object.entries(
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
 export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entries(SPOT_ORDER_TYPE_MAP)
-  .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
-
-export const REVERSED_SPOT_EXCHANGE_MAP: Record<string, string> = Object.entries(SPOT_EXCHANGE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
 export const encodeSimplyGrowCreateMemo = (details: {
@@ -269,27 +259,7 @@ export const encodeMarketMakingDepositMemo = (
 }
 
 export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
-  let finalSymbol = symbol;
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
-  const tradingType = 'SP'
-  const spotOrderType = limit ? (buy ? 'LB' : 'LS') : (buy ? 'MB' : 'MS');
-  const exchangeId = REVERSED_SPOT_EXCHANGE_MAP[exchange.toLowerCase()];
-  if (!exchange) {
-    console.error(`GenerateSpotTradingMemo failed to get exchange:${exchange}`);
-    return;
-  }
-  const pairId = PAIRS_MAP_REVERSED[finalSymbol]
-  if (!pairId) {
-    console.error(`GenerateSpotTradingMemo failed to get pairId for symbol:${symbol}`)
-    return;
-  }
-  const limitPriceOrRefId = price || '0';
-  const refId = '';
-
-  const memo = `${tradingType}:${spotOrderType}:${exchangeId}:${pairId}:${limitPriceOrRefId}:${refId}`
-  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
+  console.log('GenerateSpotTradingMemo', limit, buy, symbol, exchange, price)
 }
 
 function computeMemoChecksum(buffer: Buffer): Buffer {

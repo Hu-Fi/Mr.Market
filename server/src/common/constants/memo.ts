@@ -9,10 +9,13 @@ export const TARDING_TYPE_MAP: Record<string, string> = {
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
-  0: 'Limit Buy',
-  1: 'Limit Sell',
-  2: 'Market Buy',
-  3: 'Market Sell',
+  1: 'limit',
+  2: 'market',
+};
+
+export const SPOT_ACTION_TYPE_MAP: Record<string, string> = {
+  1: 'buy',
+  2: 'sell',
 };
 
 export const SPOT_EXCHANGE_MAP: Record<string, string> = {

@@ -6,6 +6,10 @@ import {
   decodeMarketMakingCreateMemo,
   encodeSimplyGrowCreateMemo,
   decodeSimplyGrowCreateMemo,
+  encodeSpotLimitOrderMemo,
+  decodeSpotLimitOrderMemo,
+  encodeSpotMarketOrderMemo,
+  decodeSpotMarketOrderMemo,
 } from './memo';
 
 describe('decodeSimplyGrowCreateMemo', () => {
@@ -113,6 +117,117 @@ describe('decodeMarketMakingCreateMemo', () => {
       marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
       rewardAddress: '0x0000000000000000000000000000000000000000',
+    });
+  });
+});
+
+describe('Spot Trading Memo Functions', () => {
+  const spotLimitBuyOrderDetails = {
+    version: 1,
+    tradingType: 'Spot',
+    spotOrderType: 'limit',
+    action: 'buy',
+    tradingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+    limitPrice: '100',
+  };
+
+  const spotLimitSellOrderDetails = {
+    version: 1,
+    tradingType: 'Spot',
+    spotOrderType: 'limit',
+    action: 'sell',
+    tradingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+    limitPrice: '100',
+  };
+
+  const spotMarketBuyOrderDetails = {
+    version: 1,
+    tradingType: 'Spot',
+    spotOrderType: 'market',
+    action: 'buy',
+    tradingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+  };
+
+  const spotMarketSellOrderDetails = {
+    version: 1,
+    tradingType: 'Spot',
+    spotOrderType: 'market',
+    action: 'sell',
+    tradingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+  };
+  describe('encodeSpotLimitBuyOrderMemo', () => {
+    it('should encode a spot limit buy order memo correctly', () => {
+      const encodedMemo = encodeSpotLimitOrderMemo(spotLimitBuyOrderDetails);
+      console.log('encodedMemo', encodedMemo);
+
+      expect(encodedMemo).toBe('bbouDgSykQLX1SzBrdbSLXcjqc7ogJJtpu1HQ');
+    });
+  });
+
+  describe('decodeSpotLimitBuyOrderMemo', () => {
+    it('should decode a spot limit buy order memo correctly', () => {
+      const encodedMemo = 'bbouDgSykQLX1SzBrdbSLXcjqc7ogJJtpu1HQ';
+      const { payload } = memoPreDecode(encodedMemo);
+      const decodedDetails = decodeSpotLimitOrderMemo(payload);
+
+      expect(decodedDetails).toEqual(spotLimitBuyOrderDetails);
+    });
+  });
+
+  describe('encodeSpotLimitSellOrderMemo', () => {
+    it('should encode a spot limit sell order memo correctly', () => {
+      const encodedMemo = encodeSpotLimitOrderMemo(spotLimitSellOrderDetails);
+      console.log('encodedMemo', encodedMemo);
+
+      expect(encodedMemo).toBe('bboud23xrhdEBus1HmgTkrwDxsuSBZFbowkHg');
+    });
+  });
+
+  describe('decodeSpotLimitSellOrderMemo', () => {
+    it('should decode a spot limit sell order memo correctly', () => {
+      const encodedMemo = 'bboud23xrhdEBus1HmgTkrwDxsuSBZFbowkHg';
+      const { payload } = memoPreDecode(encodedMemo);
+      const decodedDetails = decodeSpotLimitOrderMemo(payload);
+
+      expect(decodedDetails).toEqual(spotLimitSellOrderDetails);
+    });
+  });
+
+  describe('encodeSpotMarketBuyOrderMemo', () => {
+    it('should encode a spot market buy order memo correctly', () => {
+      const encodedMemo = encodeSpotMarketOrderMemo(spotMarketBuyOrderDetails);
+      console.log('encodedMemo', encodedMemo);
+
+      expect(encodedMemo).toBe('6HgjiPeqKVnJ9fnNKfx3EQGxPjGbNDS6');
+    });
+  });
+
+  describe('decodeSpotMarketBuyOrderMemo', () => {
+    it('should decode a spot market buy order memo correctly', () => {
+      const encodedMemo = '6HgjiPeqKVnJ9fnNKfx3EQGxPjGbNDS6';
+      const { payload } = memoPreDecode(encodedMemo);
+      const decodedDetails = decodeSpotMarketOrderMemo(payload);
+
+      expect(decodedDetails).toEqual(spotMarketBuyOrderDetails);
+    });
+  });
+
+  describe('encodeSpotMarketSellOrderMemo', () => {
+    it('should encode a spot market sell order memo correctly', () => {
+      const encodedMemo = encodeSpotMarketOrderMemo(spotMarketSellOrderDetails);
+      console.log('encodedMemo', encodedMemo);
+
+      expect(encodedMemo).toBe('6HgjmxWaGoZm9zwTH7vtjkervCE2Mjio');
+    });
+  });
+
+  describe('decodeSpotMarketSellOrderMemo', () => {
+    it('should decode a spot market sell order memo correctly', () => {
+      const encodedMemo = '6HgjmxWaGoZm9zwTH7vtjkervCE2Mjio';
+      const { payload } = memoPreDecode(encodedMemo);
+      const decodedDetails = decodeSpotMarketOrderMemo(payload);
+
+      expect(decodedDetails).toEqual(spotMarketSellOrderDetails);
     });
   });
 });

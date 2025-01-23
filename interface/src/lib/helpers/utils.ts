@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
-import { PAIRS_MAP_REVERSED, SYMBOL_ASSET_ID_MAP } from "$lib/helpers/constants";
+import { SYMBOL_ASSET_ID_MAP } from "$lib/helpers/constants";
 
 const toFixed = (amount: string | number, decimalPlaces: number): string => {
   const parts = `${amount}`.split('.')
@@ -226,17 +226,6 @@ export const toggleNumberInArray = (array: Array<number>, item: number) => {
 
 export const processSymbol = (symbol: string) => {
   return symbol.endsWith('USDT') ? `${symbol}-ERC20` : symbol;
-}
-
-// Used for handling symbol -> 4 digit memo
-export const encodeSymbolToMemo = (symbol: string) => {
-  let finalSymbol = symbol
-  finalSymbol = processSymbol(symbol)
-  const memoCode = PAIRS_MAP_REVERSED[finalSymbol];
-  if (!memoCode) {
-    return;
-  }
-  return memoCode;
 }
 
 // Used for handling the symbol -> both asset id conversion

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { encodeSymbolToMemo, decodeSymbolToAssetID } from './utils';
+import { decodeSymbolToAssetID } from './utils';
 import { formatChartPrice, formatDecimals, formatOrderBookPrice, formatTimestampToTime, formatUSMoney, formatWalletBalance, numberInArray, toggleItemInArray, toggleNumberInArray } from './utils'
 
 vi.mock('$env/dynamic/public', () => {
@@ -318,17 +318,6 @@ describe('formatOrderBookPrice', () => {
       
 })
 })
-
-describe('encodeSymbolToMemo', () => {
-  it('should return the correct memo code for a valid symbol', () => {
-    expect(encodeSymbolToMemo('USDT')).toBeUndefined();
-    expect(encodeSymbolToMemo('BTC/USDT')).toBe('Z7GC');
-  });
-
-  it('should return undefined for an invalid symbol', () => {
-    expect(encodeSymbolToMemo('INVALID')).toBeUndefined();
-  });
-});
 
 describe('decodeSymbolToAssetID', () => {
   it('should return the correct asset IDs for a valid symbol', () => {

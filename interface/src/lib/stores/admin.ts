@@ -5,6 +5,7 @@ export const submitted = writable(false);
 export const checked = writable(false);
 export const correct = writable(false);
 export const loginLoading = writable(false);
+export const loginTimeout = writable(false);
 
 // /manage/rebalance
 export const balances = writable()
