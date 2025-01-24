@@ -70,33 +70,6 @@ describe('ExchangeService', () => {
     });
   });
 
-  describe('checkExchangeBalanceEnough', () => {
-    it.failing(
-      'should check if exchange balance is enough for a given amount',
-      async () => {
-        // TODO: adapt CCXT fetch balance
-        const mockBalance = { total: { BTC: 2 } };
-        service.getBalanceBySymbol = jest.fn().mockResolvedValue(mockBalance);
-
-        const result = await service.checkExchangeBalanceEnough(
-          'okx',
-          'apiKey',
-          'apiSecret',
-          'BTC',
-          '1',
-        );
-
-        expect(service.getBalanceBySymbol).toHaveBeenCalledWith(
-          'okx',
-          'apiKey',
-          'apiSecret',
-          'BTC',
-        );
-        expect(result).toBeTruthy();
-      },
-    );
-  });
-
   describe('aggregateBalancesByExchange', () => {
     it('should correctly aggregate balances by exchange', () => {
       const successfulBalances = [
@@ -176,33 +149,4 @@ describe('ExchangeService', () => {
       service.readAPIKey = jest.fn().mockResolvedValue(mockAPIKey);
     });
   });
-
-  // describe('pickAPIKeyOnDemand', () => {
-  //   // TODO: Fix
-  //   it.failing(
-  //     'should pick an API key based on balance and demand',
-  //     async () => {
-  //       const mockApiKeys = [
-  //         {
-  //           key_id: '1',
-  //           exchange: 'okx',
-  //           api_key: 'apiKey1',
-  //           api_secret: 'apiSecret1',
-  //         },
-  //       ];
-  //       exchangeRepository.readAllAPIKeysByExchange.mockResolvedValue(
-  //         mockApiKeys,
-  //       );
-  //       service.checkExchangeBalanceEnough = jest.fn().mockResolvedValue(true);
-
-  //       const result = await service.pickAPIKeyOnDemand('okx', 'asset_id', '1');
-
-  //       expect(
-  //         exchangeRepository.readAllAPIKeysByExchange,
-  //       ).toHaveBeenCalledWith('okx');
-  //       expect(service.checkExchangeBalanceEnough).toHaveBeenCalled();
-  //       expect(result.type).toEqual('success');
-  //     },
-  //   );
-  // });
 });

@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MixinListener } from './mixin.listener';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import * as uuid from 'uuid';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
@@ -16,22 +15,15 @@ describe('MixinListener', () => {
   let listener: MixinListener;
   let snapshotsService: jest.Mocked<SnapshotsService>;
   let exchangeService: jest.Mocked<ExchangeService>;
-  let customConfigService: jest.Mocked<CustomConfigService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        MixinListener,
-        SnapshotsService,
-        ExchangeService,
-        CustomConfigService,
-      ],
+      providers: [MixinListener, SnapshotsService, ExchangeService],
     }).compile();
 
     listener = module.get<MixinListener>(MixinListener);
     snapshotsService = module.get(SnapshotsService);
     exchangeService = module.get(ExchangeService);
-    customConfigService = module.get(CustomConfigService);
 
     jest.clearAllMocks();
   });
@@ -95,7 +87,6 @@ describe('MixinListener', () => {
       updatedAt: getRFC3339Timestamp(),
     };
     exchangeService.readMixinReleaseHistory.mockResolvedValueOnce(false); // Simulate order not in release history
-    customConfigService.readSpotFee.mockResolvedValue('0.01');
     snapshotsService.sendMixinTx.mockResolvedValue([
       {
         type: 'kernel_transaction_request',
@@ -140,7 +131,6 @@ describe('MixinListener', () => {
       updatedAt: getRFC3339Timestamp(),
     };
     exchangeService.readMixinReleaseHistory.mockResolvedValueOnce(false); // Simulate order not in release history
-    customConfigService.readSpotFee.mockResolvedValue('0.01');
     snapshotsService.sendMixinTx.mockResolvedValue([]); // Simulate failure in sending transaction
     await listener.handleReleaseTokenEvent(mockEvent);
     expect(exchangeService.updateSpotOrderState).toHaveBeenCalledWith(

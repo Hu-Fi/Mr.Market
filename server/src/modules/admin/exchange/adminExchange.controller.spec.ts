@@ -1,11 +1,11 @@
 // exchange.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExchangeController } from './adminExchange.controller';
+import { AdminExchangeController } from './adminExchange.controller';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 describe('ExchangeController', () => {
-  let controller: ExchangeController;
+  let controller: AdminExchangeController;
   let service: ExchangeService;
 
   beforeEach(async () => {
@@ -15,7 +15,7 @@ describe('ExchangeController', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ExchangeController],
+      controllers: [AdminExchangeController],
       providers: [
         {
           provide: ExchangeService,
@@ -27,7 +27,7 @@ describe('ExchangeController', () => {
       .useValue({ canActivate: () => true }) // Mock JwtAuthGuard to always allow access
       .compile();
 
-    controller = module.get<ExchangeController>(ExchangeController);
+    controller = module.get<AdminExchangeController>(AdminExchangeController);
     service = module.get<ExchangeService>(ExchangeService);
   });
 

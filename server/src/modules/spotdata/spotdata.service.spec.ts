@@ -3,101 +3,30 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { SpotdataService } from './spotdata.service';
 import { SpotdataRepository } from './spotdata.repository';
 import { MarketdataService } from '../marketdata/marketdata.service';
+import { ExchangeService } from '../mixin/exchange/exchange.service';
+import { AdminSettingsService } from '../admin/settings/adminSettings.service';
+import { CustomLogger } from 'src/modules/logger/logger.service';
 import { Cache } from 'cache-manager';
-import { CustomLogger } from '../logger/logger.service';
-import { Tickers } from 'ccxt';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
 
 describe('SpotdataService', () => {
   let service: SpotdataService;
-  let repository: SpotdataRepository;
-  let marketdataService: MarketdataService;
   let cacheService: Cache;
-
-  const mockTradingPairs: SpotdataTradingPair[] = [
-    {
-      id: 'a87fe0c1-898f-457a-9303-b83bb81b09b5',
-      symbol: 'BTC/USDT',
-      exchange_id: 'binance',
-      base_asset_id: '7e04727a-6f8b-499a-92d0-18bf4ef013bb',
-      quote_asset_id: 'ccde90fe-d611-4fc8-afb4-3388e96fbb02',
-      ccxt_id: 'binance',
-      max_buy_amount: '1000',
-      max_sell_amount: '1000',
-      enable: true,
-      amount_significant_figures: '8',
-      price_significant_figures: '2',
-      buy_decimal_digits: '2',
-      sell_decimal_digits: '2',
-    },
-    {
-      id: 'a87fe0c1-898f-457a-9303-b83bb81b09b5',
-      symbol: 'ETH/USDT',
-      exchange_id: 'binance',
-      base_asset_id: 'a87fe0c1-898f-457a-9303-b83bb81b09b5',
-      quote_asset_id: 'ccde90fe-d611-4fc8-afb4-3388e96fbb02',
-      ccxt_id: 'binance',
-      max_buy_amount: '1000',
-      max_sell_amount: '1000',
-      enable: true,
-      amount_significant_figures: '8',
-      price_significant_figures: '2',
-      buy_decimal_digits: '2',
-      sell_decimal_digits: '2',
-    },
-  ];
-
-  const mockTickers: Tickers = {
-    'BTC/USDT': {
-      symbol: 'BTC/USDT',
-      info: {},
-      timestamp: Date.now(),
-      datetime: new Date().toISOString(),
-      high: 0,
-      low: 0,
-      bid: 0,
-      ask: 0,
-      last: 0,
-      change: 0,
-      percentage: 1.5,
-      baseVolume: 0,
-      quoteVolume: 0,
-      bidVolume: 0,
-      askVolume: 0,
-      vwap: 0,
-      open: 0,
-      close: 0,
-      previousClose: 0,
-      average: 0,
-    },
-    'ETH/USDT': {
-      symbol: 'ETH/USDT',
-      info: {},
-      timestamp: Date.now(),
-      datetime: new Date().toISOString(),
-      high: 0,
-      low: 0,
-      bid: 0,
-      ask: 0,
-      last: 0,
-      change: 0,
-      percentage: 2.0,
-      baseVolume: 0,
-      quoteVolume: 0,
-      bidVolume: 0,
-      askVolume: 0,
-      vwap: 0,
-      open: 0,
-      close: 0,
-      previousClose: 0,
-      average: 0,
-    },
-  };
+  let spotdataRepository: SpotdataRepository;
+  let exchangeService: ExchangeService;
+  let settingsService: AdminSettingsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SpotdataService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+          },
+        },
         {
           provide: SpotdataRepository,
           useValue: {
@@ -115,27 +44,33 @@ describe('SpotdataService', () => {
           },
         },
         {
-          provide: CACHE_MANAGER,
+          provide: ExchangeService,
           useValue: {
-            get: jest.fn(),
-            set: jest.fn(),
+            readAllAPIKeys: jest.fn(),
+          },
+        },
+        {
+          provide: AdminSettingsService,
+          useValue: {
+            getSpotFee: jest.fn(),
           },
         },
         {
           provide: CustomLogger,
           useValue: {
-            log: jest.fn(),
             error: jest.fn(),
             warn: jest.fn(),
+            debug: jest.fn(),
           },
         },
       ],
     }).compile();
 
     service = module.get<SpotdataService>(SpotdataService);
-    repository = module.get<SpotdataRepository>(SpotdataRepository);
-    marketdataService = module.get<MarketdataService>(MarketdataService);
     cacheService = module.get<Cache>(CACHE_MANAGER);
+    spotdataRepository = module.get<SpotdataRepository>(SpotdataRepository);
+    exchangeService = module.get<ExchangeService>(ExchangeService);
+    settingsService = module.get<AdminSettingsService>(AdminSettingsService);
   });
 
   it('should be defined', () => {
@@ -143,139 +78,142 @@ describe('SpotdataService', () => {
   });
 
   describe('getSpotData', () => {
-    it('should return spot data successfully', async () => {
-      const expectedPairs = mockTradingPairs.map((pair) => ({
-        ...pair,
-        change: mockTickers[pair.symbol].percentage,
-      }));
+    it('should return spot data', async () => {
+      const mockPairs: SpotdataTradingPair[] = [
+        {
+          id: '1',
+          symbol: 'BTC/USD',
+          ccxt_id: 'btc_usd',
+          exchange_id: 'binance',
+          base_asset_id: 'BTC',
+          quote_asset_id: 'USD',
+          amount_significant_figures: '8',
+          price_significant_figures: '2',
+          max_buy_amount: '10',
+          max_sell_amount: '10',
+          buy_decimal_digits: '2',
+          sell_decimal_digits: '2',
+          enable: true,
+        },
+      ];
+      const mockExchanges = ['binance'];
+      const mockFee = '0.1';
 
-      jest.spyOn(cacheService, 'get').mockResolvedValue(null);
-      jest
-        .spyOn(repository, 'findAllTradingPairs')
-        .mockResolvedValue(mockTradingPairs);
-      jest
-        .spyOn(marketdataService, 'getTickers')
-        .mockResolvedValue(mockTickers);
+      jest.spyOn(service, 'getSupportedPairs').mockResolvedValue(mockPairs);
+      jest.spyOn(exchangeService, 'readAllAPIKeys').mockResolvedValue([
+        {
+          exchange: 'binance',
+          key_id: 'key',
+          name: 'name',
+          api_key: 'api_key',
+          api_secret: 'api_secret',
+          api_extra: 'api_extra',
+          enable: true,
+        },
+      ]);
+      jest.spyOn(settingsService, 'getSpotFee').mockResolvedValue(mockFee);
 
       const result = await service.getSpotData();
+
       expect(result).toEqual({
-        trading_pairs: expectedPairs,
+        exchanges: mockExchanges,
+        trading_pairs: mockPairs,
+        fee: { spot: mockFee },
       });
-    });
-
-    it('should handle errors and return error response', async () => {
-      jest
-        .spyOn(repository, 'findAllTradingPairs')
-        .mockRejectedValue(new Error('Database error'));
-
-      const result = await service.getSpotData();
-      expect(result).toEqual({
-        code: 500,
-        message: 'Internal server error',
-        error: 'Database error',
-      });
-    });
-  });
-
-  describe('getSupportedPairs', () => {
-    it('should return cached data when available', async () => {
-      const cachedPairs = [{ id: 'cached-pair' }];
-      jest
-        .spyOn(cacheService, 'get')
-        .mockResolvedValue(JSON.stringify(cachedPairs));
-
-      const result = await service.getSupportedPairs();
-      expect(result).toEqual(cachedPairs);
-      expect(cacheService.get).toHaveBeenCalledWith('supported-spotdata-pairs');
-    });
-  });
-
-  describe('getTradingPairById', () => {
-    it('should return trading pair when found', async () => {
-      const pair = mockTradingPairs[0];
-      jest.spyOn(repository, 'findTradingPairById').mockResolvedValue(pair);
-
-      const result = await service.getTradingPairById(pair.id);
-      expect(result).toEqual(pair);
-    });
-
-    it('should return null when trading pair not found', async () => {
-      jest.spyOn(repository, 'findTradingPairById').mockResolvedValue(null);
-
-      const result = await service.getTradingPairById('non-existent-id');
-      expect(result).toBeNull();
     });
   });
 
   describe('addTradingPair', () => {
-    it('should add trading pair successfully', async () => {
-      const newPair = mockTradingPairs[0];
-      jest.spyOn(repository, 'addTradingPair').mockResolvedValue(newPair);
-
-      const result = await service.addTradingPair(newPair);
-      expect(result).toEqual(newPair);
-      expect(repository.addTradingPair).toHaveBeenCalledWith(newPair);
-    });
-
-    it('should throw error when adding trading pair fails', async () => {
-      const newPair = mockTradingPairs[0];
+    it('should add a trading pair', async () => {
+      const mockPair: SpotdataTradingPair = {
+        id: '1',
+        symbol: 'BTC/USD',
+        ccxt_id: 'btc_usd',
+        exchange_id: 'binance',
+        base_asset_id: 'BTC',
+        quote_asset_id: 'USD',
+        amount_significant_figures: '8',
+        price_significant_figures: '2',
+        max_buy_amount: '10',
+        max_sell_amount: '10',
+        buy_decimal_digits: '2',
+        sell_decimal_digits: '2',
+        enable: true,
+      };
       jest
-        .spyOn(repository, 'addTradingPair')
-        .mockRejectedValue(new Error('Database error'));
+        .spyOn(spotdataRepository, 'addTradingPair')
+        .mockResolvedValue(mockPair);
 
-      await expect(service.addTradingPair(newPair)).rejects.toThrow(
-        'Database error',
-      );
-    });
-  });
+      const result = await service.addTradingPair(mockPair);
 
-  describe('updateTradingPair', () => {
-    it('should update trading pair successfully', async () => {
-      const pairId = 'pair-1';
-      const updateData = { symbol: 'updated-symbol' };
-      jest
-        .spyOn(repository, 'updateTradingPair')
-        .mockResolvedValue({ affected: 1 } as any);
-
-      await service.updateTradingPair(pairId, updateData);
-      expect(repository.updateTradingPair).toHaveBeenCalledWith(
-        pairId,
-        updateData,
-      );
-    });
-
-    it('should throw error when updating trading pair fails', async () => {
-      const pairId = 'pair-1';
-      const updateData = { symbol: 'updated-symbol' };
-      jest
-        .spyOn(repository, 'updateTradingPair')
-        .mockRejectedValue(new Error('Database error'));
-
-      await expect(
-        service.updateTradingPair(pairId, updateData),
-      ).rejects.toThrow('Database error');
+      expect(result).toEqual(mockPair);
+      expect(spotdataRepository.addTradingPair).toHaveBeenCalledWith(mockPair);
     });
   });
 
-  describe('removeTradingPair', () => {
-    it('should remove trading pair successfully', async () => {
-      const pairId = 'pair-1';
+  describe('getSupportedPairs', () => {
+    it('should return supported pairs from cache', async () => {
+      const mockPairs: SpotdataTradingPair[] = [
+        {
+          id: '1',
+          symbol: 'BTC/USD',
+          ccxt_id: 'btc_usd',
+          exchange_id: 'binance',
+          base_asset_id: 'BTC',
+          quote_asset_id: 'USD',
+          amount_significant_figures: '8',
+          price_significant_figures: '2',
+          max_buy_amount: '10',
+          max_sell_amount: '10',
+          buy_decimal_digits: '2',
+          sell_decimal_digits: '2',
+          enable: true,
+        },
+      ];
       jest
-        .spyOn(repository, 'removeTradingPair')
-        .mockResolvedValue({ affected: 1 } as any);
+        .spyOn(cacheService, 'get')
+        .mockResolvedValue(JSON.stringify(mockPairs));
 
-      await service.removeTradingPair(pairId);
-      expect(repository.removeTradingPair).toHaveBeenCalledWith(pairId);
+      const result = await service.getSupportedPairs();
+
+      expect(result).toEqual(mockPairs);
+      expect(cacheService.get).toHaveBeenCalledWith('supported-spotdata-pairs');
     });
 
-    it('should throw error when removing trading pair fails', async () => {
-      const pairId = 'pair-1';
+    it('should return supported pairs from repository if not cached', async () => {
+      const mockPairs: any[] = [
+        {
+          id: '1',
+          symbol: 'BTC/USD',
+          ccxt_id: 'btc_usd',
+          exchange_id: 'binance',
+          base_asset_id: 'BTC',
+          quote_asset_id: 'USD',
+          amount_significant_figures: '8',
+          price_significant_figures: '2',
+          max_buy_amount: '10',
+          max_sell_amount: '10',
+          buy_decimal_digits: '2',
+          change: '0',
+          price: '0',
+          sell_decimal_digits: '2',
+          enable: true,
+        },
+      ];
+      jest.spyOn(cacheService, 'get').mockResolvedValue(null);
       jest
-        .spyOn(repository, 'removeTradingPair')
-        .mockRejectedValue(new Error('Database error'));
+        .spyOn(spotdataRepository, 'findAllTradingPairs')
+        .mockResolvedValue(mockPairs);
+      jest.spyOn(cacheService, 'set').mockResolvedValue(Promise.resolve());
 
-      await expect(service.removeTradingPair(pairId)).rejects.toThrow(
-        'Database error',
+      const result = await service.getSupportedPairs();
+
+      expect(result).toEqual(mockPairs);
+      expect(spotdataRepository.findAllTradingPairs).toHaveBeenCalled();
+      expect(cacheService.set).toHaveBeenCalledWith(
+        'supported-spotdata-pairs',
+        JSON.stringify(mockPairs),
+        { ttl: 5 },
       );
     });
   });

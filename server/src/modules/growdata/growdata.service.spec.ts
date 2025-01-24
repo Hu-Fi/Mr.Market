@@ -62,14 +62,12 @@ describe('GrowdataService', () => {
 
   describe('getGrowData', () => {
     it('should return grow data', async () => {
-      jest.spyOn(repository, 'findAllExchanges').mockResolvedValue([]);
       jest.spyOn(repository, 'findAllSimplyGrowTokens').mockResolvedValue([]);
       jest.spyOn(repository, 'findAllArbitragePairs').mockResolvedValue([]);
       jest.spyOn(repository, 'findAllMarketMakingPairs').mockResolvedValue([]);
 
       const result = await service.getGrowData();
       expect(result).toEqual({
-        exchanges: [],
         simply_grow: { tokens: [] },
         arbitrage: { pairs: [] },
         market_making: { pairs: [] },

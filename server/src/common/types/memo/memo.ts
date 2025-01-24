@@ -7,7 +7,6 @@ import {
   SPOT_ORDER_TYPE_MAP,
   TARDING_TYPE_MAP,
 } from 'src/common/constants/memo';
-import { PairsMapKey } from 'src/common/types/pairs/pairs';
 
 // Maintain /src/common/constants/memo.ts
 export type TradingType = keyof typeof TARDING_TYPE_MAP;

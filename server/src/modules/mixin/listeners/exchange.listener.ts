@@ -36,7 +36,6 @@
 
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import {
   ExchangePlaceSpotEvent,
   MixinReleaseTokenEvent,
@@ -56,6 +55,7 @@ export class ExchangeListener {
     event: ExchangePlaceSpotEvent;
     mixinEvent: MixinReleaseTokenEvent;
   }) {
+    console.log('payload', payload);
     // const { event, mixinEvent } = payload;
     // const exchangeName = event.exchangeName;
     // let [baseSymbol, targetSymbol] = event.symbol.split('/');

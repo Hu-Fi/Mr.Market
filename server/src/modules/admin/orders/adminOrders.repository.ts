@@ -20,6 +20,7 @@ export class AdminOrdersRepository {
   ) {}
 
   async getSpotOrders(userId: string) {
+    return userId;
     // return this.spotOrderRepository.find({ where: { userId } });
   }
 

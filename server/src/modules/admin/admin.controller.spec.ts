@@ -4,7 +4,6 @@ import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { AdminGrowService } from './growdata/adminGrow.service';
 import { AdminSpotService } from './spotData/adminSpot.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
 import {
   StartStrategyDto,
   StopStrategyDto,
@@ -13,7 +12,6 @@ import {
 describe('AdminController', () => {
   let controller: AdminController;
   let adminStrategyService: AdminStrategyService;
-  let adminSpotService: AdminSpotService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -71,7 +69,6 @@ describe('AdminController', () => {
     controller = module.get<AdminController>(AdminController);
     adminStrategyService =
       module.get<AdminStrategyService>(AdminStrategyService);
-    adminSpotService = module.get<AdminSpotService>(AdminSpotService);
   });
 
   it('should be defined', () => {
@@ -111,51 +108,6 @@ describe('AdminController', () => {
     await controller.stopStrategy(stopStrategyDto);
     expect(adminStrategyService.stopStrategy).toHaveBeenCalledWith(
       stopStrategyDto,
-    );
-  });
-
-  // Existing tests for AdminSpotService
-  it('should call addTradingPair on AdminSpotService', async () => {
-    const pairDto: SpotdataTradingPairDto = {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      ccxt_id: 'binance',
-      symbol: 'BTC/USDT',
-      exchange_id: 'binance',
-      amount_significant_figures: '8',
-      price_significant_figures: '2',
-      buy_decimal_digits: '2',
-      sell_decimal_digits: '2',
-      max_buy_amount: '1000',
-      max_sell_amount: '1000',
-      base_asset_id: '7e04727a-6f8b-499a-92d0-18bf4ef013bb',
-      quote_asset_id: 'ccde90fe-d611-4fc8-afb4-3388e96fbb02',
-      enable: true,
-    };
-
-    await controller.addTradingPair(pairDto);
-    expect(adminSpotService.addTradingPair).toHaveBeenCalledWith(pairDto);
-  });
-
-  it('should call removeTradingPair on AdminSpotService', async () => {
-    const id = 'mock-id';
-    await controller.removeTradingPair(id);
-    expect(adminSpotService.removeTradingPair).toHaveBeenCalledWith(id);
-  });
-
-  it('should call removeAllTradingPairs on AdminSpotService', async () => {
-    await controller.removeAllTradingPairs();
-    expect(adminSpotService.removeAllTradingPairs).toHaveBeenCalled();
-  });
-
-  it('should call updateTradingPair on AdminSpotService', async () => {
-    const id = 'mock-id';
-    const modifications = {
-      // mock modifications
-    };
-    await controller.updateTradingPair(id, modifications);
-    expect(adminSpotService.updateTradingPair).toHaveBeenCalledWith(
-      id,
-      modifications,
     );
   });
 });

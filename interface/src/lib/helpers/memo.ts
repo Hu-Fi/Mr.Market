@@ -45,6 +45,117 @@ export const REVERSED_TARDING_TYPE_MAP: Record<string, string> = Object.entries(
 export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entries(SPOT_ORDER_TYPE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
+export const encodeSpotLimitOrderMemo = (details: {
+  version: number;
+  tradingType: string;
+  spotOrderType: string;
+  action: string;
+  tradingPairId: string;
+  limitPrice: string;
+}): string => {
+  const tradingTypeKey = Number(
+    Object.keys(TARDING_TYPE_MAP).find(
+      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+    ),
+  );
+  const actionKey = Number(
+    Object.keys(SPOT_ACTION_TYPE_MAP).find(
+      (key) => SPOT_ACTION_TYPE_MAP[key] === details.action,
+    ),
+  );
+  const spotOrderTypeKey = Number(
+    Object.keys(SPOT_ORDER_TYPE_MAP).find(
+      (key) => SPOT_ORDER_TYPE_MAP[key] === details.spotOrderType,
+    ),
+  );
+  if (
+    tradingTypeKey === undefined ||
+    actionKey === undefined ||
+    spotOrderTypeKey === undefined
+  ) {
+    throw new Error('Invalid memo details');
+  }
+
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+  const spotOrderTypeBuffer = Buffer.from([spotOrderTypeKey]);
+  const actionBuffer = Buffer.from([actionKey]);
+  const tradingPairIdBuffer = Buffer.from(
+    details.tradingPairId.replace(/-/g, ''),
+    'hex',
+  );
+  const limitPriceBuffer = Buffer.from(details.limitPrice);
+
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    spotOrderTypeBuffer,
+    actionBuffer,
+    tradingPairIdBuffer,
+    Buffer.from([0x7c]), // '|' as a divider
+    limitPriceBuffer,
+  ]);
+
+  const checksum = computeMemoChecksum(payload);
+  const completeBuffer = Buffer.concat([payload, checksum]);
+  return base58.encode(completeBuffer);
+};
+
+export const encodeSpotMarketOrderMemo = (details: {
+  version: number;
+  tradingType: string;
+  spotOrderType: string;
+  action: string;
+  tradingPairId: string;
+}): string => {
+  const tradingTypeKey = Number(
+    Object.keys(TARDING_TYPE_MAP).find(
+      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+    ),
+  );
+
+  const spotOrderTypeKey = Number(
+    Object.keys(SPOT_ORDER_TYPE_MAP).find(
+      (key) => SPOT_ORDER_TYPE_MAP[key] === details.spotOrderType,
+    ),
+  );
+
+  const actionKey = Number(
+    Object.keys(SPOT_ACTION_TYPE_MAP).find(
+      (key) => SPOT_ACTION_TYPE_MAP[key] === details.action,
+    ),
+  );
+
+  if (
+    tradingTypeKey === undefined ||
+    spotOrderTypeKey === undefined ||
+    actionKey === undefined
+  ) {
+    throw new Error('Invalid memo details');
+  }
+
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+  const spotOrderTypeBuffer = Buffer.from([spotOrderTypeKey]);
+  const actionBuffer = Buffer.from([actionKey]);
+  const tradingPairIdBuffer = Buffer.from(
+    details.tradingPairId.replace(/-/g, ''),
+    'hex',
+  );
+
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    spotOrderTypeBuffer,
+    actionBuffer,
+    tradingPairIdBuffer,
+  ]);
+
+  const checksum = computeMemoChecksum(payload);
+  const completeBuffer = Buffer.concat([payload, checksum]);
+  return base58.encode(completeBuffer);
+};
+
 export const encodeSimplyGrowCreateMemo = (details: {
   version: number;
   tradingType: string;
