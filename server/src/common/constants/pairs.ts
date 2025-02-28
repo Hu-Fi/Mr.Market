@@ -7,49 +7,6 @@
 // 5. Update src/modules/marketdata/marketdata.service.ts for data source if new exchange added
 // 6. Update SUPPORTED_PAIRS and PAIRS_MAP in interface/src/lib/helpers/constants.ts
 
-export const SUPPORTED_PAIRS = {
-  mexc: ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'UNI/USDT', 'HMT/USDT'],
-};
-
-// Used for Mixin memo
-export const PAIRS_MAP = {
-  Z7GC: 'BTC/USDT-ERC20',
-  MX5C: 'ETH/USDT-ERC20',
-  K8TT: 'BNB/USDT-ERC20',
-  Y3YH: 'XRP/USDT-ERC20',
-  W4EF: 'ADA/USDT-ERC20',
-  GTYF: 'SOL/USDT-ERC20',
-  K5M2: 'DOT/USDT-ERC20',
-  DHWY: 'DOGE/USDT-ERC20',
-  L4JL: 'AVAX/USDT-ERC20',
-  RSMN: 'SHIB/USDT-ERC20',
-  LM4O: 'LTC/USDT-ERC20',
-  HM3F: 'UNI/USDT-ERC20',
-  POGO: 'LINK/USDT-ERC20',
-  XDWG: 'MATIC/USDT-ERC20',
-  FQ10: 'ALGO/USDT-ERC20',
-  M5TG: 'TRX/USDT-ERC20',
-  XE6B: 'XLM/USDT-ERC20',
-  LHSF: 'VET/USDT-ERC20',
-  JUP0: 'ICP/USDT-ERC20',
-  AYWT: 'FIL/USDT-ERC20',
-  Y5IL: 'THETA/USDT-ERC20',
-  X2P1: 'XTZ/USDT-ERC20',
-  ABWR: 'EOS/USDT-ERC20',
-  PXYT: 'AAVE/USDT-ERC20',
-  X1YO: 'KSM/USDT-ERC20',
-  EHE7: 'NEO/USDT-ERC20',
-  YJGX: 'MKR/USDT-ERC20',
-  MQQZ: 'CRO/USDT-ERC20',
-  WOX4: 'ATOM/USDT-ERC20',
-  BVSE: 'COMP/USDT-ERC20',
-  FNZB: 'HMT/USDT-ERC20',
-};
-
-export const PAIRS_MAP_REVERSED: { [key: string]: string } = Object.entries(
-  PAIRS_MAP,
-).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
-
 export const SYMBOL_ASSET_ID_MAP = {
   BOX: 'f5ef6b5d-cc5a-3d90-b2c0-a2fd386e7a3c',
   BTC: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
@@ -226,10 +183,6 @@ export const SYMBOL_ASSET_ID_MAP = {
   BICO: '892efd85-0e5b-3c3c-b029-fbf423bc50ce',
   OCN: '478ce398-4a00-3274-900e-02ae4516c08f',
 };
-
-export const ASSET_ID_SYMBOL_MAP: { [key: string]: string } = Object.entries(
-  SYMBOL_ASSET_ID_MAP,
-).reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
 
 // Map mixin asset id to networks (Used for withdrawal on exchanges)
 // TODO: We still need modify this as we test it,

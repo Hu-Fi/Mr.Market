@@ -5,6 +5,7 @@ import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
 import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
 import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
 import { CustomLogger } from 'src/modules/logger/logger.service';
+import { ExchangeService } from '../mixin/exchange/exchange.service';
 
 @Injectable()
 export class GrowdataService {
@@ -13,17 +14,24 @@ export class GrowdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly growdataRepository: GrowdataRepository,
+    private readonly exchangeService: ExchangeService,
   ) {}
 
   private cachingTTL = 600; // 10 minutes
 
   async getGrowData() {
     try {
+      const exchanges = await this.exchangeService.deriveExchangesFromAPIKeys();
+      const exchangeFields = exchanges.map((exchange) => ({
+        exchange_id: exchange,
+        name: exchange,
+      }));
       const simplyGrowTokens = await this.getAllSimplyGrowTokens();
       const arbitragePairs = await this.getAllArbitragePairs();
       const marketMakingPairs = await this.getAllMarketMakingPairs();
 
       return {
+        exchanges: exchangeFields,
         simply_grow: {
           tokens: simplyGrowTokens,
         },

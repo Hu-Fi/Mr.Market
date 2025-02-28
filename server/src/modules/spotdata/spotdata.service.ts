@@ -24,18 +24,15 @@ export class SpotdataService {
 
   async getSpotData() {
     const trading_pairs = await this.getSupportedPairs();
-
-    // Derive exchanges from api keys, remove duplicates
-    const apiKeys = await this.exchangeService.readAllAPIKeys();
-    const exchanges = Array.from(new Set(apiKeys.map((key) => key.exchange)));
-
-    const spotFee = await this.settingsService.getSpotFee();
-    const fee = { spot: spotFee };
+    const exchanges = await this.exchangeService.deriveExchangesFromAPIKeys();
+    const spot = await this.settingsService.getSpotFee();
 
     return {
       exchanges,
       trading_pairs,
-      fee,
+      fee: {
+        spot,
+      },
     };
   }
 

@@ -7,5 +7,5 @@
 <div class="flex flex-col space-y-8 p-8">
   <BalanceSummary />
   <RebalanceActions />
-  <RecordSummary />
+  <!-- <RecordSummary /> -->
 </div>

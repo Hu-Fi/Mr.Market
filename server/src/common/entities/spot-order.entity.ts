@@ -1,6 +1,5 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 import { SpotOrderType } from 'src/common/types/memo/memo';
-import { PairsMapValue } from 'src/common/types/pairs/pairs';
 import { SpotOrderStatus } from 'src/common/types/orders/states';
 
 @Entity()
@@ -24,7 +23,7 @@ export class SpotOrder {
   state: SpotOrderStatus;
 
   @Column()
-  symbol: PairsMapValue;
+  symbol: string;
 
   @Column()
   amount: string; // The amount of pay asset received

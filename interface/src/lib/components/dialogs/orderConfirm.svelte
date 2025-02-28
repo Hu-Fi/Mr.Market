@@ -191,7 +191,4 @@
       </div>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop">
-    <button on:click={() => orderConfirmDialog.set(false)}></button>
-  </form>
 </dialog>

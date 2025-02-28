@@ -1,39 +1,7 @@
-import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 import BigNumber from 'bignumber.js';
-import {
-  PAIRS_MAP,
-  SYMBOL_ASSET_ID_MAP,
-  ASSET_ID_SYMBOL_MAP,
-} from 'src/common/constants/pairs';
-import { AssetBalances } from 'src/common/types/rebalance/map';
+import { SYMBOL_ASSET_ID_MAP } from 'src/common/constants/pairs';
 
-// used for generating 4 positions key mapped to trading symbol
-export const generateRandomSequence = () => {
-  // Helper function to generate a random letter
-  function getRandomLetter(): string {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    return alphabet[Math.floor(Math.random() * alphabet.length)];
-  }
-
-  // Helper function to generate a random digit
-  function getRandomDigit(): string {
-    return Math.floor(Math.random() * 10).toString();
-  }
-
-  // Generate a 4-character sequence
-  return (
-    getRandomLetter() +
-    Array.from({ length: 3 }, () =>
-      Math.random() > 0.5 ? getRandomLetter() : getRandomDigit(),
-    ).join('')
-  );
-};
-
-export const getPairSymbolByKey = (key: PairsMapKey): PairsMapValue => {
-  return PAIRS_MAP[key] || '';
-};
-
-export const getAssetIDBySymbol = (value: PairsMapValue) => {
+export const getAssetIDBySymbol = (value: string) => {
   const symbol = value.split('/');
   const base = symbol[0];
   const target = symbol[1];
@@ -43,10 +11,6 @@ export const getAssetIDBySymbol = (value: PairsMapValue) => {
     baseAssetID,
     targetAssetID,
   };
-};
-
-export const getSymbolByAssetID = (asset_id: string): string => {
-  return ASSET_ID_SYMBOL_MAP[asset_id] || '';
 };
 
 export const getRFC3339Timestamp = () => {
@@ -71,40 +35,4 @@ export const subtractFee = (
     amount: finalAmount.toString(),
     fee: feeAmount.toString(),
   };
-};
-
-export const convertAssetBalancesToSymbols = (
-  assetBalances: AssetBalances,
-): Record<string, string> => {
-  const symbolBalances: Record<string, string> = {};
-
-  // Iterate over each entry in the asset balances
-  Object.entries(assetBalances).forEach(([assetId, balance]) => {
-    const symbol = ASSET_ID_SYMBOL_MAP[assetId]; // Find the symbol for the current asset ID
-    if (symbol) {
-      // If the symbol exists, add it to the result map
-      symbolBalances[symbol] = balance;
-    } else {
-      // Optionally handle the case where there's no symbol for an asset ID
-      console.warn(`Symbol not found for asset ID: ${assetId}`);
-    }
-  });
-
-  return symbolBalances; // {"BTC": "0.1234", "ETH": "123"}
-};
-
-export const calculateRebalanceAmount = (
-  left: BigNumber,
-  right: BigNumber,
-): BigNumber => {
-  // Calculate total balance
-  const total = left.plus(right);
-
-  // Calculate balanced amount for each side
-  const balancedAmount = total.dividedBy(2);
-
-  // Calculate amount to transfer from right to left
-  const amountToTransfer = balancedAmount.minus(left);
-
-  return amountToTransfer;
 };

@@ -141,6 +141,7 @@
 
   <div class="flex flex-col space-y-2 text-xs font-extralight text-base-content text-opacity-60 !mt-10 !mb-3">
     <span>- {$_("deposit_will_arrive", { values: { number: confirmations } })}</span>
-    <span>- {$_("minium_deposit_amount", { values: { amount: miniumDepositAmount, symbol: assetSymbol } })}</span>
+    <span>- {$_("minimum_deposit_amount", { values: { amount: miniumDepositAmount, symbol: assetSymbol } })}</span>
+    <a href="https://discuss.mixin.one/questions/D1pB" target="_blank" class=""><span>- {$_("mixin_deposit_fee_intro")}</span></a>
   </div>
 </div>

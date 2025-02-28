@@ -9,6 +9,7 @@ import {
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
 } from 'src/common/entities/grow-data.entity';
+import { ExchangeModule } from '../mixin/exchange/exchange.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
       GrowdataArbitragePair,
       GrowdataMarketMakingPair,
     ]),
+    ExchangeModule,
   ],
   controllers: [GrowdataController],
   providers: [GrowdataService, GrowdataRepository],

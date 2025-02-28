@@ -135,9 +135,9 @@
     {#if miniumDepositAmount && maxiumDepositAmount && ( maxiumDepositAmount !== '0' || miniumDepositAmount !== '0' )}
       <span>- {$_("deposit_amount_range", { values: { min: miniumDepositAmount, max: maxiumDepositAmount, symbol: currencyId } })}</span>
     {:else if miniumDepositAmount}
-      <span>- {$_("minium_deposit_amount", { values: { amount: miniumDepositAmount, symbol: currencyId } })}</span>
+      <span>- {$_("minimum_deposit_amount", { values: { amount: miniumDepositAmount, symbol: currencyId } })}</span>
     {:else if maxiumDepositAmount}
-      <span>- {$_("maxium_deposit_amount", { values: { amount: maxiumDepositAmount, symbol: currencyId } })}</span>
+      <span>- {$_("maximum_deposit_amount", { values: { amount: maxiumDepositAmount, symbol: currencyId } })}</span>
     {/if}
   </div>
 </div>

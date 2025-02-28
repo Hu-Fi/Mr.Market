@@ -97,6 +97,11 @@ export class ExchangeService {
     return this.removeSensitiveData(apiKeys);
   }
 
+  async deriveExchangesFromAPIKeys() {
+    const apiKeys = await this.readAllAPIKeys();
+    return Array.from(new Set(apiKeys.map((key) => key.exchange)));
+  }
+
   async getAllAPIKeysBalance() {
     try {
       const apiKeys: exchangeAPIKeysConfig[] = await this.readAllAPIKeys();
@@ -334,9 +339,9 @@ export class ExchangeService {
       );
 
       let networkInfo;
-      let minium_deposit_amount = '0';
+      let minimum_deposit_amount = '0';
       let minium_withdrawal_amount = '0';
-      let maxium_deposit_amount = '0';
+      let maximum_deposit_amount = '0';
       let maxium_withdrawal_amount = '0';
 
       if (currencyInfo['networks']) {
@@ -344,10 +349,10 @@ export class ExchangeService {
       }
 
       if (networkInfo && networkInfo['limits']) {
-        minium_deposit_amount = networkInfo['limits']['deposit']['min'] || '0';
+        minimum_deposit_amount = networkInfo['limits']['deposit']['min'] || '0';
         minium_withdrawal_amount =
           networkInfo['limits']['withdraw']['min'] || '0';
-        maxium_deposit_amount = networkInfo['limits']['deposit']['max'] || '0';
+        maximum_deposit_amount = networkInfo['limits']['deposit']['max'] || '0';
         maxium_withdrawal_amount =
           networkInfo['limits']['withdraw']['max'] || '0';
       }
@@ -358,9 +363,9 @@ export class ExchangeService {
       );
       return {
         currency: symbol,
-        minium_deposit_amount,
+        minimum_deposit_amount,
         minium_withdrawal_amount,
-        maxium_deposit_amount,
+        maximum_deposit_amount,
         maxium_withdrawal_amount,
         address: depositAddress['address'],
         memo: depositAddress['tag'] || '',

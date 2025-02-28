@@ -121,15 +121,4 @@ describe('MarketdataService', () => {
       );
     });
   });
-
-  describe('getSupportedPairs', () => {
-    it('returns supported pairs from cache if available', async () => {
-      const cachedPairs = [{ symbol: 'BTCUSD', price: 50000 }];
-      cacheManager.get.mockResolvedValue(JSON.stringify(cachedPairs));
-
-      const pairs = await service.getSupportedPairs();
-      expect(pairs).toEqual(cachedPairs);
-      expect(cacheManager.get).toHaveBeenCalledWith('supported-pairs');
-    });
-  });
 });

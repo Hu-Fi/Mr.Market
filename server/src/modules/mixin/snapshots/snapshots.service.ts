@@ -29,8 +29,9 @@ import {
   decodeArbitrageCreateMemo,
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
+  decodeSpotLimitOrderMemo,
+  decodeSpotMarketOrderMemo,
 } from 'src/common/helpers/mixin/memo';
-import { getSymbolByAssetID } from 'src/common/helpers/utils';
 
 @Injectable()
 export class SnapshotsService {
@@ -103,7 +104,7 @@ export class SnapshotsService {
         return {
           address: entity.destination,
           memo: entity.tag,
-          minium_deposit_amount: dust,
+          minimum_deposit_amount: dust,
           confirmations,
         };
       }
@@ -435,36 +436,34 @@ export class SnapshotsService {
       }, {});
 
       // Calculate total balance for each asset and map to symbols
-      // Map of { symbol: balance_amount }
       if (type === 'map') {
-        return Object.entries(groupedByAssetId).reduce(
-          (acc, [assetId, outputs]) => {
-            // @ts-expect-error types
-            const totalBalance = getTotalBalanceFromOutputs(outputs);
-            const symbol = getSymbolByAssetID(assetId); // Convert asset ID to symbol
-            if (symbol) {
-              acc[symbol] = totalBalance.toString(); // Assuming you want the balance as a string
-            } else {
-              this.logger.warn(`Symbol not found for asset ID: ${assetId}`);
-            }
-            return acc;
-          },
-          {},
-        );
+        const result = {};
+        for (const [assetId, outputs] of Object.entries(groupedByAssetId)) {
+          // @ts-expect-error types
+          const totalBalance = getTotalBalanceFromOutputs(outputs);
+          const asset = await this.client.network.fetchAsset(assetId);
+          const symbol = asset.symbol;
+          if (symbol) {
+            result[symbol] = totalBalance.toString();
+          } else {
+            this.logger.warn(`Symbol not found for asset ID: ${assetId}`);
+          }
+        }
+        return result;
       } else {
-        return Object.entries(groupedByAssetId).reduce(
-          (acc, [assetId, outputs]) => {
-            // @ts-expect-error types
-            const totalBalance = getTotalBalanceFromOutputs(outputs);
-            acc.push({
-              asset_id: assetId,
-              balance: totalBalance.toString(),
-              symbol: getSymbolByAssetID(assetId),
-            });
-            return acc;
-          },
-          [],
-        );
+        const result = [];
+        for (const [assetId, outputs] of Object.entries(groupedByAssetId)) {
+          // @ts-expect-error types
+          const totalBalance = getTotalBalanceFromOutputs(outputs);
+          const asset = await this.client.network.fetchAsset(assetId);
+          const symbol = asset.symbol;
+          result.push({
+            asset_id: assetId,
+            balance: totalBalance.toString(),
+            symbol,
+          });
+        }
+        return result;
       }
     } catch (error) {
       this.logger.error(`Error fetching asset balances: ${error.message}`);
@@ -584,7 +583,7 @@ export class SnapshotsService {
       const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
         'utf-8',
       );
-      const { payload, version, tradingTypeKey } =
+      const { payload, version, tradingTypeKey, actionKey } =
         memoPreDecode(hexDecodedMemo);
       if (!payload) {
         this.logger.log(
@@ -602,38 +601,59 @@ export class SnapshotsService {
       }
 
       switch (tradingTypeKey) {
+        // Spot trading
         case 0:
-          // Spot trading
+          if (actionKey === 1) {
+            const spotDetails = decodeSpotLimitOrderMemo(payload);
+            if (!spotDetails) {
+              break;
+            }
+            this.events.emit(
+              'spot_trading.create_limit_order',
+              spotDetails,
+              snapshot,
+            );
+          } else if (actionKey === 2) {
+            const spotDetails = decodeSpotMarketOrderMemo(payload);
+            if (!spotDetails) {
+              break;
+            }
+            this.events.emit(
+              'spot_trading.create_market_order',
+              spotDetails,
+              snapshot,
+            );
+          }
           break;
+        // Swap
         case 1:
-          // Swap
           break;
+        // Simply grow
         case 2:
-          // Simply grow
           const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
           if (!simplyGrowDetails) {
             break;
           }
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
+        // Market making
         case 3:
-          // Market making
           const mmDetails = decodeMarketMakingCreateMemo(payload);
           if (!mmDetails) {
             break;
           }
           this.events.emit('market_making.create', mmDetails, snapshot);
           break;
+        // Arbitrage
         case 4:
-          // Arbitrage
           const arbDetails = decodeArbitrageCreateMemo(payload);
           if (!arbDetails) {
             break;
           }
           this.events.emit('arbitrage.create', arbDetails, snapshot);
           break;
+        // Refund
         default:
-          // Refund
           break;
       }
     } catch (error) {

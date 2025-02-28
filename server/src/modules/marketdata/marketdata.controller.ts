@@ -86,12 +86,4 @@ export class MarketDataController {
     const symbolsCap = symbolsArray.map((symbol) => symbol.toUpperCase());
     return this.marketDataService.getTickers(exchange, symbolsCap);
   }
-
-  @Get('/tickers/pairs')
-  @ApiOperation({ summary: 'Get supported pairs with real time price info' })
-  @ApiResponse({ status: 200, description: 'Supported symbols' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  async getSupportedPairs() {
-    return this.marketDataService.getSupportedPairs();
-  }
 }

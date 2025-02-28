@@ -36,7 +36,7 @@
       if (data) {
         depositAddress = data.address;
         depositMemo = data.memo;
-        minDepositAmount = data.minium_deposit_amount;
+        minDepositAmount = data.minimum_deposit_amount;
         confirmations = data.confirmations;
         loaded = true;
       }

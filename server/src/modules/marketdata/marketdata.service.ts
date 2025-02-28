@@ -2,7 +2,6 @@ import * as ccxt from 'ccxt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Injectable, Inject } from '@nestjs/common';
-import { SUPPORTED_PAIRS } from 'src/common/constants/pairs';
 import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
 import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
@@ -79,60 +78,6 @@ export class MarketdataService {
         volume: data[5],
       };
     });
-  }
-
-  async getSupportedPairs(): Promise<any> {
-    const cacheID = `supported-pairs`;
-    try {
-      const cachedData = await this.cacheService.get(cacheID);
-      if (cachedData) {
-        return JSON.parse(cachedData);
-      } else {
-        const pairs = await this._getSupportedPairs();
-        await this.cacheService.set(
-          cacheID,
-          JSON.stringify(pairs),
-          this.cachingTTL,
-        );
-        return pairs;
-      }
-    } catch (error) {
-      this.logger.error('Error accessing cache', error.message);
-      const pairs = await this._getSupportedPairs();
-      return pairs;
-    }
-  }
-
-  async _getSupportedPairs(): Promise<any> {
-    const promises = [];
-
-    for (const [exchange, pairs] of Object.entries(SUPPORTED_PAIRS)) {
-      if (pairs.length > 0) {
-        const promise = this.getTickers(exchange, pairs)
-          .then((tickers) => {
-            return pairs.map((pair) => ({
-              symbol: pair,
-              price: tickers[pair]?.last, // Use optional chaining in case tickers[pair] is undefined
-              change: tickers[pair]?.percentage, // Use optional chaining here as well
-              exchange,
-            }));
-          })
-          .catch((error) => {
-            this.logger.error(
-              `Error fetching tickers from ${exchange}: ${error.message}`,
-            );
-            return []; // Return an empty array for this exchange in case of error
-          });
-        promises.push(promise);
-      } else {
-        promises.push(Promise.resolve([])); // Return an empty array if there are no pairs
-      }
-    }
-
-    const results = await Promise.all(promises);
-    // Flatten the array of arrays into a single array
-    const flattenedResults = results.flat();
-    return flattenedResults;
   }
 
   async watchOrderBook(

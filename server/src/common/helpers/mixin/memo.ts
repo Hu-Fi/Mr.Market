@@ -34,7 +34,12 @@ function bufferToUuid(buffer: Buffer): string {
 
 export const memoPreDecode = (
   memo: string,
-): { payload: Buffer; version: number; tradingTypeKey: number } => {
+): {
+  payload: Buffer;
+  version: number;
+  tradingTypeKey: number;
+  actionKey: number;
+} => {
   // Base58 decode memo
   const completeBuffer = base58.decode(memo);
 
@@ -59,7 +64,10 @@ export const memoPreDecode = (
     throw new Error('Invalid memo details');
   }
 
-  return { payload, version, tradingTypeKey };
+  // ActionKey (1 byte)
+  const actionKey = payload.readUInt8(2);
+
+  return { payload, version, tradingTypeKey, actionKey };
 };
 
 export const encodeSpotLimitOrderMemo = (details: {

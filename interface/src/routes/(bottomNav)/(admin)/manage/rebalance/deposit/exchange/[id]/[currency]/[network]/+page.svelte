@@ -41,7 +41,7 @@
       if (data) {
         depositAddress = data.address;
         depositMemo = data.memo;
-        minDepositAmount = data.minium_deposit_amount;
+        minDepositAmount = data.minimum_deposit_amount;
         minWithdrawalAmount = data.minium_withdrawal_amount;
         maxDepositAmount = data.max_deposit_amount;
         maxWithdrawalAmount = data.max_withdrawal_amount;
