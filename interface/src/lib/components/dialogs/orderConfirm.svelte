@@ -15,11 +15,13 @@
     marketAmount,
     marketTotal,
     spotCreating,
+    pairTargetSymbol,
+    pairBaseSymbol,
   } from "$lib/stores/spot";
   import { SpotPay } from "$lib/helpers/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import { getOrderById } from "$lib/helpers/hufi/spot";
-  import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
+  import {BN, formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
   import { HARDCODED_FEE, ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
   
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
@@ -32,12 +34,12 @@
       title: $_("payment_amount"),
       value: $orderTypeLimit ?
         $buy
-          ? `${$limitTotal} ${$pair.symbol.split("/")[1]}`
-          : `${$limitAmount} ${$pair.symbol.split("/")[0]}`
+          ? `${$limitTotal} ${$pairTargetSymbol}`
+          : `${$limitAmount} ${$pairBaseSymbol}`
       : $orderTypeMarket ?
         $buy
-          ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
-          : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
+          ? `${$marketAmount} ${$pairTargetSymbol}`
+          : `${$marketAmount} ${$pairBaseSymbol}`
       : ''
     },
     {
@@ -131,11 +133,11 @@
         </span>
         <span class="text-3xl font-bold" data-testid="estimated_receive_value">
           {#if $orderTypeLimit}
-            {$buy ? $limitAmount : $limitTotal}
-            {$buy ? $pair.symbol.split("/")[0] : $pair.symbol.split("/")[1]}
+            {BN($limitTotal).toString()}
+            {$buy ? $pairBaseSymbol : $pairTargetSymbol}
           {:else if $orderTypeMarket}
-            {$marketTotal}
-            {$buy ? $pair.symbol.split("/")[0] : $pair.symbol.split("/")[1]}
+            {BN($marketTotal).toString()}
+            {$buy ? $pairBaseSymbol : $pairTargetSymbol}
           {/if}
         </span>
       </div>
@@ -156,8 +158,8 @@
             {:else if i === 1}
               <!-- Exchange price -->
               <span data-testid="order_confirm_exchange_price">
-                1 {$pair.symbol.split("/")[0]} = {info.value}
-                {$pair.symbol.split("/")[1]}
+                1 {$pairBaseSymbol} = {info.value}
+                {$pairTargetSymbol}
               </span>
             {:else}
               <span data-testid="order_confirm_recipient">

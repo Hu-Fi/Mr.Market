@@ -35,8 +35,8 @@
     }
     return formatWalletBalance(extractedData.balance);
   };
-  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
-  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
+  $: baseBalance = $mixinConnected && $userAssets ? extractBalance(targetSymbol) : 0;
+  $: targetBalance = $mixinConnected && $userAssets ? extractBalance(baseSymbol) : 0;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -49,13 +49,12 @@
   const getAmount = () => {
     if ($orderTypeLimit) {
       limitAmount.set(
-        formatDecimals(BN($limitTotal).dividedBy($limitPrice).toNumber(), 8) ||
+        BN($limitTotal).dividedBy($limitPrice).toFixed() ||
           "",
       );
       return;
     }
     if ($orderTypeMarket) {
-      console.log('getAmount()=>Market')
       marketAmount.set(
         BN($marketTotal).dividedBy($marketPrice).toFixed(),
       );
@@ -63,35 +62,35 @@
     }
   };
   const getTotal = () => {
+    if ($orderTypeLimit && (!$limitPrice || !$limitAmount)) {
+      limitTotal.set('')
+      return;
+    }
     if ($orderTypeLimit && $buy) {
       limitTotal.set(
-        formatDecimals(
-          BN($limitAmount).multipliedBy($limitPrice).toNumber(),
-          8,
-        ) || "",
-      );
+        BN($limitAmount).multipliedBy($limitPrice).toString() || '',
+      )
       return;
     }
     if ($orderTypeLimit && !$buy) {
       limitTotal.set(
-        formatDecimals(BN($limitAmount).multipliedBy($current).toNumber(), 8) ||
-          "",
+        BN($limitAmount).multipliedBy($limitPrice).toString() || '',
       );
+      return;
+    }
+    if ($orderTypeMarket && (!$marketAmount)) {
+      marketTotal.set('')
       return;
     }
     if ($orderTypeMarket && $buy) {
       marketTotal.set(
-        formatDecimals(
-          BN($marketAmount).dividedBy($current).toNumber(),
-          8,
-        ) || "",
+        BN($marketAmount).dividedBy($current).toString() || '',
       );
       return;
     }
     if ($orderTypeMarket && !$buy) {
       marketTotal.set(
-        formatDecimals(BN($marketAmount).multipliedBy($current).toNumber(), 8) ||
-          "",
+        BN($marketAmount).multipliedBy($current).toString() || '',
       );
       return;
     }
@@ -177,6 +176,8 @@
     );
   };
 
+  $: baseSymbol = $pair.symbol?.split("/")[0]
+  $: targetSymbol = $pair.symbol?.split("/")[1]
   // Set total as slider change
   $: slider, setSlider();
   // Update total amount as limit price change
@@ -211,7 +212,7 @@
           "input input-sm text-base bg-base-100 w-full focus:outline-none focus:border-0 px-0",
         )}
       />
-      <span class="text-xs opacity-60"> {$pair.symbol.split("/")[1]} </span>
+      <span class="text-xs opacity-60"> {targetSymbol} </span>
     {:else if $orderTypeMarket}
       <input
         disabled
@@ -245,7 +246,7 @@
         data-testid="amount_input"
         class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
       />
-      <span class="text-xs opacity-60"> {$pair.symbol.split("/")[0]} </span>
+      <span class="text-xs opacity-60"> {baseSymbol} </span>
     </div>
   {/if}
 
@@ -303,9 +304,9 @@
     <span class="text-xs opacity-60">
       {
         $orderTypeLimit ?
-          $pair.symbol.split("/")[1] :
+          targetSymbol :
           $orderTypeMarket ?
-          $buy ? $pair.symbol.split("/")[1] : $pair.symbol.split("/")[0] : ''
+          $buy ? targetSymbol : baseSymbol : ''
       }
     </span>
   </div>
@@ -321,7 +322,7 @@
         }}
         ><span class="text-xs opacity-90"
           >{$buy ? baseBalance : targetBalance}
-          {$buy ? $pair.symbol.split("/")[1] : $pair.symbol.split("/")[0]}</span
+          {$buy ? targetSymbol : baseSymbol}</span
         ></button
       >
     {:else}

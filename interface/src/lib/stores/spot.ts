@@ -9,11 +9,12 @@ export const bottomTradeDialog = writable(false)
 export const bottomModeLastRoute = writable('')
 
 export const socket = writable<Socket>()
-export const pair = writable<PairsData>({
+export const pair = writable<Partial<PairsData>>({
   symbol: 'BTC/USDT',
-  price: 0,
-  exchange: 'okx',
+  exchange_id: 'okx',
 })
+export const pairBaseSymbol = derived(pair, (pair)=>pair.symbol?.split("/")[0] || '')
+export const pairTargetSymbol = derived(pair, (pair)=>pair.symbol?.split("/")[1] || '')
 export const pairSearch = writable("")
 export const pairSelectorDialog = writable(false)
 export const pairSelectorLoaded = writable(false)

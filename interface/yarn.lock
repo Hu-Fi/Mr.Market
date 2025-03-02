@@ -2964,10 +2964,10 @@ kleur@^4.1.5:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-klinecharts@^9.7.2:
-  version "9.8.5"
-  resolved "https://registry.yarnpkg.com/klinecharts/-/klinecharts-9.8.5.tgz#4277ec66dc4ad64ed45439fb44327860e97bb1f5"
-  integrity sha512-sBuFmnwuxwC51VQ17WOEem80bzfX/4nUMuEzTvfcMvUtTiYb7HYP3jqlI+ei3f2WkqplfYKrpNOn5ejucq1NrQ==
+klinecharts@^10.0.0-alpha4:
+  version "10.0.0-alpha4"
+  resolved "https://registry.yarnpkg.com/klinecharts/-/klinecharts-10.0.0-alpha4.tgz#d106e085e1506d8604e1a29afa37f6801caa5703"
+  integrity sha512-RURw0RNMdaxuJzW2AVwbuuVkEbtEnX5UyvieaRoXS+dL9hRAxx1ri4pcSG5BJRzf0hk33WWg7HTj7B8Ml5m+mg==
 
 known-css-properties@^0.30.0:
   version "0.30.0"

@@ -4,7 +4,7 @@
 </script>
 
 {#await $page.data.spotInfo}
-  <div class="flex flex-col justify-center items-center space-y-4 mb-20 h-[80vh]">
+  <div class="flex flex-col justify-center items-center space-y-4 mb-20 h-[90vh]">
     <span class="loading loading-spinner loading-md"></span>
   </div>
 {:then spotInfo}

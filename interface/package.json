@@ -54,7 +54,7 @@
     "clsx": "^2.0.0",
     "crypto-js": "^4.2.0",
     "daisyui": "^4.12",
-    "klinecharts": "^9.7.2",
+    "klinecharts": "^10.0.0-alpha4",
     "lightweight-charts": "^4.1.1",
     "moment": "^2.30.1",
     "pako": "^2.1.0",
