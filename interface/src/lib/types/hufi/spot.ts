@@ -16,6 +16,10 @@ export type SpotOrder = {
 
 export type SpotInfo = {
   trading_pairs: SpotTradingPair[];
+  exchanges: string[];
+  fee: {
+    spot: string;
+  };
 }
 
 export type SpotTradingPair = {

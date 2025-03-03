@@ -3,14 +3,12 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { onDestroy, onMount } from "svelte";
-  import { invalidate } from "$app/navigation";
   import { switchSpotPair } from "$lib/helpers/hufi/socket";
-  import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
   import NoResult from "$lib/components/common/NoResult.svelte";
-  import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
+  import { BN, formatDecimals, formatUSNumber } from "$lib/helpers/utils";
   import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/spot";
 
   let tabItems = [];

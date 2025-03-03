@@ -3,11 +3,11 @@
   import { onDestroy, onMount } from "svelte";
 	import { invalidate } from '$app/navigation';
   import { sortSpot } from "$lib/helpers/sortTable";
+  import NoResult from "$lib/components/common/NoResult.svelte";
   import { activeSpotTab, asc, spotSelectedField } from "$lib/stores/market";
   import SinglePair from "$lib/components/market/elements/singlePair.svelte";
   import TableColumns from "$lib/components/market/elements/tableColumns.svelte";
   import SpotTableColumns from "$lib/components/market/elements/spotTableColumns.svelte";
-  import NoResult from "$lib/components/common/NoResult.svelte";
 
   $: Pairs = [];
   $: sortedPairs = sortSpot($spotSelectedField, Pairs, $asc)?.filter((pair) => {
@@ -37,7 +37,7 @@
   onMount(() => {
     const interval = setInterval(() => {
       console.log(`Trading info updated at ${new Date().toISOString()}`)
-			invalidate('market');
+			invalidate('base:market');
       loadPairs()
 		}, 3000); // 3 seconds
     loadPairs()

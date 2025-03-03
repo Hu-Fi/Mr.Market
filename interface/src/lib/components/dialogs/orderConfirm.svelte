@@ -1,6 +1,7 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import {
     buy,
@@ -22,12 +23,13 @@
   import { getOrderById } from "$lib/helpers/hufi/spot";
   import {BN, formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
   import { HARDCODED_FEE, ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
-  
+
+  export let spotFee = $page.data.spot_fee || HARDCODED_FEE;
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
   const precisionMarket = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
   // Calculate fee multiplier based on buy/sell direction
-  $: feeMultiplier = $buy ? BN(1).plus(HARDCODED_FEE) : BN(1).minus(HARDCODED_FEE);
+  $: feeMultiplier = $buy ? BN(1).plus(BN(spotFee)) : BN(1).minus(BN(spotFee));
   
   // Limit order calculations
   $: limitPriceWithFee = formatFixedOrderBookPrice(BN($limitPrice).multipliedBy(feeMultiplier).toNumber(), precisionLimit())

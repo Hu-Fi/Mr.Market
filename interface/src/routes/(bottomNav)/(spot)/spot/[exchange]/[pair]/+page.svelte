@@ -44,7 +44,7 @@
     <OrderBook />
   </div>
 </div>
-<OrderConfirm />
+<OrderConfirm spotFee={$page.data.spot_fee} />
 
 <!-- Orders -->
 <div class={clsx("border-t", $darkTheme ? "border-slate-900" : "border-base-200")}>

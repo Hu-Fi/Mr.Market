@@ -1,9 +1,10 @@
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({params}) {
+export async function load({params, parent}) {
 	let exchange = params['exchange'] as string
 	let pair = params['pair'] as string
+	const spotInfo = await (await parent()).spotInfo
 
 	if (!exchange && !pair) {
 		return
@@ -15,5 +16,5 @@ export async function load({params}) {
 	exchange = String(exchange).toLowerCase();
 	pair = String(pair).replace('-', "/").toUpperCase();
 	
-	return {exchange, pair}
+	return {exchange, pair, spot_fee: spotInfo?.data.fee.spot}
 }

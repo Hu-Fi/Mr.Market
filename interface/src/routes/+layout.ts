@@ -6,7 +6,7 @@ export const ssr = false;
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({depends}) {
   try {
-    depends('market')
+    depends('base:spotInfo')
     const market = getCoingeckoMarket('all', 1)
     const growInfo = getGrowBasicInfo()
     const spotInfo = getSpotInfo()
