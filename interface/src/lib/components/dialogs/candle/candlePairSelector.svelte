@@ -116,12 +116,16 @@
                 </div>
 
                 <div class="flex flex-col items-end">
-                  {#if c.price}
-                    <span class="text-sm font-semibold">
+                  <span class="text-sm font-semibold">
+                    {#if BN(c.price).isGreaterThan(0)}
                       {formatUSNumber(c.price)}
-                    </span>
-                  {/if}
-                  {#if c.change}
+                    {:else}
+                      <span class="opacity-60">
+                        ---
+                      </span>
+                    {/if}
+                  </span>                    
+                  {#if BN(c.change).isGreaterThan(0)}
                     <span class={clsx("text-xs !text-[10px]", BN(c.change).gt(0) ? UpColorText : DownColorText)}>
                       {BN(c.change).gt(0) ? '+':''}{formatDecimals(c.change, 2)}%
                     </span>

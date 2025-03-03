@@ -5,7 +5,6 @@
   import { onDestroy, onMount } from "svelte";
   import { darkTheme } from "$lib/stores/theme";
   import { manageMode } from "$lib/stores/spot";
-	import { type PairsData } from '$lib/types/hufi/exchanges';
   import { connectOrderBook, switchSpotPair } from "$lib/helpers/hufi/socket";
 
   import OrderConfirm from "$lib/components/dialogs/orderConfirm.svelte";

@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { onDestroy, onMount } from "svelte";
+  import { invalidate } from "$app/navigation";
   import { switchSpotPair } from "$lib/helpers/hufi/socket";
   import type { PairsData } from "$lib/types/hufi/exchanges";
   import Loading from "$lib/components/common/loading.svelte";
@@ -11,7 +12,6 @@
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";
   import { DownColorText, UpColorText } from "$lib/helpers/constants";
   import { pairExchangeFilter, pairSearch, pairSelectorDialog, pairSelectorLoaded, socket } from "$lib/stores/spot";
-    import { invalidate } from "$app/navigation";
 
   let tabItems = [];
 
@@ -117,14 +117,18 @@
                     {c.symbol.split('/')[0]}<span class="font-light text-xs text-base-content/60">/{c.symbol.split('/')[1]}</span>
                   </span>
                 </div>
-        
+
                 <div class="flex flex-col items-end">
-                  {#if c.price}
-                    <span class="text-sm font-semibold">
+                  <span class="text-sm font-semibold">
+                    {#if BN(c.price).isGreaterThan(0)}
                       {formatUSNumber(c.price)}
-                    </span>
-                  {/if}
-                  {#if c.change}
+                    {:else}
+                      <span class="opacity-60">
+                        ---
+                      </span>
+                    {/if}
+                  </span>                    
+                  {#if BN(c.change).isGreaterThan(0)}
                     <span class={clsx("text-xs !text-[10px]", BN(c.change).gt(0) ? UpColorText : DownColorText)}>
                       {BN(c.change).gt(0) ? '+':''}{formatDecimals(c.change, 2)}%
                     </span>

@@ -29,7 +29,7 @@
     </div>
 
     <div class="join border rounded-lg items-center">
-      <input type="text" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createSimplyGrowAmount} class={clsx("input focus:border-none focus:outline-none w-36 join-item pr-0 placeholder:text-base-content/40")} placeholder={$_('enter_amount')} />
+      <input type="text" inputmode="decimal" use:cleave={maskOption} data-testid="amount-input-0" bind:value={$createSimplyGrowAmount} class={clsx("input focus:border-none focus:outline-none w-36 join-item pr-0 placeholder:text-base-content/40")} placeholder={$_('enter_amount')} />
       <div class="join-item mr-2 w-14 text-end truncate">
         <span class="text-sm opacity-40"> {$createSimplyGrowAsset ? $createSimplyGrowAsset.symbol : ''} </span>
       </div>

@@ -94,95 +94,187 @@ test('connect wallet', async({ page, context }) => {
   expect(newPage.url()).toContain('https://mixin.one/codes/');
 })
 
-// test('create buy limit order', async ({ page }) => {
-//   const price = '10000'; const recvAmount = '10'; const estimatedPay = Number(price)*Number(recvAmount)
+test('create buy limit order', async ({ page }) => {
+  const price = '10000'; 
+  const amount = '10'; 
+  const estimatedTotal = Number(price) * Number(amount);
 
-//   // Open dialog
-//     await page.getByTestId('order_type_selector').click()
+  // Open dialog
+  await page.getByTestId('order_type_selector').click();
 
-//   // Select limit order
-//   await page.getByTestId('limit_order_btn').click()
+  // Select limit order
+  await page.getByTestId('limit_order_btn').click();
 
-//   // Click on limit price
-//   await page.getByTestId('limit_price_input').click()
-//   await page.getByTestId('limit_price_input').fill(price)
+  // Click buy tab
+  await page.getByTestId('type_buy').click();
+
+  // Enter limit price
+  await page.getByTestId('limit_price_input').click();
+  await page.getByTestId('limit_price_input').fill(price);
   
-//   // Click on pay amount
-//   await page.getByTestId('amount_input').click()
-//   await page.keyboard.type(recvAmount);
+  // Enter amount
+  await page.getByTestId('amount_input').click();
+  await page.keyboard.type(amount);
 
-//   // Check estimated amount
-//   const expectedReceive = page.getByTestId('estimated_receive_value').textContent()
-//   expect(expectedReceive).toContain(`${estimatedPay}`)
-
-//   // Click buy action
-//   // await page.getByTestId('type_buy').click()
-
-//   // Check Recv amount
-//   const recvAmountX = await page.getByTestId('order_confirm_recv_amount').textContent()
-//   expect(recvAmountX).toContain(recvAmount)
-
-//   // Check Pay amount
-//   const estimatedPayX = await page.getByTestId('order_confirm_pay_amount').textContent()
-//   expect(estimatedPayX).toContain(estimatedPay.toString())
-
-//   // Check if confirm button is disabled
-//   const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
-
-//   if (!isConfirmButtonDisabled) {
-//     // Confirm order
-//     await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
-//     await page.getByTestId('confirm_order_button').click();
-//   }
-
-//   // Close
-//   await page.getByTestId('close_order_modal').click();
-// });
-
-// test.skip('create sell limit order', async ({ page }) => {
-//   const price = '10000'; const payAmount = '10'; const estimatedRecv = Number(price)*Number(payAmount)
-
-//   // Open dialog
-//     await page.getByTestId('order_type_selector').click()
-
-//   // Select limit order
-//   await page.getByTestId('limit_order_btn').click()
+  // Click confirm order button
+  await page.getByTestId('confirm_order').click();
   
-//   // Click sell tab
-//   await page.getByTestId('sell_tab').click()
-
-//   // Click on limit price
-//   await page.getByTestId('limit_price_input').click()
-//   await page.getByTestId('limit_price_input').fill(price)
+  // Verify order details in confirmation modal
+  const payAmount = await page.getByTestId('order_confirm_pay_amount').textContent();
+  expect(payAmount).toContain(estimatedTotal.toString());
   
-//   // Click on pay amount
-//   await page.getByTestId('amount_input').click()
-//   await page.keyboard.type(payAmount);
+  // Check estimated receive value - don't check exact value due to fees
+  const estimatedReceive = await page.getByTestId('estimated_receive_value').textContent();
+  expect(estimatedReceive).toBeTruthy();
+  expect(estimatedReceive).toContain('BTC');
+
+  // Check if confirm button is disabled
+  const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
+
+  if (!isConfirmButtonDisabled) {
+    // Confirm order
+    await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
+    await page.getByTestId('confirm_order_button').click();
+  }
+
+  // Close
+  await page.getByTestId('close_order_modal').click();
+});
+
+test('create sell limit order', async ({ page }) => {
+  const price = '10000'; 
+  const amount = '10'; 
+  const estimatedTotal = Number(price) * Number(amount);
+
+  // Open dialog
+  await page.getByTestId('order_type_selector').click();
+
+  // Select limit order
+  await page.getByTestId('limit_order_btn').click();
   
-//   // Check estimated amount
-//   const expectedReceive = page.getByTestId('estimated_receive_input')
-//   expect(expectedReceive).toHaveValue(`${estimatedRecv}`, {timeout: 2000})  
+  // Click sell tab
+  await page.getByTestId('type_sell').click();
 
-//   // Click sell action
-//   await page.getByTestId('type_sell').click()
+  // Enter limit price
+  await page.getByTestId('limit_price_input').click();
+  await page.getByTestId('limit_price_input').fill(price);
+  
+  // Enter amount
+  await page.getByTestId('amount_input').click();
+  await page.keyboard.type(amount);
 
-//   // Check Recv amount
-//   const estimatedRecvX = await page.getByTestId('order_confirm_recv_amount').textContent()
-//   expect(estimatedRecvX).toContain(estimatedRecv.toString())
+  // Click confirm order button
+  await page.getByTestId('confirm_order').click();
+  
+  // Verify order details in confirmation modal
+  const payAmount = await page.getByTestId('order_confirm_pay_amount').textContent();
+  expect(payAmount).toContain(amount);
+  
+  // Check estimated receive value - don't check exact value due to fees
+  const estimatedReceive = await page.getByTestId('estimated_receive_value').textContent();
+  expect(estimatedReceive).toBeTruthy();
+  expect(estimatedReceive).toContain('USDT');
 
-//   // Check Pay amount
-//   const payAmountX = await page.getByTestId('order_confirm_pay_amount').textContent()
-//   expect(payAmountX).toContain(payAmount)
+  // Check if confirm button is disabled
+  const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
 
-//   // Check if confirm button is disabled
-//   const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
+  if (!isConfirmButtonDisabled) {
+    // Confirm order
+    await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
+    await page.getByTestId('confirm_order_button').click();
+  }
 
-//   if (!isConfirmButtonDisabled) {
-//     // Confirm order
-//     await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
-//     await page.getByTestId('confirm_order_button').click();
-//   }
+  // Close
+  await page.getByTestId('close_order_modal').click();
+});
 
-//   // Close
-//   await page.getByTestId('close_order_modal').click();
-// });
+test('verify order confirmation modal displays correct information', async ({ page }) => {
+  // Open dialog
+  await page.getByTestId('order_type_selector').click();
+  
+  // Select market order
+  await page.getByTestId('market-order-btn').click();
+  
+  // Click buy tab
+  await page.getByTestId('type_buy').click();
+  
+  // Enter amount
+  const amount = '500';
+  await page.getByTestId('total_input').click();
+  await page.getByTestId('total_input').fill(amount);
+  
+  // Click confirm order button
+  await page.getByTestId('confirm_order').click();
+  
+  // Verify modal is open
+  const isDialogOpen = await page.locator('#order_confirm_modal').evaluate(dialog => dialog.classList.contains('modal-open'));
+  expect(isDialogOpen).toBeTruthy();
+  
+  // Verify payment amount
+  const payAmount = await page.getByTestId('order_confirm_pay_amount').textContent();
+  expect(payAmount).toContain(amount);
+  
+  // Verify recipient
+  const recipient = await page.getByTestId('order_confirm_recipient').textContent();
+  expect(recipient?.toLowerCase()).toContain('mixin wallet');
+  
+  // Close modal
+  await page.getByTestId('close_order_modal').click();
+  
+  // Verify modal is closed
+  const isDialogClosed = await page.locator('#order_confirm_modal').evaluate(dialog => !dialog.classList.contains('modal-open'));
+  expect(isDialogClosed).toBeTruthy();
+});
+
+test('test switching between market and limit affects input fields', async ({ page }) => {
+  // Start with market order
+  await page.getByTestId('order_type_selector').click();
+  await page.getByTestId('market-order-btn').click();
+  
+  // Verify market input is visible
+  const marketInputVisible = await page.getByTestId('total_input').isVisible();
+  expect(marketInputVisible).toBeTruthy();
+  
+  // Switch to limit order
+  await page.getByTestId('order_type_selector').click();
+  await page.getByTestId('limit_order_btn').click();
+  
+  // Verify limit price input is visible
+  const limitPriceVisible = await page.getByTestId('limit_price_input').isVisible();
+  expect(limitPriceVisible).toBeTruthy();
+  
+  // Verify amount input is visible
+  const amountInputVisible = await page.getByTestId('amount_input').isVisible();
+  expect(amountInputVisible).toBeTruthy();
+});
+
+test('verify exchange rate display in confirmation modal', async ({ page }) => {
+  // Open dialog
+  await page.getByTestId('order_type_selector').click();
+  
+  // Select limit order
+  await page.getByTestId('limit_order_btn').click();
+  
+  // Click buy tab
+  await page.getByTestId('type_buy').click();
+  
+  // Enter price
+  const price = '5000';
+  await page.getByTestId('limit_price_input').click();
+  await page.getByTestId('limit_price_input').fill(price);
+  
+  // Enter amount
+  const amount = '2';
+  await page.getByTestId('amount_input').click();
+  await page.getByTestId('amount_input').fill(amount);
+  
+  // Open confirmation modal
+  await page.getByTestId('confirm_order').click();
+
+  // Check exchange price display
+  const exchangePrice = await page.getByTestId('order_confirm_pay_amount').textContent();
+  expect(exchangePrice).toContain('10000');
+
+  // Close modal
+  await page.getByTestId('close_order_modal').click();
+});

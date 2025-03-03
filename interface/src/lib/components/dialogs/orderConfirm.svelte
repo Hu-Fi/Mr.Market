@@ -13,7 +13,6 @@
     limitAmount,
     orderTypeMarket,
     marketAmount,
-    marketTotal,
     spotCreating,
     pairTargetSymbol,
     pairBaseSymbol,
@@ -25,10 +24,23 @@
   import { HARDCODED_FEE, ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
   
   const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
-  const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
+  const precisionMarket = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
 
-  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * HARDCODED_FEE, precisionLimit()) : $limitPrice;
-  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * HARDCODED_FEE, precisionCurrent()) : $current;
+  // Calculate fee multiplier based on buy/sell direction
+  $: feeMultiplier = $buy ? BN(1).plus(HARDCODED_FEE) : BN(1).minus(HARDCODED_FEE);
+  
+  // Limit order calculations
+  $: limitPriceWithFee = formatFixedOrderBookPrice(BN($limitPrice).multipliedBy(feeMultiplier).toNumber(), precisionLimit())
+  $: estimatedLimitReceive = $buy ? 
+    BN($limitTotal).div(BN(limitPriceWithFee)).toString() : 
+    BN(limitPriceWithFee).multipliedBy(BN($limitAmount)).toString();
+  
+  // Market order calculations
+  $: marketPriceWithFee = formatFixedOrderBookPrice(BN($current).multipliedBy(feeMultiplier).toNumber(), precisionMarket())
+  $: estimatedMarketReceive = $buy ? 
+    BN($marketAmount).div(BN(marketPriceWithFee)).toString() : 
+    BN(marketPriceWithFee).multipliedBy(BN($marketAmount)).toString();
+
   $: infos = [
     {
       title: $_("payment_amount"),
@@ -44,7 +56,7 @@
     },
     {
       title: $_("estimated_price"),
-      value: $orderTypeLimit ? limitPriceWithFee : currentWithFee
+      value: $orderTypeLimit ? limitPriceWithFee : marketPriceWithFee
     },
     { title: $_("recipient"), value: $_("mixin_wallet") },
   ];
@@ -133,10 +145,10 @@
         </span>
         <span class="text-3xl font-bold" data-testid="estimated_receive_value">
           {#if $orderTypeLimit}
-            {BN($limitTotal).toString()}
+            {estimatedLimitReceive}
             {$buy ? $pairBaseSymbol : $pairTargetSymbol}
           {:else if $orderTypeMarket}
-            {BN($marketTotal).toString()}
+            {estimatedMarketReceive}
             {$buy ? $pairBaseSymbol : $pairTargetSymbol}
           {/if}
         </span>

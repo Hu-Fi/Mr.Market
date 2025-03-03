@@ -12,17 +12,15 @@
   import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
 
   import {
-    pair,
     buy,
-    current,
     orderTypeLimit,
     orderTypeMarket,
     limitPrice,
     limitTotal,
     limitAmount,
     marketAmount,
-    marketTotal,
-    marketPrice,
+    pairBaseSymbol,
+    pairTargetSymbol,
   } from "$lib/stores/spot";
   let usdValue = 1;
   let slider = 0;
@@ -35,8 +33,8 @@
     }
     return formatWalletBalance(extractedData.balance);
   };
-  $: baseBalance = $mixinConnected && $userAssets ? extractBalance(targetSymbol) : 0;
-  $: targetBalance = $mixinConnected && $userAssets ? extractBalance(baseSymbol) : 0;
+  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pairTargetSymbol) : 0;
+  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pairBaseSymbol) : 0;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -48,49 +46,26 @@
   // Auto calculate Amount after total input
   const getAmount = () => {
     if ($orderTypeLimit) {
+      if (!$limitPrice || !$limitTotal) {
+        limitAmount.set('');
+        return;
+      }
       limitAmount.set(
         BN($limitTotal).dividedBy($limitPrice).toFixed() ||
           "",
       );
       return;
     }
-    if ($orderTypeMarket) {
-      marketAmount.set(
-        BN($marketTotal).dividedBy($marketPrice).toFixed(),
-      );
-      return;
-    }
   };
   const getTotal = () => {
-    if ($orderTypeLimit && (!$limitPrice || !$limitAmount)) {
-      limitTotal.set('')
-      return;
-    }
-    if ($orderTypeLimit && $buy) {
+    if ($orderTypeLimit) {
+      if (!$limitPrice || !$limitAmount) {
+        limitTotal.set('');
+        return;
+      }
+      
       limitTotal.set(
-        BN($limitAmount).multipliedBy($limitPrice).toString() || '',
-      )
-      return;
-    }
-    if ($orderTypeLimit && !$buy) {
-      limitTotal.set(
-        BN($limitAmount).multipliedBy($limitPrice).toString() || '',
-      );
-      return;
-    }
-    if ($orderTypeMarket && (!$marketAmount)) {
-      marketTotal.set('')
-      return;
-    }
-    if ($orderTypeMarket && $buy) {
-      marketTotal.set(
-        BN($marketAmount).dividedBy($current).toString() || '',
-      );
-      return;
-    }
-    if ($orderTypeMarket && !$buy) {
-      marketTotal.set(
-        BN($marketAmount).multipliedBy($current).toString() || '',
+        BN($limitAmount).multipliedBy($limitPrice).toString() || ''
       );
       return;
     }
@@ -115,42 +90,25 @@
     getAmount();
   };
   const setSlider = () => {
-    if ($orderTypeLimit && $buy) {
-      limitTotal.set(
-        formatDecimals(
-          BN(baseBalance).multipliedBy(slider).dividedBy(100).toNumber(),
-          8,
-        ) || "",
-      );
-      getAmount();
+    const balance = $buy ? baseBalance : targetBalance;
+    const sliderValue = formatDecimals(
+      BN(balance).multipliedBy(slider).dividedBy(100).toNumber(),
+      8
+    ) || "";
+    
+    if ($orderTypeLimit) {
+      if ($buy) {
+        limitTotal.set(sliderValue);
+        getAmount();
+      } else {
+        limitAmount.set(sliderValue);
+        getTotal();
+      }
       return;
     }
-    if ($orderTypeLimit && !$buy) {
-      limitAmount.set(
-        formatDecimals(
-          BN(targetBalance).multipliedBy(slider).dividedBy(100).toNumber(),
-          8,
-        ) || "",
-      );
-      getTotal();
-      return;
-    }
-    if ($orderTypeMarket && $buy) {
-      marketAmount.set(
-        formatDecimals(
-          BN(baseBalance).multipliedBy(slider).dividedBy(100).toNumber(),
-          8,
-        ) || "",
-      );
-      getTotal();
-    }
-    if ($orderTypeMarket && !$buy) {
-      marketAmount.set(
-        formatDecimals(
-          BN(targetBalance).multipliedBy(slider).dividedBy(100).toNumber(),
-          8,
-        ) || "",
-      );
+    
+    if ($orderTypeMarket) {
+      marketAmount.set(sliderValue);
       getTotal();
     }
   };
@@ -176,17 +134,12 @@
     );
   };
 
-  $: baseSymbol = $pair.symbol?.split("/")[0]
-  $: targetSymbol = $pair.symbol?.split("/")[1]
   // Set total as slider change
   $: slider, setSlider();
-  // Update total amount as limit price change
-  $: if ($orderTypeLimit) {$limitPrice; getTotal();}
-  $: if ($orderTypeMarket) {$current; getTotal();}
   // Show 0 when estimated price is NaN
   $: est = $limitPrice ? BN($limitPrice).multipliedBy(usdValue) : 0;
-  // Clear values when buy/sell change
-  $: $buy, limitAmount.set(""), limitTotal.set(""), marketAmount.set(""), marketTotal.set(""), slider = 0;
+  // Clear states when buy/sell change
+  $: $buy, limitAmount.set(""), limitTotal.set(""), marketAmount.set(""), slider = 0;
 </script>
 
 <div>
@@ -203,7 +156,8 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="tel"
+        type="text"
+        inputmode="decimal"
         use:cleave={maskOption}
         bind:value={$limitPrice}
         placeholder={$_("price")}
@@ -212,7 +166,7 @@
           "input input-sm text-base bg-base-100 w-full focus:outline-none focus:border-0 px-0",
         )}
       />
-      <span class="text-xs opacity-60"> {targetSymbol} </span>
+      <span class="text-xs opacity-60"> {$pairTargetSymbol} </span>
     {:else if $orderTypeMarket}
       <input
         disabled
@@ -238,7 +192,8 @@
       class="flex justify-between items-center border px-2 py-1 my-1 rounded-lg border-base-300 focus-within:border-blue-400"
     >
       <input
-        type="tel"
+        type="text"
+        inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$limitAmount}
@@ -246,7 +201,7 @@
         data-testid="amount_input"
         class="input input-sm text-base w-full focus:outline-none focus:border-0 px-0"
       />
-      <span class="text-xs opacity-60"> {baseSymbol} </span>
+      <span class="text-xs opacity-60"> {$pairBaseSymbol} </span>
     </div>
   {/if}
 
@@ -262,6 +217,7 @@
       type="range"
       min="0"
       max="100"
+      step="5"
       bind:value={slider}
       on:input={handleInput}
       on:change={handleChange}
@@ -283,7 +239,8 @@
   >
     {#if $orderTypeLimit}
       <input
-        type="tel"
+        type="text"
+        inputmode="decimal"
         on:keyup={getAmount}
         use:cleave={maskOption}
         bind:value={$limitTotal}
@@ -292,7 +249,8 @@
       />
     {:else if $orderTypeMarket}
       <input
-        type="tel"
+        type="text"
+        inputmode="decimal"
         on:keyup={getTotal}
         use:cleave={maskOption}
         bind:value={$marketAmount}
@@ -304,9 +262,9 @@
     <span class="text-xs opacity-60">
       {
         $orderTypeLimit ?
-          targetSymbol :
+          $pairTargetSymbol :
           $orderTypeMarket ?
-          $buy ? targetSymbol : baseSymbol : ''
+          $buy ? $pairTargetSymbol : $pairBaseSymbol : ''
       }
     </span>
   </div>
@@ -322,7 +280,7 @@
         }}
         ><span class="text-xs opacity-90"
           >{$buy ? baseBalance : targetBalance}
-          {$buy ? targetSymbol : baseSymbol}</span
+          {$buy ? $pairTargetSymbol : $pairBaseSymbol}</span
         ></button
       >
     {:else}

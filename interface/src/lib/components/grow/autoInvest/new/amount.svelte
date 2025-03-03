@@ -78,7 +78,7 @@
           </span>
         </div>
         <div class="join border rounded-lg items-center">
-          <input type="text" use:cleave={maskOption} bind:value={$createAIAmounts[i]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
+          <input type="text" inputmode="decimal" use:cleave={maskOption} bind:value={$createAIAmounts[i]} class={clsx("input focus:border-none focus:outline-none w-32 join-item")} />
           <div class="join-item mr-2">
             <span class="text-sm opacity-60"> {$createAIFiat} </span>
           </div>

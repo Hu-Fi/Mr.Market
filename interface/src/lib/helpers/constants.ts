@@ -19,7 +19,7 @@ export const BALANCE_CURRENCY_RATE_URL = "https://latest.currency-api.pages.dev/
 export const MARKET_TOKEN_EXCHANGES = ["binance", "huobi", "okex", "bybit", "bitget", "bitmex", "bitfinex", "kraken", "coinbase", "bigone"]
 export const ORDER_STATE_FETCH_INTERVAL = 3000
 export const ORDER_STATE_TIMEOUT_DURATION = 180000
-export const HARDCODED_FEE = 1.002
+export const HARDCODED_FEE = 0.002
 
 // It must sync with server/pairs.ts
 export const PAIRS_MAP = {
