@@ -30,6 +30,15 @@
     $socket.disconnect();
   });
   onMount(getRoutingParams)
+
+  // Add checks based on dynamic pairs, find the matching trading pair from the spotInfo
+  // console.log(spotInfo?.data.trading_pairs)
+	
+	// // Find the matching trading pair
+	// const matchedPair = spotInfo?.data.trading_pairs.find(
+	// 	tp => tp.symbol === pair
+	// );
+	// console.log('matchedPair:', matchedPair)
 </script>
 
 <!-- Trading -->

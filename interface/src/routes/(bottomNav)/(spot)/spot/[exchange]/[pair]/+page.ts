@@ -5,7 +5,8 @@ export async function load({params, parent}) {
 	let exchange = params['exchange'] as string
 	let pair = params['pair'] as string
 	const spotInfo = await (await parent()).spotInfo
-
+	console.log('spotInfo:', spotInfo)
+	
 	if (!exchange && !pair) {
 		return
 	}

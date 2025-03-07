@@ -126,7 +126,7 @@
                       </span>
                     {/if}
                   </span>                    
-                  {#if BN(c.change).isGreaterThan(0)}
+                  {#if BN(c.change).abs().gt(0)}
                     <span class={clsx("text-xs !text-[10px]", BN(c.change).gt(0) ? UpColorText : DownColorText)}>
                       {BN(c.change).gt(0) ? '+':''}{formatDecimals(c.change, 2)}%
                     </span>

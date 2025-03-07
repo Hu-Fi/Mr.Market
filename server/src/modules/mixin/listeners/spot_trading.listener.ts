@@ -1,18 +1,13 @@
-// Update src/modules/mixin/listeners/spot.listener.ts
 import { randomUUID } from 'crypto';
+import BigNumber from 'bignumber.js';
 import { Injectable } from '@nestjs/common';
-import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
-import { BigNumber } from 'bignumber.js';
-import {
-  isSpotOrderTypeValueValid,
-  isTradingTypeValueValid,
-} from 'src/common/helpers/checks/spotChecks';
+import { OnEvent } from '@nestjs/event-emitter';
+import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 import {
-  ExchangePlaceSpotEvent,
-  MixinReleaseTokenEvent,
-  SpotOrderCreateEvent,
-} from 'src/modules/mixin/events/spot.event';
+  SpotLimitMemoDetails,
+  SpotMarketMemoDetails,
+} from 'src/common/types/memo/memo';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -24,160 +19,269 @@ export class SpotOrderListener {
   private readonly logger = new CustomLogger(SpotOrderListener.name);
 
   constructor(
-    private exchangeService: ExchangeService,
-    private eventEmitter: EventEmitter2,
-    private snapshotsService: SnapshotsService,
-    private spotdataService: SpotdataService,
+    private readonly exchangeService: ExchangeService,
+    private readonly snapshotsService: SnapshotsService,
+    private readonly spotdataService: SpotdataService,
   ) {}
 
   @OnEvent('spot_trading.create_limit_order')
-  @OnEvent('spot_trading.create_market_order')
-  async handleSpotOrderCreateEvent(event: SpotOrderCreateEvent) {
-    // try {
-    //   // Validate basic parameters
-    //   if (!this.validateEventParameters(event)) {
-    //     await this.handleInvalidOrder(event, 'Invalid order parameters');
-    //     return;
-    //   }
-    //   // Get symbol details from database
-    //   const symbolDetails = await this.spotdataService.getTradingPairById(
-    //     event.tradingPairId,
-    //   );
-    //   if (!symbolDetails) {
-    //     await this.handleInvalidOrder(event, 'Invalid trading pair');
-    //     return;
-    //   }
-    //   // Validate payment asset
-    //   if (!this.validatePaymentAsset(event, symbolDetails)) {
-    //     await this.handleInvalidOrder(event, 'Invalid payment asset');
-    //     return;
-    //   }
-    //   // Check exchange balance
-    //   const isBalanceSufficient = await this.checkUserBalance(
-    //     event,
-    //     symbolDetails,
-    //   );
-    //   if (!isBalanceSufficient) {
-    //     await this.handleInsufficientBalance(event);
-    //     return;
-    //   }
-    //   // Create and persist order
-    //   const { order, mixinEvent } = await this.createOrderObject(
-    //     event,
-    //     symbolDetails,
-    //   );
-    //   await this.exchangeService.createSpotOrder(order);
-    //   // Proceed to order placement
-    //   this.eventEmitter.emit('exchange.spot.place', { order, mixinEvent });
-    // } catch (error) {
-    //   this.logger.error(`Order processing failed: ${error.message}`);
-    //   await this.handleOrderFailure(event, error.message);
-    // }
+  async handleLimitOrderCreateEvent(
+    details: SpotLimitMemoDetails,
+    snapshot: SafeSnapshot,
+  ) {
+    if (!details || !snapshot) {
+      this.logger.error(
+        'Invalid arguments passed to handleLimitOrderCreateEvent',
+      );
+      return;
+    }
+
+    try {
+      // Validate limit order parameters
+      if (!this.validateLimitOrderParameters(details, snapshot)) {
+        this.logger.warn(
+          `Invalid limit order parameters: ${JSON.stringify(details)}`,
+        );
+        return await this.snapshotsService.refund(snapshot);
+      }
+
+      // Read details.tradingPairId
+      const tradingPair = await this.spotdataService.getTradingPairById(
+        details.tradingPairId,
+      );
+
+      // Find API key for the exchange
+      const apiKeyConfig = await this.exchangeService.findFirstAPIKeyByExchange(
+        tradingPair.exchange_id,
+      );
+
+      if (!apiKeyConfig) {
+        this.logger.error(
+          `No API key found for exchange: ${tradingPair.exchange_id}`,
+        );
+        return await this.snapshotsService.refund(snapshot);
+      }
+
+      // Generate a unique order ID
+      const orderId = randomUUID();
+
+      // Create the order in our database first with CREATED status
+      await this.exchangeService.createSpotOrder({
+        side: details.action === 'buy' ? 'buy' : 'sell',
+        orderId,
+        userId: snapshot.opponent_id,
+        exchangeName: tradingPair.exchange_id,
+        symbol: tradingPair.symbol,
+        type: 'limit',
+        amount: snapshot.amount,
+        baseAssetId: tradingPair.base_asset_id,
+        targetAssetId: tradingPair.quote_asset_id,
+        limitPrice: details.limitPrice,
+        state: STATE_TEXT_MAP['CREATED'],
+        apiKeyId: apiKeyConfig.key_id,
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+        snapshotId: snapshot.snapshot_id,
+      });
+
+      // Prepare for token release after order execution
+      await this.exchangeService.addMixinReleaseToken({
+        orderId,
+        userId: snapshot.opponent_id,
+        assetId: tradingPair.base_asset_id,
+        amount: snapshot.amount,
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+        state: STATE_TEXT_MAP['CREATED'],
+      });
+
+      try {
+        // Place the order on the exchange
+        await this.exchangeService.placeOrder(
+          orderId,
+          tradingPair.exchange_id,
+          true, // limit order
+          details.action === 'buy',
+          apiKeyConfig.key_id,
+          apiKeyConfig.api_key,
+          apiKeyConfig.api_secret,
+          tradingPair.symbol,
+          snapshot.amount,
+          details.limitPrice,
+        );
+
+        this.logger.log(`Successfully placed limit order: ${orderId}`);
+      } catch (error) {
+        this.logger.error(
+          `Failed to place limit order: ${error.message}`,
+          error.stack,
+        );
+        await this.exchangeService.updateSpotOrderState(
+          orderId,
+          STATE_TEXT_MAP['FAILED'],
+        );
+        await this.snapshotsService.refund(
+          snapshot,
+          'Failed to execute order. Please try again later.',
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error processing limit order: ${error.message}`,
+        error.stack,
+      );
+      await this.snapshotsService.refund(
+        snapshot,
+        'An error occurred while processing your order. Please try again later.',
+      );
+    }
   }
 
-  // private async validateEventParameters(
-  //   event: SpotOrderCreateEvent,
-  // ): Promise<boolean> {
-  //   if (!isTradingTypeValueValid(event.tradingType)) return false;
-  //   if (!isSpotOrderTypeValueValid(event.spotOrderType)) return false;
-  //   if (!event.symbol || !event.amount) return false;
-  //   if (event.spotOrderType === 'LIMIT' && !event.limitPrice) return false;
-  //   return true;
-  // }
+  @OnEvent('spot_trading.create_market_order')
+  async handleMarketOrderCreateEvent(
+    details: SpotMarketMemoDetails,
+    snapshot: SafeSnapshot,
+  ) {
+    if (!details || !snapshot) {
+      this.logger.error(
+        'Invalid arguments passed to handleMarketOrderCreateEvent',
+      );
+      return;
+    }
 
-  // private async validatePaymentAsset(
-  //   event: SpotOrderCreateEvent,
-  //   symbolDetails: any,
-  // ): Promise<boolean> {
-  //   const isBuyOrder = event.spotOrderType.toUpperCase().includes('BUY');
-  //   const expectedAssetId = isBuyOrder
-  //     ? symbolDetails.targetAssetId
-  //     : symbolDetails.baseAssetId;
-  //   return event.snapshot.asset_id === expectedAssetId;
-  // }
+    try {
+      // Validate market order parameters
+      if (!this.validateMarketOrderParameters(details, snapshot)) {
+        this.logger.warn(
+          `Invalid market order parameters: ${JSON.stringify(details)}`,
+        );
+        return await this.snapshotsService.refund(snapshot);
+      }
 
-  // private async checkUserBalance(
-  //   event: SpotOrderCreateEvent,
-  //   symbolDetails: any,
-  // ): Promise<boolean> {
-  //   const requiredAssetId = event.spotOrderType.includes('BUY')
-  //     ? symbolDetails.targetAssetId
-  //     : symbolDetails.baseAssetId;
+      // Read details.tradingPairId
+      const tradingPair = await this.spotdataService.getTradingPairById(
+        details.tradingPairId,
+      );
 
-  //   const balance = await this.snapshotsService.getAssetBalance(
-  //     requiredAssetId,
-  //   );
-  //   return new BigNumber(balance).isGreaterThanOrEqualTo(event.amount);
-  // }
+      // Find API key for the exchange
+      const apiKeyConfig = await this.exchangeService.findFirstAPIKeyByExchange(
+        tradingPair.exchange_id,
+      );
 
-  // private async createOrderObject(
-  //   event: SpotOrderCreateEvent,
-  //   symbolDetails: any,
-  // ) {
-  //   const timeNow = getRFC3339Timestamp();
-  //   const orderId = randomUUID();
-  //   const isBuyOrder = event.spotOrderType.toUpperCase().includes('BUY');
+      if (!apiKeyConfig) {
+        this.logger.error(
+          `No API key found for exchange: ${tradingPair.exchange_id}`,
+        );
+        return await this.snapshotsService.refund(snapshot);
+      }
 
-  //   const order: ExchangePlaceSpotEvent = {
-  //     orderId,
-  //     exchangeName: event.exchangeName,
-  //     snapshotId: event.snapshot.snapshot_id,
-  //     userId: event.snapshot.opponent_id,
-  //     type: event.spotOrderType,
-  //     state: STATE_TEXT_MAP['CREATED'],
-  //     symbol: event.symbol,
-  //     amount: event.snapshot.amount,
-  //     baseAssetId: symbolDetails.baseAssetId,
-  //     targetAssetId: symbolDetails.targetAssetId,
-  //     createdAt: timeNow,
-  //     updatedAt: timeNow,
-  //     limitPrice: event.limitPrice,
-  //   };
+      // Generate a unique order ID
+      const orderId = randomUUID();
 
-  //   const mixinEvent: MixinReleaseTokenEvent = {
-  //     orderId,
-  //     userId: event.snapshot.opponent_id,
-  //     assetId: isBuyOrder
-  //       ? symbolDetails.baseAssetId
-  //       : symbolDetails.targetAssetId,
-  //     amount: event.snapshot.amount,
-  //     createdAt: timeNow,
-  //     updatedAt: timeNow,
-  //   };
+      // Create the order in our database first with CREATED status
+      await this.exchangeService.createSpotOrder({
+        side: details.action === 'buy' ? 'buy' : 'sell',
+        orderId,
+        userId: snapshot.opponent_id,
+        exchangeName: tradingPair.exchange_id,
+        symbol: tradingPair.symbol,
+        type: 'market',
+        amount: snapshot.amount,
+        baseAssetId: tradingPair.base_asset_id,
+        targetAssetId: tradingPair.quote_asset_id,
+        state: STATE_TEXT_MAP['CREATED'],
+        apiKeyId: apiKeyConfig.key_id,
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+        snapshotId: snapshot.snapshot_id,
+      });
 
-  //   return { order, mixinEvent };
-  // }
+      // Prepare for token release after order execution
+      await this.exchangeService.addMixinReleaseToken({
+        orderId,
+        userId: snapshot.opponent_id,
+        assetId: tradingPair.base_asset_id,
+        amount: snapshot.amount,
+        createdAt: getRFC3339Timestamp(),
+        updatedAt: getRFC3339Timestamp(),
+        state: STATE_TEXT_MAP['CREATED'],
+      });
 
-  // private async handleInvalidOrder(
-  //   event: SpotOrderCreateEvent,
-  //   reason: string,
-  // ) {
-  //   this.logger.warn(`Invalid order: ${reason}`);
-  //   await this.snapshotsService.refund(event.snapshot);
-  //   await this.exchangeService.createFailedOrder({
-  //     ...event,
-  //     status: OrderStatus.FAILED,
-  //     errorMessage: reason,
-  //   });
-  // }
+      try {
+        // Place the order on the exchange
+        await this.exchangeService.placeOrder(
+          orderId,
+          tradingPair.exchange_id,
+          false, // market order
+          details.action === 'buy',
+          apiKeyConfig.key_id,
+          apiKeyConfig.api_key,
+          apiKeyConfig.api_secret,
+          tradingPair.symbol,
+          snapshot.amount,
+        );
 
-  // private async handleInsufficientBalance(event: SpotOrderCreateEvent) {
-  //   const errorMsg = 'Insufficient balance for order execution';
-  //   this.logger.warn(errorMsg);
-  //   await this.snapshotsService.refund(event.snapshot);
-  //   await this.exchangeService.createFailedOrder({
-  //     ...event,
-  //     status: OrderStatus.FAILED,
-  //     errorMessage: errorMsg,
-  //   });
-  // }
+        this.logger.log(`Successfully placed market order: ${orderId}`);
+      } catch (error) {
+        this.logger.error(
+          `Failed to place market order: ${error.message}`,
+          error.stack,
+        );
+        await this.exchangeService.updateSpotOrderState(
+          orderId,
+          STATE_TEXT_MAP['FAILED'],
+        );
+        await this.snapshotsService.refund(
+          snapshot,
+          'Failed to execute order. Please try again later.',
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error processing market order: ${error.message}`,
+        error.stack,
+      );
+      await this.snapshotsService.refund(
+        snapshot,
+        'An error occurred while processing your order. Please try again later.',
+      );
+    }
+  }
 
-  // private async handleOrderFailure(event: SpotOrderCreateEvent, error: string) {
-  //   await this.snapshotsService.refund(event.snapshot);
-  //   await this.exchangeService.createFailedOrder({
-  //     ...event,
-  //     status: OrderStatus.FAILED,
-  //     errorMessage: error,
-  //   });
-  // }
+  private validateLimitOrderParameters(
+    details: SpotLimitMemoDetails,
+    snapshot: SafeSnapshot,
+  ): boolean {
+    // Basic validation for limit orders
+    if (!details.tradingPairId || !details.limitPrice) {
+      return false;
+    }
+
+    // Validate price and amount are positive numbers
+    if (
+      BigNumber(details.limitPrice).lte(0) ||
+      BigNumber(snapshot.amount).lte(0)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private validateMarketOrderParameters(
+    details: SpotMarketMemoDetails,
+    snapshot: SafeSnapshot,
+  ): boolean {
+    // Basic validation for market orders
+    if (!details.tradingPairId) {
+      return false;
+    }
+
+    // Validate amount is a positive number
+    if (BigNumber(snapshot.amount).lte(0)) {
+      return false;
+    }
+
+    return true;
+  }
 }

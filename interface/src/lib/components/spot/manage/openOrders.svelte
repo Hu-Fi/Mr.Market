@@ -87,7 +87,7 @@
     {/if}
   </div>
 {:else}
-  <div class="flex flex-col items-center justify-center my-32 space-y-4">
+  <div class="flex flex-col items-center justify-center my-32 mb-48 space-y-4">
     <span class="text-sm opacity-60">
       {$_("connect_wallet_order_intro")}
     </span>

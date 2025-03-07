@@ -20,6 +20,9 @@ export class SpotOrder {
   type: SpotOrderType;
 
   @Column()
+  side: string;
+
+  @Column()
   state: SpotOrderStatus;
 
   @Column()

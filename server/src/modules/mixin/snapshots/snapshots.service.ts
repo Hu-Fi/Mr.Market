@@ -32,7 +32,7 @@ import {
   decodeSpotLimitOrderMemo,
   decodeSpotMarketOrderMemo,
 } from 'src/common/helpers/mixin/memo';
-
+import { MessageService } from 'src/modules/mixin/message/message.service';
 @Injectable()
 export class SnapshotsService {
   private events: EventEmitter2;
@@ -46,6 +46,7 @@ export class SnapshotsService {
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
     private snapshotsRepository: SnapshotsRepository,
+    private messageService: MessageService,
   ) {
     this.keystore = {
       app_id: this.configService.get<string>('mixin.app_id'),
@@ -408,13 +409,17 @@ export class SnapshotsService {
     return sendedTx;
   }
 
-  async refund(snapshot: SafeSnapshot) {
+  async refund(snapshot: SafeSnapshot, message: string = '') {
     try {
       await this.sendMixinTx(
         snapshot.opponent_id,
         snapshot.asset_id,
         snapshot.amount,
       );
+      if (!message) {
+        return;
+      }
+      this.messageService.sendTextMessage(snapshot.opponent_id, message);
     } catch (error) {
       this.logger.error(`Failed to refund snapshot: ${error.message}`);
     }

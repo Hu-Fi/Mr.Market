@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { pair } from "$lib/stores/spot";
+  import { pairBaseSymbol, pairTargetSymbol } from "$lib/stores/spot";
 </script>
 
 <div class="flex justify-between">
@@ -9,7 +9,7 @@
       {$_("price")}
     </span>
     <span>
-      ({$pair.symbol.split('/')[0]})
+      {$pairBaseSymbol}
     </span>
   </div>
 
@@ -18,7 +18,7 @@
       {$_("amount")}
     </span>
     <span>
-      ({$pair.symbol.split('/')[1]})
+      {$pairTargetSymbol}
     </span>
   </div>
 </div>

@@ -1,0 +1,76 @@
+<script lang="ts">
+  import { _ } from "svelte-i18n";
+  import { formatDecimals, formatTimestampToTime } from "$lib/helpers/utils";
+
+  export let tokenSymbol0 = "";
+  export let tokenSymbol1 = "";
+  export let amount0Now = 0;
+  export let amount1Now = 0;
+  export let apy = 0;
+  export let profit = 0;
+  export let createdAt = '';
+</script>
+
+<div class="flex flex-col mt-2 space-y-6">
+  <div class="flex flex-col space-y-4">
+    <span class="font-bold p-6 text-sm py-3 bg-gray-100">
+      {$_("balance")}
+    </span>
+
+    <div class="flex px-6 flex-col space-y-2">
+      {#each Array(2) as _, i}
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-bold">
+            {i === 0 ? tokenSymbol0 : tokenSymbol1}
+          </span>
+          <span class="font-base text-sm">
+            {
+              i === 0
+              ? `${formatDecimals(amount0Now, 8)}`
+              : `${formatDecimals(amount1Now, 8)}`
+            }
+          </span>
+        </div>
+      {/each}
+    </div>
+  </div>
+
+  <div class="flex flex-col space-y-4">
+    <span class="font-bold text-sm bg-gray-100 p-3 px-6">
+      {$_("details")}
+    </span>
+    <div class="flex flex-col space-y-4 px-6 pb-6">
+      <div class="flex justify-between">
+        <span class="text-sm font-bold">
+          {$_("apy")}
+        </span>
+        <span class="text-sm">
+          {apy ? `${apy}%` : '-'}
+        </span>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="text-sm font-bold">
+          {$_("profit")}
+        </span>
+        <span class="text-sm">
+          {profit ? `${formatDecimals(profit, 2)}` : '-'}
+        </span>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="text-sm font-bold">
+          {$_("created_at")}
+        </span>
+        <span class="text-sm">
+          {formatTimestampToTime(createdAt, true)}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .bg-gray-100 {
+    background-color: #F8FAFC;
+  }
+</style> 
