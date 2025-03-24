@@ -38,7 +38,9 @@
   const loadTradingPairs = async () => {
     $page.data.spotInfo.then(resp => {
       if (!resp.data.trading_pairs) return;
-      pairs = resp.data.trading_pairs;
+      pairs = resp.data.trading_pairs.filter((item)=>{
+        return item.enable
+      });
       pairSelectorLoaded.set(true)
     })
   }
@@ -49,13 +51,13 @@
     })
   }
   // TODO: update trading pairs periodically
-  const updateTradingPairs = async () => {
-    pairSelectorLoaded.set(false)
-    $page.data.spotInfo.then(resp => {
-      if (!resp.data.trading_pairs) return;
-      pairs = resp.data.trading_pairs;
-    }) 
-  }
+  // const updateTradingPairs = async () => {
+  //   pairSelectorLoaded.set(false)
+  //   $page.data.spotInfo.then(resp => {
+  //     if (!resp.data.trading_pairs) return;
+  //     pairs = resp.data.trading_pairs;
+  //   }) 
+  // }
   onMount(async ()=> {
     await loadTradingPairs()
     await loadExchanges()

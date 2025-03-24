@@ -1,6 +1,5 @@
 <!-- Single asset balance in exchange balance details page -->
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import { BN } from "$lib/helpers/utils";
   import emptyToken from '$lib/images/empty-token.svg';
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";

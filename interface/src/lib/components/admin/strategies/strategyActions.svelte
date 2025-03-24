@@ -1,6 +1,5 @@
 <script>
   import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
 
   const actions = [
     { name: 'Execute Arbitrage', fn: () => { /* Add logic to execute arbitrage */ } },

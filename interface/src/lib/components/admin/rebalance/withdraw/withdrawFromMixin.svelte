@@ -2,10 +2,8 @@
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import BigNumber from "bignumber.js";
-  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
-  import type { AdminCCXTCurrency } from "$lib/types/hufi/admin";
   import { getMixinBalance } from "$lib/helpers/hufi/admin/rebalance";
   
   // Fetch balance

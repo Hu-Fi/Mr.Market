@@ -1,6 +1,5 @@
 <!-- Balance card in rebalance page without asset list -->
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import emptyToken from '$lib/images/empty-token.svg';
   import { findExchangeIconByIdentifier } from "$lib/helpers/helpers";

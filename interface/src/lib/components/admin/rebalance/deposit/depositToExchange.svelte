@@ -20,7 +20,7 @@
       return;
     }
     const keyId = $page.params.id;
-    const res = (await getAllCurrenciesByKeyId(token, keyId)) as { data: Record<string, any> };
+    const res = (await getAllCurrenciesByKeyId(token, keyId)) as { data: Record<string, unknown> };
     if (!res) {
       return;
     }

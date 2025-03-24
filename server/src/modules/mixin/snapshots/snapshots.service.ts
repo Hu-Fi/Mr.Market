@@ -677,4 +677,47 @@ export class SnapshotsService {
       return;
     }
   }
+
+  async getSnapshotById(snapshotId: string): Promise<SafeSnapshot | null> {
+    try {
+      return await this.snapshotsRepository.findSnapshotById(snapshotId);
+    } catch (error) {
+      this.logger.error(`Error fetching snapshot by ID: ${error.message}`);
+      return null;
+    }
+  }
+
+  async sendOrderCompletionMessage(
+    userId: string,
+    orderId: string,
+    orderType: string,
+    side: string,
+    amount: string,
+    symbol: string,
+    price: string,
+  ): Promise<void> {
+    try {
+      // Format a user-friendly message
+      const action = side === 'buy' ? 'bought' : 'sold';
+      const orderTypeText = orderType === 'limit' ? 'limit' : 'market';
+
+      const message =
+        `✅ Your ${orderTypeText} order has been completed!\n\n` +
+        `Order ID: ${orderId}\n` +
+        `You ${action} ${amount} ${symbol} at ${price}\n\n` +
+        `Thank you for using our service!`;
+
+      // Send the message to the user
+      await this.messageService.sendTextMessage(userId, message);
+
+      this.logger.log(
+        `Sent order completion message to user ${userId} for order ${orderId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send order completion message: ${error.message}`,
+        error.stack,
+      );
+    }
+  }
 }

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import type { AdminSingleKey } from "$lib/types/hufi/admin";
   import SingleExchangeStat from "$lib/components/admin/exchanges/singleExchangeStat.svelte";
 

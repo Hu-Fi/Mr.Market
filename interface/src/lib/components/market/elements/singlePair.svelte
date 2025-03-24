@@ -42,9 +42,12 @@
     <!-- Price change -->
     <div class="w-[4.5rem] flex items-center justify-end">
       {#if pair.change}
-        <div class={clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", pairChangeValid ? UpColorBg : DownColorBg)}>
+        <div class={
+          clsx("min-w-14 w-[4rem] h-7 flex justify-center items-center rounded-md px-2", 
+          pairChangeValid ? UpColorBg : DownColorBg)
+        }>
           <span class="text-center text-xs font-extrabold text-base-100">
-            {pairChangeValid ? `${formatDecimals(pair.change, 2)}%` : '---' }
+            {formatDecimals(pair.change, 2)}%
           </span>
         </div>
       {:else}

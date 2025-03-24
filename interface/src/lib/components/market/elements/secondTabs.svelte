@@ -5,7 +5,7 @@
   import { onDestroy, onMount } from "svelte";
   import { darkTheme } from "$lib/stores/theme";  
   import { activeCoinTab } from "$lib/stores/home";
-  import { CoinsTypeTabs, SUPPORTED_EXCHANGES } from "$lib/helpers/constants";
+  import { CoinsTypeTabs } from "$lib/helpers/constants";
   import { activeSpotTab, stopMarketQuery } from "$lib/stores/market";
   
   const MARKET_BAR_ITEMS = [

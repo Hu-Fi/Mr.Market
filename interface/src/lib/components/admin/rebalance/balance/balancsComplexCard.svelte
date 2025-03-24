@@ -1,6 +1,5 @@
 <!-- Balance card in balance details page with asset list -->
 <script lang="ts">
-  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { BN } from "$lib/helpers/utils";
   import emptyToken from '$lib/images/empty-token.svg';

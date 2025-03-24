@@ -94,7 +94,7 @@ export async function getMixinDepositAddress(assetId: string, token: string) {
 }
 
 // Create withdrawal
-export const createWithdrawal = async (token: string, data: any): Promise<unknown> => {
+export const createWithdrawal = async (token: string, data: unknown): Promise<unknown> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchange/withdrawal/exchange/create`, {
       method: 'POST',

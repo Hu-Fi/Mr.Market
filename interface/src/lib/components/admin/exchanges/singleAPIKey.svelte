@@ -6,27 +6,27 @@
   import { loadExchangeApiKeys, removeExchangeApiKey } from "$lib/helpers/hufi/admin/exchange";
   
   export let key: AdminSingleKey;
-  let loading = false;
+  // let loading = false;
   let deleteConfirm = false;
 
   const deleteAPIKey = async (key_id: string) => {
-    loading = true;
+    // loading = true;
     const token = localStorage.getItem("admin-access-token");
     if (!token) {
       return;
     }
 
     try {
-      loading = false;
+      // loading = false;
       const res = await removeExchangeApiKey(token, key_id);
       if (res.code === 200) {
         toast.success(`${res.message}`);
       } else {
         toast.error(`${res.message}`);
       }
-    } catch (e: any) {
+    } catch (e) {
       toast.error(`${e.message}`);
-      loading = false;
+      // loading = false;
       deleteConfirm = false;
     }
     setTimeout(async () => {

@@ -42,7 +42,9 @@
   const loadTradingPairs = async () => {
     $page.data.spotInfo.then(resp => {
       if (!resp.data.trading_pairs) return;
-      pairs = resp.data.trading_pairs;
+      pairs = resp.data.trading_pairs.filter((item)=>{
+        return item.enable
+      });
       CandlePairSelectorLoaded.set(true)
     })
   }

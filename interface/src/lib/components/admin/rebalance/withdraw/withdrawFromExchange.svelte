@@ -11,8 +11,8 @@
   let search = "";
   let balancesLoading = false;
   
-  let balances: any[] = [];
-  $: filteredBalances = balances.filter((c: any) => {
+  let balances: { name: string, amount: string }[] = [];
+  $: filteredBalances = balances.filter((c: { name: string, amount: string }) => {
     return c.name.toLowerCase().includes(search.toLowerCase());
   });
 

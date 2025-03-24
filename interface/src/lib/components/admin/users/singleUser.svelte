@@ -12,7 +12,7 @@
     jwt_token: string;
     created_at: string;
     last_updated: string;
-    contributions: any[];
+    contributions: unknown[];
     walletAddress?: string | null;
   };
 </script>

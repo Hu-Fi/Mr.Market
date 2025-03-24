@@ -17,9 +17,9 @@
 
   let addDialog = false;
   let isAdding = false;
-  let isUpdating = '';
+  // let isUpdating = '';
+  // let isDeleting = '';
   let isRefreshing = false;
-  let isDeleting = '';
   // async function AddExchange(name: string, exchangeId: string) {
   //   if (!name || !exchangeId) return;
   //   isAdding = true;
@@ -67,9 +67,6 @@
     setTimeout(() => {
       invalidate('admin:settings').finally(() => {
         isRefreshing = false;
-        isUpdating = '';
-        isDeleting = '';
-        isAdding = false;
       });
     }, getRandomDelay());
   }
@@ -199,7 +196,7 @@
             <input type="text" class="input input-bordered focus:outline-none" bind:value={AddNewExchangeId} />
           </div>
           <button class="btn bg-base-200 hover:bg-base-200 border-none no-animation" on:click={async () => {
-            await AddExchange(AddNewName, AddNewExchangeId);
+            // await AddExchange(AddNewName, AddNewExchangeId);
           }}>
             <span class={clsx(isAdding && "loading loading-spinner loading-sm")}>
               {$_("add")}

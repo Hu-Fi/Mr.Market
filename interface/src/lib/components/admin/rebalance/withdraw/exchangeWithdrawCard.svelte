@@ -45,7 +45,7 @@
     });
     currenciesLoading = false;
 
-    balance = $withdrawBalances.find((b: any) => b.name === currency)?.amount || undefined;
+    balance = $withdrawBalances.find((b) => b.name === currency)?.amount || undefined;
   });
 
   function validateWithdrawal() {

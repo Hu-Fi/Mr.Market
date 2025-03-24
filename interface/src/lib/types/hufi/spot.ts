@@ -37,3 +37,14 @@ export type SpotTradingPair = {
   quote_asset_id: string;
   enable: boolean;
 }
+
+export enum SpotOrderState {
+  CREATED = 'created',
+  PARTIALLY_FILLED = 'partially_filled',
+  FILLED = 'filled',
+  CANCELED = 'canceled',
+  REJECTED = 'rejected',
+  EXPIRED = 'expired',
+  FAILED = 'failed',
+  COMPLETED = 'completed'
+}

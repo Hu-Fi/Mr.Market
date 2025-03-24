@@ -6,13 +6,11 @@
   import toast from "svelte-french-toast";
   import { BN } from "$lib/helpers/utils";
   import emptyToken from "$lib/images/empty-token.svg";
-  import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import type { AdminCCXTCurrency } from "$lib/types/hufi/admin";
   import { getMixinWithdrawInfo } from "$lib/helpers/hufi/admin/rebalance";
 
   let assetLoading = false;
-  let asset: any;
-  let chain: any;
+  let asset: unknown;
+  let chain: unknown;
   let address: string;
   let memo: string;
   let amount: string;

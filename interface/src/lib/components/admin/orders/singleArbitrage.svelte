@@ -1,5 +1,5 @@
 <script>
-  export let order
+  // export let order
 </script>
 
 <div>

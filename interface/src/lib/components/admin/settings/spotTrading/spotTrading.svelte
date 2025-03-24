@@ -25,7 +25,6 @@
   let isUpdating = '';
   let isDeleting = '';
   let isRefreshing = false;
-  let infoLoading = true;
 
   const cleanUpStates = () => {
     isAdding = false;
@@ -99,13 +98,11 @@
   }
 
   let pairs: SpotTradingPair[] = [];
-  $page.data.spotInfo.then((resp: any) => {
+  $page.data.spotInfo.then((resp) => {
     if (resp.code != 200) return;
     pairs = resp.data.trading_pairs as SpotTradingPair[];
-  }).catch((error: any) => {
+  }).catch(() => {
     pairs = [];
-  }).finally(() => {
-    infoLoading = false;
   });
 
   $: spotTradingPairs = pairs;

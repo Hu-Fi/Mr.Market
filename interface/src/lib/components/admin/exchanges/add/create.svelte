@@ -40,7 +40,7 @@
       } else {
         toast.error(`${res.message}`);
       }
-    } catch (e: any) {
+    } catch (e) {
       toast.error(`${e.message}`);
       loading = false;
     } finally {
