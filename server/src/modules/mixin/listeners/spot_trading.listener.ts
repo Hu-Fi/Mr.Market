@@ -13,6 +13,8 @@ import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { SpotdataService } from 'src/modules/spotdata/spotdata.service';
+import { ExchangeRepository } from 'src/modules/mixin/exchange/exchange.repository';
+import * as ccxt from 'ccxt';
 
 @Injectable()
 export class SpotOrderListener implements OnModuleDestroy {
@@ -24,6 +26,7 @@ export class SpotOrderListener implements OnModuleDestroy {
     private readonly exchangeService: ExchangeService,
     private readonly snapshotsService: SnapshotsService,
     private readonly spotdataService: SpotdataService,
+    private readonly exchangeRepository: ExchangeRepository,
   ) {
     // Initialize the order status update worker
     this.startOrderStatusUpdateWorker();
@@ -47,12 +50,20 @@ export class SpotOrderListener implements OnModuleDestroy {
   private async checkPendingOrders() {
     try {
       // Fetch all pending orders (CREATED, PARTIALLY_FILLED)
-      const pendingOrders = await this.exchangeService.getPendingSpotOrders();
+      const pendingOrders = await this.exchangeService.readOrdersByState(
+        STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
+      );
 
-      this.logger.debug(`Checking ${pendingOrders.length} pending orders`);
+      const createdOrders = await this.exchangeService.readOrdersByState(
+        STATE_TEXT_MAP['ORDER_CREATED'],
+      );
+
+      const allPendingOrders = [...pendingOrders, ...createdOrders];
+
+      this.logger.debug(`Checking ${allPendingOrders.length} pending orders`);
 
       // Process each order
-      for (const order of pendingOrders) {
+      for (const order of allPendingOrders) {
         try {
           if (order.type === 'limit') {
             await this.processLimitOrder(order);
@@ -88,35 +99,46 @@ export class SpotOrderListener implements OnModuleDestroy {
       return;
     }
 
-    // Check order status on exchange
-    const orderStatus = await this.exchangeService.checkOrderStatus(
-      order.orderId,
-      order.exchangeName,
-      apiKeyConfig.api_key,
-      apiKeyConfig.api_secret,
-      order.symbol,
-    );
+    // Create exchange instance to check order status
+    const e = new ccxt[order.exchangeName]({
+      apiKey: apiKeyConfig.api_key,
+      secret: apiKeyConfig.api_secret,
+    });
 
-    if (!orderStatus) {
-      // Order not found or error occurred
-      this.logger.warn(`Could not retrieve status for order: ${order.orderId}`);
-      return;
-    }
+    try {
+      // Check order status on exchange
+      const orderStatus = await e.fetchOrder(order.orderId, order.symbol);
 
-    // Update order status based on exchange response
-    if (orderStatus.status === 'FILLED') {
-      // Order is fully filled
-      await this.handleFullyFilledOrder(order, orderStatus);
-    } else if (orderStatus.status === 'PARTIALLY_FILLED') {
-      // Order is partially filled
-      await this.handlePartiallyFilledOrder(order, orderStatus);
-    } else if (
-      ['CANCELED', 'REJECTED', 'EXPIRED'].includes(orderStatus.status)
-    ) {
-      // Order failed or was canceled
-      await this.handleFailedOrder(order, orderStatus);
+      if (!orderStatus) {
+        // Order not found or error occurred
+        this.logger.warn(
+          `Could not retrieve status for order: ${order.orderId}`,
+        );
+        return;
+      }
+
+      // Update order status based on exchange response
+      if (orderStatus.status === 'FILLED' || orderStatus.status === 'closed') {
+        // Order is fully filled
+        await this.handleFullyFilledOrder(order, orderStatus);
+      } else if (
+        orderStatus.status === 'PARTIALLY_FILLED' ||
+        (orderStatus.status === 'open' && orderStatus.filled > 0)
+      ) {
+        // Order is partially filled
+        await this.handlePartiallyFilledOrder(order, orderStatus);
+      } else if (
+        ['CANCELED', 'REJECTED', 'EXPIRED', 'canceled'].includes(
+          orderStatus.status,
+        )
+      ) {
+        // Order failed or was canceled
+        await this.handleFailedOrder(order, orderStatus);
+      }
+      // Other statuses (PENDING, NEW) don't require action
+    } catch (error) {
+      this.logger.error(`Error checking order status: ${error.message}`);
     }
-    // Other statuses (PENDING, NEW) don't require action
   }
 
   private async processMarketOrder(order) {
@@ -133,30 +155,36 @@ export class SpotOrderListener implements OnModuleDestroy {
       return;
     }
 
-    // Check order status on exchange
-    const orderStatus = await this.exchangeService.checkOrderStatus(
-      order.orderId,
-      order.exchangeName,
-      apiKeyConfig.api_key,
-      apiKeyConfig.api_secret,
-      order.symbol,
-    );
+    // Create exchange instance to check order status
+    const e = new ccxt[order.exchangeName]({
+      apiKey: apiKeyConfig.api_key,
+      secret: apiKeyConfig.api_secret,
+    });
 
-    if (!orderStatus) {
-      // Order not found or error occurred
-      this.logger.warn(
-        `Could not retrieve status for market order: ${order.orderId}`,
-      );
-      return;
-    }
+    try {
+      // Check order status on exchange
+      const orderStatus = await e.fetchOrder(order.orderId, order.symbol);
 
-    // Market orders should be either FILLED or FAILED
-    if (orderStatus.status === 'FILLED') {
-      await this.handleFullyFilledOrder(order, orderStatus);
-    } else if (
-      ['CANCELED', 'REJECTED', 'EXPIRED'].includes(orderStatus.status)
-    ) {
-      await this.handleFailedOrder(order, orderStatus);
+      if (!orderStatus) {
+        // Order not found or error occurred
+        this.logger.warn(
+          `Could not retrieve status for market order: ${order.orderId}`,
+        );
+        return;
+      }
+
+      // Market orders should be either FILLED or FAILED
+      if (orderStatus.status === 'FILLED' || orderStatus.status === 'closed') {
+        await this.handleFullyFilledOrder(order, orderStatus);
+      } else if (
+        ['CANCELED', 'REJECTED', 'EXPIRED', 'canceled'].includes(
+          orderStatus.status,
+        )
+      ) {
+        await this.handleFailedOrder(order, orderStatus);
+      }
+    } catch (error) {
+      this.logger.error(`Error checking market order status: ${error.message}`);
     }
   }
 
@@ -169,14 +197,15 @@ export class SpotOrderListener implements OnModuleDestroy {
       );
 
       // Update filled amount and execution price
-      await this.exchangeService.updateOrderExecutionDetails(
+      await this.exchangeRepository.updateOrderExecutionDetails(
         order.orderId,
-        orderStatus.executedQty,
+        orderStatus.filled || orderStatus.executedQty,
         orderStatus.price || order.limitPrice,
+        getRFC3339Timestamp(),
       );
 
       // Get the release token record
-      const releaseToken = await this.exchangeService.getMixinReleaseToken(
+      const releaseToken = await this.exchangeService.readMixinReleaseToken(
         order.orderId,
       );
 
@@ -196,19 +225,22 @@ export class SpotOrderListener implements OnModuleDestroy {
       let releaseAmount;
       if (order.side === 'buy') {
         // For buy orders, we release the bought asset
-        releaseAmount = orderStatus.executedQty;
+        releaseAmount = orderStatus.filled || orderStatus.executedQty;
       } else {
         // For sell orders, we release the proceeds
-        releaseAmount = new BigNumber(orderStatus.executedQty)
+        releaseAmount = new BigNumber(
+          orderStatus.filled || orderStatus.executedQty,
+        )
           .multipliedBy(orderStatus.price || order.limitPrice)
           .toString();
       }
 
       // Update release token state to COMPLETED
-      await this.exchangeService.updateMixinReleaseTokenState(
+      await this.exchangeRepository.updateMixinReleaseTokenState(
         order.orderId,
         STATE_TEXT_MAP['MIXIN_RELEASED'],
         releaseAmount,
+        getRFC3339Timestamp(),
       );
 
       // Send success message to user
@@ -242,13 +274,16 @@ export class SpotOrderListener implements OnModuleDestroy {
       }
 
       // Update filled amount
-      await this.exchangeService.updateOrderFilledAmount(
+      await this.exchangeRepository.updateOrderFilledAmount(
         order.orderId,
-        orderStatus.executedQty,
+        orderStatus.filled || orderStatus.executedQty,
+        getRFC3339Timestamp(),
       );
 
       this.logger.log(
-        `Order ${order.orderId} partially filled: ${orderStatus.executedQty}/${order.amount}`,
+        `Order ${order.orderId} partially filled: ${
+          orderStatus.filled || orderStatus.executedQty
+        }/${order.amount}`,
       );
     } catch (error) {
       this.logger.error(
@@ -267,9 +302,11 @@ export class SpotOrderListener implements OnModuleDestroy {
       );
 
       // Update release token state to FAILED
-      await this.exchangeService.updateMixinReleaseTokenState(
+      await this.exchangeRepository.updateMixinReleaseTokenState(
         order.orderId,
         STATE_TEXT_MAP['FAILED'],
+        null,
+        getRFC3339Timestamp(),
       );
 
       // Get the original snapshot to refund

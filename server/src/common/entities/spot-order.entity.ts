@@ -48,4 +48,10 @@ export class SpotOrder {
 
   @Column()
   updatedAt: string; // timestamp
+
+  @Column({ nullable: true })
+  filledAmount: string;
+
+  @Column({ nullable: true })
+  executionPrice: string;
 }

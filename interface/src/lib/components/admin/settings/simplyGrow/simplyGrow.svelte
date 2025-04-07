@@ -82,11 +82,13 @@
   
     async function RefreshSimplyGrowTokens() {
       isRefreshing = true;
-      await invalidate('admin:settings').finally(() => {
-        setTimeout(() => {
-          isRefreshing = false;
-        }, getRandomDelay());
-      });
+      try {
+        await invalidate('admin:settings');
+      } catch (error) {
+        console.error('Failed to refresh simply grow tokens:', error);
+      } finally {
+        isRefreshing = false;
+      }
     }
   </script>
   

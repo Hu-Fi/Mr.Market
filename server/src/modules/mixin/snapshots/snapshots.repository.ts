@@ -11,8 +11,8 @@ export class SnapshotsRepository {
     private readonly repository: Repository<Snapshot>,
   ) {}
 
-  async findSnapshotByID(snapshot_id: string): Promise<Snapshot[]> {
-    return this.repository.find({ where: { snapshot_id } });
+  async findSnapshotByID(snapshot_id: string): Promise<Snapshot> {
+    return this.repository.findOne({ where: { snapshot_id } });
   }
 
   async checkSnapshotExist(snapshot_id: string): Promise<boolean> {

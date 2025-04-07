@@ -136,4 +136,53 @@ export class ExchangeRepository {
     const transaction = this.transferRecordRepository.create(transactionData);
     return await this.transferRecordRepository.save(transaction);
   }
+
+  async updateOrderExecutionDetails(
+    orderId: string,
+    executedQty: string,
+    price: string,
+    updatedAt: string,
+  ): Promise<void> {
+    await this.spotOrderRepository.update(
+      { orderId },
+      {
+        ...({
+          filledAmount: executedQty,
+          executionPrice: price,
+          updatedAt,
+        } as any),
+      },
+    );
+  }
+
+  async updateOrderFilledAmount(
+    orderId: string,
+    filledAmount: string,
+    updatedAt: string,
+  ): Promise<void> {
+    await this.spotOrderRepository.update(
+      { orderId },
+      {
+        ...({ filledAmount, updatedAt } as any),
+      },
+    );
+  }
+
+  async updateMixinReleaseTokenState(
+    orderId: string,
+    state: string,
+    amount: string | null = null,
+    updatedAt: string,
+  ): Promise<void> {
+    const updateData: any = {
+      state,
+      updatedAt,
+    };
+
+    if (amount !== null) {
+      updateData.amount = amount;
+    }
+
+    await this.mixinReleaseRepository.update({ orderId }, updateData);
+  }
 }

@@ -92,11 +92,13 @@
 
   async function RefreshArbitragePairs() {
     isRefreshing = true;
-    await invalidate('admin:settings').finally(() => {
-      setTimeout(() => {
-        isRefreshing = false;
-      }, getRandomDelay());
-    });
+    try {
+      await invalidate('admin:settings');
+    } catch (error) {
+      console.error('Failed to refresh arbitrage pairs:', error);
+    } finally {
+      isRefreshing = false;
+    }
   }
 </script>
 

@@ -33,6 +33,7 @@ import {
   decodeSpotMarketOrderMemo,
 } from 'src/common/helpers/mixin/memo';
 import { MessageService } from 'src/modules/mixin/message/message.service';
+import { Snapshot } from 'src/common/entities/snapshots.entity';
 @Injectable()
 export class SnapshotsService {
   private events: EventEmitter2;
@@ -409,7 +410,7 @@ export class SnapshotsService {
     return sendedTx;
   }
 
-  async refund(snapshot: SafeSnapshot, message: string = '') {
+  async refund(snapshot: Snapshot, message: string = '') {
     try {
       await this.sendMixinTx(
         snapshot.opponent_id,
@@ -678,9 +679,12 @@ export class SnapshotsService {
     }
   }
 
-  async getSnapshotById(snapshotId: string): Promise<SafeSnapshot | null> {
+  async getSnapshotById(snapshotId: string): Promise<Snapshot | null> {
     try {
-      return await this.snapshotsRepository.findSnapshotById(snapshotId);
+      const snapshot = await this.snapshotsRepository.findSnapshotByID(
+        snapshotId,
+      );
+      return snapshot ? snapshot : null;
     } catch (error) {
       this.logger.error(`Error fetching snapshot by ID: ${error.message}`);
       return null;

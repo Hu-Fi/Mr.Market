@@ -616,7 +616,7 @@ export class ExchangeService {
     return await this.exchangeRepository.removeAPIKey(keyId);
   }
 
-  async createSpotOrder(order: SpotOrder) {
+  async createSpotOrder(order: Partial<SpotOrder>) {
     return await this.exchangeRepository.createSpotOrder(order);
   }
 
