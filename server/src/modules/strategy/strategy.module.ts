@@ -23,6 +23,8 @@ import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
 import { AlpacaStratService } from './alpacastrat.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { AdminModule } from '../admin/admin.module';
+import { TimeIndicatorStrategyService } from './time-indicator.service';
+import { IndicatorStrategyHistory } from 'src/common/entities/indicator-strategy-history.entity';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { AdminModule } from '../admin/admin.module';
       PaymentState,
       ArbitrageHistory,
       MarketMakingHistory,
+      IndicatorStrategyHistory,
     ]),
   ],
   controllers: [StrategyController],
@@ -49,7 +52,13 @@ import { AdminModule } from '../admin/admin.module';
     StrategyUserRepository,
     ExchangeInitService,
     AlpacaStratService,
+    TimeIndicatorStrategyService,
   ],
-  exports: [StrategyService, StrategyUserService, StrategyUserRepository],
+  exports: [
+    StrategyService,
+    StrategyUserService,
+    StrategyUserRepository,
+    TimeIndicatorStrategyService,
+  ],
 })
 export class StrategyModule {}

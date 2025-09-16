@@ -3,6 +3,7 @@ export interface StrategyKey {
     | 'arbitrage'
     | 'pureMarketMaking'
     | 'volume'
+    | 'timeIndicator'
     | 'alpaca-arbitrage'
     | 'alpaca-futures-arbitrage'
     | 'alpaca-options-arbitrage';

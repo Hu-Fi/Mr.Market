@@ -54,7 +54,7 @@
     "bcrypt": "^5.1.1",
     "bignumber.js": "^9.1.2",
     "cache-manager": "^4.0.0",
-    "ccxt": "^4.1.98",
+    "ccxt": "^4.4.92",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "coingecko-api-v3": "^0.0.29",
@@ -116,5 +116,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

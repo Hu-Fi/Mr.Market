@@ -55,7 +55,8 @@ export class AdminStrategyService {
         volumeParams.numTrades,
         volumeParams.userId,
         volumeParams.clientId,
-        volumeParams.pricePushRate
+        volumeParams.pricePushRate,
+        volumeParams.postOnlySide,
       );
     } else {
       throw new BadRequestException('Invalid strategy parameters');

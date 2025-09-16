@@ -66,6 +66,7 @@ import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
 import { MetricsModule } from './modules/metrics/metrics/metrics.module';
+import { IndicatorStrategyHistory } from './common/entities/indicator-strategy-history.entity';
 
 dotenv.config();
 
@@ -125,8 +126,9 @@ dotenv.config();
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,
+        IndicatorStrategyHistory,
       ],
-      synchronize: false,
+      synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),

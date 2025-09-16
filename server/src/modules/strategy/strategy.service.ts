@@ -120,9 +120,9 @@ export class StrategyService {
     @InjectRepository(StrategyInstance)
     private strategyInstanceRepository: Repository<StrategyInstance>,
   ) {
-    process.on('SIGINT', () => this.handleShutdown());
-    process.on('SIGTERM', () => this.handleShutdown());
-    process.on('uncaughtException', () => this.handleShutdown());
+    // process.on('SIGINT', () => this.handleShutdown());
+    // process.on('SIGTERM', () => this.handleShutdown());
+    // process.on('uncaughtException', () => this.handleShutdown());
   }
 
   async getSupportedExchanges(): Promise<string[]> {
@@ -185,7 +185,8 @@ export class StrategyService {
           parameters.numTrades,
           parameters.userId,
           parameters.clientId,
-          parameters.pricePushRate
+          parameters.pricePushRate,
+          parameters.postOnlySide,
         );
         break;
       default:
@@ -361,182 +362,342 @@ export class StrategyService {
   async executeVolumeStrategy(
     exchangeName: string,
     symbol: string,
-    baseIncrementPercentage: number,  // Used to offset from midPrice initially
+    baseIncrementPercentage: number,
     baseIntervalTime: number,
     baseTradeAmount: number,
     numTrades: number,
     userId: string,
     clientId: string,
-    pricePushRate: number, 
+    pricePushRate: number,
+    postOnlySide: 'buy' | 'sell',
   ) {
     const strategyKey = createStrategyKey({
       type: 'volume',
       user_id: userId,
       client_id: clientId,
     });
-  
+
     try {
-      const exchangeAccount1 = this.exchangeInitService.getExchange(exchangeName, 'default');
-      const exchangeAccount2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
-  
-      let useAccount1AsMaker = true;
+      let strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
+
+      const exchange = this.exchangeInitService.getExchange(exchangeName);
+      const ticker = await exchange.fetchTicker(symbol);
+      const startPrice = Math.trunc(ticker.last);
+
+      const parameters = {
+        exchangeName,
+        symbol,
+        baseIncrementPercentage,
+        baseIntervalTime,
+        baseTradeAmount,
+        numTrades,
+        userId,
+        clientId,
+        pricePushRate,
+        postOnlySide,
+      };
+
+      if (!strategyInstance) {
+        strategyInstance = this.strategyInstanceRepository.create({
+          strategyKey,
+          userId,
+          clientId,
+          strategyType: 'volume',
+          parameters,
+          status: 'running',
+          startPrice,
+        });
+        await this.strategyInstanceRepository.save(strategyInstance);
+      } else {
+        await this.strategyInstanceRepository.update(
+          { strategyKey },
+          { status: 'running', updatedAt: new Date() },
+        );
+      }
+
+      const exchangeAccount1 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'default',
+      );
+      const exchangeAccount2 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'account2',
+      );
+
       let tradesExecuted = 0;
-  
-      // Track our "target maker price" across trades.
-      // We'll set it after the *first* trade is established (based on midPrice).
-      let currentMakerPrice: number | null = null;
-  
+      let useAccount1AsMaker = true;
+
+      /* helper → fetch free balances for base / quote */
+      const getFree = async (
+        exch: ccxt.Exchange,
+        base: string,
+        quote: string,
+      ) => {
+        const bal = await exch.fetchBalance();
+        return {
+          base: bal.free[base] ?? 0,
+          quote: bal.free[quote] ?? 0,
+        };
+      };
+
+      /* helper → one-shot rebalance so the next trade can proceed */
+      const rebalance = async (
+        exch: ccxt.Exchange,
+        needSide: 'buy' | 'sell',
+        amountNeeded: number,
+        price: number,
+      ) => {
+        if (needSide === 'buy') {
+          /* need more base, so buy base with quote */
+          if (amountNeeded > 0)
+            await exch.createOrder(symbol, 'market', 'buy', amountNeeded);
+        } else {
+          /* need more quote, so sell base for quote */
+          const baseToSell = amountNeeded / price;
+          if (baseToSell > 0)
+            await exch.createOrder(symbol, 'market', 'sell', baseToSell);
+        }
+      };
+
+      /* ── capture initial portfolio value ── */
+      const [baseAsset, quoteAsset] = symbol.split('/');
+      const initBal1 = await getFree(exchangeAccount1, baseAsset, quoteAsset);
+      const initBal2 = await getFree(exchangeAccount2, baseAsset, quoteAsset);
+      const initialTotalQuoteValue =
+        (initBal1.base + initBal2.base) * startPrice +
+        (initBal1.quote + initBal2.quote);
+
+      /* ── trading loop ── */
       const executeTrade = async () => {
         if (tradesExecuted >= numTrades) {
-          this.logger.log(`Volume strategy ${strategyKey} completed.`);
+          this.logger.log(
+            `Volume strategy [${strategyKey}] completed after ${numTrades} trades.`,
+          );
           this.strategyInstances.delete(strategyKey);
           return;
         }
-  
+
         try {
-          // 1. Fetch the current order book for reference
-          const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
-          if (!orderBook.bids.length || !orderBook.asks.length) {
-             throw new Error(`Order book data is incomplete for ${symbol}`);
-            }
-            const bestBid = orderBook.bids[0][0];
-            const bestAsk = orderBook.asks[0][0];
-  
-          this.logger.log(`Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`);
-  
-          // 2. Decide maker / taker accounts
-          const makerExchange = useAccount1AsMaker ? exchangeAccount1 : exchangeAccount2;
-          const takerExchange = useAccount1AsMaker ? exchangeAccount2 : exchangeAccount1;
-  
-          // 3. Randomize the trade amount ±5% around baseTradeAmount
-          //    Range: [0.95 * baseTradeAmount, 1.05 * baseTradeAmount]
-          const randomFactor = 1 + (Math.random() * 0.1 - 0.05); 
+          /* cancel leftovers */
+          await this.cancelAllOrders(exchangeAccount1, symbol, strategyKey);
+          await this.cancelAllOrders(exchangeAccount2, symbol, strategyKey);
+
+          const makerExchange = useAccount1AsMaker
+            ? exchangeAccount1
+            : exchangeAccount2;
+          const takerExchange = useAccount1AsMaker
+            ? exchangeAccount2
+            : exchangeAccount1;
+
+          const makerSide: 'buy' | 'sell' = postOnlySide;
+          const takerSide: 'buy' | 'sell' =
+            postOnlySide === 'buy' ? 'sell' : 'buy';
+
+          const randomFactor = 1 + (Math.random() * 0.1 - 0.05);
           const amount = baseTradeAmount * randomFactor;
-  
-          // 4. Determine the maker price
-          //    - If first trade, base it on the midPrice with a small increment factor.
-          //    - After each success, push the price up by 'pricePushRate' (e.g. +1%).
-          if (currentMakerPrice == null) {
-            // For the first trade, pick a price in the spread
-            const midPrice = (bestBid + bestAsk) / 2;
-            const baseFactor = 1 + baseIncrementPercentage / 100;
-            currentMakerPrice = midPrice * baseFactor;
-          } else {
-            // For subsequent trades, push the price up slowly
-            // Example: If pricePushRate = 1, it goes up by 1% each successful trade
-            currentMakerPrice *= (1 + pricePushRate / 100);
-          }
-  
-          // Ensure we do NOT exceed the bestAsk - small offset
-          const makerPrice = Math.min(currentMakerPrice, bestAsk - 0.000001);
-  
-          this.logger.log(
-            `Maker placing limit BUY: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${makerExchange.id}`,
+
+          const makerBook = await makerExchange.fetchOrderBook(symbol);
+          const bestBid = makerBook.bids[0][0];
+          const bestAsk = makerBook.asks[0][0];
+          const midPrice = (bestBid + bestAsk) / 2;
+
+          /* balances + PnL */
+          const makerBalances = await getFree(
+            makerExchange,
+            baseAsset,
+            quoteAsset,
           );
-  
-          // 5. Place the maker (BUY) order with postOnly to remain on the order book
-          let makerOrder;
-          try {
-            makerOrder = await makerExchange.createOrder(
-              symbol,
-              'limit',
-              'buy',
-              amount,
-              makerPrice,
-              { postOnly: true },
-            );
-          } catch (error) {
-            this.logger.error(`Failed to create maker order: ${error.message}`);
-            throw error;
-          }
-          // 6. Wait briefly to ensure maker order is posted in the order book
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-  
-          // 7. Taker places a LIMIT SELL at exactly makerPrice to cross that order
-          this.logger.log(
-            `Taker placing limit SELL: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${takerExchange.id}`,
+          const takerBalances = await getFree(
+            takerExchange,
+            baseAsset,
+            quoteAsset,
           );
+
+          const currentTotalQuoteValue =
+            (makerBalances.base + takerBalances.base) * midPrice +
+            (makerBalances.quote + takerBalances.quote);
+
+          const pnlSinceStart = currentTotalQuoteValue - initialTotalQuoteValue;
+
+          this.logger.log(
+            `[${strategyKey}] Balances | ${
+              makerExchange.id
+            }: ${baseAsset}=${makerBalances.base.toFixed(
+              4,
+            )}, ${quoteAsset}=${makerBalances.quote.toFixed(2)} | ${
+              takerExchange.id
+            }: ${baseAsset}=${takerBalances.base.toFixed(
+              4,
+            )}, ${quoteAsset}=${takerBalances.quote.toFixed(
+              2,
+            )} | PnL: ${pnlSinceStart.toFixed(2)} ${quoteAsset}`,
+          );
+
+          /* maker side sufficient? */
+          if (
+            makerSide === 'buy' &&
+            makerBalances.quote < amount * midPrice * 1.01
+          ) {
+            const deficitBase =
+              (amount * midPrice - makerBalances.quote) / midPrice;
+            await rebalance(makerExchange, 'buy', deficitBase, midPrice);
+          } else if (
+            makerSide === 'sell' &&
+            makerBalances.base < amount * 1.01
+          ) {
+            const deficitQuote = amount - makerBalances.base;
+            await rebalance(makerExchange, 'sell', deficitQuote, midPrice);
+          }
+
+          /* taker side sufficient? */
+          if (
+            takerSide === 'buy' &&
+            takerBalances.quote < amount * midPrice * 1.01
+          ) {
+            const deficitBase =
+              (amount * midPrice - takerBalances.quote) / midPrice;
+            await rebalance(takerExchange, 'buy', deficitBase, midPrice);
+          } else if (
+            takerSide === 'sell' &&
+            takerBalances.base < amount * 1.01
+          ) {
+            const deficitQuote = amount - takerBalances.base;
+            await rebalance(takerExchange, 'sell', deficitQuote, midPrice);
+          }
+
+          /* choose random maker price inside spread */
+          const makerPrice = bestBid + Math.random() * (bestAsk - bestBid);
+          const takerPrice = makerPrice;
+
+          const makerOrder = await makerExchange.createOrder(
+            symbol,
+            'limit',
+            makerSide,
+            amount,
+            makerPrice,
+            { postOnly: true },
+          );
+
           const takerOrder = await takerExchange.createOrder(
             symbol,
             'limit',
-            'sell',
+            takerSide,
             amount,
-            makerPrice,
+            takerPrice,
           );
-  
-          // 8. Check final statuses (optional but recommended)
-          const makerResult = await makerExchange.fetchOrder(makerOrder.id, symbol);
-          const takerResult = await takerExchange.fetchOrder(takerOrder.id, symbol);
-  
-          if (makerResult.status === 'closed' || makerResult.status === 'filled') {
+
+          /* log fills */
+          const makerResult = await makerExchange.fetchOrder(
+            makerOrder.id,
+            symbol,
+          );
+          const takerResult = await takerExchange.fetchOrder(
+            takerOrder.id,
+            symbol,
+          );
+
+          if (
+            makerResult.status === 'closed' ||
+            makerResult.status === 'filled'
+          ) {
             this.logger.log(
-              `Maker order on ${makerExchange.id} filled successfully at ${makerPrice}`,
-            );
-          } else {
-            this.logger.warn(
-              `Maker order on ${makerExchange.id} is still ${makerResult.status}.`,
+              `Maker ${makerSide.toUpperCase()} on ${
+                makerExchange.id
+              } filled at ${makerPrice.toFixed(6)}`,
             );
           }
-  
-          if (takerResult.status === 'closed' || takerResult.status === 'filled') {
+
+          if (
+            takerResult.status === 'closed' ||
+            takerResult.status === 'filled'
+          ) {
             this.logger.log(
-              `Taker order on ${takerExchange.id} filled successfully at ${makerPrice}`,
-            );
-          } else {
-            this.logger.warn(
-              `Taker order on ${takerExchange.id} is still ${takerResult.status}.`,
+              `Taker ${takerSide.toUpperCase()} on ${
+                takerExchange.id
+              } filled at ${takerPrice.toFixed(6)}`,
             );
           }
-  
-          // 9. One trade completed
+
           tradesExecuted++;
-          // Flip the roles for next trade
           useAccount1AsMaker = !useAccount1AsMaker;
-  
-          // 10. Determine the next trade delay randomly in [baseIntervalTime, 1.5 * baseIntervalTime]
+
           const minInterval = baseIntervalTime;
           const maxInterval = baseIntervalTime * 1.5;
-          const randomInterval = minInterval + Math.random() * (maxInterval - minInterval);
-  
-          // Optionally, round the delay to a whole number of seconds:
-          const delaySeconds = Math.floor(randomInterval); 
-          this.logger.log(
-            `Scheduling next trade in ${delaySeconds} seconds (range: ${minInterval} - ${maxInterval}).`,
+          const delaySeconds = Math.floor(
+            minInterval + Math.random() * (maxInterval - minInterval),
           );
-  
+
+          this.logger.log(
+            `Trade #${tradesExecuted} done. Next trade in ~${delaySeconds}s.`,
+          );
           setTimeout(executeTrade, delaySeconds * 1000);
-  
         } catch (error) {
-          this.logger.error(`Error executing trade: ${error.stack || error}`);
-          
-          // Retry also in that [baseIntervalTime, 1.5 * baseIntervalTime] range
-          const minInterval = baseIntervalTime;
-          const maxInterval = baseIntervalTime * 1.5;
-          const retryInterval = minInterval + Math.random() * (maxInterval - minInterval);
-          const delaySeconds = Math.floor(retryInterval);
-  
-          this.logger.log(`Retrying in ${delaySeconds} seconds.`);
-          setTimeout(executeTrade, delaySeconds * 1000);
+          this.logger.error(`Error in trade cycle: ${error.message}`);
+          const retryDelay = Math.floor(
+            baseIntervalTime + Math.random() * (baseIntervalTime * 0.5),
+          );
+          this.logger.log(`Retrying volume trade in ${retryDelay}s.`);
+          setTimeout(executeTrade, retryDelay * 1000);
         }
       };
-  
-      // Start the process
+
       this.strategyInstances.set(strategyKey, {
         isRunning: true,
         intervalId: null,
       });
-      this.logger.log(`Volume strategy ${strategyKey} started.`);
+      this.logger.log(`Volume strategy [${strategyKey}] started.`);
       executeTrade();
     } catch (error) {
-      this.logger.error(`Failed to execute volume strategy: ${error.message}`);
+      this.logger.error(
+        `Failed to execute volume strategy [${strategyKey}]: ${error.message}`,
+      );
     }
   }
-  
-  
-  
-  
+
+  /**
+   * Cancel leftover orders for a given exchange, symbol, and strategyKey.
+   */
+  private async cancelAllOrders(
+    exchange: ccxt.Exchange,
+    pair: string,
+    strategyKey: string,
+  ) {
+    this.logger.log(
+      `Canceling leftover orders for [${strategyKey}] on ${exchange.id}`,
+    );
+
+    try {
+      const orders = await exchange.fetchOpenOrders(pair);
+      for (const order of orders) {
+        try {
+          await exchange.cancelOrder(order.id, pair);
+          // Optionally update DB if you're tracking orders by strategy
+          await this.orderRepository.update(
+            {
+              orderId: order.id,
+              exchange: exchange.id,
+              pair,
+              strategy: strategyKey, // or "volume" if you store by strategy name
+            },
+            {
+              status: 'canceled',
+            },
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to cancel order ${order.id} on ${exchange.id}: ${error.message}`,
+          );
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
+      );
+    }
+  }
+
   private async waitForOrderFill(
     exchange: ccxt.Exchange,
     orderId: string,
@@ -628,29 +789,29 @@ export class StrategyService {
       ceilingPrice,
       floorPrice,
     } = strategyParamsDto;
-  
+
     const strategyKey = createStrategyKey({
       type: 'pureMarketMaking',
       user_id: userId,
       client_id: clientId,
     });
-  
+
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.error(`Strategy ${strategyKey} is already running.`);
       return;
     }
-  
+
     // Find or create the strategy instance
     let strategyInstance = await this.strategyInstanceRepository.findOne({
       where: { strategyKey, status: 'running' },
     });
-  
+
     if (!strategyInstance) {
       strategyInstance = await this.strategyInstanceRepository.findOne({
         where: { strategyKey },
       });
-  
+
       if (strategyInstance) {
         await this.strategyInstanceRepository.update(
           { strategyKey },
@@ -658,8 +819,9 @@ export class StrategyService {
         );
       } else {
         // The exchange we place orders on
-        const executionExchange = this.exchangeInitService.getExchange(exchangeName);
-  
+        const executionExchange =
+          this.exchangeInitService.getExchange(exchangeName);
+
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -679,7 +841,7 @@ export class StrategyService {
         await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
-  
+
     // Start the strategy
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
     const intervalId = setInterval(async () => {
@@ -687,7 +849,7 @@ export class StrategyService {
         await this.manageMarketMakingOrdersWithLayers(
           userId,
           clientId,
-          exchangeName,     // We'll still execute trades on 'exchangeName'
+          exchangeName, // We'll still execute trades on 'exchangeName'
           pair,
           bidSpread,
           askSpread,
@@ -698,7 +860,7 @@ export class StrategyService {
           amountChangeType,
           ceilingPrice,
           floorPrice,
-          oracleExchangeName // Pass along to retrieve price from a different exchange if provided
+          oracleExchangeName, // Pass along to retrieve price from a different exchange if provided
         );
       } catch (error) {
         this.logger.error(
@@ -707,11 +869,10 @@ export class StrategyService {
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }, orderRefreshTime);
-  
+
     // Track the strategy instance
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
-  
 
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
@@ -733,17 +894,19 @@ export class StrategyService {
     const priceExchange = oracleExchangeName
       ? this.exchangeInitService.getExchange(oracleExchangeName)
       : this.exchangeInitService.getExchange(executionExchangeName);
-  
+
     // 2. Execution exchange is always the main exchangeName
-    const executionExchange = this.exchangeInitService.getExchange(executionExchangeName);
-  
+    const executionExchange = this.exchangeInitService.getExchange(
+      executionExchangeName,
+    );
+
     // 3. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
       priceExchange.id, // use priceExchange for data
       pair,
       priceSourceType,
     );
-  
+
     // 4. Cancel all existing orders on the execution exchange, but still use the same strategyKey
     await this.cancelAllOrders(
       executionExchange,
@@ -754,7 +917,7 @@ export class StrategyService {
         client_id: clientId,
       }),
     );
-  
+
     // Mark all open orders not canceled as closed in DB
     await this.orderRepository.update(
       {
@@ -769,24 +932,25 @@ export class StrategyService {
         status: 'closed',
       },
     );
-  
+
     let currentOrderAmount = baseOrderAmount;
-  
+
     for (let layer = 1; layer <= numberOfLayers; layer++) {
       if (layer > 1) {
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
-          currentOrderAmount += currentOrderAmount * (amountChangePerLayer / 100);
+          currentOrderAmount +=
+            currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
-  
+
       const layerBidSpreadPercentage = bidSpread * layer;
       const layerAskSpreadPercentage = askSpread * layer;
-  
+
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
-  
+
       // 5. Place buy orders on the execution exchange, if below the ceiling
       if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
         const {
@@ -799,9 +963,11 @@ export class StrategyService {
           buyPrice,
         );
         if (!adjustedBuyAmount || !adjustedBuyPrice) {
-            throw new Error(`Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`);
-          }
-  
+          throw new Error(
+            `Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`,
+          );
+        }
+
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -811,7 +977,7 @@ export class StrategyService {
           amount: parseFloat(adjustedBuyAmount),
           price: parseFloat(adjustedBuyPrice),
         });
-  
+
         // Persist
         const orderEntity = this.orderRepository.create({
           userId,
@@ -832,7 +998,7 @@ export class StrategyService {
           `Skipping buy order for ${pair} as price source ${priceSource} exceeds ceiling ${ceilingPrice}.`,
         );
       }
-  
+
       // 6. Place sell orders on the execution exchange, if above the floor
       if (floorPrice === undefined || priceSource >= floorPrice) {
         const {
@@ -844,7 +1010,7 @@ export class StrategyService {
           currentOrderAmount,
           sellPrice,
         );
-  
+
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -854,7 +1020,7 @@ export class StrategyService {
           amount: parseFloat(adjustedSellAmount),
           price: parseFloat(adjustedSellPrice),
         });
-  
+
         const orderEntity = this.orderRepository.create({
           userId,
           clientId,
@@ -876,7 +1042,6 @@ export class StrategyService {
       }
     }
   }
-  
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,
@@ -894,45 +1059,6 @@ export class StrategyService {
     const adjustedPrice = await exchange.priceToPrecision(symbol, price);
     this.logger.log(`Adjusted Order: ${adjustedAmount} @ ${adjustedPrice}`);
     return { adjustedAmount, adjustedPrice };
-  }
-
-  private async cancelAllOrders(
-    exchange: ccxt.Exchange,
-    pair: string,
-    strategyKey: string,
-  ) {
-    this.logger.log('Cancelling Orders for', strategyKey);
-    try {
-      const orders = await exchange.fetchOpenOrders(pair);
-      for (const order of orders) {
-        try {
-          await exchange.cancelOrder(order.id, pair);
-
-          // Mark canceled on the database
-          await this.orderRepository.update(
-            {
-              orderId: order.id,
-              exchange: exchange.id,
-              pair,
-              strategy: 'pureMarketMaking',
-            },
-            {
-              status: 'canceled',
-            },
-          );
-        } catch (error) {
-          this.logger.error(
-            `Failed to cancel order ${order.id} for ${pair} on ${exchange.id}: ${error.message}`,
-          );
-          // Decide whether to retry or continue with the next order
-        }
-      }
-    } catch (error) {
-      this.logger.error(
-        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
-      );
-      // Handle the error, e.g., by logging and possibly retrying later
-    }
   }
 
   private async getCurrentMarketPrice(
