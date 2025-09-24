@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x] # Adjust node version as necessary
+        node-version: [22] # Adjust node version as necessary
 
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +23,9 @@ jobs:
 
       - name: Enable Corepack
         run: corepack enable
+        
+      - name: Prepare Yarn 4.9.1
+        run: corepack prepare yarn@4.9.1 --activate
 
       - name: Cache Yarn
         uses: actions/cache@v3
