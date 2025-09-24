@@ -18,7 +18,6 @@ jobs:
           POSTGRES_USER: postgres
         ports:
           - 5432:5432
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -32,7 +31,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/unplugged
+            .yarn/build-state.yml
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: make install
@@ -84,11 +98,11 @@ jobs:
           ADMIN_PASSWORD: 123123
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: yarn dlx playwright install --with-deps
         working-directory: ./interface
 
       - name: Run Playwright tests
-        run: npx playwright test --project='chromium'
+        run: yarn dlx playwright test --project=chromium
         working-directory: ./interface
         env:
           PUBLIC_HUFI_BACKEND_URL: "http://localhost:3000"
