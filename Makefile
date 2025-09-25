@@ -6,7 +6,7 @@ install-client:
 
 install-server:
 	@echo "Installing server dependencies..."
-	@cd server && yarn install || exit 1
+	@cd server && yarn install --immutable || exit 1
 	@echo "Server dependencies installed successfully!"
 .PHONY: install-server
 
