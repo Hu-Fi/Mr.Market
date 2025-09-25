@@ -40,6 +40,8 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+        env:
+          YARN_ENABLE_HARDENED_MODE: 0
 
       - name: Execute Unit tests
         run: yarn test:unit
