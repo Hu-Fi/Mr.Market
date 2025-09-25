@@ -1,94 +1,102 @@
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/spot');
-})
+test.describe('Spot trading', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('http://127.0.0.1:5173/spot');
+  });
 
-test('switch buy and sell', async ({ page }) => {
-  // buy
-  await page.getByTestId('type_buy').click()
-  let actionButtonText = await page.getByTestId('buy_button_text').textContent()
-  expect(actionButtonText?.toLocaleLowerCase()).toContain('buy')
-  
-  // sell
-  await page.getByTestId('type_sell').click()
-  actionButtonText = await page.getByTestId('sell_button_text').textContent()
-  expect(actionButtonText?.toLocaleLowerCase()).toContain('sell')
-});
+  test('switch buy and sell', async ({ page }) => {
+    // buy
+    await page.getByTestId('type_buy').click();
+    let actionButtonText = await page.getByTestId('buy_button_text').textContent();
+    expect(actionButtonText?.toLocaleLowerCase()).toContain('buy');
 
-test('select limit/market order', async ({ page }) => {
-  // Open dialog
-  await page.getByTestId('order_type_selector').click()
-  // Select limit order
-  await page.getByTestId('limit_order_btn').click()
-  let actionButtonText = await page.getByTestId('limit_order_btn-text').textContent()
-  expect(actionButtonText?.toLocaleLowerCase()).toContain('limit')
+    // sell
+    await page.getByTestId('type_sell').click();
+    actionButtonText = await page.getByTestId('sell_button_text').textContent();
+    expect(actionButtonText?.toLocaleLowerCase()).toContain('sell');
+  });
 
-  // Open dialog
-  await page.getByTestId('order_type_selector').click()
+  test('select limit/market order', async ({ page }) => {
+    // Open dialog
+    await page.getByTestId('order_type_selector').click();
+    // Select limit order
+    await page.getByTestId('limit_order_btn').click();
+    let actionButtonText = await page.getByTestId('limit_order_btn-text').textContent();
+    expect(actionButtonText?.toLocaleLowerCase()).toContain('limit');
 
-  // Select market order
-  await page.getByTestId('market-order-btn').click()
-  actionButtonText = await page.getByTestId('market-order-btn-text').textContent()
-  expect(actionButtonText?.toLocaleLowerCase()).toContain('market')
-});
+    // Open dialog
+    await page.getByTestId('order_type_selector').click();
 
-test('create buy/sell market order', async ({ page }) => {
-  let isDialogOpen = await page.locator('#order_confirm_modal').evaluate(dialog => dialog.classList.contains('modal-open'));
-  expect(isDialogOpen).toBeFalsy();
+    // Select market order
+    await page.getByTestId('market-order-btn').click();
+    actionButtonText = await page.getByTestId('market-order-btn-text').textContent();
+    expect(actionButtonText?.toLocaleLowerCase()).toContain('market');
+  });
 
-  const amount = '1234.2346'
-  // Click buy tab
-  await page.getByTestId('type_buy').click()
-  // Enter amount
-  await page.getByTestId('total_input').click()
-  await page.keyboard.type(amount);
-  
-  // Click buy action
-  await page.getByTestId('confirm_order').click()
-  let payAmount = await page.getByTestId('order_confirm_pay_amount').textContent()
-  let actualAmount = await page.getByTestId('total_input').textContent()
-  expect(payAmount).toContain(actualAmount)
-  // Confirm order
-  await page.getByTestId('confirm_order_button').click()
+  test('create buy/sell market order', async ({ page }) => {
+    let isDialogOpen = await page
+      .locator('#order_confirm_modal')
+      .evaluate((dialog) => dialog.classList.contains('modal-open'));
+    expect(isDialogOpen).toBeFalsy();
 
-  // Close
-  await page.getByTestId('close_order_modal').click()
-  await page.getByTestId('total_input').fill('')
+    const amount = '1234.2346';
+    // Click buy tab
+    await page.getByTestId('type_buy').click();
+    // Enter amount
+    await page.getByTestId('total_input').click();
+    await page.keyboard.type(amount);
 
-  // Click sell tab
-  await page.getByTestId('type_sell').click()
-  // Enter amount
-  await page.getByTestId('total_input').click()
-  await page.keyboard.type(amount);
-  // Click sell action
-  await page.getByTestId('confirm_order').click()
-  payAmount = await page.getByTestId('order_confirm_pay_amount').textContent()
-  actualAmount = await page.getByTestId('total_input').textContent()
-  expect(payAmount).toContain(actualAmount)
-  
-  // Check if confirm button is disabled
-  const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
+    // Click buy action
+    await page.getByTestId('confirm_order').click();
+    let payAmount = await page.getByTestId('order_confirm_pay_amount').textContent();
+    let actualAmount = await page.getByTestId('total_input').textContent();
+    expect(payAmount).toContain(actualAmount);
 
-  if (!isConfirmButtonDisabled) {
     // Confirm order
-    await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
-    await page.getByTestId('confirm_order_button').click()
-  }
+    await page.getByTestId('confirm_order_button').click();
 
-  // Close
-  await page.getByTestId('close_order_modal').click()
-  isDialogOpen = await page.locator('#order_confirm_modal').evaluate(dialog => dialog.classList.contains('modal-open'));
-  expect(isDialogOpen).toBeFalsy();
+    // Close
+    await page.getByTestId('close_order_modal').click();
+    await page.getByTestId('total_input').fill('');
+
+    // Click sell tab
+    await page.getByTestId('type_sell').click();
+    // Enter amount
+    await page.getByTestId('total_input').click();
+    await page.keyboard.type(amount);
+
+    // Click sell action
+    await page.getByTestId('confirm_order').click();
+    payAmount = await page.getByTestId('order_confirm_pay_amount').textContent();
+    actualAmount = await page.getByTestId('total_input').textContent();
+    expect(payAmount).toContain(actualAmount);
+
+    // Check if confirm button is disabled
+    const isConfirmButtonDisabled = await page.getByTestId('confirm_order_button').isDisabled();
+
+    if (!isConfirmButtonDisabled) {
+      await page.waitForSelector('[data-testid="confirm_order_button"]', { state: 'visible' });
+      await page.getByTestId('confirm_order_button').click();
+    }
+
+    // Close
+    await page.getByTestId('close_order_modal').click();
+    isDialogOpen = await page
+      .locator('#order_confirm_modal')
+      .evaluate((dialog) => dialog.classList.contains('modal-open'));
+    expect(isDialogOpen).toBeFalsy();
+  });
+
+  test('connect wallet', async ({ page, context }) => {
+    const popupPromise = context.waitForEvent('page');
+    await page.getByRole('button', { name: 'Connect Wallet' }).first().click();
+    const newPage = await popupPromise;
+    await newPage.waitForLoadState();
+    await expect(newPage).toHaveURL(/https:\/\/mixin\.one\/codes\//);
+  });
+
 });
-
-test('connect wallet', async({ page, context }) => {
-  await page.getByRole('button', { name: 'Connect Wallet' }).first().click();
-  const pagePromise = context.waitForEvent('page');
-  const newPage = await pagePromise;
-  await newPage.waitForLoadState();
-  expect(newPage.url()).toContain('https://mixin.one/codes/');
-})
 
 // test('create buy limit order', async ({ page }) => {
 //   const price = '10000'; const recvAmount = '10'; const estimatedPay = Number(price)*Number(recvAmount)

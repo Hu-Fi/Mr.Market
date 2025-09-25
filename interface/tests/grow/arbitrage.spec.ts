@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 
+test.describe('Market making', () => {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/grow');
@@ -41,4 +42,5 @@ test('create arbitrage', async ({ page }) => {
   const newPage2 = await pagePromise2;
   await newPage2.waitForLoadState();
   expect(newPage2.url()).toContain('https://mixin.one/pay');
-})
+});
+});

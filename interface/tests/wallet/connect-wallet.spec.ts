@@ -1,13 +1,17 @@
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173/wallet');
-})
+test.describe('Wallet', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('http://127.0.0.1:5173/wallet');
+  });
 
-test('connect wallet', async ({ page }) => {
-  const page14Promise = page.waitForEvent('popup');
-  await page.getByRole('button', { name: 'Connect Wallet' }).click();
-  const newPage = await page14Promise;
-  await newPage.waitForLoadState();
-  expect(newPage.url()).toContain('https://mixin.one/codes/');
-})
+  test('connect wallet', async ({ page }) => {
+    const popupPromise = page.waitForEvent('popup');
+    await page.getByRole('button', { name: 'Connect Wallet' }).click();
+
+    const newPage = await popupPromise;
+    await newPage.waitForLoadState();
+
+    await expect(newPage).toHaveURL(/https:\/\/mixin\.one\/codes\//);
+  });
+});
