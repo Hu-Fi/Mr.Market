@@ -102,6 +102,10 @@ jobs:
           JWT_SECRET: 6b23439e8fee67c5da38b61b8779e9f41a5e3e36efe723c6299dd2111896def6
           ADMIN_PASSWORD: 123123
 
+      - name: Sync SvelteKit config
+        run: yarn svelte-kit sync
+        working-directory: ./interface
+
       - name: Install Playwright Browsers
         run: yarn dlx playwright install --with-deps
         working-directory: ./interface

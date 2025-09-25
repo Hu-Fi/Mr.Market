@@ -1,4 +1,4 @@
-name: Runs All Unit Tests
+name: Runs All interface Unit Tests
 on:
   push:
     branches: [ main ]
@@ -42,6 +42,9 @@ jobs:
         run: yarn install --immutable
         env:
           YARN_ENABLE_HARDENED_MODE: 0
+
+      - name: Sync SvelteKit config
+        run: yarn svelte-kit sync
 
       - name: Execute Unit tests
         run: yarn test:unit
