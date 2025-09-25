@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [22] # Adjust node version as necessary
+        node-version: [22.15.0] # Adjust node version as necessary
 
     steps:
       - uses: actions/checkout@v4
