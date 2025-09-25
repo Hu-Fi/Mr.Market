@@ -1261,7 +1261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.47.2":
+"@playwright/test@npm:^1.55.1":
   version: 1.55.1
   resolution: "@playwright/test@npm:1.55.1"
   dependencies:
@@ -1642,12 +1642,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.11.0":
-  version: 20.19.17
-  resolution: "@types/node@npm:20.19.17"
+"@types/node@npm:^24.5.2":
+  version: 24.5.2
+  resolution: "@types/node@npm:24.5.2"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10c0/ab4c5dd8bdeacb1c04c2724c75023eec0ac9469583b39032f5daaf56768a31ee6fa3a0bfcc597e4a3e74eb49744deeb9d5eb760f30e984e25088f6d895e0811d
+    undici-types: "npm:~7.12.0"
+  checksum: 10c0/96baaca6564d39c6f7f6eddd73ce41e2a7594ef37225cd52df3be36fad31712af8ae178387a72d0b80f2e2799e7fd30c014bc0ae9eb9f962d9079b691be00c48
   languageName: node
   linkType: hard
 
@@ -1655,6 +1655,13 @@ __metadata:
   version: 6.14.13
   resolution: "@types/node@npm:6.14.13"
   checksum: 10c0/e1e06d8bd429c6e4ea6a34f87a690c4a7b86be07f09da05524a3b6df6a5d163e442d82d97c67b199a8005c52d6c14c05380d4592a55df7d787a6e51a19a0439e
+  languageName: node
+  linkType: hard
+
+"@types/path-browserify@npm:^1":
+  version: 1.0.3
+  resolution: "@types/path-browserify@npm:1.0.3"
+  checksum: 10c0/6ed6de375c210dbc20d171ab547be6065ce9904463ca8ca63443a3b23efc7234ff5400d62be05b9be36fc2e863b77592c2e607896988ad39a45276b8a7e42d70
   languageName: node
   linkType: hard
 
@@ -4692,12 +4699,13 @@ __metadata:
     "@fontsource/inter": "npm:^5.0.16"
     "@mixin.dev/mixin-node-sdk": "npm:^6.1.1"
     "@playwright/experimental-ct-svelte": "npm:^1.40.1"
-    "@playwright/test": "npm:^1.47.2"
+    "@playwright/test": "npm:^1.55.1"
     "@sveltejs/adapter-auto": "npm:^3.0.0"
     "@sveltejs/adapter-static": "npm:^3.0.5"
     "@sveltejs/kit": "npm:^2.0.0"
     "@sveltejs/vite-plugin-svelte": "npm:^3.0.0"
-    "@types/node": "npm:^20.11.0"
+    "@types/node": "npm:^24.5.2"
+    "@types/path-browserify": "npm:^1"
     "@types/uuid": "npm:^9.0.8"
     "@typescript-eslint/eslint-plugin": "npm:^6.19.1"
     "@typescript-eslint/parser": "npm:^6.19.1"
@@ -4718,6 +4726,7 @@ __metadata:
     lightweight-charts: "npm:^4.1.1"
     moment: "npm:^2.30.1"
     pako: "npm:^2.1.0"
+    path-browserify: "npm:^1.0.1"
     postcss: "npm:^8.4.32"
     reconnecting-websocket: "npm:^4.4.0"
     socket.io-client: "npm:^4.7.4"
@@ -7824,10 +7833,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
+"undici-types@npm:~7.12.0":
+  version: 7.12.0
+  resolution: "undici-types@npm:7.12.0"
+  checksum: 10c0/326e455bbc0026db1d6b81c76a1cf10c63f7e2f9821db2e24fdc258f482814e5bfa8481f8910d07c68e305937c5c049610fdc441c5e8b7bb0daca7154fb8a306
   languageName: node
   linkType: hard
 
