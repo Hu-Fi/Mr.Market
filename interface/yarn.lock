@@ -3787,10 +3787,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-scope@npm:^8.2.0":
+  version: 8.4.0
+  resolution: "eslint-scope@npm:8.4.0"
+  dependencies:
+    esrecurse: "npm:^4.3.0"
+    estraverse: "npm:^5.2.0"
+  checksum: 10c0/407f6c600204d0f3705bd557f81bd0189e69cd7996f408f8971ab5779c0af733d1af2f1412066b40ee1588b085874fc37a2333986c6521669cdbdd36ca5058e0
+  languageName: node
+  linkType: hard
+
 "eslint-visitor-keys@npm:^3.4.1, eslint-visitor-keys@npm:^3.4.3":
   version: 3.4.3
   resolution: "eslint-visitor-keys@npm:3.4.3"
   checksum: 10c0/92708e882c0a5ffd88c23c0b404ac1628cf20104a108c745f240a13c332a11aac54f49a22d5762efbffc18ecbc9a580d1b7ad034bf5f3cc3307e5cbff2ec9820
+  languageName: node
+  linkType: hard
+
+"eslint-visitor-keys@npm:^4.0.0, eslint-visitor-keys@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "eslint-visitor-keys@npm:4.2.1"
+  checksum: 10c0/fcd43999199d6740db26c58dbe0c2594623e31ca307e616ac05153c9272f12f1364f5a0b1917a8e962268fdecc6f3622c1c2908b4fcc2e047a106fe6de69dc43
   languageName: node
   linkType: hard
 
@@ -3858,6 +3875,17 @@ __metadata:
     event-emitter: "npm:^0.3.5"
     type: "npm:^2.7.2"
   checksum: 10c0/7efd8d44ac20e5db8cb0ca77eb65eca60628b2d0f3a1030bcb05e71cc40e6e2935c47b87dba3c733db12925aa5b897f8e0e7a567a2c274206f184da676ea2e65
+  languageName: node
+  linkType: hard
+
+"espree@npm:^10.0.0":
+  version: 10.4.0
+  resolution: "espree@npm:10.4.0"
+  dependencies:
+    acorn: "npm:^8.15.0"
+    acorn-jsx: "npm:^5.3.2"
+    eslint-visitor-keys: "npm:^4.2.1"
+  checksum: 10c0/c63fe06131c26c8157b4083313cb02a9a54720a08e21543300e55288c40e06c3fc284bdecf108d3a1372c5934a0a88644c98714f38b6ae8ed272b40d9ea08d6b
   languageName: node
   linkType: hard
 
@@ -4697,6 +4725,7 @@ __metadata:
     svelte-carousel: "npm:^1.0.25"
     svelte-check: "npm:^3.6.0"
     svelte-cleavejs: "npm:^1.0.3"
+    svelte-eslint-parser: "npm:^1.3.3"
     svelte-french-toast: "npm:^1.2.0"
     svelte-i18n: "npm:^4.0.0"
     svelte-infinite-loading: "npm:^1.4.0"
@@ -6284,6 +6313,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-selector-parser@npm:^7.0.0":
+  version: 7.1.0
+  resolution: "postcss-selector-parser@npm:7.1.0"
+  dependencies:
+    cssesc: "npm:^3.0.0"
+    util-deprecate: "npm:^1.0.2"
+  checksum: 10c0/0fef257cfd1c0fe93c18a3f8a6e739b4438b527054fd77e9a62730a89b2d0ded1b59314a7e4aaa55bc256204f40830fecd2eb50f20f8cb7ab3a10b52aa06c8aa
+  languageName: node
+  linkType: hard
+
 "postcss-value-parser@npm:^4.0.0, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
@@ -6291,7 +6330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.32, postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.43, postcss@npm:^8.4.47, postcss@npm:^8.5.3":
+"postcss@npm:^8.4.32, postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.43, postcss@npm:^8.4.47, postcss@npm:^8.4.49, postcss@npm:^8.5.3":
   version: 8.5.6
   resolution: "postcss@npm:8.5.6"
   dependencies:
@@ -7299,6 +7338,25 @@ __metadata:
     svelte:
       optional: true
   checksum: 10c0/52bbbf5d266fc36f64626e38d8de4354d78a5490fa60b61b1cd127c1c661d94f0c671a220e3ed7dd92b144a3c99f517d5205c218f78feea0603132f24eeb4c9d
+  languageName: node
+  linkType: hard
+
+"svelte-eslint-parser@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "svelte-eslint-parser@npm:1.3.3"
+  dependencies:
+    eslint-scope: "npm:^8.2.0"
+    eslint-visitor-keys: "npm:^4.0.0"
+    espree: "npm:^10.0.0"
+    postcss: "npm:^8.4.49"
+    postcss-scss: "npm:^4.0.9"
+    postcss-selector-parser: "npm:^7.0.0"
+  peerDependencies:
+    svelte: ^3.37.0 || ^4.0.0 || ^5.0.0
+  peerDependenciesMeta:
+    svelte:
+      optional: true
+  checksum: 10c0/f76dc2695c475244e71b53e478bf56113d02ee98e7e96bc141eb6b4f19cb2a0feb009f56e222628d31e9e79c4b0e3a7bcd8988924ffb9b0e15bd3b73bfd5394c
   languageName: node
   linkType: hard
 
