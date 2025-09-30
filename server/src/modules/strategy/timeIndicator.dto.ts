@@ -41,13 +41,13 @@ export class TimeIndicatorStrategyDto {
   rsiPeriod: number;
 
   @ApiPropertyOptional({
-    description: 'RSI threshold for buys (below this value)',
+    description: 'RSI threshold for buys (<= this value)',
     example: 35,
   })
   rsiBuyBelow?: number;
 
   @ApiPropertyOptional({
-    description: 'RSI threshold for sells (above this value)',
+    description: 'RSI threshold for sells (>= this value)',
     example: 65,
   })
   rsiSellAbove?: number;
@@ -93,14 +93,24 @@ export class TimeIndicatorStrategyDto {
   slippageBps?: number;
 
   @ApiPropertyOptional({
-    description: 'Max concurrent positions allowed (guard)',
+    description: 'Max concurrent open orders allowed on the symbol (guard)',
     example: 2,
   })
   maxConcurrentPositions?: number;
 
-  @ApiProperty({
-    description: 'Tick interval in milliseconds',
-    example: 60000,
-  })
+  @ApiProperty({ description: 'Tick interval in milliseconds', example: 60000 })
   tickIntervalMs: number;
+
+  // --- NEW: Risk controls ---
+  @ApiPropertyOptional({
+    description: 'Stop-loss percent (3 = 3%).',
+    example: 3,
+  })
+  stopLossPct?: number;
+
+  @ApiPropertyOptional({
+    description: 'Take-profit percent (3 = 3%).',
+    example: 3,
+  })
+  takeProfitPct?: number;
 }
