@@ -10,7 +10,7 @@ import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
 import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
-import { topAssetsCache, user, userArbitrageOrders, userAssets, userMarketMakingOrders, userSpotOrders, userSpotOrdersLoaded, userStrategyOrders, userStrategyOrdersLoaded } from "$lib/stores/wallet";
+import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
   const ua = window?.navigator?.userAgent;
@@ -212,10 +212,6 @@ export const getUserStrategyOrders = async (user_id: string) => {
       userStrategyOrdersLoaded.set(true);
       return;
     }
-    userArbitrageOrders.set(orders.arbitrage)
-    userMarketMakingOrders.set(orders.market_making)
-    userSimplyGrowOrders.set(orders.simply_grow)
-    userStrategyOrders.set(orders);
     userStrategyOrdersLoaded.set(true);
   } catch (e) {
     userStrategyOrders.set([]);
@@ -271,7 +267,7 @@ export const AfterMixinOauth = async (token: string) => {
     localStorage.setItem("mixin-oauth", token)
     getUserBalances(data.user_id, token)
     getUserSpotOrders(data.user_id)
-    getUserStrategyOrders(data.user_id)
+    // getUserStrategyOrders(data.user_id)
   // }
 }
 

@@ -1,13 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { mixinConnected } from "$lib/stores/home";
-  import Entrance from "$lib/components/grow/elements/entrance.svelte";
   import Ongoing from "$lib/components/grow/elements/ongoing.svelte";
   import GrowAddMore from "$lib/components/dialogs/grow/growAddMore.svelte";
   import ConnectWalletBtn from "$lib/components/common/connectWalletBtn.svelte";
 </script>
 
-<Entrance />
 {#if $mixinConnected}
   <Ongoing />
   <GrowAddMore />

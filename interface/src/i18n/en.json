@@ -3,6 +3,8 @@
   "market": "Market",
   "trade": "Trade",
   "grow": "Grow",
+  "mm": "Market making",
+  "mm_short": "M-Making",
   "wallet": "Wallet",
   "search": "Search",
   "favorites": "Favorites",
