@@ -1,7 +1,7 @@
 <script lang="ts">
-//   import Home from "$lib/components/home/home.svelte";
+  import Slogan from "$lib/components/market_making/intro/slogan.svelte";
 </script>
 
 <div class="w-full">
-  hi
+  <Slogan />
 </div>

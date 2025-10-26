@@ -5,6 +5,3 @@
 <div>
   <MoreApps />
 </div>
-
-<style>
-</style>
