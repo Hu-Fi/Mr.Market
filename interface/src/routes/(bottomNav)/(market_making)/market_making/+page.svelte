@@ -1,11 +1,19 @@
 <script lang="ts">
-  import Slogan from "$lib/components/market_making/intro/slogan.svelte";
-  import IntroButtons from "$lib/components/market_making/intro/introButtons.svelte";
+  
+  import Slogan from "$lib/components/grow/marketMaking/initIntro/slogan.svelte";
+  import IntroButtons from "$lib/components/grow/marketMaking/initIntro/introButtons.svelte";
+
+  import { isFirstTimeMarketMaking } from "$lib/stores/market_making";
+  isFirstTimeMarketMaking.set(true)
 </script>
 
-<div class="flex flex-col flex-grow space-y-24">
-  <Slogan />
-  <div class="">
-    <IntroButtons />
+{#if $isFirstTimeMarketMaking}
+  <div class="flex flex-col flex-grow space-y-0">
+    <Slogan />
+    <div class="">
+      <IntroButtons />
+    </div>
   </div>
-</div>
+{:else}
+  
+{/if}
