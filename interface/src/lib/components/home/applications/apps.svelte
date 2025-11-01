@@ -6,8 +6,7 @@
   const bt = [
     {name: $_("spot"), icon: "spot", fn: ()=>{goto('/spot');}},
     {name: $_("market"), icon: "token", fn: ()=>{goto('/market');}},
-    {name: $_("grow"), icon: "earn", fn: ()=>{goto('/grow')}},
-    {name: $_("arbitrage"), icon: "arbitrage", fn: ()=>{goto('/grow/arbitrage')}},
+    {name: $_("mm"), icon: "market_making", fn: ()=>{goto('/market_making')}},
     {name: $_("more"), icon: "more", fn: ()=>{goto('/home/more')}},
 
     // Enable in v2
