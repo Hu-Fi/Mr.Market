@@ -1,5 +1,4 @@
 <script lang="ts">
-  
   import Slogan from "$lib/components/grow/marketMaking/initIntro/slogan.svelte";
   import IntroButtons from "$lib/components/grow/marketMaking/initIntro/introButtons.svelte";
 
@@ -15,5 +14,5 @@
     </div>
   </div>
 {:else}
-  
+  <!--  -->
 {/if}
