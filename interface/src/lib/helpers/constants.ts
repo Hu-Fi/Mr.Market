@@ -12,7 +12,7 @@ export const MIXIN_API_BASE_URL = env.PUBLIC_MIXIN_API_BASE_URL || 'https://api.
 
 export const HUFI_SOCKET_URL = env.PUBLIC_HUFI_SOCKET_URL || '//mr-market-server.onrender.com'
 export const HUFI_BACKEND_URL = env.PUBLIC_HUFI_BACKEND_URL || 'https://mr-market-server.onrender.com'
-export const HUFI_CAMPAGIN_LAUNCHER_URL = env.PUBLIC_HUFI_CAMPAGIN_LAUNCHER_URL || 'https://cl.hu.finance/'
+export const HUFI_CAMPAGIN_LAUNCHER_URL = env.PUBLIC_HUFI_CAMPAGIN_LAUNCHER_URL || 'https://cl.hu.finance'
 export const HUMAN_PROTOCOL_GROUP_URL = env.PUBLIC_HUMAN_PROTOCOL_GROUP_URL || 'https://mixin.one/apps/5a33fc52-f445-4170-a06a-47f8be94a8f3'
 
 export const BALANCE_CURRENCIES = ["USDT", "USD", "EUR", "GBP", "AED", "CNY", "HKD", "JPY"]

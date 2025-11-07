@@ -3,7 +3,7 @@ export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({params}) {
-	return {
-		data: await getActiveCampaigns(137),
-	}
+  return {
+    active_campaigns: getActiveCampaigns(137),
+  }
 }

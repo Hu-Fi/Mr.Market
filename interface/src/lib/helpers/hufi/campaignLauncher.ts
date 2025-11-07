@@ -7,9 +7,9 @@ const handleResponse = async (response: Response) => {
   return await response.json();
 };
 
-export const getActiveCampaigns = async (chain_id: 1 | 137 = 137, launcher?: string, status: 'active'| 'cancelled'| 'completed' = 'active', limit: number = 10, skip: number = 0) => {
+export const getActiveCampaigns = async (chain_id: 1 | 137 = 137, status: 'active'| 'cancelled'| 'completed' = 'active', limit: number = 10) => {
   try {
-    const response = await fetch(`${HUFI_CAMPAGIN_LAUNCHER_URL}/campaigns?chain_id=${chain_id}&launcher=${launcher || ''}&status=${status}&limit=${limit}&skip=${skip}`);
+    const response = await fetch(`${HUFI_CAMPAGIN_LAUNCHER_URL}/campaigns?chain_id=${chain_id}&status=${status}&limit=${limit}`);
     return await handleResponse(response);
   } catch (error) {
     console.error('Error fetching active campaigns:', error);
