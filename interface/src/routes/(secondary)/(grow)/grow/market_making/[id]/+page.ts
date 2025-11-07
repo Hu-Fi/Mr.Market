@@ -1,9 +1,9 @@
-import { getMarketMakingDetailsById } from "$lib/helpers/hufi/strategy";
+import { getActiveCampaigns } from "$lib/helpers/hufi/campaignLauncher.js";
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({params}) {
 	return {
-		data: await getMarketMakingDetailsById(params.id),
+		data: await getActiveCampaigns(137),
 	}
 }
