@@ -1,4 +1,5 @@
 <script>
+    import { goto } from "$app/navigation";
   import { _ } from "svelte-i18n";
 </script>
 
@@ -16,5 +17,15 @@
     <span class="font-light text-sm opacity-60">
       {$_('start_market_making_intro')}
     </span>
+  </div>
+
+  <div class="w-full flex justify-center mt-4">
+    <button class="btn bg-base-content text-base-100 w-32 rounded-lg no-animation !rounded-full" on:click={
+    () => {
+      goto('/market-making/create-new')
+    }
+  }>
+      {$_('create_new')}
+    </button>
   </div>
 </div>
