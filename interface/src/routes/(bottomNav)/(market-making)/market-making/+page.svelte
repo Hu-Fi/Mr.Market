@@ -6,16 +6,20 @@
 
   import { onMount } from "svelte";
   import { page } from "$app/state";
+  import { mixinConnected } from "$lib/stores/home";
   import { isFirstTimeMarketMaking } from "$lib/stores/market_making";
   import Bar from "$lib/components/grow/marketMaking/baseSection/bar.svelte";
   import BaseIntro from "$lib/components/grow/marketMaking/baseSection/baseIntro.svelte";
   onMount(() => {
     isFirstTimeMarketMaking.set(true)
   });
+  
 
   const noMarketMakingCreated = true;
 </script>
 
+<!-- If not connected, show start market making, button redirect to connect wallet -->
+<!-- If connected and first time user, show start market making, button go to market-making -->
 {#if $isFirstTimeMarketMaking}
   <div class="flex flex-col flex-grow space-y-0">
     <Slogan />
