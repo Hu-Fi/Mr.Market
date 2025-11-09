@@ -11,7 +11,7 @@
     // {name: $_("future"), icon: "future", fn: ()=>{goto('/future');}},
   ]
   const earnApps = [
-    {name: $_("market_making"), icon: "market_making", fn: ()=>{goto('/grow/market_making')}},
+    {name: $_("market_making"), icon: "market-making", fn: ()=>{goto('/market-making')}},
     // {name: $_("auto_invest"), icon: "auto_invest", fn: ()=>{goto('/grow/auto_invest')}},
   ]
   const marketApps = [

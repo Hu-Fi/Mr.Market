@@ -15,7 +15,7 @@
 
   <button class="btn bg-base-100 text-base-content w-full rounded-lg no-animation !rounded-full" 
     on:click={() => {
-      goto('/market_making/learn_more');
+      goto('/market-making/learn-more');
     }}
     >
     {$_('learn_more')}

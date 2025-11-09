@@ -197,6 +197,7 @@
   "ready_to_grow_your_wealth": "Ready to grow your wealth?",
   "create_new_arbitrage": "Create new arbitrage",
   "start_market_making": "Start market making",
+  "start_market_making_intro": "To earn rewards and provide liquidity for your community",
   "learn_more": "Learn more",
   "grow_get_started": "Maximize wealth growth effectively",
   "explore": "Explore",
@@ -363,5 +364,9 @@
   "click_to_enable": "Click to enable",
   "click_to_disable": "Click to disable",
   "updating": "Updating...",
-  "welcome_to_admin_panel": "Welcome to the admin panel!"
+  "welcome_to_admin_panel": "Welcome to the admin panel!",
+  "hufi_campaigns": "HuFi Campaigns",
+  "rewards_pool": "Rewards Pool",
+  "active_campaigns": "Active Campaigns",
+  "create_new": "Create New"
 }

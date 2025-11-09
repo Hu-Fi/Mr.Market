@@ -16,6 +16,15 @@ export const getActiveCampaigns = async (chain_id: 1 | 137 = 137, status: 'activ
   }
 }
 
+export const getCampaignStats = async (chain_id: 1 | 137 = 137) => {
+  try {
+    const response = await fetch(`${HUFI_CAMPAGIN_LAUNCHER_URL}/stats/campaigns?chain_id=${chain_id}`);
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching campaign stats:', error);
+  }
+}
+
 export const getSupportedExchanges = async () => {
   try {
     const response = await fetch(`${HUFI_CAMPAGIN_LAUNCHER_URL}/exchanges`);
