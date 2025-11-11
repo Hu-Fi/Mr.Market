@@ -14,7 +14,6 @@
     isFirstTimeMarketMaking.set(true)
   });
   
-
   const noMarketMakingCreated = true;
 </script>
 
