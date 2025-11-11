@@ -369,5 +369,7 @@
   "rewards_pool": "Rewards Pool",
   "active_campaigns": "Active Campaigns",
   "create_new": "Create New",
-  "which_exchange_to_market_make_on": "Choose one exchange to market make on"
+  "choose_one_exchange_to_market_make_on": "Choose one exchange to market make on",
+  "select_trading_pair": "Select trading pair",
+  "choose_one_trading_pair_to_market_make": "Choose one trading pair to market make"
 }

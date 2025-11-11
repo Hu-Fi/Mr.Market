@@ -8,6 +8,6 @@
   </span>
 
   <span class="font-light text-sm opacity-60">
-    {$_("which_exchange_to_market_make_on")}
+    {$_("choose_one_exchange_to_market_make_on")}
   </span>
 </div>
