@@ -6,6 +6,14 @@ import {
 } from '@nestjs/common';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
+type ExchangeCtor = new (params?: any) => ccxt.Exchange;
+
+interface ExchangeConfig {
+  name: string;
+  class: ExchangeCtor;
+  defaultType?: 'spot' | 'swap' | 'future';
+}
+
 @Injectable({ scope: Scope.DEFAULT })
 export class ExchangeInitService {
   private readonly logger = new CustomLogger(ExchangeInitService.name);
@@ -21,136 +29,221 @@ export class ExchangeInitService {
       .catch((error) =>
         this.logger.error(
           'Error during exchanges initialization',
-          error.message,
+          error?.message ?? String(error),
         ),
       );
   }
 
+  /** ---------- utils ---------- */
+
+  /** read env and hard-trim (kills stray spaces/newlines that break signatures) */
+  private envTrim(name: string): string | undefined {
+    const v = process.env[name];
+    return typeof v === 'string' ? v.trim() : v;
+  }
+
+  private makeExchangeId(name: string, isTestnet: boolean) {
+    return isTestnet ? `${name}-testnet` : name;
+  }
+
+  /** build a ccxt instance with safe defaults */
+  private buildExchangeInstance(
+    Ctor: ExchangeCtor,
+    {
+      apiKey,
+      secret,
+      password,
+      defaultType = 'spot',
+    }: { apiKey?: string; secret?: string; password?: string; defaultType?: 'spot' | 'swap' | 'future' },
+  ) {
+    const ex = new Ctor({
+      apiKey,
+      secret,
+      password,
+      enableRateLimit: true,
+      // some exchanges look at options.defaultType for spot/swap routing
+      options: {
+        ...(defaultType ? { defaultType } : {}),
+      },
+      // strict SSL can save you from weird proxies
+      timeout: 20000,
+      verbose: false,
+    } as ccxt.Exchange);
+
+    // Prefer to keep clocks aligned automatically whenever the exchange supports it
+    // For Binance this is options.adjustForTimeDifference, for others we log skew below.
+    try {
+      (ex.options as any).adjustForTimeDifference = true;
+    } catch {/* ignore if not supported */}
+    return ex;
+  }
+
+  /** quick targeted diagnostics to catch auth/time issues early */
+  private async postInitDiagnostics(
+    exName: string,
+    label: string,
+    exchange: ccxt.Exchange,
+  ) {
+    // 1) time skew
+    try {
+      const serverTime = await exchange.fetchTime();
+      if (serverTime && Number.isFinite(serverTime)) {
+        const skewMs = serverTime - Date.now();
+        const absSkew = Math.abs(skewMs);
+        const skewMsg = `[${exName}:${label}] time skew ${skewMs}ms`;
+        if (absSkew > 5000) {
+          this.logger.warn(`${skewMsg} → consider NTP sync to avoid signature errors.`);
+        } else {
+          this.logger.log(skewMsg);
+        }
+      }
+    } catch {
+      // not all exchanges expose fetchTime
+    }
+
+    // 2) private call smoke-test (fetchBalance) to surface INVALID_SIGNATURE now
+    try {
+      // Only if credentials exist (ccxt will throw otherwise)
+      if (exchange.apiKey && exchange.secret) {
+        await exchange.fetchBalance();
+        this.logger.log(`[${exName}:${label}] fetchBalance OK (creds valid).`);
+      }
+    } catch (e: any) {
+      const msg = e?.message ?? String(e);
+      // Surface common root causes explicitly
+      if (/INVALID_SIGNATURE|Signature mismatch|auth|signature/i.test(msg)) {
+        this.logger.error(
+          `[${exName}:${label}] auth/signature failed → ` +
+          `check key/secret trimming, permissions, IP whitelist, and testnet vs mainnet. Raw: ${msg}`,
+        );
+      } else if (/timestamp|request expired|time/i.test(msg)) {
+        this.logger.error(
+          `[${exName}:${label}] request time issue → clock skew. Raw: ${msg}`,
+        );
+      } else {
+        this.logger.error(`[${exName}:${label}] private-call check failed: ${msg}`);
+      }
+    }
+  }
+
+  /** ---------- init ---------- */
+
   private async initializeExchanges() {
-    const exchangeConfigs = [
-      { name: 'okx', class: ccxt.pro.okx },
-      { name: 'alpaca', class: ccxt.pro.alpaca },
-      { name: 'bitfinex', class: ccxt.pro.bitfinex },
-      { name: 'gate', class: ccxt.pro.gate },
-      { name: 'mexc', class: ccxt.pro.mexc },
-      { name: 'xt', class: ccxt.pro.xt },
-      { name: 'binance', class: ccxt.pro.binance },
-      { name: 'bybit', class: ccxt.pro.bybit },
-      { name: 'lbank', class: ccxt.pro.lbank },
-      { name: 'bitmart', class: ccxt.pro.bitmart },
-      { name: 'bigone', class: ccxt.bigone },
-      { name: 'p2b', class: ccxt.pro.p2b },
-      { name: 'probit', class: ccxt.pro.probit },
-      { name: 'digifinex', class: ccxt.digifinex },
+    const exchangeConfigs: ExchangeConfig[] = [
+      { name: 'okx', class: (ccxt as any).pro.okx },
+      { name: 'alpaca', class: (ccxt as any).pro.alpaca },
+      { name: 'bitfinex', class: (ccxt as any).pro.bitfinex },
+      { name: 'gate', class: (ccxt as any).pro.gate, defaultType: 'spot' },
+      { name: 'mexc', class: (ccxt as any).pro.mexc, defaultType: 'spot' },
+      { name: 'xt', class: (ccxt as any).pro.xt, defaultType: 'spot' },
+      { name: 'binance', class: (ccxt as any).pro.binance, defaultType: 'spot' },
+      { name: 'bybit', class: (ccxt as any).pro.bybit, defaultType: 'spot' },
+      { name: 'lbank', class: (ccxt as any).pro.lbank, defaultType: 'spot' },
+      { name: 'bitmart', class: (ccxt as any).pro.bitmart, defaultType: 'spot' },
+      { name: 'bigone', class: (ccxt as any).bigone, defaultType: 'spot' },
+      { name: 'p2b', class: (ccxt as any).pro.p2b, defaultType: 'spot' },
+      { name: 'probit', class: (ccxt as any).pro.probit, defaultType: 'spot' },
+      { name: 'digifinex', class: (ccxt as any).digifinex, defaultType: 'spot' },
     ];
 
     await Promise.all(
-      exchangeConfigs.map(async (config) => {
-        const exchangeNames = [config.name, `${config.name}-testnet`];
+      exchangeConfigs.map(async (cfg) => {
+        const names = [cfg.name, `${cfg.name}-testnet`];
 
-        for (const exName of exchangeNames) {
+        for (const rawName of names) {
           const exchangeMap = new Map<string, ccxt.Exchange>();
-          const isTestnet = exName.endsWith('-testnet');
+          const isTestnet = rawName.endsWith('-testnet');
+          const exName = this.makeExchangeId(cfg.name, isTestnet);
 
           const accounts = [
             {
               label: 'default',
-              apiKey:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_API_KEY`
-                ],
-              secret:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_SECRET`
-                ],
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD`,
+              ), // OKX etc.
             },
             {
               label: 'account2',
-              apiKey:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_API_KEY_2`
-                ],
-              secret:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_SECRET_2`
-                ],
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY_2`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET_2`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_2`,
+              ),
             },
             {
               label: 'read-only',
-              apiKey:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_API_KEY_READ_ONLY`
-                ],
-              secret:
-                process.env[
-                  `${config.name.toUpperCase()}${
-                    isTestnet ? '_TESTNET' : ''
-                  }_SECRET_READ_ONLY`
-                ],
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY_READ_ONLY`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET_READ_ONLY`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_READ_ONLY`,
+              ),
             },
           ];
 
           await Promise.all(
-            accounts.map(async (account) => {
+            accounts.map(async (acct) => {
               try {
-                if (!account.apiKey || !account.secret) {
+                if (!acct.apiKey || !acct.secret) {
+                  // this.logger.log(
+                  //   `[${exName}:${acct.label}] skipped (missing API key/secret).`,
+                  // );
                   return;
                 }
 
-                const exchange = new config.class({
-                  apiKey: account.apiKey,
-                  secret: account.secret,
+                const exchange = this.buildExchangeInstance(cfg.class, {
+                  apiKey: acct.apiKey,
+                  secret: acct.secret,
+                  password: acct.password,
+                  defaultType: cfg.defaultType ?? 'spot',
                 });
 
-                // 🔹 Enable sandbox if testnet
-                if (
-                  isTestnet &&
-                  typeof exchange.setSandboxMode === 'function'
-                ) {
-                  exchange.setSandboxMode(true);
-                  this.logger.log(
-                    `${exName} ${account.label} sandbox mode activated.`,
-                  );
+                // Testnet routing where supported
+                if (isTestnet && typeof (exchange as any).setSandboxMode === 'function') {
+                  (exchange as any).setSandboxMode(true);
+                  this.logger.log(`[${exName}:${acct.label}] sandbox mode ON.`);
                 }
 
+                // Preload markets to configure symbol routing/types
                 await exchange.loadMarkets();
 
-                // Special signIn for ProBit
-                if (config.name === 'probit' && exchange.has['signIn']) {
+                // ProBit requires signIn for private endpoints
+                if (cfg.name === 'probit' && exchange.has?.signIn) {
                   try {
-                    await exchange.signIn();
-                    this.logger.log(
-                      `${exName} ${account.label} signed in successfully.`,
-                    );
-                  } catch (error) {
+                    await (exchange as any).signIn();
+                    this.logger.log(`[${exName}:${acct.label}] signIn OK.`);
+                  } catch (error: any) {
                     this.logger.error(
-                      `${exName} ${account.label} sign-in failed: ${error.message}`,
+                      `[${exName}:${acct.label}] signIn failed: ${error?.message ?? error}`,
                     );
                   }
                 }
 
-                exchangeMap.set(account.label, exchange);
+                // Diagnostics (time skew + auth smoke test)
+                await this.postInitDiagnostics(exName, acct.label, exchange);
 
-                if (account.label === 'default') {
+                exchangeMap.set(acct.label, exchange);
+                if (acct.label === 'default') {
                   this.defaultAccounts.set(exName, exchange);
                 }
 
-                this.logger.log(
-                  `${exName} ${account.label} initialized successfully.`,
-                );
-              } catch (error) {
+                this.logger.log(`[${exName}:${acct.label}] initialized.`);
+              } catch (error: any) {
                 this.logger.error(
-                  `Failed to initialize ${exName} ${account.label}: ${error.message}`,
+                  `Failed to initialize [${exName}:${acct.label}]: ${error?.message ?? error}`,
                 );
               }
             }),
@@ -162,35 +255,36 @@ export class ExchangeInitService {
     );
   }
 
+  /** ---------- keep-alive ---------- */
+
   private startKeepAlive() {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
 
     setInterval(async () => {
       this.logger.log('Running keep-alive checks for all exchanges...');
       for (const [exchangeName, accounts] of this.exchanges) {
+        // ProBit token expires; keep it fresh but avoid resetting open orders
         if (exchangeName.startsWith('probit')) {
           for (const [label, exchange] of accounts) {
             try {
-              if (!exchange.has['signIn']) {
-                this.logger.log(
-                  `ProBit ${label} does not support signIn. Skipping...`,
-                );
+              if (!exchange.has?.signIn) {
+                this.logger.log(`ProBit ${label} has no signIn. Skipping...`);
                 continue;
               }
 
               const openOrders = await exchange.fetchOpenOrders();
               if (openOrders.length > 0) {
                 this.logger.log(
-                  `ProBit ${label} has open orders. Skipping signIn to avoid resetting them.`,
+                  `ProBit ${label} has open orders → skipping signIn to avoid resets.`,
                 );
                 continue;
               }
 
-              await exchange.signIn();
+              await (exchange as any).signIn();
               this.logger.log(`ProBit ${label} re-signed in successfully.`);
-            } catch (error) {
+            } catch (error: any) {
               this.logger.error(
-                `ProBit ${label} keep-alive signIn failed: ${error.message}`,
+                `ProBit ${label} keep-alive signIn failed: ${error?.message ?? error}`,
               );
             }
           }
@@ -198,6 +292,8 @@ export class ExchangeInitService {
       }
     }, intervalMs);
   }
+
+  /** ---------- getters ---------- */
 
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
@@ -239,6 +335,8 @@ export class ExchangeInitService {
     return exchange;
   }
 
+  /** ---------- helpers ---------- */
+
   async getDepositAddress(
     exchangeName: string,
     tokenSymbol: string,
@@ -247,17 +345,14 @@ export class ExchangeInitService {
   ): Promise<string> {
     try {
       const exchange = this.getExchange(exchangeName, label);
-      if (!exchange.has['fetchDepositAddress']) {
+      if (!exchange.has?.fetchDepositAddress) {
         throw new InternalServerErrorException(
           `Exchange ${exchangeName} does not support fetching deposit addresses.`,
         );
       }
 
       const params = network ? { network } : {};
-      const addressInfo = await exchange.fetchDepositAddress(
-        tokenSymbol,
-        params,
-      );
+      const addressInfo = await exchange.fetchDepositAddress(tokenSymbol, params);
 
       if (!addressInfo || !addressInfo.address) {
         throw new InternalServerErrorException(
@@ -266,9 +361,9 @@ export class ExchangeInitService {
       }
 
       return addressInfo.address;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
-        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error.message}`,
+        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error?.message ?? error}`,
       );
       throw new InternalServerErrorException('Failed to get deposit address.');
     }
