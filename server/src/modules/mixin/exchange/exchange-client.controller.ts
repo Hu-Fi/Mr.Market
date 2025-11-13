@@ -6,7 +6,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
 
-@ApiTags('exchange')
+@ApiTags('Exchange')
 @Controller('exchange')
 export class ExchangeUserController {
   private readonly logger = new CustomLogger(ExchangeUserController.name);
