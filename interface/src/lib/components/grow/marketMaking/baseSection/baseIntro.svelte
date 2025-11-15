@@ -1,6 +1,6 @@
 <script>
-    import { goto } from "$app/navigation";
   import { _ } from "svelte-i18n";
+  import CreateNewMMBtn from "./createNewMMBtn.svelte";
 </script>
 
 <div class="flex flex-col my-32">
@@ -20,12 +20,6 @@
   </div>
 
   <div class="w-full flex justify-center mt-4">
-    <button class="btn bg-base-content text-base-100 w-32 rounded-lg no-animation !rounded-full" on:click={
-    () => {
-      goto('/market-making/create-new')
-    }
-  }>
-      {$_('create_new')}
-    </button>
+    <CreateNewMMBtn />
   </div>
 </div>

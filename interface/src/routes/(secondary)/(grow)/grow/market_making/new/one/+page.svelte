@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import PairIcon from "$lib/components/common/pairIcon.svelte";
+  import PairIcon from "$lib/components/common/tradingPairIcon.svelte";
   import {
     findCoinIconBySymbol,
     findExchangeIconByIdentifier,

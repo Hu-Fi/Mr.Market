@@ -1,0 +1,165 @@
+<script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page as dPage } from "$app/stores";
+  import ChooseExchange from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchange.svelte";
+  import ChooseExchangeSmallBtn from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchangeSmallBtn.svelte";
+  import SearchExchange from "$lib/components/grow/marketMaking/createNew/exchange/searchBtn.svelte";
+  import SearchTradingPair from "$lib/components/grow/marketMaking/createNew/tradingPair/searchTradingPair.svelte";
+  import ChooseTradingPair from "$lib/components/grow/marketMaking/createNew/tradingPair/chooseTradingPair.svelte";
+  import ChooseTradingPairSmallBtn from "$lib/components/grow/marketMaking/createNew/tradingPair/chooseTradingPairSmallBtn.svelte";
+  import SearchExchangeDialog from "./searchExchangeDialog.svelte";
+  import SearchTradingPairDialog from "./searchTradingPairDialog.svelte";
+  import AmountText from "$lib/components/grow/marketMaking/createNew/amount/amountText.svelte";
+  import AmountNextStepBtn from "$lib/components/grow/marketMaking/createNew/amount/amountNextStepBtn.svelte";
+
+  // Load supported exchanges for market making in +page.ts
+  const supportedMarketMakingExchanges = [
+    "binance",
+    "bybit",
+    "kucoin",
+    "okx",
+    "huobi",
+    "mexc",
+    "binance",
+    "bybit",
+    "kucoin",
+    "okx",
+    "huobi",
+    "mexc",
+    "binance",
+    "bybit",
+    "kucoin",
+    "okx",
+    "huobi",
+    "mexc",
+  ];
+
+  const supportedTradingpairs = [
+    "BTC/USDT",
+    "ETH/USDT",
+    "LTC/USDT",
+    "XRP/USDT",
+    "ADA/USDT",
+    "DOT/USDT",
+    "SOL/USDT",
+    "DOGE/USDT",
+    "AVAX/USDT",
+    "SHIB/USDT",
+    "MATIC/USDT",
+    "LINK/USDT",
+    "UNI/USDT",
+    "ATOM/USDT",
+    "ALGO/USDT",
+    "VET/USDT",
+    "ICP/USDT",
+    "FIL/USDT",
+    "TRX/USDT",
+    "ETC/USDT",
+    "XLM/USDT",
+    "AAVE/USDT",
+    "EOS/USDT",
+    "THETA/USDT",
+    "XTZ/USDT",
+    "CRO/USDT",
+    "FTM/USDT",
+    "NEAR/USDT",
+    "KSM/USDT",
+    "ZIL/USDT",
+    "DASH/USDT",
+    "MKR/USDT",
+    "COMP/USDT",
+    "SNX/USDT",
+  ];
+
+  // ------------------------------ Above are mock values for API fetching ------------------------------
+  // ----------------------------------------------------------------------------------------------------
+  const selectExchange = (exchangeName: string) => {
+    const newUrl = new URL($dPage.url);
+    newUrl.searchParams.set("exchange", exchangeName);
+    const newPath = newUrl.pathname + newUrl.search;
+    goto(newPath, {
+      replaceState: true,
+      keepFocus: true,
+      noScroll: true,
+    });
+  };
+
+  const selectTradingPair = (tradingPair: string) => {
+    const newUrl = new URL($dPage.url);
+    newUrl.searchParams.set("trading_pair", tradingPair);
+    const newPath = newUrl.pathname + newUrl.search;
+    goto(newPath, {
+      replaceState: true,
+      keepFocus: true,
+      noScroll: true,
+    });
+  };
+  
+  $: exchangeName = $dPage.url.searchParams.get("exchange");
+  $: tradingPair = $dPage.url.searchParams.get("trading_pair");
+  $: baseAmount = $dPage.url.searchParams.get("base_amount");
+  $: quoteAmount = $dPage.url.searchParams.get("quote_amount");
+</script>
+
+{#if !exchangeName}
+  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+    <div class="text-center">
+      <ChooseExchange />
+    </div>
+    <div
+      class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white 
+        bg-gradient-radial from-sky-100 via-white to-white 
+        max-h-[50vh] overflow-y-auto"
+    >
+      {#each supportedMarketMakingExchanges as exchangeName}
+        <ChooseExchangeSmallBtn {exchangeName} onClick={() => selectExchange(exchangeName)} />
+      {/each}
+    </div>
+  </div>
+
+  <div class="absolute bottom-24 w-full flex justify-center">
+    <SearchExchange onSearch={() => {}} />
+  </div>
+  <SearchExchangeDialog supportedExchanges={supportedMarketMakingExchanges} />
+
+{:else if !tradingPair}
+  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+    <div class="text-center">
+      <ChooseTradingPair />
+    </div>
+    <div
+      class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white 
+      bg-gradient-radial from-sky-100 via-white to-white
+      max-h-[50vh] overflow-y-auto"
+    >
+      {#each supportedTradingpairs as tradingPair}
+        <ChooseTradingPairSmallBtn {tradingPair} {exchangeName} onClick={() => selectTradingPair(tradingPair)} />
+      {/each}
+    </div>
+  </div>
+
+  <div class="absolute bottom-24 w-full flex justify-center">
+    <SearchTradingPair onSearch={() => {}} />
+  </div>
+  <SearchTradingPairDialog supportedTradingPairs={[]} />
+
+{:else if !baseAmount && !quoteAmount}
+  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+    <div class="text-center">
+      <AmountText />
+    </div>
+    <div
+      class="mx-4 mt-4 gap-6 grid grid-cols-1 min-w-60 bg-white 
+      max-h-[50vh] overflow-y-auto"
+    >
+      <ChooseTradingPairSmallBtn {tradingPair} {exchangeName} />
+    </div>
+  </div>
+
+  <div class="absolute bottom-24 w-full flex justify-center">
+    <div class="w-full flex justify-center mt-4">
+      <AmountNextStepBtn {baseAmount} {quoteAmount} />
+    </div>
+  </div>
+  <SearchTradingPairDialog supportedTradingPairs={[]} />
+{/if}

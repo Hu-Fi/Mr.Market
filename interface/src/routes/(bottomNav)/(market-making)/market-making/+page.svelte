@@ -39,6 +39,7 @@
       {#if noMarketMakingCreated}
         <BaseIntro />
       {:else}
+        <!-- Show created market making + create new btn -->
         <slot />
       {/if}
     </div>

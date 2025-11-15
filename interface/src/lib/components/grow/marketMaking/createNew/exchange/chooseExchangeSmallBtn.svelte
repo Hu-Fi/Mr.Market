@@ -8,7 +8,9 @@
 </script>
 
 <button
-  class="flex items-center justify-left px-4 py-2 space-x-4 bg-base-100 shadow-sm border border-slate-100 text-base-content min-h-12 w-full no-animation !rounded-full"
+  class="flex items-center justify-left px-4 py-2 space-x-4 
+    bg-base-100 shadow-sm border border-slate-100 text-base-content 
+    min-h-12 w-full no-animation rounded-xl"
   on:click={() => onClick()}
 >
   <ExchangeIcon exchangeName={exchangeName} clazz="w-8 h-8 rounded-full" />

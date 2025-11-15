@@ -5,6 +5,7 @@
 
 <button
   class="btn btn-sm rounded-full bg-base-100 opacity-70 shadow"
+  onclick={"mm_search_exchange.showModal()"}
   on:click={() => onSearch()}
 >
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4" >

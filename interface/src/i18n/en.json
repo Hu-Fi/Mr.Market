@@ -371,5 +371,7 @@
   "create_new": "Create New",
   "choose_one_exchange_to_market_make_on": "Choose one exchange to market make on",
   "select_trading_pair": "Select trading pair",
-  "choose_one_trading_pair_to_market_make": "Choose one trading pair to market make"
+  "choose_one_trading_pair_to_market_make": "Choose one trading pair to market make",
+  "how_much_amount_to_market_make": "How much amount to market make?",
+  "": ""
 }
