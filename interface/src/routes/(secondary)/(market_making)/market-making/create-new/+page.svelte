@@ -11,7 +11,9 @@
   import SearchTradingPairDialog from "./searchTradingPairDialog.svelte";
   import AmountText from "$lib/components/grow/marketMaking/createNew/amount/amountText.svelte";
   import AmountNextStepBtn from "$lib/components/grow/marketMaking/createNew/amount/amountNextStepBtn.svelte";
-    import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
+  import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
+  import emptyToken from "$lib/images/empty-token.svg";
+  import { findCoinIconBySymbol } from "$lib/helpers/helpers";
 
   // Load supported exchanges for market making in +page.ts
   const supportedMarketMakingExchanges = [
@@ -100,6 +102,10 @@
   $: tradingPair = $dPage.url.searchParams.get("trading_pair");
   $: baseAmount = $dPage.url.searchParams.get("base_amount");
   $: quoteAmount = $dPage.url.searchParams.get("quote_amount");
+  $: baseSymbol = tradingPair ? tradingPair.split('/')[0] : null;
+  $: quoteSymbol = tradingPair ? tradingPair.split('/')[1] : null;
+  $: baseIcon = baseSymbol ? findCoinIconBySymbol(baseSymbol) : emptyToken;
+  $: quoteIcon = quoteSymbol ? findCoinIconBySymbol(quoteSymbol) : emptyToken;
 </script>
 
 {#if !exchangeName}
@@ -149,11 +155,10 @@
       <AmountText />
     </div>
     <div
-      class="mx-4 mt-4 gap-6 grid grid-cols-1 bg-white 
+      class="mx-4 mt-16 gap-6 grid grid-cols-1 bg-white 
       max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
     >
-      <ChooseTradingPairSmallBtn {tradingPair} {exchangeName} />
-      <AmountInput />
+      <AmountInput {baseIcon} {quoteIcon} {baseSymbol} {quoteSymbol} />
     </div>
   </div>
 
