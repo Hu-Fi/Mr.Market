@@ -11,6 +11,7 @@
   import SearchTradingPairDialog from "./searchTradingPairDialog.svelte";
   import AmountText from "$lib/components/grow/marketMaking/createNew/amount/amountText.svelte";
   import AmountNextStepBtn from "$lib/components/grow/marketMaking/createNew/amount/amountNextStepBtn.svelte";
+    import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
 
   // Load supported exchanges for market making in +page.ts
   const supportedMarketMakingExchanges = [
@@ -129,7 +130,6 @@
     </div>
     <div
       class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white 
-      bg-gradient-radial from-sky-100 via-white to-white
       max-h-[50vh] overflow-y-auto"
     >
       {#each supportedTradingpairs as tradingPair}
@@ -149,10 +149,11 @@
       <AmountText />
     </div>
     <div
-      class="mx-4 mt-4 gap-6 grid grid-cols-1 min-w-60 bg-white 
-      max-h-[50vh] overflow-y-auto"
+      class="mx-4 mt-4 gap-6 grid grid-cols-1 bg-white 
+      max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
     >
       <ChooseTradingPairSmallBtn {tradingPair} {exchangeName} />
+      <AmountInput />
     </div>
   </div>
 
