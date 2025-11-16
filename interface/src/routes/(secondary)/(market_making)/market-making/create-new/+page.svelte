@@ -115,6 +115,10 @@
       noScroll: true,
     });
   };
+
+  const confirmPayment = () => {
+    // Invoke mixin invoice payment
+  };
   
   $: exchangeName = $dPage.url.searchParams.get("exchange");
   $: tradingPair = $dPage.url.searchParams.get("trading_pair");
@@ -130,6 +134,13 @@
   let lastTradingPair: string | null = null;
   let lastUrlBaseAmount: string | null = null;
   let lastUrlQuoteAmount: string | null = null;
+  const toNumeric = (value: string | null) => {
+    if (!value) return null;
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
+  };
+  $: baseAmountUsd = baseSymbol?.toUpperCase() === "USDT" ? toNumeric(baseAmount) : null;
+  $: quoteAmountUsd = quoteSymbol?.toUpperCase() === "USDT" ? toNumeric(quoteAmount) : null;
 
   $: if (tradingPair !== lastTradingPair) {
     baseAmountInput = "";
@@ -217,7 +228,7 @@
   <SearchTradingPairDialog supportedTradingPairs={[]} />
 
 {:else}
-  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-8">
+  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4">
     <ConfirmPaymentInfo
       {exchangeName}
       {tradingPair}
@@ -227,7 +238,11 @@
       {quoteIcon}
       baseAmount={baseAmount}
       quoteAmount={quoteAmount}
+      {baseAmountUsd}
+      {quoteAmountUsd}
     />
-    <ConfirmPaymentBtn />
+    <div class="px-6 w-full">
+      <ConfirmPaymentBtn onConfirm={confirmPayment} />
+    </div>
   </div>
 {/if}

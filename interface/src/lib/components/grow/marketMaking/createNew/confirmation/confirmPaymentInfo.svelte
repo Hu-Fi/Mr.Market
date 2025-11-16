@@ -1,12 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { formatUSMoney } from "$lib/helpers/utils";
   import ExchangeIcon from "$lib/components/common/exchangeIcon.svelte";
   import ExchangeName from "$lib/components/common/exchangeName.svelte";
   import PairIcon from "$lib/components/common/tradingPairIcon.svelte";
   import emptyToken from "$lib/images/empty-token.svg";
   import ConfirmHeader from "./confirmHeader.svelte";
   import ConfirmSummaryCard from "./confirmSummaryCard.svelte";
-  import ConfirmAmountTile from "./confirmAmountTile.svelte";
 
   export let exchangeName: string | null = null;
   export let tradingPair: string | null = null;
@@ -14,23 +14,37 @@
   export let quoteSymbol: string | null = null;
   export let baseIcon: string = emptyToken;
   export let quoteIcon: string = emptyToken;
-  export let baseAmount: string | null = null;
-  export let quoteAmount: string | null = null;
+  export let baseAmount: string | number | null = null;
+  export let quoteAmount: string | number | null = null;
+  export let baseAmountUsd: string | number | null = null;
+  export let quoteAmountUsd: string | number | null = null;
+  export let feeAmount: string | number | null = "25";
+  export let feeSymbol: string | null = null;
 
-  const formatAmount = (amount: string | null) => {
-    if (!amount) return "0";
+  const formatAmount = (amount: string | number | null) => {
+    if (amount === null || amount === undefined || amount === "") return "0";
     const parsed = Number(amount);
-    if (!Number.isFinite(parsed)) return amount;
+    if (!Number.isFinite(parsed)) return `${amount}`;
     return parsed.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 8,
     });
   };
+
+  const formatFiat = (value: string | number | null) => {
+    if (value === null || value === undefined || value === "") return null;
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return null;
+    return formatUSMoney(numeric);
+  };
+
+  $: baseAmountUsdFormatted = formatFiat(baseAmountUsd);
+  $: quoteAmountUsdFormatted = formatFiat(quoteAmountUsd);
+  $: feeSymbolDisplay = feeSymbol ?? quoteSymbol ?? "USDT";
 </script>
 
-<div class="w-full max-w-md space-y-6 rounded-3xl bg-base-100 p-6 shadow-lg">
+<div class="w-full max-w-md space-y-6 rounded-3xl bg-base-100 p-6 pt-0">
   <ConfirmHeader
-    label={$_("review_selection")}
     title={$_("confirm_payment")}
     description={$_("review_selection_intro")}
   />
@@ -41,34 +55,91 @@
         <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-10 h-10 rounded-full" />
       </svelte:fragment>
       <svelte:fragment slot="value">
-        <ExchangeName exchangeName={exchangeName ?? ""} clazz="text-base font-semibold" />
+        <ExchangeName exchangeName={exchangeName ?? ""} />
       </svelte:fragment>
     </ConfirmSummaryCard>
 
     <ConfirmSummaryCard title={$_("trading_pair")}>
       <svelte:fragment slot="icon">
         <PairIcon
-          clazz="w-10 h-10"
-          claxx="w-3 h-3"
+          clazz="w-5 h-5"
+          claxx="w-4 h-4"
           asset0Icon={baseIcon || emptyToken}
           asset1Icon={quoteIcon || emptyToken}
         />
       </svelte:fragment>
       <svelte:fragment slot="value">
-        {tradingPair ?? ""}
+        <span>{tradingPair ?? ""}</span>
       </svelte:fragment>
     </ConfirmSummaryCard>
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <ConfirmAmountTile
-        label={`${baseSymbol ?? ""} ${$_("amount")}`}
-        amount={formatAmount(baseAmount)}
-      />
-      <ConfirmAmountTile
-        label={`${quoteSymbol ?? ""} ${$_("amount")}`}
-        amount={formatAmount(quoteAmount)}
-      />
-    </div>
+    <ConfirmSummaryCard
+      title={`${baseSymbol ?? ""} ${$_("amount")}`}
+      valueClass="text-base-content"
+    >
+      <svelte:fragment slot="icon">
+        <img src={baseIcon || emptyToken} alt={baseSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
+      </svelte:fragment>
+      <svelte:fragment slot="value">
+        <div class="flex flex-col leading-tight">
+          <span class="text-xl font-semibold text-base-content">
+            {formatAmount(baseAmount)}
+          </span>
+          {#if baseAmountUsdFormatted}
+            <span class="text-xs opacity-70 font-medium">
+              ({baseAmountUsdFormatted})
+            </span>
+          {/if}
+        </div>
+      </svelte:fragment>
+    </ConfirmSummaryCard>
+
+    <ConfirmSummaryCard
+      title={`${quoteSymbol ?? ""} ${$_("amount")}`}
+      valueClass="text-base-content"
+    >
+      <svelte:fragment slot="icon">
+        <img src={quoteIcon || emptyToken} alt={quoteSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
+      </svelte:fragment>
+      <svelte:fragment slot="value">
+        <div class="flex flex-col leading-tight">
+          <span class="text-xl font-semibold text-base-content">
+            {formatAmount(quoteAmount)}
+          </span>
+          {#if quoteAmountUsdFormatted}
+            <span class="text-xs opacity-70 font-medium">
+              ({quoteAmountUsdFormatted})
+            </span>
+          {/if}
+        </div>
+      </svelte:fragment>
+    </ConfirmSummaryCard>
+
+    <ConfirmSummaryCard
+      title={$_("fee")}
+      valueClass="text-base-content"
+    >
+      <svelte:fragment slot="icon">
+        <div class="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold">
+          GAS
+        </div>
+      </svelte:fragment>
+      <svelte:fragment slot="value">
+        <div class="flex items-center gap-3">
+          <span class="text-xl font-semibold text-base-content">
+            {formatAmount(feeAmount)} {feeSymbolDisplay}
+          </span>
+          <button
+            class="badge badge-xs rounded-full bg-base-300 text-base-content tooltip tooltip-bottom text-xs"
+            data-tip={$_("fee_usage_note")}
+            type="button"
+            aria-label={$_("fee_usage_note")}
+          >
+            ?
+          </button>
+        </div>
+      </svelte:fragment>
+    </ConfirmSummaryCard>
   </div>
 </div>
 

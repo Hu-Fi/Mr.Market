@@ -376,5 +376,6 @@
   "how_much_amount_to_market_make": "How much amount to market make?",
   "balance_of": "Balance: {amount}",
   "review_selection": "Review your selection",
-  "review_selection_intro": "Double-check the info before confirming payment"
+  "review_selection_intro": "Double-check the info before confirming payment",
+  "fee_usage_note": "Will be used for covering expenses of moving funds"
 }
