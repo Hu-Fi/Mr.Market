@@ -317,5 +317,7 @@
   "order_partially_filled": "订单部分成交",
   "order_filled": "订单已成交",
   "order_success": "订单成功",
-  "recently_created": "最近创建"
+  "recently_created": "最近创建",
+  "review_selection": "检查您的选择",
+  "review_selection_intro": "确认支付前请再次核对信息"
 }

@@ -374,5 +374,7 @@
   "select_trading_pair": "Select trading pair",
   "choose_one_trading_pair_to_market_make": "Choose one trading pair to market make",
   "how_much_amount_to_market_make": "How much amount to market make?",
-  "": ""
+  "balance_of": "Balance: {amount}",
+  "review_selection": "Review your selection",
+  "review_selection_intro": "Double-check the info before confirming payment"
 }

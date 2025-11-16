@@ -12,10 +12,23 @@
   import AmountText from "$lib/components/grow/marketMaking/createNew/amount/amountText.svelte";
   import AmountNextStepBtn from "$lib/components/grow/marketMaking/createNew/amount/amountNextStepBtn.svelte";
   import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
+  import ConfirmPaymentInfo from "$lib/components/grow/marketMaking/createNew/confirmation/confirmPaymentInfo.svelte";
+  import ConfirmPaymentBtn from "$lib/components/grow/marketMaking/createNew/confirmation/confirmPaymentBtn.svelte";
   import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
 
   // Load supported exchanges for market making in +page.ts
+  // Mr.Market backend api should return
+  // 1. supported market making exchanges: []
+  // 2. supported trading pairs: 
+  // [
+  //   {
+  //     symbol: 'BTC/USDT', 'baseSymbol': 'BTC', 'quoteSymbol': 'USDT', 
+  //     baseUsdPrice: 100000, quoteUsdPrice: 1, baseAssetId: 'uuid', quoteAssetId: 'uuid'
+  //   }, 
+  // ]
+  // 
+  // 
   const supportedMarketMakingExchanges = [
     "binance",
     "bybit",
@@ -79,6 +92,9 @@
   const selectExchange = (exchangeName: string) => {
     const newUrl = new URL($dPage.url);
     newUrl.searchParams.set("exchange", exchangeName);
+    newUrl.searchParams.delete("trading_pair");
+    newUrl.searchParams.delete("base_amount");
+    newUrl.searchParams.delete("quote_amount");
     const newPath = newUrl.pathname + newUrl.search;
     goto(newPath, {
       replaceState: true,
@@ -90,6 +106,8 @@
   const selectTradingPair = (tradingPair: string) => {
     const newUrl = new URL($dPage.url);
     newUrl.searchParams.set("trading_pair", tradingPair);
+    newUrl.searchParams.delete("base_amount");
+    newUrl.searchParams.delete("quote_amount");
     const newPath = newUrl.pathname + newUrl.search;
     goto(newPath, {
       replaceState: true,
@@ -104,12 +122,34 @@
   $: quoteAmount = $dPage.url.searchParams.get("quote_amount");
   $: baseSymbol = tradingPair ? tradingPair.split('/')[0] : null;
   $: quoteSymbol = tradingPair ? tradingPair.split('/')[1] : null;
-  $: baseIcon = baseSymbol ? findCoinIconBySymbol(baseSymbol) : emptyToken;
-  $: quoteIcon = quoteSymbol ? findCoinIconBySymbol(quoteSymbol) : emptyToken;
+  $: baseIcon = baseSymbol ? findCoinIconBySymbol(baseSymbol) || emptyToken : emptyToken;
+  $: quoteIcon = quoteSymbol ? findCoinIconBySymbol(quoteSymbol) || emptyToken : emptyToken;
+
+  let baseAmountInput = "";
+  let quoteAmountInput = "";
+  let lastTradingPair: string | null = null;
+  let lastUrlBaseAmount: string | null = null;
+  let lastUrlQuoteAmount: string | null = null;
+
+  $: if (tradingPair !== lastTradingPair) {
+    baseAmountInput = "";
+    quoteAmountInput = "";
+    lastTradingPair = tradingPair;
+  }
+
+  $: if (baseAmount !== lastUrlBaseAmount) {
+    baseAmountInput = baseAmount ?? "";
+    lastUrlBaseAmount = baseAmount;
+  }
+
+  $: if (quoteAmount !== lastUrlQuoteAmount) {
+    quoteAmountInput = quoteAmount ?? "";
+    lastUrlQuoteAmount = quoteAmount;
+  }
 </script>
 
 {#if !exchangeName}
-  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
       <ChooseExchange />
     </div>
@@ -130,7 +170,7 @@
   <SearchExchangeDialog supportedExchanges={supportedMarketMakingExchanges} />
 
 {:else if !tradingPair}
-  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
       <ChooseTradingPair />
     </div>
@@ -149,23 +189,45 @@
   </div>
   <SearchTradingPairDialog supportedTradingPairs={[]} />
 
-{:else if !baseAmount && !quoteAmount}
-  <div class="flex flex-col items-center flex-grow h-[100vh-64px] mt-[10vh]">
+{:else if !baseAmount || !quoteAmount}
+  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
       <AmountText />
     </div>
     <div
-      class="mx-4 mt-16 gap-6 grid grid-cols-1 bg-white 
+      class="mx-4 mt-12 gap-6 grid grid-cols-1 bg-white 
       max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
     >
-      <AmountInput {baseIcon} {quoteIcon} {baseSymbol} {quoteSymbol} />
+      <AmountInput
+        {baseIcon}
+        {quoteIcon}
+        {baseSymbol}
+        {quoteSymbol}
+        bind:baseAmount={baseAmountInput}
+        bind:quoteAmount={quoteAmountInput}
+      />
     </div>
   </div>
 
   <div class="absolute bottom-24 w-full flex justify-center">
     <div class="w-full flex justify-center mt-4">
-      <AmountNextStepBtn {baseAmount} {quoteAmount} />
+      <AmountNextStepBtn baseAmount={baseAmountInput} quoteAmount={quoteAmountInput} />
     </div>
   </div>
   <SearchTradingPairDialog supportedTradingPairs={[]} />
+
+{:else}
+  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-8">
+    <ConfirmPaymentInfo
+      {exchangeName}
+      {tradingPair}
+      {baseSymbol}
+      {quoteSymbol}
+      {baseIcon}
+      {quoteIcon}
+      baseAmount={baseAmount}
+      quoteAmount={quoteAmount}
+    />
+    <ConfirmPaymentBtn />
+  </div>
 {/if}
