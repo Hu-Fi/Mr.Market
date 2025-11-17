@@ -50,28 +50,30 @@
   />
 
   <div class="space-y-4">
-    <ConfirmSummaryCard title={$_("exchange")}>
-      <svelte:fragment slot="icon">
-        <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-10 h-10 rounded-full" />
-      </svelte:fragment>
-      <svelte:fragment slot="value">
-        <ExchangeName exchangeName={exchangeName ?? ""} />
-      </svelte:fragment>
-    </ConfirmSummaryCard>
+    <div class="grid grid-cols-2 gap-1 md:grid-cols-2">
+      <ConfirmSummaryCard title={$_("exchange")}>
+        <svelte:fragment slot="icon">
+          <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-10 h-10 rounded-full" />
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          <ExchangeName exchangeName={exchangeName ?? ""} />
+        </svelte:fragment>
+      </ConfirmSummaryCard>
 
-    <ConfirmSummaryCard title={$_("trading_pair")}>
-      <svelte:fragment slot="icon">
-        <PairIcon
-          clazz="w-5 h-5"
-          claxx="w-4 h-4"
-          asset0Icon={baseIcon || emptyToken}
-          asset1Icon={quoteIcon || emptyToken}
-        />
-      </svelte:fragment>
-      <svelte:fragment slot="value">
-        <span>{tradingPair ?? ""}</span>
-      </svelte:fragment>
-    </ConfirmSummaryCard>
+      <ConfirmSummaryCard title={$_("trading_pair")}>
+        <svelte:fragment slot="icon">
+          <PairIcon
+            clazz="w-5 h-5"
+            claxx="w-4 h-4"
+            asset0Icon={baseIcon || emptyToken}
+            asset1Icon={quoteIcon || emptyToken}
+          />
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          <span>{tradingPair ?? ""}</span>
+        </svelte:fragment>
+      </ConfirmSummaryCard>
+    </div>
 
     <ConfirmSummaryCard
       title={`${baseSymbol ?? ""} ${$_("amount")}`}
@@ -81,12 +83,12 @@
         <img src={baseIcon || emptyToken} alt={baseSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
       </svelte:fragment>
       <svelte:fragment slot="value">
-        <div class="flex flex-col leading-tight">
+        <div class="flex items-baseline gap-2 leading-tight">
           <span class="text-xl font-semibold text-base-content">
             {formatAmount(baseAmount)}
           </span>
           {#if baseAmountUsdFormatted}
-            <span class="text-xs opacity-70 font-medium">
+            <span class="text-xs font-medium opacity-60">
               ({baseAmountUsdFormatted})
             </span>
           {/if}
@@ -102,12 +104,12 @@
         <img src={quoteIcon || emptyToken} alt={quoteSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
       </svelte:fragment>
       <svelte:fragment slot="value">
-        <div class="flex flex-col leading-tight">
+        <div class="flex items-baseline gap-2 leading-tight">
           <span class="text-xl font-semibold text-base-content">
             {formatAmount(quoteAmount)}
           </span>
           {#if quoteAmountUsdFormatted}
-            <span class="text-xs opacity-70 font-medium">
+            <span class="text-xs font-medium opacity-60">
               ({quoteAmountUsdFormatted})
             </span>
           {/if}

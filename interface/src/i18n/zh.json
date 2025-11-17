@@ -320,5 +320,6 @@
   "recently_created": "最近创建",
   "review_selection": "检查您的选择",
   "review_selection_intro": "确认支付前请再次核对信息",
-  "fee_usage_note": "用于覆盖资金划转相关费用"
+  "fee_usage_note": "手续费用于覆盖资金划转相关费用",
+  "processing": "处理中..."
 }

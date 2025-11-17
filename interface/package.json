@@ -46,7 +46,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^6.1.1",
+    "@mixin.dev/mixin-node-sdk": "^7.4.7",
     "autoprefixer": "^10.4.21",
     "axios": "^1.12.2",
     "bignumber.js": "^9.3.1",

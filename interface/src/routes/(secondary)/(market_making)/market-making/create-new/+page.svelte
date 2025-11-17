@@ -134,13 +134,10 @@
   let lastTradingPair: string | null = null;
   let lastUrlBaseAmount: string | null = null;
   let lastUrlQuoteAmount: string | null = null;
-  const toNumeric = (value: string | null) => {
-    if (!value) return null;
-    const numeric = Number(value);
-    return Number.isFinite(numeric) ? numeric : null;
-  };
-  $: baseAmountUsd = baseSymbol?.toUpperCase() === "USDT" ? toNumeric(baseAmount) : null;
-  $: quoteAmountUsd = quoteSymbol?.toUpperCase() === "USDT" ? toNumeric(quoteAmount) : null;
+  
+  // Will be fetched from backend
+  $: baseAmountUsd = null;
+  $: quoteAmountUsd = null;
 
   $: if (tradingPair !== lastTradingPair) {
     baseAmountInput = "";

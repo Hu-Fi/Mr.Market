@@ -7,7 +7,7 @@ import { getOrdersByUser } from "$lib/helpers/hufi/spot";
 import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
-import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { buildMixinOneSafePaymentUri, getInvoiceString, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
 import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrdersLoaded } from "$lib/stores/wallet";
@@ -43,6 +43,33 @@ export const mixinShare = (url: string, title: string, description: string, icon
     title,
   };
   window.open(`mixin://send?category=app_card&data=${encodeURIComponent(btoa(JSON.stringify(data)))}`)
+}
+
+type MixinInvoiceParams = {
+  recipient: string,
+  asset_id: string,
+  amount: string,
+  memo?: string,
+  trace_id?: string,
+};
+
+export const mixinInvoice = async ({ recipient, asset_id, amount, memo = "", trace_id }: MixinInvoiceParams) => {
+  const invoice = {
+    version: 0,
+    recipient,
+    items: [
+      {
+        trace_id: trace_id ?? getUuid(),
+        asset_id,
+        amount,
+        memo,
+        references: [],
+      },
+    ],
+  };
+
+  const invoiceStr = getInvoiceString(invoice);
+  return `https://mixin.one/pay/${invoiceStr}`;
 }
 
 export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
