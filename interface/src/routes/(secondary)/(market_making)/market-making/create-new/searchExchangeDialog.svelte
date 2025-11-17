@@ -4,7 +4,6 @@
   import ExchangeIcon from "$lib/components/common/exchangeIcon.svelte";
 
   export let supportedExchanges: string[] = [];
-  export let selectedExchange: string | null = null;
   export let onSelect: (exchange: string) => void = () => {};
 
   const dispatch = createEventDispatcher();

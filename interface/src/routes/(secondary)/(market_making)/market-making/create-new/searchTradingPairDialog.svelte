@@ -14,7 +14,6 @@
       };
 
   export let supportedTradingPairs: TradingPair[] = [];
-  export let selectedTradingPair: string | null = null;
   export let exchangeName: string | null = null;
   export let onSelect: (tradingPair: string) => void = () => {};
 

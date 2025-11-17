@@ -177,7 +177,6 @@
   </div>
   <SearchExchangeDialog
     supportedExchanges={supportedMarketMakingExchanges}
-    selectedExchange={exchangeName}
     onSelect={selectExchange}
   />
 
@@ -201,7 +200,6 @@
   </div>
   <SearchTradingPairDialog
     supportedTradingPairs={supportedTradingpairs}
-    selectedTradingPair={tradingPair}
     exchangeName={exchangeName}
     onSelect={selectTradingPair}
   />
@@ -233,7 +231,6 @@
   </div>
   <SearchTradingPairDialog
     supportedTradingPairs={supportedTradingpairs}
-    selectedTradingPair={tradingPair}
     exchangeName={exchangeName}
     onSelect={selectTradingPair}
   />
