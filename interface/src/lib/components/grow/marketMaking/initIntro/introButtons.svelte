@@ -5,7 +5,7 @@
 </script>
 
 <div class="mx-8 flex flex-col space-y-4">
-  <button class="btn bg-base-content text-base-100 w-full rounded-lg no-animation !rounded-full" on:click={
+  <button class="btn bg-base-content text-base-100 w-full no-animation rounded-full!" on:click={
     () => {
       isFirstTimeMarketMaking.set(false);
     }
@@ -13,7 +13,7 @@
     {$_('start_market_making')}
   </button>
 
-  <button class="btn bg-base-100 text-base-content w-full rounded-lg no-animation !rounded-full" 
+  <button class="btn bg-base-100 text-base-content w-full no-animation rounded-full!" 
     on:click={() => {
       goto('/market-making/learn-more');
     }}

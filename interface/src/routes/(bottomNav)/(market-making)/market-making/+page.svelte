@@ -20,7 +20,7 @@
 <!-- If not connected, show start market making, button redirect to connect wallet -->
 <!-- If connected and first time user, show start market making, button go to market-making -->
 {#if $isFirstTimeMarketMaking}
-  <div class="flex flex-col flex-grow space-y-0">
+  <div class="flex flex-col grow space-y-0">
     <Slogan />
     <div class="">
       <IntroButtons />
@@ -28,11 +28,11 @@
   </div>
 {:else}
    {#await page.data.campaign_stats}
-   <div class="flex flex-col items-center justify-center flex-grow h-[100vh]">
+   <div class="flex flex-col items-center justify-center grow h-screen">
     <Loading />
    </div>
    {:then data}
-    <div class="flex flex-col flex-grow space-y-0 mt-4 mx-4">
+    <div class="flex flex-col grow space-y-0 mt-4 mx-4">
       <BasicStats rewardsPool={data.rewards_pool_usd} activeCampaigns={data.n_active_campaigns} />
       
       <Bar />

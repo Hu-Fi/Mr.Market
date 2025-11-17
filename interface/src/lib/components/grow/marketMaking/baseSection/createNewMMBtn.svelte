@@ -4,7 +4,7 @@
 </script>
 
 <button
-  class="btn bg-base-content text-base-100 w-32 rounded-lg no-animation !rounded-full"
+    class="btn bg-base-content text-base-100 w-32 no-animation rounded-full!"
   on:click={() => {
     goto("/market-making/create-new");
   }}
