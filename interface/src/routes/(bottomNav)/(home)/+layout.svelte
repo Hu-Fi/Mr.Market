@@ -6,7 +6,7 @@
   <HomeBar />
 </header>
 
-<main class="!p-0">
+<main class="p-0!">
   <slot />
 </main>
 
