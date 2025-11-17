@@ -175,7 +175,11 @@
   <div class="absolute bottom-24 w-full flex justify-center">
     <SearchExchange onSearch={() => {}} />
   </div>
-  <SearchExchangeDialog supportedExchanges={supportedMarketMakingExchanges} />
+  <SearchExchangeDialog
+    supportedExchanges={supportedMarketMakingExchanges}
+    selectedExchange={exchangeName}
+    onSelect={selectExchange}
+  />
 
 {:else if !tradingPair}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
@@ -195,7 +199,12 @@
   <div class="absolute bottom-24 w-full flex justify-center">
     <SearchTradingPair onSearch={() => {}} />
   </div>
-  <SearchTradingPairDialog supportedTradingPairs={[]} />
+  <SearchTradingPairDialog
+    supportedTradingPairs={supportedTradingpairs}
+    selectedTradingPair={tradingPair}
+    exchangeName={exchangeName}
+    onSelect={selectTradingPair}
+  />
 
 {:else if !baseAmount || !quoteAmount}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
@@ -222,7 +231,12 @@
       <AmountNextStepBtn baseAmount={baseAmountInput} quoteAmount={quoteAmountInput} />
     </div>
   </div>
-  <SearchTradingPairDialog supportedTradingPairs={[]} />
+  <SearchTradingPairDialog
+    supportedTradingPairs={supportedTradingpairs}
+    selectedTradingPair={tradingPair}
+    exchangeName={exchangeName}
+    onSelect={selectTradingPair}
+  />
 
 {:else}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4">
