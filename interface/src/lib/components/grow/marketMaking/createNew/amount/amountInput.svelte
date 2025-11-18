@@ -28,7 +28,7 @@
       <img
         src={baseIcon}
         alt={baseSymbol}
-        class="w-10 h-10 mr-2 inline-block align-middle"
+        class="w-8 h-8 mr-2 inline-block align-middle"
       />
       <input
         type="text"
@@ -38,7 +38,7 @@
         placeholder={$_("enter_symbol_amount", {
           values: { symbol: baseSymbol ?? "" },
         })}
-        class="focus:outline-none"
+        class="focus:outline-none text-base!"
       />
     </label>
     <div class="flex justify-between">
@@ -56,7 +56,7 @@
       <img
         src={quoteIcon}
         alt={quoteSymbol}
-        class="w-10 h-10 mr-2 inline-block align-middle"
+        class="w-8 h-8 mr-2 inline-block align-middle"
       />
       <input
         type="text"
@@ -66,7 +66,7 @@
         placeholder={$_("enter_symbol_amount", {
           values: { symbol: quoteSymbol ?? "" },
         })}
-        class="focus:outline-none"
+        class="focus:outline-none text-base!"
       />
     </label>
     <div class="flex justify-between">
