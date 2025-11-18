@@ -46,7 +46,7 @@
 </script>
 
 <div class={clsx(
-  "dock dock-sm bg-base-100 shadow-[0_-1px_1px_rgb(0_0_0_/_12%)]",
+  "dock dock-sm bg-base-100 shadow-[0_-1px_1px_rgb(0_0_0/12%)",
   $darkTheme ? "border-base-content/20" : "border-base-300/70"
 )}>
   {#each routes as route, i}

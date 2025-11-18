@@ -4,16 +4,23 @@
   import BasicStats from "$lib/components/grow/marketMaking/baseSection/basicHuFiStats.svelte";
   import Loading from "$lib/components/common/loading.svelte";
 
-  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
   import { page } from "$app/state";
   import { mixinConnected } from "$lib/stores/home";
   import { isFirstTimeMarketMaking } from "$lib/stores/market_making";
   import Bar from "$lib/components/grow/marketMaking/baseSection/bar.svelte";
   import BaseIntro from "$lib/components/grow/marketMaking/baseSection/baseIntro.svelte";
-  onMount(() => {
-    isFirstTimeMarketMaking.set(true)
-  });
-  
+  const MARKET_MAKING_INTRO_KEY = "market-making-intro-seen";
+
+  if (browser) {
+    const hasSeenIntro = localStorage.getItem(MARKET_MAKING_INTRO_KEY) === "true";
+    isFirstTimeMarketMaking.set(!hasSeenIntro);
+
+    if (!hasSeenIntro) {
+      localStorage.setItem(MARKET_MAKING_INTRO_KEY, "true");
+    }
+  }
+
   const noMarketMakingCreated = true;
 </script>
 
