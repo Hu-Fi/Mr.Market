@@ -40,7 +40,7 @@
 
   $: baseAmountUsdFormatted = formatFiat(baseAmountUsd);
   $: quoteAmountUsdFormatted = formatFiat(quoteAmountUsd);
-  $: feeSymbolDisplay = feeSymbol ?? quoteSymbol ?? "USDT";
+  $: feeSymbolDisplay = feeSymbol || "USDT";
 </script>
 
 <div class="w-full max-w-md space-y-6 rounded-3xl bg-base-100 p-6 pt-0">
@@ -49,11 +49,11 @@
     description={$_("review_selection_intro")}
   />
 
-  <div class="space-y-4">
+  <div class="space-y-6">
     <div class="grid grid-cols-2 gap-1 md:grid-cols-2">
       <ConfirmSummaryCard title={$_("exchange")}>
         <svelte:fragment slot="icon">
-          <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-10 h-10 rounded-full" />
+          <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-8 h-8 rounded-full" />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <ExchangeName exchangeName={exchangeName ?? ""} />
@@ -75,73 +75,77 @@
       </ConfirmSummaryCard>
     </div>
 
-    <ConfirmSummaryCard
-      title={`${baseSymbol ?? ""} ${$_("amount")}`}
-      valueClass="text-base-content"
-    >
-      <svelte:fragment slot="icon">
-        <img src={baseIcon || emptyToken} alt={baseSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
-      </svelte:fragment>
-      <svelte:fragment slot="value">
-        <div class="flex items-baseline gap-2 leading-tight">
-          <span class="text-xl font-semibold text-base-content">
-            {formatAmount(baseAmount)}
-          </span>
-          {#if baseAmountUsdFormatted}
-            <span class="text-xs font-medium opacity-60">
-              ({baseAmountUsdFormatted})
+    <div class="flex flex-col space-y-1">
+      <ConfirmSummaryCard
+        title={`${baseSymbol ?? ""} ${$_("amount")}`}
+        valueClass="text-base-content"
+      >
+        <svelte:fragment slot="icon">
+          <img src={baseIcon || emptyToken} alt={baseSymbol ?? ""} class="w-8 h-8 rounded-full object-cover" />
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          <div class="flex items-baseline gap-2 leading-tight">
+            <span class="text-xl font-semibold text-base-content">
+              {formatAmount(baseAmount)}
             </span>
-          {/if}
-        </div>
-      </svelte:fragment>
-    </ConfirmSummaryCard>
+            {#if baseAmountUsdFormatted}
+              <span class="text-xs font-medium opacity-60">
+                ({baseAmountUsdFormatted})
+              </span>
+            {/if}
+          </div>
+        </svelte:fragment>
+      </ConfirmSummaryCard>
 
-    <ConfirmSummaryCard
-      title={`${quoteSymbol ?? ""} ${$_("amount")}`}
-      valueClass="text-base-content"
-    >
-      <svelte:fragment slot="icon">
-        <img src={quoteIcon || emptyToken} alt={quoteSymbol ?? ""} class="w-10 h-10 rounded-full object-cover" />
-      </svelte:fragment>
-      <svelte:fragment slot="value">
-        <div class="flex items-baseline gap-2 leading-tight">
-          <span class="text-xl font-semibold text-base-content">
-            {formatAmount(quoteAmount)}
-          </span>
-          {#if quoteAmountUsdFormatted}
-            <span class="text-xs font-medium opacity-60">
-              ({quoteAmountUsdFormatted})
+      <ConfirmSummaryCard
+        title={`${quoteSymbol ?? ""} ${$_("amount")}`}
+        valueClass="text-base-content"
+      >
+        <svelte:fragment slot="icon">
+          <img src={quoteIcon || emptyToken} alt={quoteSymbol ?? ""} class="w-8 h-8 rounded-full object-cover" />
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          <div class="flex items-baseline gap-2 leading-tight">
+            <span class="text-xl font-semibold text-base-content">
+              {formatAmount(quoteAmount)}
             </span>
-          {/if}
-        </div>
-      </svelte:fragment>
-    </ConfirmSummaryCard>
+            {#if quoteAmountUsdFormatted}
+              <span class="text-xs font-medium opacity-60">
+                ({quoteAmountUsdFormatted})
+              </span>
+            {/if}
+          </div>
+        </svelte:fragment>
+      </ConfirmSummaryCard>
 
-    <ConfirmSummaryCard
-      title={$_("fee")}
-      valueClass="text-base-content"
-    >
-      <svelte:fragment slot="icon">
-        <div class="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold">
-          GAS
-        </div>
-      </svelte:fragment>
-      <svelte:fragment slot="value">
-        <div class="flex items-center gap-3">
-          <span class="text-xl font-semibold text-base-content">
-            {formatAmount(feeAmount)} {feeSymbolDisplay}
-          </span>
-          <button
-            class="badge badge-xs rounded-full bg-base-300 text-base-content tooltip tooltip-bottom text-xs"
-            data-tip={$_("fee_usage_note")}
-            type="button"
-            aria-label={$_("fee_usage_note")}
-          >
-            ?
-          </button>
-        </div>
-      </svelte:fragment>
-    </ConfirmSummaryCard>
+      <ConfirmSummaryCard
+        title={$_("fee")}
+        valueClass="text-xs font-semibold text-base-content"
+      >
+        <svelte:fragment slot="icon">
+          <div class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold">
+            GAS
+          </div>
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-base-content">
+              {formatAmount(feeAmount)} {feeSymbolDisplay}
+            </span>
+            <button
+              class="badge badge-xs p-1 rounded-full bg-base-300 text-base-content tooltip tooltip-bottom text-xs opacity-60"
+              data-tip={$_("fee_usage_note")}
+              type="button"
+              aria-label={$_("fee_usage_note")}
+            >
+              <span class="text-xs">
+                ?
+              </span>
+            </button>
+          </div>
+        </svelte:fragment>
+      </ConfirmSummaryCard>
+    </div>
   </div>
 </div>
 

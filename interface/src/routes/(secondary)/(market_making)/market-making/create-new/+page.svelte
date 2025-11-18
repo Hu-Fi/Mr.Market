@@ -244,8 +244,8 @@
       {quoteSymbol}
       {baseIcon}
       {quoteIcon}
-      baseAmount={baseAmount}
-      quoteAmount={quoteAmount}
+      {baseAmount}
+      {quoteAmount}
       {baseAmountUsd}
       {quoteAmountUsd}
     />
