@@ -38,7 +38,7 @@
         placeholder={$_("enter_symbol_amount", {
           values: { symbol: baseSymbol ?? "" },
         })}
-        class="focus:outline-none text-base!"
+        class="focus:outline-none text-xl!"
       />
     </label>
     <div class="flex justify-between">
@@ -66,7 +66,7 @@
         placeholder={$_("enter_symbol_amount", {
           values: { symbol: quoteSymbol ?? "" },
         })}
-        class="focus:outline-none text-base!"
+        class="focus:outline-none text-xl!"
       />
     </label>
     <div class="flex justify-between">

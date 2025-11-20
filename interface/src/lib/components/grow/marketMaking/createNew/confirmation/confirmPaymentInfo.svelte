@@ -129,7 +129,7 @@
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex items-center gap-3">
-            <span class="text-sm font-medium text-base-content">
+            <span class="text-lg font-semibold text-base-content">
               {formatAmount(feeAmount)} {feeSymbolDisplay}
             </span>
             <button
