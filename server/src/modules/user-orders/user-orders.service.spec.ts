@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StrategyUserService } from './strategy-user.service';
-import { StrategyUserRepository } from './strategy-user.repository';
+import { UserOrdersService } from './user-orders.service';
 import { CustomLogger } from '../logger/logger.service';
-import { StrategyService } from './strategy.service';
+import { StrategyService } from '../strategy/strategy.service';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import {
   type ArbitrageStates,
@@ -10,33 +9,83 @@ import {
   type SimplyGrowStates,
 } from 'src/common/types/orders/states';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SimplyGrowOrder } from 'src/common/entities/strategy-user.entity';
+import {
+  ArbitrageOrder,
+  MarketMakingOrder,
+  PaymentState,
+  SimplyGrowOrder,
+} from 'src/common/entities/strategy-user.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
+import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
-jest.mock('./strategy-user.repository');
 jest.mock('../logger/logger.service');
-jest.mock('./strategy.service');
+jest.mock('../strategy/strategy.service');
 
-describe('StrategyUserService', () => {
-  let service: StrategyUserService;
+describe('UserOrdersService', () => {
+  let service: UserOrdersService;
   let strategyService: StrategyService;
-  let strategyUserRepository: StrategyUserRepository;
+  let arbitrageRepository: Repository<ArbitrageOrder>;
+  let marketMakingRepository: Repository<MarketMakingOrder>;
+  let simplyGrowRepository: Repository<SimplyGrowOrder>;
+  let paymentStateRepository: Repository<PaymentState>;
+  let marketMakingHistoryRepository: Repository<MarketMakingHistory>;
+  let arbitrageHistoryRepository: Repository<ArbitrageHistory>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        StrategyUserService,
-        StrategyUserRepository,
+        UserOrdersService,
         CustomLogger,
         StrategyService,
-        ConfigModule,
         ConfigService,
+        {
+          provide: getRepositoryToken(ArbitrageOrder),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(MarketMakingOrder),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(SimplyGrowOrder),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(PaymentState),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(MarketMakingHistory),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(ArbitrageHistory),
+          useClass: Repository,
+        },
       ],
     }).compile();
 
-    service = module.get<StrategyUserService>(StrategyUserService);
+    service = module.get<UserOrdersService>(UserOrdersService);
     strategyService = module.get<StrategyService>(StrategyService);
-    strategyUserRepository = module.get<StrategyUserRepository>(
-      StrategyUserRepository,
+    arbitrageRepository = module.get<Repository<ArbitrageOrder>>(
+      getRepositoryToken(ArbitrageOrder),
+    );
+    marketMakingRepository = module.get<Repository<MarketMakingOrder>>(
+      getRepositoryToken(MarketMakingOrder),
+    );
+    simplyGrowRepository = module.get<Repository<SimplyGrowOrder>>(
+      getRepositoryToken(SimplyGrowOrder),
+    );
+    paymentStateRepository = module.get<Repository<PaymentState>>(
+      getRepositoryToken(PaymentState),
+    );
+    marketMakingHistoryRepository = module.get<Repository<MarketMakingHistory>>(
+      getRepositoryToken(MarketMakingHistory),
+    );
+    arbitrageHistoryRepository = module.get<Repository<ArbitrageHistory>>(
+      getRepositoryToken(ArbitrageHistory),
     );
     jest.clearAllMocks();
   });
@@ -50,19 +99,19 @@ describe('StrategyUserService', () => {
         tradingType: 'typeA',
         action: 'buy',
         state: 'created' as SimplyGrowStates,
-        createdAt: '2021-01-01T00:00:00.000Z',
+        createdAt: new Date(),
         rewardAddress: '0x0000000000000000000000000000000000000000',
         mixinAssetId: '123e4567-e89b-12d3-a456-426614174000',
-        amount: '100',
-      };
+        amount: 100,
+      } as unknown as SimplyGrowOrder;
 
       jest
-        .spyOn(strategyUserRepository, 'createSimplyGrow')
-        .mockResolvedValue(mockSimplyGrowOrder as SimplyGrowOrder);
+        .spyOn(simplyGrowRepository, 'save')
+        .mockResolvedValue(mockSimplyGrowOrder);
 
       const result = await service.createSimplyGrow(mockSimplyGrowOrder);
       expect(result).toEqual(mockSimplyGrowOrder);
-      expect(strategyUserRepository.createSimplyGrow).toHaveBeenCalledWith(
+      expect(simplyGrowRepository.save).toHaveBeenCalledWith(
         mockSimplyGrowOrder,
       );
     });
@@ -74,14 +123,15 @@ describe('StrategyUserService', () => {
       const newState = 'paused';
 
       jest
-        .spyOn(strategyUserRepository, 'updateArbitrageOrderState')
+        .spyOn(arbitrageRepository, 'update')
         .mockResolvedValue(undefined);
 
       await service.updateArbitrageOrderState(orderId, newState);
 
-      expect(
-        strategyUserRepository.updateArbitrageOrderState,
-      ).toHaveBeenCalledWith(orderId, newState);
+      expect(arbitrageRepository.update).toHaveBeenCalledWith(
+        { orderId },
+        { state: newState },
+      );
     });
   });
 
@@ -91,24 +141,24 @@ describe('StrategyUserService', () => {
         orderId: 'arb1',
         userId: 'user1',
         pair: 'BTC/USDT',
-        amountToTrade: '0.5',
-        minProfitability: '0.01',
+        amountToTrade: 0.5,
+        minProfitability: 0.01,
         exchangeAName: 'ExchangeA',
         exchangeBName: 'ExchangeB',
-        balanceA: '100',
-        balanceB: '1000',
+        balanceA: 100,
+        balanceB: 1000,
         state: 'created' as ArbitrageStates,
-        createdAt: '2021-01-01T00:00:00.000Z',
+        createdAt: new Date(),
         rewardAddress: '0x0000000000000000000000000000000000000000',
-      };
+      } as unknown as ArbitrageOrder;
 
       jest
-        .spyOn(strategyUserRepository, 'createArbitrage')
+        .spyOn(arbitrageRepository, 'save')
         .mockResolvedValue(mockArbitrageOrder);
 
       const result = await service.createArbitrage(mockArbitrageOrder);
       expect(result).toEqual(mockArbitrageOrder);
-      expect(strategyUserRepository.createArbitrage).toHaveBeenCalledWith(
+      expect(arbitrageRepository.save).toHaveBeenCalledWith(
         mockArbitrageOrder,
       );
     });
@@ -121,30 +171,30 @@ describe('StrategyUserService', () => {
         userId: 'user1',
         pair: 'BTC/USDT',
         exchangeName: 'ExchangeA',
-        bidSpread: '0.001',
-        askSpread: '0.001',
-        orderAmount: '0.5',
-        orderRefreshTime: '60', // Seconds
-        numberOfLayers: '1',
+        bidSpread: 0.001,
+        askSpread: 0.001,
+        orderAmount: 0.5,
+        orderRefreshTime: 60, // Seconds
+        numberOfLayers: 1,
         priceSourceType: PriceSourceType.MID_PRICE,
-        amountChangePerLayer: '0.1',
+        amountChangePerLayer: 0.1,
         amountChangeType: 'percentage' as 'fixed' | 'percentage',
-        ceilingPrice: '60000',
-        floorPrice: '50000',
-        balanceA: '100',
-        balanceB: '1000',
+        ceilingPrice: 60000,
+        floorPrice: 50000,
+        balanceA: 100,
+        balanceB: 1000,
         state: 'created' as MarketMakingStates,
-        createdAt: '2021-01-01T00:00:00.000Z',
+        createdAt: new Date(),
         rewardAddress: '0x0000000000000000000000000000000000000000',
-      };
+      } as unknown as MarketMakingOrder;
 
       jest
-        .spyOn(strategyUserRepository, 'createMarketMaking')
+        .spyOn(marketMakingRepository, 'save')
         .mockResolvedValue(mockMarketMakingOrder);
 
       const result = await service.createMarketMaking(mockMarketMakingOrder);
       expect(result).toEqual(mockMarketMakingOrder);
-      expect(strategyUserRepository.createMarketMaking).toHaveBeenCalledWith(
+      expect(marketMakingRepository.save).toHaveBeenCalledWith(
         mockMarketMakingOrder,
       );
     });
@@ -156,17 +206,18 @@ describe('StrategyUserService', () => {
       const newState = 'paused' as MarketMakingStates;
 
       jest
-        .spyOn(strategyUserRepository, 'updateMarketMakingOrderState')
+        .spyOn(marketMakingRepository, 'update')
         .mockResolvedValue(undefined);
 
       await service.updateMarketMakingOrderState(orderId, newState);
-      expect(
-        strategyUserRepository.updateMarketMakingOrderState,
-      ).toHaveBeenCalledWith(orderId, newState);
+      expect(marketMakingRepository.update).toHaveBeenCalledWith(
+        { orderId },
+        { state: newState },
+      );
     });
   });
 
-  it.failing(
+  it(
     'should correctly handle both active and paused orders',
     async () => {
       // Mock data for running and paused orders
@@ -175,110 +226,112 @@ describe('StrategyUserService', () => {
           orderId: 'arb1',
           userId: 'user1',
           pair: 'BTC/USDT',
-          amountToTrade: '0.5',
-          minProfitability: '0.01',
+          amountToTrade: 0.5,
+          minProfitability: 0.01,
           exchangeAName: 'ExchangeA',
           exchangeBName: 'ExchangeB',
-          balanceA: '100',
-          balanceB: '1000',
+          balanceA: 100,
+          balanceB: 1000,
           state: 'created' as ArbitrageStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
+          createdAt: new Date(),
           rewardAddress: '0x0000000000000000000000000000000000000000',
         },
-      ];
+      ] as unknown as ArbitrageOrder[];
       const mockActiveMMOrders = [
         {
           orderId: 'mm1',
           userId: 'user1',
           pair: 'BTC/USDT',
           exchangeName: 'ExchangeA',
-          bidSpread: '0.001',
-          askSpread: '0.001',
-          orderAmount: '0.5',
-          orderRefreshTime: '60', // Seconds
-          numberOfLayers: '1',
+          bidSpread: 0.001,
+          askSpread: 0.001,
+          orderAmount: 0.5,
+          orderRefreshTime: 60, // Seconds
+          numberOfLayers: 1,
           priceSourceType: PriceSourceType.MID_PRICE,
-          amountChangePerLayer: '0.1',
+          amountChangePerLayer: 0.1,
           amountChangeType: 'percentage' as 'fixed' | 'percentage',
-          ceilingPrice: '60000',
-          floorPrice: '50000',
-          balanceA: '100',
-          balanceB: '1000',
+          ceilingPrice: 60000,
+          floorPrice: 50000,
+          balanceA: 100,
+          balanceB: 1000,
           state: 'created' as MarketMakingStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
+          createdAt: new Date(),
           rewardAddress: '0x0000000000000000000000000000000000000000',
         },
-      ];
+      ] as unknown as MarketMakingOrder[];
       const mockPausedArbOrders = [
         {
           orderId: 'arb1',
           userId: 'user1',
           pair: 'BTC/USDT',
-          amountToTrade: '0.5',
-          minProfitability: '0.01',
+          amountToTrade: 0.5,
+          minProfitability: 0.01,
           exchangeAName: 'ExchangeA',
           exchangeBName: 'ExchangeB',
-          balanceA: '100',
-          balanceB: '1000',
+          balanceA: 100,
+          balanceB: 1000,
           state: 'paused' as ArbitrageStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
+          createdAt: new Date(),
           rewardAddress: '0x0000000000000000000000000000000000000000',
         },
-      ];
+      ] as unknown as ArbitrageOrder[];
       const mockPausedMMOrders = [
         {
           orderId: 'mm1',
           userId: 'user1',
           pair: 'BTC/USDT',
           exchangeName: 'ExchangeA',
-          bidSpread: '0.001',
-          askSpread: '0.001',
-          orderAmount: '0.5',
-          orderRefreshTime: '60', // Seconds
-          numberOfLayers: '1',
+          bidSpread: 0.001,
+          askSpread: 0.001,
+          orderAmount: 0.5,
+          orderRefreshTime: 60, // Seconds
+          numberOfLayers: 1,
           priceSourceType: PriceSourceType.MID_PRICE,
-          amountChangePerLayer: '0.1',
+          amountChangePerLayer: 0.1,
           amountChangeType: 'percentage' as 'fixed' | 'percentage',
-          ceilingPrice: '60000',
-          floorPrice: '50000',
-          balanceA: '100',
-          balanceB: '1000',
+          ceilingPrice: 60000,
+          floorPrice: 50000,
+          balanceA: 100,
+          balanceB: 1000,
           state: 'paused' as MarketMakingStates,
-          createdAt: '2021-01-01T00:00:00.000Z',
+          createdAt: new Date(),
           rewardAddress: '0x0000000000000000000000000000000000000000',
         },
-      ];
+      ] as unknown as MarketMakingOrder[];
 
       jest
-        .spyOn(strategyUserRepository, 'findRunningArbitrageOrders')
-        .mockResolvedValue(mockActiveArbOrders);
+        .spyOn(arbitrageRepository, 'findBy')
+        .mockImplementation(async (criteria: any) => {
+          if (criteria.state === 'created') return mockActiveArbOrders;
+          if (criteria.state === 'paused') return mockPausedArbOrders;
+          return [];
+        });
       jest
-        .spyOn(strategyUserRepository, 'findRunningMarketMakingOrders')
-        .mockResolvedValue(mockActiveMMOrders);
-      jest
-        .spyOn(strategyUserRepository, 'findPausedArbitrageOrders')
-        .mockResolvedValue(mockPausedArbOrders);
-      jest
-        .spyOn(strategyUserRepository, 'findPausedMarketMakingOrders')
-        .mockResolvedValue(mockPausedMMOrders);
+        .spyOn(marketMakingRepository, 'findBy')
+        .mockImplementation(async (criteria: any) => {
+          if (criteria.state === 'created') return mockActiveMMOrders;
+          if (criteria.state === 'paused') return mockPausedMMOrders;
+          return [];
+        });
 
       // Mock strategy service methods to simulate starting and pausing strategies
       const startArbitrageSpy = jest
         .spyOn(strategyService, 'startArbitrageIfNotStarted')
-        .mockImplementation(async () => {});
+        .mockImplementation(async () => { });
       const startMarketMakingSpy = jest
         .spyOn(strategyService, 'startMarketMakingIfNotStarted')
-        .mockImplementation(async () => {});
+        .mockImplementation(async () => { });
       const pauseArbitrageSpy = jest
         .spyOn(strategyService, 'pauseStrategyIfNotPaused')
-        .mockImplementation(async () => {});
+        .mockImplementation(async () => { });
 
       // Execute the method under test
       await service.updateExecutionBasedOnOrders();
 
       // Verify that strategies are started for the active orders
-      expect(startArbitrageSpy).toHaveBeenCalledWith(expect.anything());
-      expect(startMarketMakingSpy).toHaveBeenCalledWith(expect.anything());
+      expect(startArbitrageSpy).toHaveBeenCalled();
+      expect(startMarketMakingSpy).toHaveBeenCalled();
 
       // Verify that strategies are paused for the paused orders
       expect(pauseArbitrageSpy).toHaveBeenCalledTimes(

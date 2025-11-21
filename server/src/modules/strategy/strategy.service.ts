@@ -1154,20 +1154,6 @@ export class StrategyService {
     }
   }
 
-  // Fetch regular orders for a specific user
-  async getUserOrders(userId: string): Promise<MarketMakingHistory[]> {
-    return await this.orderRepository.find({
-      where: { userId },
-    });
-  }
-
-  // Fetch arbitrage orders for a specific user
-  async getUserArbitrageHistorys(userId: string): Promise<ArbitrageHistory[]> {
-    return await this.arbitrageHistoryRepository.find({
-      where: { userId },
-    });
-  }
-
   private calculateVWAPForAmount(
     orderBook: ccxt.OrderBook,
     amountToTrade: number,

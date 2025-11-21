@@ -11,6 +11,7 @@ import { TradeModule } from './modules/trade/trade.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { MarketdataModule } from './modules/marketdata/marketdata.module';
 import { PerformanceModule } from './modules/performance/performance.module';
+import { UserOrdersModule } from './modules/user-orders/user-orders.module';
 
 import configuration from './config/configuration';
 import { HealthModule } from './modules/health/health.module';
@@ -146,8 +147,9 @@ dotenv.config();
     CampaignModule,
     Web3Module,
     MetricsModule,
+    UserOrdersModule,
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger],
 })
-export class AppModule {}
+export class AppModule { }

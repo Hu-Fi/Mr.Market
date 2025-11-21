@@ -1,13 +1,9 @@
-// src/strategy/strategy.module.ts
-
 import { Module } from '@nestjs/common';
 import { StrategyService } from './strategy.service';
 import { StrategyController } from './strategy.controller';
 import { TradeModule } from '../trade/trade.module';
 import { PerformanceModule } from '../performance/performance.module';
 import { LoggerModule } from '../logger/logger.module';
-import { StrategyUserService } from './strategy-user.service';
-import { StrategyUserRepository } from './strategy-user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   ArbitrageOrder,
@@ -45,11 +41,9 @@ import { AdminModule } from '../admin/admin.module';
   controllers: [StrategyController],
   providers: [
     StrategyService,
-    StrategyUserService,
-    StrategyUserRepository,
     ExchangeInitService,
     AlpacaStratService,
   ],
-  exports: [StrategyService, StrategyUserService, StrategyUserRepository],
+  exports: [StrategyService],
 })
-export class StrategyModule {}
+export class StrategyModule { }
