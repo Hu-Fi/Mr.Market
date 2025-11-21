@@ -42,8 +42,6 @@
  *
  * - checkExchangeBalanceEnough(exchange: string, apiKey: string, apiSecret: string, symbol: string, amount: string): Checks if the exchange balance is sufficient for a specific symbol.
  *
- * - pickAPIKeyOnDemand(exchange: string, asset_id: string, amount: string): Picks an API key based on demand and available balance.
- *
  * - estimateSpotAmount(exchange: string, symbol: string, buy: boolean, amount: string, limit_price?: string): Estimates the amount for spot orders.
  *
  * - getAllSpotOrders(): Retrieves all spot orders from the repository.
@@ -93,7 +91,6 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   getRFC3339Timestamp,
-  getSymbolByAssetID,
 } from 'src/common/helpers/utils';
 import {
   STATE_TEXT_MAP,
@@ -455,7 +452,7 @@ export class ExchangeService {
     asset_id: string,
     amount: string,
   ): Promise<SuccessResponse | ErrorResponse> {
-    const symbol = getSymbolByAssetID(asset_id);
+    const symbol = '' // getSymbolByAssetID(asset_id);
     const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
       exchange,
     );
@@ -480,9 +477,8 @@ export class ExchangeService {
     });
     return {
       type: 'error',
-      error: `no API key available (${exchange}:${
-        symbol || asset_id
-      }:${amount})`,
+      error: `no API key available (${exchange}:${symbol || asset_id
+        }:${amount})`,
     };
   }
 

@@ -1,7 +1,6 @@
 import BigNumber from "bignumber.js";
 import mixinChains from "$lib/constants/mixinChains.json"
 import moment from "moment";
-import { PAIRS_MAP_REVERSED, SYMBOL_ASSET_ID_MAP } from "$lib/helpers/constants";
 
 const toFixed = (amount: string | number, decimalPlaces: number): string => {
   const parts = `${amount}`.split('.')
@@ -228,36 +227,9 @@ export const processSymbol = (symbol: string) => {
   return symbol.endsWith('USDT') ? `${symbol}-ERC20` : symbol;
 }
 
-// Used for handling symbol -> 4 digit memo
-export const encodeSymbolToMemo = (symbol: string) => {
-  let finalSymbol = symbol
-  finalSymbol = processSymbol(symbol)
-  const memoCode = PAIRS_MAP_REVERSED[finalSymbol];
-  if (!memoCode) {
-    return;
-  }
-  return memoCode;
-}
-
-// Used for handling the symbol -> both asset id conversion
-export const decodeSymbolToAssetID = (symbol: string) => {
-  let finalSymbol = symbol
-  finalSymbol = processSymbol(symbol)
-  const [firstAssetSymbol, secondAssetSymbol] = finalSymbol.split('/')
-  const firstAssetID = SYMBOL_ASSET_ID_MAP[firstAssetSymbol];
-  const secondAssetID = SYMBOL_ASSET_ID_MAP[secondAssetSymbol];
-  if (!firstAssetID) {
-    return;
-  }
-  if (!secondAssetID) {
-    return;
-  }
-  return { firstAssetID, secondAssetID }
-}
-
 export const handleCoingeckoTokenName = (name: string) => {
-  if (name.toUpperCase().includes('0X')){
-    return `${name.slice(0,6)}...`
+  if (name.toUpperCase().includes('0X')) {
+    return `${name.slice(0, 6)}...`
   }
   return name
 }

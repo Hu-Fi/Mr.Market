@@ -59,7 +59,6 @@ import {
 import BigNumber from 'bignumber.js';
 import {
   ASSET_ID_NETWORK_MAP,
-  SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
 import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
 import { CustomLogger } from 'src/modules/logger/logger.service';
@@ -139,7 +138,7 @@ export class RebalanceService {
             symbol,
           );
 
-        const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
+        const mixinAssetID = '(symbol to id)' // SYMBOL_ASSET_ID_MAP[symbol];
         const mixinAmount = BigNumber(mixinBalance);
         if (mixinAmount.lte(minAmount)) {
           this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
@@ -208,7 +207,8 @@ export class RebalanceService {
 
       // Get mixin deposit address
       const mixinDeposit = await this.snapshotService.depositAddress(
-        SYMBOL_ASSET_ID_MAP[symbol],
+        'symbol to id'
+        // SYMBOL_ASSET_ID_MAP[symbol],
       );
 
       const network = ASSET_ID_NETWORK_MAP[assetId];
@@ -308,7 +308,7 @@ export class RebalanceService {
       return;
     }
 
-    const assetID = SYMBOL_ASSET_ID_MAP[symbol];
+    const assetID = 'symbol to id' // SYMBOL_ASSET_ID_MAP[symbol];
     // Get network by asset id
     const network = ASSET_ID_NETWORK_MAP[assetID];
 

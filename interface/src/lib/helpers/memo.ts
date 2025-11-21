@@ -1,5 +1,3 @@
-import { createHash } from "crypto";
-import { PAIRS_MAP_REVERSED } from "./constants";
 import base58 from "bs58";
 
 // related to 
@@ -223,32 +221,3 @@ export const encodeMarketMakingCreateMemo = (
   const completeBuffer = Buffer.concat([payload, checksum]);
   return base58.encode(completeBuffer);
 };
-
-export const GenerateSpotTradingMemo = ({ limit, buy, symbol, exchange, price }: { limit: boolean, buy: boolean, symbol: string, exchange: string, price?: string }) => {
-  let finalSymbol = symbol;
-  if (symbol.endsWith('USDT')) {
-    finalSymbol = `${symbol}-ERC20`
-  }
-  const tradingType = 'SP'
-  const spotOrderType = limit ? (buy ? 'LB' : 'LS') : (buy ? 'MB' : 'MS');
-  const exchangeId = REVERSED_SPOT_EXCHANGE_MAP[exchange.toLowerCase()];
-  if (!exchange) {
-    console.error(`GenerateSpotTradingMemo failed to get exchange:${exchange}`);
-    return;
-  }
-  const pairId = PAIRS_MAP_REVERSED[finalSymbol]
-  if (!pairId) {
-    console.error(`GenerateSpotTradingMemo failed to get pairId for symbol:${symbol}`)
-    return;
-  }
-  const limitPriceOrRefId = price || '0';
-  const refId = '';
-
-  const memo = `${tradingType}:${spotOrderType}:${exchangeId}:${pairId}:${limitPriceOrRefId}:${refId}`
-  return Buffer.from(memo, 'binary').toString('base64').replaceAll('=', '');
-}
-
-function computeMemoChecksum(buffer: Buffer): Buffer {
-  const hash = createHash('sha256').update(buffer).digest();
-  return createHash('sha256').update(hash).digest().subarray(0, 4);
-}

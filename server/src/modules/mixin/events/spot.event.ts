@@ -6,13 +6,12 @@ import {
   TradingTypeValue,
 } from 'src/common/types/memo/memo';
 import { SpotOrderStatus } from 'src/common/types/orders/states';
-import { PairsMapKey, PairsMapValue } from 'src/common/types/pairs/pairs';
 
 export class SpotOrderCreateEvent {
   tradingType: TradingTypeValue;
   spotOrderType: SpotOrderTypeValue;
   exchangeName: ExchangeIndexValue;
-  destId: PairsMapKey;
+  destId: string;
   limitPrice?: string;
   refId?: string;
   snapshot: SafeSnapshot;
@@ -25,7 +24,7 @@ export class ExchangePlaceSpotEvent {
   userId: string;
   type: SpotOrderType;
   state: SpotOrderStatus;
-  symbol: PairsMapValue;
+  symbol: string;
   baseAssetId: string;
   targetAssetId: string;
   amount: string;

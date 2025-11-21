@@ -15,7 +15,6 @@ import {
   MarketMakingCreateMemoDetails,
   SimplyGrowCreateMemoDetails,
 } from 'src/common/types/memo/memo';
-import { PairsMapKey } from 'src/common/types/pairs/pairs';
 import { base58, getAddress } from 'ethers/lib/utils';
 import { createHash } from 'crypto';
 
@@ -53,7 +52,7 @@ export const decodeSpotMemo = (decodedMemo: string): SpotMemoDetails => {
     tradingType: TARDING_TYPE_MAP[tradingType] as TradingTypeValue,
     spotOrderType: SPOT_ORDER_TYPE_MAP[spotOrderType] as SpotOrderTypeValue,
     exchangeName: SPOT_EXCHANGE_MAP[exchange] as ExchangeIndexValue,
-    destId: destId as PairsMapKey,
+    destId: destId as 'string',
     limitPrice: parts.length === 6 ? limitPriceOrRefId : undefined,
     refId: parts.length === 6 ? refId : undefined,
   };

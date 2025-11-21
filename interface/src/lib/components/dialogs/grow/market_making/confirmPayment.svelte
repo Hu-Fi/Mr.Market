@@ -1,19 +1,27 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n"
+  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { MarketMakingCreatePay } from "$lib/helpers/mixin";
-  import { decodeSymbolToAssetID } from "$lib/helpers/utils";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { getMixinTx, getOrderPaymentState } from "$lib/helpers/hufi/strategy";
-  import { createMMConfirmDialog, createMMEasyPair, createMMEasyAmounts, createSimplyGrowRewardAddress } from "$lib/stores/grow"
-  import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
+  import {
+    createMMConfirmDialog,
+    createMMEasyPair,
+    createMMEasyAmounts,
+    createSimplyGrowRewardAddress,
+  } from "$lib/stores/grow";
+  import {
+    ORDER_STATE_FETCH_INTERVAL,
+    ORDER_STATE_TIMEOUT_DURATION,
+  } from "$lib/helpers/constants";
 
-  $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : ''
-  $: baseAssetAmount = $createMMEasyAmounts[0]
-  $: targetAssetSymbol = $createMMEasyPair ? $createMMEasyPair.target_symbol : ''
-  $: targetAssetAmount = $createMMEasyAmounts[1]
+  $: baseAssetSymbol = $createMMEasyPair ? $createMMEasyPair.base_symbol : "";
+  $: baseAssetAmount = $createMMEasyAmounts[0];
+  $: targetAssetSymbol = $createMMEasyPair
+    ? $createMMEasyPair.target_symbol
+    : "";
+  $: targetAssetAmount = $createMMEasyAmounts[1];
 
   let btn1Loading = false;
   let btn2Loading = false;
@@ -21,8 +29,8 @@
   let btn2Paid = false;
   let checkOrderCreationStarted = false;
   let orderId = getUuid();
-  let mixinTraceId1 = '';
-  let mixinTraceId2 = '';
+  let mixinTraceId1 = "";
+  let mixinTraceId2 = "";
 
   const checkPaymentState = async (traceId: string, base: boolean) => {
     let totalTime = 0;
@@ -31,7 +39,7 @@
       if (state.error) {
         return;
       }
-      if (state.data.state === 'spent') {
+      if (state.data.state === "spent") {
         if (base) {
           btn1Loading = false;
           btn1Paid = true;
@@ -50,7 +58,7 @@
         clearInterval(interval);
       }
     }, ORDER_STATE_FETCH_INTERVAL);
-  }
+  };
 
   const checkOrderCreation = async (orderId: string) => {
     let totalTime = 0;
@@ -68,52 +76,51 @@
       }, ORDER_STATE_FETCH_INTERVAL);
       return;
     }
-  }
+  };
 
   const payment = (type: string) => {
-    const ids = decodeSymbolToAssetID($createMMEasyPair.symbol);
-    if (!ids?.firstAssetID || !ids.secondAssetID) {
-      console.error('Unable to get asset id from symbol')
-      return;
-    }
-
-    if (type === '1') {
-      btn1Loading = true;
-      mixinTraceId1 = MarketMakingCreatePay({
-        action: 'create', 
-        exchange: $createMMEasyPair.exchange_id,
-        symbol: $createMMEasyPair.symbol,
-        amount: baseAssetAmount,
-        assetId: ids.firstAssetID,
-        firstAssetId: ids.firstAssetID,
-        secondAssetId: ids.secondAssetID,
-        marketMakingPairId: $createMMEasyPair.id,
-        orderId,
-        rewardAddress: $createSimplyGrowRewardAddress,
-      })
-    }
-    if (type === '2') {
-      btn2Loading = true;
-      mixinTraceId2 = MarketMakingCreatePay({
-        action: 'create',
-        exchange: $createMMEasyPair.exchange_id,
-        symbol: $createMMEasyPair.symbol,
-        amount: targetAssetAmount,
-        assetId: ids.secondAssetID,
-        firstAssetId: ids.firstAssetID,
-        secondAssetId: ids.secondAssetID,
-        marketMakingPairId: $createMMEasyPair.id,
-        orderId,
-        rewardAddress: $createSimplyGrowRewardAddress,
-      })
-    }
-    if (btn1Loading) {
-      checkPaymentState(mixinTraceId1, true);
-    }
-    if (btn2Loading) {
-      checkPaymentState(mixinTraceId2, false);
-    }
-  }
+    // const ids = decodeSymbolToAssetID($createMMEasyPair.symbol);
+    // if (!ids?.firstAssetID || !ids.secondAssetID) {
+    //   console.error('Unable to get asset id from symbol')
+    //   return;
+    // }
+    // if (type === '1') {
+    //   btn1Loading = true;
+    //   mixinTraceId1 = MarketMakingCreatePay({
+    //     action: 'create',
+    //     exchange: $createMMEasyPair.exchange_id,
+    //     symbol: $createMMEasyPair.symbol,
+    //     amount: baseAssetAmount,
+    //     assetId: ids.firstAssetID,
+    //     firstAssetId: ids.firstAssetID,
+    //     secondAssetId: ids.secondAssetID,
+    //     marketMakingPairId: $createMMEasyPair.id,
+    //     orderId,
+    //     rewardAddress: $createSimplyGrowRewardAddress,
+    //   })
+    // }
+    // if (type === '2') {
+    //   btn2Loading = true;
+    //   mixinTraceId2 = MarketMakingCreatePay({
+    //     action: 'create',
+    //     exchange: $createMMEasyPair.exchange_id,
+    //     symbol: $createMMEasyPair.symbol,
+    //     amount: targetAssetAmount,
+    //     assetId: ids.secondAssetID,
+    //     firstAssetId: ids.firstAssetID,
+    //     secondAssetId: ids.secondAssetID,
+    //     marketMakingPairId: $createMMEasyPair.id,
+    //     orderId,
+    //     rewardAddress: $createSimplyGrowRewardAddress,
+    //   })
+    // }
+    // if (btn1Loading) {
+    //   checkPaymentState(mixinTraceId1, true);
+    // }
+    // if (btn2Loading) {
+    //   checkPaymentState(mixinTraceId2, false);
+    // }
+  };
 </script>
 
 <dialog
@@ -150,48 +157,94 @@
         <div class="flex flex-col space-y-6 my-8 mb-4">
           <div class="flex justify-between">
             <div class="flex items-center space-x-3">
-              <img src={findCoinIconBySymbol(baseAssetSymbol)} class="w-6 h-6" alt="" />
-              <span class="font-bold"> {baseAssetAmount} {baseAssetSymbol} </span>
+              <img
+                src={findCoinIconBySymbol(baseAssetSymbol)}
+                class="w-6 h-6"
+                alt=""
+              />
+              <span class="font-bold">
+                {baseAssetAmount}
+                {baseAssetSymbol}
+              </span>
             </div>
             <div class="flex">
-              <button class={
-                clsx(
-                  "btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem]", "hover:bg-slate-800 no-animation"
-                )} 
-                on:click={()=>{ payment('1') }}
-                data-testid='pay-btn-1'
+              <button
+                class={clsx(
+                  "btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem]",
+                  "hover:bg-slate-800 no-animation",
+                )}
+                on:click={() => {
+                  payment("1");
+                }}
+                data-testid="pay-btn-1"
               >
                 {#if !btn1Paid}
-                  <span class={clsx("mx-2", btn1Loading && "loading loading-sm")}>
-                    {$_('pay')}
+                  <span
+                    class={clsx("mx-2", btn1Loading && "loading loading-sm")}
+                  >
+                    {$_("pay")}
                   </span>
                 {:else}
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5 mx-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="3"
+                    stroke="currentColor"
+                    class="w-5 h-5 mx-2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    />
                   </svg>
                 {/if}
               </button>
             </div>
           </div>
 
-          <div class="flex justify-between"> 
+          <div class="flex justify-between">
             <div class="flex items-center space-x-3">
-              <img src={findCoinIconBySymbol(targetAssetSymbol)} class="w-6 h-6" alt="" />
-              <span class="font-bold"> {targetAssetAmount} {targetAssetSymbol} </span>
+              <img
+                src={findCoinIconBySymbol(targetAssetSymbol)}
+                class="w-6 h-6"
+                alt=""
+              />
+              <span class="font-bold">
+                {targetAssetAmount}
+                {targetAssetSymbol}
+              </span>
             </div>
             <div class="flex">
-              <button class="btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem] hover:bg-slate-800 no-animation"
-                on:click={()=>{ payment('2') }}
-                data-testid='pay-btn-2'
+              <button
+                class="btn btn-xs bg-slate-800 text-base-100 rounded-full !h-[2rem] hover:bg-slate-800 no-animation"
+                on:click={() => {
+                  payment("2");
+                }}
+                data-testid="pay-btn-2"
               >
                 {#if !btn2Paid}
-                  <span class={clsx("mx-2", btn2Loading && "loading loading-sm")}>
-                    {$_('pay')}
+                  <span
+                    class={clsx("mx-2", btn2Loading && "loading loading-sm")}
+                  >
+                    {$_("pay")}
                   </span>
                 {:else}
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5 mx-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>                
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="3"
+                    stroke="currentColor"
+                    class="w-5 h-5 mx-2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    />
+                  </svg>
                 {/if}
               </button>
             </div>

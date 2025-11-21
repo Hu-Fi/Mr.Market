@@ -48,7 +48,6 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 import { Injectable, HttpException } from '@nestjs/common';
 import { FeeResponse } from 'src/common/types/rebalance/bigone';
-import { ASSET_ID_SYMBOL_MAP } from 'src/common/constants/pairs';
 
 @Injectable()
 export class BigoneService {
@@ -96,10 +95,10 @@ export class BigoneService {
     assetSymbol?: string,
   ): Promise<AxiosResponse<any>> {
     const queryParams = `?`;
-    if (pageToken) `${queryParams}page_token=${pageToken}&`;
-    if (limit) `${queryParams}limit=${limit}&`;
-    if (kind) `${queryParams}kind=${kind}&`;
-    if (assetSymbol) `${queryParams}asset_symbol=${assetSymbol}`;
+    if (pageToken)`${queryParams}page_token=${pageToken}&`;
+    if (limit)`${queryParams}limit=${limit}&`;
+    if (kind)`${queryParams}kind=${kind}&`;
+    if (assetSymbol)`${queryParams}asset_symbol=${assetSymbol}`;
 
     try {
       const response = await axios.get(
@@ -205,9 +204,5 @@ export class BigoneService {
         throw new Error('An unexpected error occurred');
       }
     }
-  }
-
-  async getBigOneFeeByID(asset_id: string): Promise<string> {
-    return this.getFeeBySymbol(ASSET_ID_SYMBOL_MAP[asset_id]);
   }
 }

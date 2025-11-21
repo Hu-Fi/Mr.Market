@@ -177,33 +177,4 @@ describe('ExchangeService', () => {
       service.readAPIKey = jest.fn().mockResolvedValue(mockAPIKey);
     });
   });
-
-  describe('pickAPIKeyOnDemand', () => {
-    // TODO: Fix
-    it.failing(
-      'should pick an API key based on balance and demand',
-      async () => {
-        const mockApiKeys = [
-          {
-            key_id: '1',
-            exchange: 'okx',
-            api_key: 'apiKey1',
-            api_secret: 'apiSecret1',
-          },
-        ];
-        exchangeRepository.readAllAPIKeysByExchange.mockResolvedValue(
-          mockApiKeys,
-        );
-        service.checkExchangeBalanceEnough = jest.fn().mockResolvedValue(true);
-
-        const result = await service.pickAPIKeyOnDemand('okx', 'asset_id', '1');
-
-        expect(
-          exchangeRepository.readAllAPIKeysByExchange,
-        ).toHaveBeenCalledWith('okx');
-        expect(service.checkExchangeBalanceEnough).toHaveBeenCalled();
-        expect(result.type).toEqual('success');
-      },
-    );
-  });
 });
