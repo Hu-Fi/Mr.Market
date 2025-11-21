@@ -7,6 +7,7 @@ import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../logger/logger.service';
 import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
 import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
+import { AdminMarketMakingConfigService } from '../admin/market-making-config/admin-market-making-config.service';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -23,7 +24,8 @@ export class MarketdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private ExchangeInitService: ExchangeInitService,
-  ) {}
+    private adminConfigService: AdminMarketMakingConfigService,
+  ) { }
 
   async getSupportedExchanges(): Promise<string[]> {
     return this.ExchangeInitService.getSupportedExchanges();
@@ -103,35 +105,32 @@ export class MarketdataService {
   }
 
   async _getSupportedPairs(): Promise<any> {
-    const promises = [];
+    const enabledConfigs = await this.adminConfigService.getEnabledPairs();
+    const results = [];
 
-    for (const [exchange, pairs] of Object.entries(SUPPORTED_PAIRS)) {
-      if (pairs.length > 0) {
-        const promise = this.getTickers(exchange, pairs)
-          .then((tickers) => {
-            return pairs.map((pair) => ({
-              symbol: pair,
-              price: tickers[pair]?.last, // Use optional chaining in case tickers[pair] is undefined
-              change: tickers[pair]?.percentage, // Use optional chaining here as well
-              exchange,
-            }));
-          })
-          .catch((error) => {
-            this.logger.error(
-              `Error fetching tickers from ${exchange}: ${error.message}`,
-            );
-            return []; // Return an empty array for this exchange in case of error
-          });
-        promises.push(promise);
-      } else {
-        promises.push(Promise.resolve([])); // Return an empty array if there are no pairs
+    for (const config of enabledConfigs) {
+      try {
+        const ticker = await this.getTickerPrice(config.exchange, config.symbol);
+        results.push({
+          symbol: config.symbol,
+          base_symbol: config.baseSymbol,
+          quote_symbol: config.quoteSymbol,
+          base_asset_id: config.baseAssetId,
+          quote_asset_id: config.quoteAssetId,
+          base_icon: config.baseIcon,
+          quote_icon: config.quoteIcon,
+          price: ticker?.last,
+          change: ticker?.percentage,
+          exchange: config.exchange,
+        });
+      } catch (error) {
+        this.logger.error(
+          `Error fetching ticker for ${config.symbol} on ${config.exchange}: ${error.message}`,
+        );
       }
     }
 
-    const results = await Promise.all(promises);
-    // Flatten the array of arrays into a single array
-    const flattenedResults = results.flat();
-    return flattenedResults;
+    return results;
   }
 
   async watchOrderBook(
@@ -320,12 +319,10 @@ export class MarketdataService {
   }
 
   async getSupportedSymbols(exchangeName: string): Promise<string[]> {
-    const exchange = this.ExchangeInitService.getExchange(exchangeName);
-    if (!exchange) {
-      throw new Error(`Exchange ${exchangeName} is not configured.`);
-    }
-    await exchange.loadMarkets();
-    return Object.keys(exchange.markets);
+    const enabledConfigs = await this.adminConfigService.getEnabledPairs(
+      exchangeName,
+    );
+    return enabledConfigs.map((config) => config.symbol);
   }
 
   unsubscribeData(
