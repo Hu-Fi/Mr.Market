@@ -12,8 +12,11 @@ import {
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
+import { ConfigModule } from '@nestjs/config';
+
 @Module({
   imports: [
+    ConfigModule,
     TypeOrmModule.forFeature([
       ArbitrageOrder,
       MarketMakingOrder,

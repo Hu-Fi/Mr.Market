@@ -18,9 +18,7 @@ import { GrowdataModule } from '../growdata/growdata.module';
 import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
 import { AdminSpotService } from './spotData/adminSpot.service';
 import { SpotdataModule } from '../spotdata/spotdata.module';
-import { AdminMarketMakingConfigService } from './market-making-config/admin-market-making-config.service';
-import { AdminMarketMakingConfigController } from './market-making-config/admin-market-making-config.controller';
-import { AdminMarketMakingConfig } from 'src/common/entities/admin-market-making-config.entity';
+import { AdminMarketMakingConfigModule } from './market-making-config/admin-market-making-config.module';
 
 @Module({
   imports: [
@@ -34,12 +32,12 @@ import { AdminMarketMakingConfig } from 'src/common/entities/admin-market-making
       MixinUser,
       Contribution,
       Performance,
-      AdminMarketMakingConfig,
     ]),
     TradeModule,
     Web3Module,
+    AdminMarketMakingConfigModule,
   ],
-  controllers: [AdminController, AdminMarketMakingConfigController],
+  controllers: [AdminController],
   providers: [
     AdminStrategyService,
     StrategyService,
@@ -48,13 +46,11 @@ import { AdminMarketMakingConfig } from 'src/common/entities/admin-market-making
     ExchangeInitService,
     AdminGrowService,
     AdminSpotService,
-    AdminMarketMakingConfigService,
   ],
   exports: [
     AdminStrategyService,
     AdminGrowService,
     AdminSpotService,
-    AdminMarketMakingConfigService,
   ],
 })
 export class AdminModule { }
