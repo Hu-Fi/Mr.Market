@@ -4,12 +4,11 @@ import { get } from "svelte/store";
 import authorize from "$lib/helpers/mixin-oauth";
 import { getOauth } from "$lib/helpers/hufi/auth";
 import { getOrdersByUser } from "$lib/helpers/hufi/spot";
-import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getInvoiceString, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
-import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
+import { encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
