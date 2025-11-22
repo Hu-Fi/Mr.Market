@@ -1,78 +1,3 @@
-/**
- * StrategyService
- *
- * This service manages and executes trading strategies, including arbitrage and market making.
- * It utilizes the CCXT library for interacting with cryptocurrency exchanges and provides functionality
- * for starting, stopping, and managing strategies for users.
- *
- * Dependencies:
- * - TradeService: Service for executing trades.
- * - PerformanceService: Service for recording trading performance.
- * - CustomLogger: Custom logging service for logging errors and information.
- * - Repositories: Injected repositories for managing MarketMakingHistory and ArbitrageHistory entities.
- * - DTOs: ArbitrageStrategyDto and PureMarketMakingStrategyDto for handling strategy data transfer objects.
- * - Exceptions: InternalServerErrorException for handling errors.
- * - Helpers: StrategyKey, createStrategyKey for generating strategy keys.
- * - Enums: PriceSourceType for specifying the price source type in market making.
- *
- * Methods:
- *
- * - constructor: Initializes the service with injected dependencies and sets up exchange instances.
- *
- * - initializeExchanges(): Sets up the exchange instances with the provided API keys and secrets.
- *
- * - getSupportedExchanges(): Returns a list of supported exchanges.
- *
- * - startArbitrageIfNotStarted(): Starts an arbitrage strategy if it is not already running.
- *
- * - pauseStrategyIfNotPaused(): Pauses a strategy if it is not already paused.
- *
- * - startArbitrageStrategyForUser(): Starts an arbitrage strategy for a user.
- *
- * - stopStrategyForUser(): Stops a strategy for a user and cancels all active orders.
- *
- * - watchSymbols(): Watches order books for the specified pair on two exchanges.
- *
- * - watchOrderBook(): Watches the order book for the specified pair on an exchange.
- *
- * - startMarketMakingIfNotStarted(): Starts a market making strategy if it is not already running.
- *
- * - executePureMarketMakingStrategy(): Executes a pure market making strategy.
- *
- * - manageMarketMakingOrdersWithLayers(): Manages market making orders with multiple layers.
- *
- * - adjustOrderParameters(): Adjusts order parameters to the exchange's precision.
- *
- * - cancelAllOrders(): Cancels all orders for the specified pair on an exchange.
- *
- * - getCurrentMarketPrice(): Fetches the current market price for the specified pair on an exchange.
- *
- * - getPriceSource(): Fetches the price source for the specified pair on an exchange based on the price source type.
- *
- * - evaluateArbitrageOpportunityVWAP(): Evaluates arbitrage opportunities using VWAP.
- *
- * - executeArbitrageTradeWithLimitOrders(): Executes arbitrage trades with limit orders.
- *
- * - getUserOrders(): Fetches regular orders for a specific user.
- *
- * - getUserArbitrageHistorys(): Fetches arbitrage orders for a specific user.
- *
- * - calculateVWAPForAmount(): Calculates the VWAP for a specified amount.
- *
- * - checkAndCleanFilledOrders(): Checks and cleans filled orders for a strategy.
- *
- * - isDataFresh(): Checks if the data is fresh based on a timestamp.
- *
- * - handleShutdown(): Handles the shutdown process for the service, including canceling all orders.
- *
- * - cancelAllStrategyOrders(): Cancels all orders for a strategy.
- *
- * Notes:
- * - The service uses CCXT for interacting with exchanges and handles different types of trading strategies.
- * - Error handling is implemented to log and manage errors during strategy execution and order management.
- * - The service logs all operations and ensures that strategy data is correctly recorded in the database.
- */
-
 import * as ccxt from 'ccxt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -942,15 +867,6 @@ export class StrategyService {
       );
       // Handle the error, e.g., by logging and possibly retrying later
     }
-  }
-
-  private async getCurrentMarketPrice(
-    exchangeName: string,
-    pair: string,
-  ): Promise<number> {
-    const exchange = this.exchangeInitService.getExchange(exchangeName);
-    const ticker = await exchange.fetchTicker(pair);
-    return ticker.last; // Using the last trade price as the current price
   }
 
   private async getPriceSource(

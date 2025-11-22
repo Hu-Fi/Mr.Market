@@ -23,7 +23,7 @@ export const ORDER_STATE_TIMEOUT_DURATION = 180000
 export const HARDCODED_FEE = 1.002
 
 // It must sync with server/pairs.ts
-export const SUPPORTED_EXCHANGES = ['Binance', 'OKX', 'Gate.io', 'MEXC'];
+export const SUPPORTED_EXCHANGES = ['binance', 'okx', 'gate.io', 'mexc'];
 export const SUPPORTED_TIMERANGES: SupportedTimeFrame[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M']
 
 // Limit order needs 12, Market order needs 10, use 14 to avoid data loss
