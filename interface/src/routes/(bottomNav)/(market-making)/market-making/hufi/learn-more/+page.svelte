@@ -1,11 +1,10 @@
 <div>
-  <!-- 1. What is market making? -->
-  <!-- 2. What are the benefits of market making? -->
-  <!-- 3. What is Hu-Fi? -->
-  <!-- 4. Why does market making matter? -->
-  <!-- 5. How does Mr.Market work? -->
-  <!-- 6. How to start market making with Mr.Market? -->
-  <!-- 7. Is Mr.Market safe? What techniques does Mr.Market use to protect your funds? -->
+  <!-- 1. What is Hu-Fi? -->
+  <!-- 2. Why Hu-Fi? What problem does it solve? -->
+  <!-- 3. How does Hu-Fi work? -->
+  <!-- 4. How to join campaigns? -->
+  <!-- 5. How to create campaigns? -->
+  <!-- 6. Is Hu-Fi safe? What techniques does Hu-Fi use to protect your funds? -->
 </div>
 
 <div class="carousel carousel-vertical rounded-box h-screen">

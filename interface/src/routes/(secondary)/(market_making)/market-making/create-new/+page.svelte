@@ -20,15 +20,15 @@
   // Load supported exchanges for market making in +page.ts
   // Mr.Market backend api should return
   // 1. supported market making exchanges: []
-  // 2. supported trading pairs: 
+  // 2. supported trading pairs:
   // [
   //   {
-  //     symbol: 'BTC/USDT', 'baseSymbol': 'BTC', 'quoteSymbol': 'USDT', 
+  //     symbol: 'BTC/USDT', 'baseSymbol': 'BTC', 'quoteSymbol': 'USDT',
   //     baseUsdPrice: 100000, quoteUsdPrice: 1, baseAssetId: 'uuid', quoteAssetId: 'uuid'
-  //   }, 
+  //   },
   // ]
-  // 
-  // 
+  //
+  //
   const supportedMarketMakingExchanges = [
     "binance",
     "bybit",
@@ -119,22 +119,26 @@
   const confirmPayment = () => {
     // Invoke mixin invoice payment
   };
-  
+
   $: exchangeName = $dPage.url.searchParams.get("exchange");
   $: tradingPair = $dPage.url.searchParams.get("trading_pair");
   $: baseAmount = $dPage.url.searchParams.get("base_amount");
   $: quoteAmount = $dPage.url.searchParams.get("quote_amount");
-  $: baseSymbol = tradingPair ? tradingPair.split('/')[0] : null;
-  $: quoteSymbol = tradingPair ? tradingPair.split('/')[1] : null;
-  $: baseIcon = baseSymbol ? findCoinIconBySymbol(baseSymbol) || emptyToken : emptyToken;
-  $: quoteIcon = quoteSymbol ? findCoinIconBySymbol(quoteSymbol) || emptyToken : emptyToken;
+  $: baseSymbol = tradingPair ? tradingPair.split("/")[0] : null;
+  $: quoteSymbol = tradingPair ? tradingPair.split("/")[1] : null;
+  $: baseIcon = baseSymbol
+    ? findCoinIconBySymbol(baseSymbol) || emptyToken
+    : emptyToken;
+  $: quoteIcon = quoteSymbol
+    ? findCoinIconBySymbol(quoteSymbol) || emptyToken
+    : emptyToken;
 
   let baseAmountInput = "";
   let quoteAmountInput = "";
   let lastTradingPair: string | null = null;
   let lastUrlBaseAmount: string | null = null;
   let lastUrlQuoteAmount: string | null = null;
-  
+
   // Will be fetched from backend
   $: baseAmountUsd = null;
   $: quoteAmountUsd = null;
@@ -162,35 +166,41 @@
       <ChooseExchange />
     </div>
     <div
-      class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white 
-        bg-gradient-radial from-sky-100 via-white to-white 
+      class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
+        bg-gradient-radial from-sky-100 via-white to-white
         max-h-[50vh] overflow-y-auto"
     >
       {#each supportedMarketMakingExchanges as exchangeName}
-        <ChooseExchangeSmallBtn {exchangeName} onClick={() => selectExchange(exchangeName)} />
+        <ChooseExchangeSmallBtn
+          {exchangeName}
+          onClick={() => selectExchange(exchangeName)}
+        />
       {/each}
     </div>
   </div>
 
-  <div class="absolute bottom-24 w-full flex justify-center">
+  <div class="absolute bottom-24 w-full flex justify-center space-x-2">
     <SearchExchange onSearch={() => {}} />
   </div>
   <SearchExchangeDialog
     supportedExchanges={supportedMarketMakingExchanges}
     onSelect={selectExchange}
   />
-
 {:else if !tradingPair}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
       <ChooseTradingPair />
     </div>
     <div
-      class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white 
+      class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white
       max-h-[50vh] overflow-y-auto"
     >
       {#each supportedTradingpairs as tradingPair}
-        <ChooseTradingPairSmallBtn {tradingPair} {exchangeName} onClick={() => selectTradingPair(tradingPair)} />
+        <ChooseTradingPairSmallBtn
+          {tradingPair}
+          {exchangeName}
+          onClick={() => selectTradingPair(tradingPair)}
+        />
       {/each}
     </div>
   </div>
@@ -200,17 +210,16 @@
   </div>
   <SearchTradingPairDialog
     supportedTradingPairs={supportedTradingpairs}
-    exchangeName={exchangeName}
+    {exchangeName}
     onSelect={selectTradingPair}
   />
-
 {:else if !baseAmount || !quoteAmount}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
       <AmountText />
     </div>
     <div
-      class="mx-4 mt-12 gap-6 grid grid-cols-1 bg-white 
+      class="mx-4 mt-12 gap-6 grid grid-cols-1 bg-white
       max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
     >
       <AmountInput
@@ -226,17 +235,21 @@
 
   <div class="absolute bottom-24 w-full flex justify-center">
     <div class="w-full flex justify-center mt-4">
-      <AmountNextStepBtn baseAmount={baseAmountInput} quoteAmount={quoteAmountInput} />
+      <AmountNextStepBtn
+        baseAmount={baseAmountInput}
+        quoteAmount={quoteAmountInput}
+      />
     </div>
   </div>
   <SearchTradingPairDialog
     supportedTradingPairs={supportedTradingpairs}
-    exchangeName={exchangeName}
+    {exchangeName}
     onSelect={selectTradingPair}
   />
-
 {:else}
-  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4">
+  <div
+    class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4"
+  >
     <ConfirmPaymentInfo
       {exchangeName}
       {tradingPair}
