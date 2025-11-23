@@ -39,7 +39,7 @@
 </header>
 
 <div
-  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-8 bg-base-100 min-h-screen content-start"
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-8 bg-base-100 mb-36 content-start"
 >
   {#if campaigns.length > 0}
     {#each campaigns as campaign}
@@ -49,20 +49,6 @@
     <div
       class="col-span-full flex flex-col items-center justify-center py-20 text-base-content/60"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-16 h-16 mb-4"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
-        />
-      </svg>
       <p class="text-xl font-semibold mb-2">No Active Campaigns</p>
       <p class="text-sm">There are currently no active campaigns available.</p>
     </div>

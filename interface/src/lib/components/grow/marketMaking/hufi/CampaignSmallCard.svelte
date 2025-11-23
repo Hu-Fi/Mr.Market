@@ -2,6 +2,8 @@
   import { goto } from "$app/navigation";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import emptyToken from "$lib/images/empty-token.svg";
+  import clsx from "clsx";
+  import { _ } from "svelte-i18n";
 
   export let campaign: any; // We'll type this properly if we knew the exact shape, using any for flexibility now
 
@@ -25,7 +27,7 @@
   class="bg-base-100 rounded-xl p-4 text-base-content border border-base-300 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 shadow-sm"
   on:click={handleClick}
 >
-  <div class="flex justify-between items-start">
+  <div class="flex justify-between items-center">
     <div class="flex items-center gap-3">
       <img
         src={symbolIcon}
@@ -34,30 +36,31 @@
       />
       <div class="flex flex-col">
         <span class="font-semibold text-lg">{campaign.symbol}</span>
-        <span class="text-sm text-base-content/70">{campaign.exchange}</span>
+        <span class="text-sm text-base-content/60">{campaign.exchange}</span>
       </div>
     </div>
-    <span class="badge badge-success text-success-content font-bold uppercase"
-      >{campaign.status}</span
+    <span
+      class={clsx(
+        "badge text-primary-content font-medium",
+        campaign.type === "Market Making" && "badge-primary",
+        campaign.type === "Threshold" && "badge-accent",
+        campaign.type === "Holding" && "badge-secondary",
+      )}>{campaign.type}</span
     >
   </div>
 
-  <div class="flex items-center gap-2">
-    <span class="badge badge-primary text-primary-content font-medium"
-      >{campaign.type}</span
-    >
-  </div>
-
-  <div class="grid grid-cols-2 gap-2 mt-2">
-    <div class="bg-base-200 p-2 rounded-lg">
-      <p class="text-[10px] text-base-content/60 uppercase">Total Funded</p>
-      <p class="text-sm font-semibold text-primary">
+  <div class="grid grid-cols-2 gap-2 mt-4">
+    <div class="bg-slate-100 p-4 rounded-xl">
+      <p class="text-[10px] text-base-content/60 capitalize">
+        {$_("total_funded")}
+      </p>
+      <p class="text-base font-semibold text-base-content">
         {campaign.totalFundedAmount || "0"}
       </p>
     </div>
-    <div class="bg-base-200 p-2 rounded-lg">
-      <p class="text-[10px] text-base-content/60 uppercase">Target</p>
-      <p class="text-sm font-semibold text-primary">
+    <div class="bg-slate-100 p-4 rounded-xl">
+      <p class="text-[10px] text-base-content/60 capitalize">{$_("target")}</p>
+      <p class="text-base font-semibold text-base-content">
         {campaign.targetValue || "0"}
       </p>
     </div>
