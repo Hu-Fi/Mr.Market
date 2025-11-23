@@ -1,9 +1,9 @@
 <script lang="ts">
+  import clsx from "clsx";
+  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import emptyToken from "$lib/images/empty-token.svg";
-  import clsx from "clsx";
-  import { _ } from "svelte-i18n";
 
   export let campaign: any; // We'll type this properly if we knew the exact shape, using any for flexibility now
 
@@ -21,10 +21,8 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 <button
-  class="bg-base-100 rounded-xl p-4 text-base-content border border-base-300 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 shadow-sm text-left"
+  class="bg-slate-100 rounded-xl p-4 text-base-content border border-slate-200 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 text-left"
   on:click={handleClick}
 >
   <div class="flex justify-between items-center">
@@ -41,26 +39,27 @@
     </div>
     <span
       class={clsx(
-        "badge text-primary-content font-medium",
-        campaign.type === "Market Making" && "badge-primary",
-        campaign.type === "Threshold" && "badge-accent",
-        campaign.type === "Holding" && "badge-secondary",
+        "badge text-base-content font-medium",
+        "badge-outline badge-neutral",
+        // campaign.type === "Market Making" && "badge-primary",
+        // campaign.type === "Threshold" && "badge-accent",
+        // campaign.type === "Holding" && "badge-secondary",
       )}>{campaign.type}</span
     >
   </div>
 
-  <div class="grid grid-cols-2 gap-2 mt-4">
-    <div class="bg-slate-100 p-4 py-3 rounded-xl">
+  <div class="grid grid-cols-2 gap-2 mt-2">
+    <div class="bg-base-100 p-4 py-3 rounded-xl">
       <p class="text-[10px] text-base-content/60 capitalize">
         {$_("total_funded")}
       </p>
-      <p class="text-base font-semibold text-base-content">
+      <p class="text-base font-semibold text-primary/80">
         {campaign.totalFundedAmount || "0"}
       </p>
     </div>
-    <div class="bg-slate-100 p-4 py-3 rounded-xl">
+    <div class="bg-base-100 p-4 py-3 rounded-xl">
       <p class="text-[10px] text-base-content/60 capitalize">{$_("target")}</p>
-      <p class="text-base font-semibold text-base-content">
+      <p class="text-base font-semibold text-primary/80">
         {campaign.targetValue || "0"}
       </p>
     </div>

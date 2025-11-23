@@ -1,7 +1,7 @@
 import { findCoinIconBySymbol } from "$lib/helpers/helpers";
 import emptyToken from "$lib/images/empty-token.svg";
 
-interface ApiCampaign {
+export interface ApiCampaign {
   chain_id: number;
   address: string;
   type: string;
@@ -20,13 +20,19 @@ interface ApiCampaign {
   fund_token_decimals: number;
   status: string;
   escrow_status: string;
+  amount_paid: string;
+  daily_paid_amounts: any[];
   launcher: string;
   exchange_oracle: string;
   recording_oracle: string;
   reputation_oracle: string;
   balance: string;
+  exchange_oracle_fee_percent: number;
+  recording_oracle_fee_percent: number;
+  reputation_oracle_fee_percent: number;
   intermediate_results_url: string | null;
   final_results_url: string | null;
+  reserved_funds: string;
 }
 
 export interface FormattedCampaign {
@@ -48,17 +54,46 @@ export interface FormattedCampaign {
   symbolIcon: string;
 }
 
-function formatAmount(amount: string, decimals: number, symbol: string): string {
+// Exported utility functions for use in components
+export function formatAmount(amount: string, decimals: number, symbol: string): string {
   const value = Number(amount) / Math.pow(10, decimals);
   return `${value.toLocaleString()} ${symbol}`;
 }
 
-function formatDate(dateString: string): string {
+export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function getTargetLabel(type: string): string {
+export function formatType(type: string): string {
+  return type.split('_').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  ).join(' ');
+}
+
+export function formatStatus(status: string): string {
+  return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+}
+
+export function formatExchangeName(name: string): string {
+  const exchangeNames: Record<string, string> = {
+    'mexc': 'MEXC Global',
+    'gate': 'Gate.io',
+    'binance': 'Binance',
+    'okx': 'OKX',
+    'bybit': 'Bybit',
+    'huobi': 'HTX',
+    'kucoin': 'KuCoin'
+  };
+
+  return exchangeNames[name.toLowerCase()] || name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+export function shortenAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+export function getTargetLabel(type: string): string {
   switch (type) {
     case 'MARKET_MAKING':
       return 'Daily Volume Target';
@@ -71,7 +106,7 @@ function getTargetLabel(type: string): string {
   }
 }
 
-function getTargetValue(campaign: ApiCampaign): string {
+export function getTargetValue(campaign: ApiCampaign): string {
   const { type, details, fund_token_symbol } = campaign;
 
   if (type === 'MARKET_MAKING' && details.daily_volume_target) {
@@ -89,37 +124,7 @@ function getTargetValue(campaign: ApiCampaign): string {
   return 'N/A';
 }
 
-function formatType(type: string): string {
-  return type.split('_').map(word =>
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ');
-}
-
-function formatExchangeName(name: string): string {
-  const exchangeNames: Record<string, string> = {
-    'mexc': 'MEXC Global',
-    'gate': 'Gate',
-    'binance': 'Binance',
-    'okx': 'OKX',
-    'bybit': 'Bybit',
-    'huobi': 'HTX',
-    'kucoin': 'KuCoin'
-  };
-
-  return exchangeNames[name.toLowerCase()] || name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-function getCampaignResults(campaign: ApiCampaign): string {
-  if (campaign.intermediate_results_url) {
-    return 'Intermediate';
-  }
-  if (campaign.final_results_url) {
-    return 'Completed';
-  }
-  return 'N/A';
-}
-
-function calculateAmountPaid(fundAmount: string, balance: string, decimals: number, symbol: string): string {
+export function calculateAmountPaid(fundAmount: string, balance: string, decimals: number, symbol: string): string {
   const funded = Number(fundAmount);
   const remaining = Number(balance);
   const paid = funded - remaining;
@@ -127,33 +132,58 @@ function calculateAmountPaid(fundAmount: string, balance: string, decimals: numb
   return `${value.toLocaleString()} ${symbol}`;
 }
 
-function calculateOracleFees(fundAmount: string, decimals: number, symbol: string): string {
+export function calculateOracleFees(
+  fundAmount: string,
+  decimals: number,
+  symbol: string,
+  exchangeFeePercent: number,
+  recordingFeePercent: number,
+  reputationFeePercent: number
+): string {
+  const totalFeePercent = exchangeFeePercent + recordingFeePercent + reputationFeePercent;
   const value = Number(fundAmount) / Math.pow(10, decimals);
-  const fee = value * 0.03; // 3% oracle fee
-  return `${fee.toLocaleString()} ${symbol} (3%)`;
+  const fee = value * (totalFeePercent / 100);
+  return `${fee.toLocaleString()} ${symbol} (${totalFeePercent}%)`;
 }
 
-function calculateReservedFunds(balance: string, decimals: number, symbol: string): string {
-  const value = Number(balance) / Math.pow(10, decimals);
-  return `${value.toLocaleString()} ${symbol}`;
+export function getCampaignResults(campaign: ApiCampaign): string {
+  if (campaign.final_results_url) {
+    return 'Completed';
+  }
+  if (campaign.intermediate_results_url) {
+    return 'Intermediate';
+  }
+  return 'N/A';
 }
 
+export function getSymbolIcon(symbol: string): string {
+  return findCoinIconBySymbol(symbol.split('/')[0]) || emptyToken;
+}
+
+// Legacy function for backward compatibility
 export function formatCampaign(campaign: ApiCampaign): FormattedCampaign {
-  const symbolIcon = findCoinIconBySymbol(campaign.symbol.split('/')[0]) || emptyToken;
+  const symbolIcon = getSymbolIcon(campaign.symbol);
 
   return {
     id: campaign.address,
     type: formatType(campaign.type),
-    status: campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1),
-    address: `${campaign.address.slice(0, 6)}...${campaign.address.slice(-5)}`,
+    status: formatStatus(campaign.status),
+    address: shortenAddress(campaign.address),
     startDate: formatDate(campaign.start_date),
     endDate: formatDate(campaign.end_date),
     totalFundedAmount: formatAmount(campaign.fund_amount, campaign.fund_token_decimals, campaign.fund_token_symbol),
     amountPaid: calculateAmountPaid(campaign.fund_amount, campaign.balance, campaign.fund_token_decimals, campaign.fund_token_symbol),
-    oracleFees: calculateOracleFees(campaign.fund_amount, campaign.fund_token_decimals, campaign.fund_token_symbol),
+    oracleFees: calculateOracleFees(
+      campaign.fund_amount,
+      campaign.fund_token_decimals,
+      campaign.fund_token_symbol,
+      campaign.exchange_oracle_fee_percent,
+      campaign.recording_oracle_fee_percent,
+      campaign.reputation_oracle_fee_percent
+    ),
     targetLabel: getTargetLabel(campaign.type),
     targetValue: getTargetValue(campaign),
-    reservedFunds: calculateReservedFunds(campaign.balance, campaign.fund_token_decimals, campaign.fund_token_symbol),
+    reservedFunds: formatAmount(campaign.reserved_funds, campaign.fund_token_decimals, campaign.fund_token_symbol),
     campaignResults: getCampaignResults(campaign),
     exchange: formatExchangeName(campaign.exchange_name),
     symbol: campaign.symbol,
