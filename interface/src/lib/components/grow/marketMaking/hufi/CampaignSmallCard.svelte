@@ -23,8 +23,8 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-  class="bg-base-100 rounded-xl p-4 text-base-content border border-base-300 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 shadow-sm"
+<button
+  class="bg-base-100 rounded-xl p-4 text-base-content border border-base-300 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 shadow-sm text-left"
   on:click={handleClick}
 >
   <div class="flex justify-between items-center">
@@ -50,7 +50,7 @@
   </div>
 
   <div class="grid grid-cols-2 gap-2 mt-4">
-    <div class="bg-slate-100 p-4 rounded-xl">
+    <div class="bg-slate-100 p-4 py-3 rounded-xl">
       <p class="text-[10px] text-base-content/60 capitalize">
         {$_("total_funded")}
       </p>
@@ -58,11 +58,11 @@
         {campaign.totalFundedAmount || "0"}
       </p>
     </div>
-    <div class="bg-slate-100 p-4 rounded-xl">
+    <div class="bg-slate-100 p-4 py-3 rounded-xl">
       <p class="text-[10px] text-base-content/60 capitalize">{$_("target")}</p>
       <p class="text-base font-semibold text-base-content">
         {campaign.targetValue || "0"}
       </p>
     </div>
   </div>
-</div>
+</button>
