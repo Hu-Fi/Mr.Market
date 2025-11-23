@@ -39,6 +39,12 @@
 </header>
 
 <div
+  class="p-4 m-2 rounded-2xl border border-slate-200 h-32 flex items-center justify-center"
+>
+  <span> Place holder for intro card of hufi campagin </span>
+</div>
+
+<div
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-8 bg-base-100 mb-36 content-start"
 >
   {#if campaigns.length > 0}
