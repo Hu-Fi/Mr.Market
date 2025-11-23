@@ -8,7 +8,7 @@ import {
   RebalanceHistory,
 } from 'src/common/entities/rebalance-asset.entity';
 import { DEFAULT_MINIMUM_BALANCE } from 'src/common/constants/constants';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 @Injectable()
 export class RebalanceRepository {

@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class StrategyEntity1730464574077 implements MigrationInterface {
-  name = 'StrategyEntity1730464574077';
+    name = 'StrategyEntity1730464574077';
 
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
             CREATE TABLE "strategy_instances" (
                 "id" SERIAL NOT NULL,
                 "strategyKey" character varying NOT NULL,
@@ -18,7 +18,7 @@ export class StrategyEntity1730464574077 implements MigrationInterface {
                 CONSTRAINT "PK_09080dbac0815101d4b0e883e7a" PRIMARY KEY ("id")
             )
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             CREATE TABLE "contribution" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "amount" numeric(18, 8) NOT NULL,
@@ -26,14 +26,14 @@ export class StrategyEntity1730464574077 implements MigrationInterface {
                 CONSTRAINT "PK_878330fa5bb34475732a5883d58" PRIMARY KEY ("id")
             )
         `);
-  }
+    }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
             DROP TABLE "contribution"
         `);
-    await queryRunner.query(`
+        await queryRunner.query(`
             DROP TABLE "strategy_instances"
         `);
-  }
+    }
 }

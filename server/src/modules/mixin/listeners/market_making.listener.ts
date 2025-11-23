@@ -5,8 +5,8 @@
 // import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 // import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 // import { MarketMakingCreateMemoDetails } from 'src/common/types/memo/memo';
-// import { GrowdataService } from 'src/modules/growdata/growdata.service';
-// import { CustomLogger } from 'src/modules/logger/logger.service';
+// import { GrowdataService } from 'src/modules/data/grow-data/grow-data.service';
+// import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 // import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 // import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 

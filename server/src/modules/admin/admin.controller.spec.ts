@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AdminController } from './admin.controller';
 import { AdminStrategyService } from './strategy/adminStrategy.service';
 import { AdminGrowService } from './growdata/adminGrow.service';
-import { AdminSpotService } from './spotData/adminSpot.service';
+import { AdminSpotService } from './admin-spot-management/admin-spot-management.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
+import { SpotdataTradingPairDto } from './admin-spot-management/admin-spot-management.dto';
 import {
   StartStrategyDto,
   StopStrategyDto,

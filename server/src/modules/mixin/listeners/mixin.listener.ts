@@ -44,7 +44,7 @@ import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { CustomConfigService } from 'src/modules/infrastructure/custom-config/custom-config.service';
 
 @Injectable()
 export class MixinListener {

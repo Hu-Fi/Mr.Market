@@ -1,12 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { StrategyService } from '../../strategy/strategy.service';
-import { PerformanceService } from '../../performance/performance.service';
+import { StrategyService } from '../../market-making/strategy/strategy.service';
+import { PerformanceService } from '../../market-making/performance/performance.service';
 import {
   GetDepositAddressDto,
   StartStrategyDto,
   StopStrategyDto,
 } from './admin-strategy.dto';
-import { ExchangeInitService } from '../../exchangeInit/exchangeInit.service';
+import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import {
   getInfoFromChainId,
   getTokenSymbolByContractAddress,

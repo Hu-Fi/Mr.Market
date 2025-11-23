@@ -33,8 +33,8 @@ import {
   GrowdataSimplyGrowTokenDto,
 } from './growdata/adminGrow.dto';
 import { AdminGrowService } from './growdata/adminGrow.service';
-import { AdminSpotService } from './spotData/adminSpot.service';
-import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
+import { AdminSpotService } from './admin-spot-management/admin-spot-management.service';
+import { SpotdataTradingPairDto } from './admin-spot-management/admin-spot-management.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)

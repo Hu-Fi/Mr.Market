@@ -6,8 +6,8 @@
 // import { PaymentState } from 'src/common/entities/strategy-user.entity';
 // import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 // import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-// import { GrowdataService } from 'src/modules/growdata/growdata.service';
-// import { CustomLogger } from 'src/modules/logger/logger.service';
+// import { GrowdataService } from 'src/modules/data/grow-data/grow-data.service';
+// import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 // @Injectable()
 // export class ArbitrageListener {

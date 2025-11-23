@@ -21,7 +21,7 @@ import {
   SafeMixinRecipient,
   SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 import {
   memoPreDecode,

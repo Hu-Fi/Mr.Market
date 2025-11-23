@@ -1,5 +1,5 @@
 import { createCompositeKey, decodeCompositeKey } from './subscriptionKey'; // Adjust the import path as necessary
-import { marketDataType } from '../../modules/marketdata/marketdata.service'; // Adjust the import path as necessary
+import { marketDataType } from '../../modules/data/market-data/market-data.service'; // Adjust the import path as necessary
 
 describe('Key Utils', () => {
   describe('createCompositeKey', () => {

@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RebalanceService } from './rebalance.service';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
 @ApiTags('rebalance')

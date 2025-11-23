@@ -7,17 +7,17 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { AppController } from './app.controller';
-import { TradeModule } from './modules/trade/trade.module';
-import { StrategyModule } from './modules/strategy/strategy.module';
-import { MarketdataModule } from './modules/marketdata/marketdata.module';
-import { PerformanceModule } from './modules/performance/performance.module';
-import { UserOrdersModule } from './modules/user-orders/user-orders.module';
+import { TradeModule } from './modules/market-making/trade/trade.module';
+import { StrategyModule } from './modules/market-making/strategy/strategy.module';
+import { MarketdataModule } from './modules/data/market-data/market-data.module';
+import { PerformanceModule } from './modules/market-making/performance/performance.module';
+import { UserOrdersModule } from './modules/market-making/user-orders/user-orders.module';
 
 import configuration from './config/configuration';
-import { HealthModule } from './modules/health/health.module';
-import { CoingeckoModule } from './modules/coingecko/coingecko.module';
-import { LoggerModule } from './modules/logger/logger.module';
-import { CustomLogger } from './modules/logger/logger.service';
+import { HealthModule } from './modules/infrastructure/health/health.module';
+import { CoingeckoModule } from './modules/data/coingecko/coingecko.module';
+import { LoggerModule } from './modules/infrastructure/logger/logger.module';
+import { CustomLogger } from './modules/infrastructure/logger/logger.service';
 import { MixinModule } from './modules/mixin/mixin.module';
 import { EventListenersModule } from './modules/mixin/listeners/events.module';
 
@@ -42,7 +42,7 @@ import {
   SimplyGrowOrder,
 } from './common/entities/strategy-user.entity';
 import { AuthModule } from './modules/auth/auth.module';
-import { ExchangeInitModule } from './modules/exchangeInit/exchangeInit.module';
+import { ExchangeInitModule } from './modules/infrastructure/exchange-init/exchange-init.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { CampaignModule } from './modules/campaign/campaign.module';
 import { Web3Module } from './modules/web3/web3.module';
@@ -50,7 +50,7 @@ import { StrategyInstance } from './common/entities/strategy-instances.entity';
 import { ArbitrageHistory } from './common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from './common/entities/market-making-order.entity';
 import { Contribution } from './common/entities/contribution.entity';
-import { GrowdataModule } from './modules/growdata/growdata.module';
+import { GrowdataModule } from './modules/data/grow-data/grow-data.module';
 import {
   GrowdataArbitragePair,
   GrowdataExchange,
@@ -65,8 +65,8 @@ import {
 } from './common/entities/rebalance-asset.entity';
 import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
-import { SpotdataModule } from './modules/spotdata/spotdata.module';
-import { MetricsModule } from './modules/metrics/metrics/metrics.module';
+import { SpotdataModule } from './modules/data/spot-data/spot-data.module';
+import { MetricsModule } from './modules/market-making/metrics/metrics.module';
 
 dotenv.config();
 

@@ -52,7 +52,7 @@ import {
 } from 'src/modules/mixin/events/spot.event';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 @Injectable()
 export class SpotOrderListener {

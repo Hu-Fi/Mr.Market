@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CampaignDataDto } from './campaign.dto';
 import axios, { AxiosInstance } from 'axios';
-import { CustomLogger } from '../logger/logger.service';
+import { CustomLogger } from '../infrastructure/logger/logger.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Web3Service } from '../web3/web3.service';
-import { ExchangeInitService } from '../exchangeInit/exchangeInit.service';
+import { ExchangeInitService } from '../infrastructure/exchange-init/exchange-init.service';
 
 @Injectable()
 export class CampaignService {

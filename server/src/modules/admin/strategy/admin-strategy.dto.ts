@@ -3,7 +3,7 @@ import {
   ArbitrageStrategyDto,
   PureMarketMakingStrategyDto,
   ExecuteVolumeStrategyDto,
-} from '../../strategy/strategy.dto';
+} from '../../market-making/strategy/strategy.dto';
 import { IsUUID, IsDecimal } from 'class-validator';
 
 // Unified DTO for starting strategies that handles all types

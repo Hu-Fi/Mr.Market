@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
-import { GrowdataService } from 'src/modules/growdata/growdata.service';
+import { GrowdataService } from 'src/modules/data/grow-data/grow-data.service';
 import { DataSource } from 'typeorm';
 import { SimplyGrowListener } from './simply_grow.listener';
 

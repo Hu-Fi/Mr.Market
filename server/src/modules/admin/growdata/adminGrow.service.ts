@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { GrowdataService } from 'src/modules/growdata/growdata.service';
+import { GrowdataService } from 'src/modules/data/grow-data/grow-data.service';
 import {
   GrowdataExchange,
   GrowdataSimplyGrowToken,
   GrowdataArbitragePair,
   GrowdataMarketMakingPair,
 } from 'src/common/entities/grow-data.entity';
-import { GrowdataRepository } from 'src/modules/growdata/growdata.repository';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import {
   GrowdataArbitragePairDto,
   GrowdataMarketMakingPairDto,

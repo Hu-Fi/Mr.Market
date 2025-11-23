@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CampaignService } from './campaign.service';
 import { HttpModule } from '@nestjs/axios';
 import { Web3Module } from '../web3/web3.module';
-import { ExchangeInitModule } from '../exchangeInit/exchangeInit.module';
+import { ExchangeInitModule } from '../infrastructure/exchange-init/exchange-init.module';
 
 @Module({
   imports: [HttpModule, Web3Module, ExchangeInitModule],

@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { CustomLogger } from './modules/logger/logger.service';
+import { CustomLogger } from './modules/infrastructure/logger/logger.service';
 
 async function bootstrap() {
   if (!process.env.JWT_SECRET) {
