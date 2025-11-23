@@ -14,15 +14,13 @@
     emptyToken;
 
   const handleClick = () => {
-    // Assuming campaign has an id field. If not, we might need to use address or something unique.
-    // For now, let's assume 'id' or 'address' is available.
     const id = campaign.id || campaign.address;
     goto(`/market-making/hufi/campaign/${id}`);
   };
 </script>
 
 <button
-  class="bg-slate-100 rounded-xl p-4 text-base-content border border-slate-200 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 text-left"
+  class="bg-slate-50 rounded-xl p-4 text-base-content border border-slate-100 hover:border-primary transition-colors cursor-pointer flex flex-col gap-4 text-left"
   on:click={handleClick}
 >
   <div class="flex justify-between items-center">
@@ -41,9 +39,6 @@
       class={clsx(
         "badge text-base-content font-medium",
         "badge-outline badge-neutral",
-        // campaign.type === "Market Making" && "badge-primary",
-        // campaign.type === "Threshold" && "badge-accent",
-        // campaign.type === "Holding" && "badge-secondary",
       )}>{campaign.type}</span
     >
   </div>
