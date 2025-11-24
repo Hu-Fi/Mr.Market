@@ -1,10 +1,11 @@
 import * as dotenv from 'dotenv';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { BullModule } from '@nestjs/bull';
 
 import { AppController } from './app.controller';
 import { TradeModule } from './modules/market-making/trade/trade.module';
@@ -67,6 +68,11 @@ import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/data/spot-data/spot-data.module';
 import { MetricsModule } from './modules/market-making/metrics/metrics.module';
+import { Withdrawal } from './common/entities/withdrawal.entity';
+import { Campaign } from './common/entities/campaign.entity';
+import { CampaignParticipation } from './common/entities/campaign-participation.entity';
+import { WithdrawalModule } from './modules/market-making/withdrawal/withdrawal.module';
+import { MmCampaignModule } from './modules/market-making/campaign/mm-campaign.module';
 
 dotenv.config();
 
@@ -126,6 +132,9 @@ dotenv.config();
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,
+        Withdrawal,
+        Campaign,
+        CampaignParticipation,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
@@ -148,6 +157,18 @@ dotenv.config();
     Web3Module,
     MetricsModule,
     UserOrdersModule,
+    WithdrawalModule,
+    MmCampaignModule,
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController, AdminController],
   providers: [CustomLogger],

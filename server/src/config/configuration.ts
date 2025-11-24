@@ -10,6 +10,10 @@ export default () => ({
     pass: process.env.POSTGRES_PASSWORD,
     db: process.env.POSTGRES_DATABASE,
   },
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+  },
   apiKeys: {
     binance: [
       {

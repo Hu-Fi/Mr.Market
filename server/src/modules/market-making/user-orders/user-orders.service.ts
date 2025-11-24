@@ -2,6 +2,8 @@ import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { ConfigService } from '@nestjs/config';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { StrategyService } from 'src/modules/market-making/strategy/strategy.service';
@@ -40,6 +42,7 @@ export class UserOrdersService {
     private readonly marketMakingHistoryRepository: Repository<MarketMakingHistory>,
     @InjectRepository(ArbitrageHistory)
     private readonly arbitrageHistoryRepository: Repository<ArbitrageHistory>,
+    @InjectQueue('market-making') private readonly marketMakingQueue: Queue,
   ) { }
 
   async findAllStrategyByUser(userId: string) {
@@ -258,24 +261,9 @@ export class UserOrdersService {
     }
     if (activeMM) {
       activeMM.forEach(async (mm) => {
-        const key = createStrategyKey({
-          user_id: mm.userId,
-          client_id: mm.orderId,
-          type: 'pureMarketMaking',
-        });
-        // TODO: FIX THIS HARDCODE -ERC20
-        await this.strategyService.startMarketMakingIfNotStarted(key, {
-          ...mm,
-          pair: mm.pair.replaceAll('-ERC20', ''),
-          clientId: mm.orderId,
-          bidSpread: Number(mm.bidSpread),
-          askSpread: Number(mm.askSpread),
-          orderAmount: Number(mm.orderAmount),
-          orderRefreshTime: Number(mm.orderRefreshTime),
-          numberOfLayers: Number(mm.numberOfLayers),
-          amountChangePerLayer: Number(mm.amountChangePerLayer),
-          ceilingPrice: Number(mm.ceilingPrice),
-          floorPrice: Number(mm.floorPrice),
+        await this.marketMakingQueue.add('start_mm', {
+          userId: mm.userId,
+          orderId: mm.orderId,
         });
       });
     }
@@ -294,12 +282,18 @@ export class UserOrdersService {
     }
     if (pausedMM) {
       pausedMM.forEach(async (mm) => {
-        await this.strategyService.pauseStrategyIfNotPaused({
-          type: 'pureMarketMaking',
-          user_id: mm.userId,
-          client_id: mm.orderId,
+        await this.marketMakingQueue.add('stop_mm', {
+          userId: mm.userId,
+          orderId: mm.orderId,
         });
       });
     }
+  }
+
+  async stopMarketMaking(userId: string, orderId: string) {
+    await this.marketMakingQueue.add('stop_mm', {
+      userId,
+      orderId,
+    });
   }
 }

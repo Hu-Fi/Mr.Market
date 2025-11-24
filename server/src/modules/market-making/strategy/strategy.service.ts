@@ -637,6 +637,41 @@ export class StrategyService {
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
 
+  async executeMMCycle(strategyParamsDto: PureMarketMakingStrategyDto) {
+    const {
+      userId,
+      clientId,
+      pair,
+      exchangeName,
+      oracleExchangeName,
+      bidSpread,
+      askSpread,
+      orderAmount,
+      numberOfLayers,
+      priceSourceType,
+      amountChangePerLayer,
+      amountChangeType,
+      ceilingPrice,
+      floorPrice,
+    } = strategyParamsDto;
+
+    await this.manageMarketMakingOrdersWithLayers(
+      userId,
+      clientId,
+      exchangeName,
+      pair,
+      bidSpread,
+      askSpread,
+      orderAmount,
+      numberOfLayers,
+      priceSourceType,
+      amountChangePerLayer,
+      amountChangeType,
+      ceilingPrice,
+      floorPrice,
+      oracleExchangeName
+    );
+  }
 
   private async manageMarketMakingOrdersWithLayers(
     userId: string,

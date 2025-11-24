@@ -12,6 +12,7 @@ import { CustomConfigModule } from 'src/modules/infrastructure/custom-config/cus
 import { StrategyModule } from 'src/modules/market-making/strategy/strategy.module';
 import { GrowdataModule } from 'src/modules/data/grow-data/grow-data.module';
 import { LoggerModule } from 'src/modules/infrastructure/logger/logger.module';
+import { WithdrawalModule } from 'src/modules/market-making/withdrawal/withdrawal.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { LoggerModule } from 'src/modules/infrastructure/logger/logger.module';
     StrategyModule,
     GrowdataModule,
     LoggerModule,
+    WithdrawalModule,
   ],
   providers: [
     ExchangeListener,

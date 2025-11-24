@@ -1,7 +1,9 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
 import { UserOrdersController } from './user-orders.controller';
 import { UserOrdersService } from './user-orders.service';
+import { MarketMakingProcessor } from './market-making.processor';
 import { StrategyModule } from '../strategy/strategy.module';
 import {
   ArbitrageOrder,
@@ -25,10 +27,13 @@ import { ConfigModule } from '@nestjs/config';
       MarketMakingHistory,
       ArbitrageHistory,
     ]),
+    BullModule.registerQueue({
+      name: 'market-making',
+    }),
     forwardRef(() => StrategyModule),
   ],
   controllers: [UserOrdersController],
-  providers: [UserOrdersService],
+  providers: [UserOrdersService, MarketMakingProcessor],
   exports: [UserOrdersService],
 })
 export class UserOrdersModule { }

@@ -43,5 +43,13 @@ services:
     networks:
       - mr-merket-network
 
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - mr-merket-network
+
 networks:
   mr-merket-network:
