@@ -1,23 +1,37 @@
 <script lang="ts">
-  import clsx from "clsx"
+  import clsx from "clsx";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import emptyToken from "$lib/images/empty-token.svg"
+  import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import { ChartActiveTab, ChartPrice, showCoinPrice } from "$lib/stores/market";
+  import {
+    ChartActiveTab,
+    ChartPrice,
+    showCoinPrice,
+  } from "$lib/stores/market";
   import CoinTitleLoader from "$lib/components/skeleton/market/coinTitleLoader.svelte";
-  import { formatDecimals, formatTimestampToTime, formatUSMoney } from "$lib/helpers/utils";
+  import {
+    formatDecimals,
+    formatTimestampToTime,
+    formatUSMoney,
+  } from "$lib/helpers/utils";
 
-  onMount(()=>showCoinPrice.set(true))
+  onMount(() => showCoinPrice.set(true));
 </script>
 
 {#await $page.data.coin}
   <CoinTitleLoader />
 {:then coin}
-  <div class="flex flex-col space-y-4 mx-4">
+  <div class="flex flex-col space-y-2 mx-4">
     <!-- Icon and Title -->
     <div class="flex space-x-2 items-center">
-      <img src={findCoinIconBySymbol(coin.symbol.toUpperCase()) || coin.image.thumb || emptyToken} alt={coin.symbol} class="w-6 h-6" >
+      <img
+        src={findCoinIconBySymbol(coin.symbol.toUpperCase()) ||
+          coin.image.thumb ||
+          emptyToken}
+        alt={coin.symbol}
+        class="w-6 h-6"
+      />
       <span class="font-bold text-xl uppercase">
         {coin.symbol}
       </span>
@@ -34,13 +48,31 @@
         </span>
       </div>
       <!-- Change percentage and change usd -->
-      <div class="!mt-1 flex space-x-3">
-        <span class={clsx(Number(coin.market_data.price_change_percentage_24h) >= 0 ? "text-green-400":"text-red-400")}>
-          {(Number(coin.market_data.price_change_percentage_24h) >= 0 ? "+":"")}{ formatDecimals(coin.market_data.price_change_percentage_24h, 2) }%
+      <div class="flex space-x-3">
+        <span
+          class={clsx(
+            Number(coin.market_data.price_change_percentage_24h) >= 0
+              ? "text-green-400"
+              : "text-red-400",
+          )}
+        >
+          {Number(coin.market_data.price_change_percentage_24h) >= 0
+            ? "+"
+            : ""}{formatDecimals(
+            coin.market_data.price_change_percentage_24h,
+            2,
+          )}%
         </span>
-        {#if Number(formatDecimals(coin.market_data.price_change_24h,2)) != 0}
-          <span class={clsx(Number(coin.market_data.price_change_24h) >= 0 ? "text-green-400":"text-red-400")}>
-            {(Number(coin.market_data.price_change_24h) >= 0 ? "+":"") + Number(formatDecimals(coin.market_data.price_change_24h,2))}
+        {#if Number(formatDecimals(coin.market_data.price_change_24h, 2)) != 0}
+          <span
+            class={clsx(
+              Number(coin.market_data.price_change_24h) >= 0
+                ? "text-green-400"
+                : "text-red-400",
+            )}
+          >
+            {(Number(coin.market_data.price_change_24h) >= 0 ? "+" : "") +
+              Number(formatDecimals(coin.market_data.price_change_24h, 2))}
           </span>
         {/if}
       </div>
@@ -52,9 +84,11 @@
         </span>
       </div>
       <!-- Date -->
-      <div class="!mt-1 flex space-x-3">
+      <div class="flex space-x-3">
         <span class={"text-base-content text-md opacity-50"}>
-          { $ChartActiveTab <= 2 ? formatTimestampToTime($ChartPrice.time, true) : formatTimestampToTime($ChartPrice.time) }
+          {$ChartActiveTab <= 2
+            ? formatTimestampToTime($ChartPrice.time, true)
+            : formatTimestampToTime($ChartPrice.time)}
         </span>
       </div>
     {/if}
