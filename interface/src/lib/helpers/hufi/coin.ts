@@ -8,12 +8,12 @@ import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
 // {/coingecko/coins/:id/market_chart, GET}
 // {/coingecko/coins/:id/market_chart/range, GET}
 
-export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> =>  {
+export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> => {
   const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/${name}`)
   return await r.json()
 }
 
-export const getCoingeckoMarket = async (category: string = 'all', page: number = 1) =>  {
+export const getCoingeckoMarket = async (category: string = 'all', page: number = 1) => {
   try {
     const pathCategory = category ? `/category/${category}` : ''
     const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
@@ -55,13 +55,13 @@ export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame,
     case '1h':
       url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart/range?from=${oneHourBefore}&to=${currentTs}&vs_currency=${vs_currency}`
       break;
-    case "24h": days=1; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1w": days=7; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1m": days=30; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1y": days=365; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "all": days='max';url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "24h": days = 1; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1w": days = 7; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1m": days = 30; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1y": days = 365; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "all": days = 'max'; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
   }
 
   const r = await fetch(url)
-  return  await r.json()
+  return await r.json()
 }

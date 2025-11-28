@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-import type { SupportedExchanges, SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
+import type { SupportedPairs, SupportedTimeFrame } from "$lib/types/hufi/exchanges"
 
 export const AppName = "Mr.market"
 export const AppURL = env.PUBLIC_APP_URL || "https://mr-market-app.onrender.com"

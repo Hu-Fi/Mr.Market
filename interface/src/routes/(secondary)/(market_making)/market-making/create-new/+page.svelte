@@ -16,15 +16,28 @@
   import ConfirmPaymentBtn from "$lib/components/grow/marketMaking/createNew/confirmation/confirmPaymentBtn.svelte";
   import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
+  import AmountTypeTab from "$lib/components/grow/marketMaking/createNew/amount/amountTypeTab.svelte";
 
   // Load supported exchanges for market making in +page.ts
   // Mr.Market backend api should return
-  // 1. supported market making exchanges: []
+  // 1. supported market making exchanges: [
+  //   {
+  //     'id': 'binance',
+  //     'name': 'Binance',
+  //     'enabled': true,
+  //   },
+  // ]
   // 2. supported trading pairs:
   // [
   //   {
-  //     symbol: 'BTC/USDT', 'baseSymbol': 'BTC', 'quoteSymbol': 'USDT',
-  //     baseUsdPrice: 100000, quoteUsdPrice: 1, baseAssetId: 'uuid', quoteAssetId: 'uuid'
+  //     'symbol': 'BTC/USDT',
+  //     'baseSymbol': 'BTC',
+  //     'quoteSymbol': 'USDT',
+  //     'baseUsdPrice': 100000,
+  //     'quoteUsdPrice': 1,
+  //     'baseAssetId': 'uuid',
+  //     'quoteAssetId': 'uuid',
+  //     'enabled': true,
   //   },
   // ]
   //
@@ -138,10 +151,26 @@
   let lastTradingPair: string | null = null;
   let lastUrlBaseAmount: string | null = null;
   let lastUrlQuoteAmount: string | null = null;
+  let amountMode: "both_token" | "single_token" = "both_token";
+  let singleTokenType: "base" | "quote" = "base";
+
+  $: showBase =
+    amountMode === "both_token" ||
+    (amountMode === "single_token" && singleTokenType === "base");
+  $: showQuote =
+    amountMode === "both_token" ||
+    (amountMode === "single_token" && singleTokenType === "quote");
 
   // Will be fetched from backend
   $: baseAmountUsd = null;
   $: quoteAmountUsd = null;
+
+  $: isValidAmount =
+    amountMode === "both_token"
+      ? baseAmount && quoteAmount
+      : amountMode === "single_token" && singleTokenType === "base"
+        ? baseAmount
+        : quoteAmount;
 
   $: if (tradingPair !== lastTradingPair) {
     baseAmountInput = "";
@@ -213,13 +242,23 @@
     {exchangeName}
     onSelect={selectTradingPair}
   />
-{:else if !baseAmount || !quoteAmount}
-  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
+{:else if !isValidAmount}
+  <div
+    class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] space-y-4"
+  >
     <div class="text-center">
       <AmountText />
     </div>
+    <AmountTypeTab
+      bind:mode={amountMode}
+      bind:tokenType={singleTokenType}
+      {baseSymbol}
+      {quoteSymbol}
+      {baseIcon}
+      {quoteIcon}
+    />
     <div
-      class="mx-4 mt-12 gap-6 grid grid-cols-1 bg-white
+      class="mx-4 gap-6 grid grid-cols-1 bg-white
       max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
     >
       <AmountInput
@@ -227,6 +266,8 @@
         {quoteIcon}
         {baseSymbol}
         {quoteSymbol}
+        {showBase}
+        {showQuote}
         bind:baseAmount={baseAmountInput}
         bind:quoteAmount={quoteAmountInput}
       />
@@ -238,6 +279,8 @@
       <AmountNextStepBtn
         baseAmount={baseAmountInput}
         quoteAmount={quoteAmountInput}
+        mode={amountMode}
+        tokenType={singleTokenType}
       />
     </div>
   </div>

@@ -384,5 +384,7 @@
   "fee_usage_note": "Fees will be used for covering expenses of moving funds",
   "processing": "Processing...",
   "total_funded": "Total funded",
-  "target": "Target"
+  "target": "Target",
+  "both_token": "Both tokens",
+  "single_token": "Single token"
 }
