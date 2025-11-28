@@ -11,6 +11,8 @@ import { ExchangeInitService } from '../infrastructure/exchange-init/exchange-in
 export class CampaignService {
   private readonly logger = new CustomLogger(CampaignService.name);
 
+  private readonly campaignLauncherBaseUrl: string;
+  private readonly recordingOracleBaseUrl: string;
   private readonly hufiCampaignLauncherAPI: AxiosInstance;
   private readonly hufiRecordingOracleAPI: AxiosInstance;
 
@@ -19,12 +21,19 @@ export class CampaignService {
     private readonly web3Service: Web3Service,
     private readonly exchangeService: ExchangeInitService,
   ) {
+    this.campaignLauncherBaseUrl = this.configService.get<string>(
+      'hufi.campaign_launcher.api_url',
+    );
+    this.recordingOracleBaseUrl = this.configService.get<string>(
+      'hufi.recording_oracle.api_url',
+    );
+
     this.hufiCampaignLauncherAPI = axios.create({
-      baseURL: this.configService.get<string>('hufi.campaign_launcher.api_url'),
+      baseURL: this.campaignLauncherBaseUrl,
     });
 
     this.hufiRecordingOracleAPI = axios.create({
-      baseURL: this.configService.get<string>('hufi.recording_oracle.api_url'),
+      baseURL: this.recordingOracleBaseUrl,
       headers: {
         'x-api-key': this.configService.get<string>(
           'hufi.recording_oracle.api_key',
@@ -54,6 +63,18 @@ export class CampaignService {
    */
   @Cron(CronExpression.EVERY_HOUR)
   async joinCampaigns() {
+    if (!this.campaignLauncherBaseUrl) {
+      this.logger.warn(
+        'Missing HuFi campaign launcher API base URL. Join campaign cron will not run.',
+      );
+      return;
+    }
+    if (!this.recordingOracleBaseUrl) {
+      this.logger.warn(
+        'Missing HuFi recording oracle API base URL. Join campaign cron will not run.',
+      );
+      return;
+    }
     const campaigns = await this.getCampaigns();
 
     this.logger.log('Getting running campaigns');
