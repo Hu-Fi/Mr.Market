@@ -189,6 +189,7 @@
   }
 </script>
 
+<!-- Step 1: Choose Exchange -->
 {#if !exchangeName}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
@@ -215,10 +216,12 @@
     supportedExchanges={supportedMarketMakingExchanges}
     onSelect={selectExchange}
   />
+
+  <!-- Step 2: Choose Trading Pair -->
 {:else if !tradingPair}
   <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
     <div class="text-center">
-      <ChooseTradingPair />
+      <ChooseTradingPair {exchangeName} />
     </div>
     <div
       class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white
@@ -242,12 +245,14 @@
     {exchangeName}
     onSelect={selectTradingPair}
   />
+
+  <!-- Step 3: Enter Amount -->
 {:else if !isValidAmount}
   <div
     class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] space-y-4"
   >
     <div class="text-center">
-      <AmountText />
+      <AmountText {exchangeName} {tradingPair} />
     </div>
     <AmountTypeTab
       bind:mode={amountMode}
@@ -289,6 +294,8 @@
     {exchangeName}
     onSelect={selectTradingPair}
   />
+
+  <!-- Step 4: Confirm Payment -->
 {:else}
   <div
     class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4"

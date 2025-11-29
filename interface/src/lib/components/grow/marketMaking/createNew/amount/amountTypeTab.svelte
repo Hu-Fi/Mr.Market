@@ -10,7 +10,7 @@
   export let quoteIcon: string;
 </script>
 
-<div class="flex flex-col justify-center items-center w-full">
+<div class="flex flex-col justify-center items-center w-full mt-4">
   <div class="flex justify-center grow join w-full p-4 pb-0 px-8 text-sm">
     <button
       class={clsx(
@@ -40,12 +40,12 @@
 
   {#if mode === "single_token"}
     <div
-      class="flex justify-center grow join w-full py-0 px-8 text-sm opacity-60 mb-4"
+      class="flex flex-col justify-center grow join w-full py-0 px-8 text-sm mb-4"
     >
       <button
         class={clsx(
-          "btn btn-xs w-[50%] max-w-52 join-item rounded-bl-xl rounded-tl-none",
-          tokenType === "base" && "bg-base-content/10",
+          "btn rounded-none bg-base-100",
+          // tokenType === "base" && "bg-base-content/10",
         )}
         on:click={() => (tokenType = "base")}
       >
@@ -54,8 +54,8 @@
       </button>
       <button
         class={clsx(
-          "btn btn-xs w-[50%] max-w-52 join-item rounded-br-xl rounded-tr-none",
-          tokenType === "quote" && "bg-base-content/10",
+          "btn rounded-b-xl bg-base-100",
+          // tokenType === "quote" && "bg-base-content/10",
         )}
         on:click={() => (tokenType = "quote")}
       >
