@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 test('create market making', async ({ page }) => {
   await page.getByTestId('market-making').click();
-  await page.waitForURL('**/grow/market_making');
+  await page.waitForURL('**/market-making');
 
   await page.getByTestId('create-new-market-making').click();
   await page.waitForURL('**/new/**');

@@ -46,7 +46,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^6.1.1",
+    "@mixin.dev/mixin-node-sdk": "^7.4.7",
     "autoprefixer": "^10.4.21",
     "axios": "^1.12.2",
     "bignumber.js": "^9.3.1",
@@ -55,7 +55,7 @@
     "crypto-js": "^4.2.0",
     "daisyui": "^5.3.10",
     "klinecharts": "^9.8.12",
-    "lightweight-charts": "^4.2.3",
+    "lightweight-charts": "^5.0.0",
     "moment": "^2.30.1",
     "pako": "^2.1.0",
     "postcss": "^8.5.6",

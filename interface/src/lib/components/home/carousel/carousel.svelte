@@ -9,7 +9,7 @@
         currentPageIndex = event.detail;
     }
     let currentPageIndex = 0;
-    let totalPages = 3;
+    let totalPages = 1;
     let autoplayDuration = 3 * 1000; // 3 seconds
 </script>
 
@@ -31,7 +31,7 @@
         on:pageChange={onPageChange}
     >
         <MarketMaking />
-        <SimplyGrow />
-        <Arbitrage />
+        <!-- <SimplyGrow /> -->
+        <!-- <Arbitrage /> -->
     </Carousel>
 </div>

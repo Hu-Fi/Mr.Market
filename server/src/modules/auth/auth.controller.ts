@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'; // Import Swagger decorators
 import { AuthService } from 'src/modules/auth/auth.service';
-import { CustomLogger } from '../logger/logger.service';
+import { CustomLogger } from '../infrastructure/logger/logger.service';
 
 // Add @ApiTags to categorize the endpoint in Swagger
 @ApiTags('Auth')

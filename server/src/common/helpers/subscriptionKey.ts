@@ -1,4 +1,4 @@
-import { marketDataType } from 'src/modules/marketdata/marketdata.service';
+import { marketDataType } from 'src/modules/data/market-data/market-data.service';
 
 export interface CompositeKey {
   type: marketDataType;

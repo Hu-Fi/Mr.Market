@@ -37,4 +37,7 @@ export class MarketMakingHistory {
 
   @Column({ nullable: true })
   strategy: string; // 'arbitrage', 'market-making', etc.
+
+  @Column({ nullable: true })
+  strategyInstanceId: string;
 }

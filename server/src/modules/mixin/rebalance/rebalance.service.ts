@@ -1,49 +1,3 @@
-/**
- * RebalanceService
- *
- * This service handles the rebalancing of asset balances between the Mixin network and various exchanges.
- * It periodically checks asset balances and initiates transfers to maintain the desired balance levels.
- *
- * Dependencies:
- * - ExchangeService: Service for interacting with exchange-related data and operations.
- * - SnapshotsService: Service for interacting with Mixin snapshots.
- * - RebalanceRepository: Repository for interacting with rebalance-related data in the database.
- * - Cron: NestJS schedule module for defining cron jobs.
- * - Helper functions: Utilities for managing timestamps, UUIDs, and calculating rebalance amounts.
- * - BigNumber: Library for handling arbitrary-precision decimal arithmetic.
- * - Constants: ASSET_ID_NETWORK_MAP and SYMBOL_ASSET_ID_MAP for managing asset IDs and symbols.
- *
- * Methods:
- *
- * - constructor: Initializes the service with the injected ExchangeService, SnapshotsService, and RebalanceRepository.
- *
- * - rebalance(): Scheduled task that runs every 60 seconds to check and initiate rebalances.
- *
- * - rebalanceFromExchangeToMixin(assetId: string, symbol: string, mixinAmount: BigNumber, minAmount: BigNumber, allBalanceByExchange: any):
- *   Handles rebalancing assets from exchanges to Mixin.
- *
- * - rebalanceFromMixinToExchange(symbol: string, balance: BigNumber.Value, exchange: string, mixinBalance: BigNumber.Value):
- *   Handles rebalancing assets from Mixin to exchanges.
- *
- * - findAllTokensWithExchangesAndBalances(): Retrieves all tokens with their associated exchanges and balances.
- *
- * - findAllExchagnes(): Retrieves all exchanges.
- *
- * - addRebalanceHistory(history: RebalanceHistory): Adds a rebalance history record to the database.
- *
- * - getCurrencyMinAmountBySymbol(exchangeName: string, symbol: string): Retrieves the minimum amount for a currency on a specific exchange.
- *
- * - addMinimumBalance(symbol: string, assetId: string, exchangeName: string, minimumBalance: string): Adds a minimum balance requirement for an asset on an exchange.
- *
- * - updateMinimumBalance(assetId: string, exchangeName: string, minimumBalance: string): Updates the minimum balance requirement for an asset on an exchange.
- *
- * Notes:
- * - The service periodically checks asset balances and initiates rebalances based on predefined minimum balance requirements.
- * - The rebalanceFromExchangeToMixin and rebalanceFromMixinToExchange methods handle the logic for transferring assets between Mixin and exchanges.
- * - Error handling is implemented to log and manage errors during the rebalance process.
- * - The service maintains a history of rebalance operations for auditing and tracking purposes.
- */
-
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { getUuid } from '@mixin.dev/mixin-node-sdk';
@@ -59,10 +13,9 @@ import {
 import BigNumber from 'bignumber.js';
 import {
   ASSET_ID_NETWORK_MAP,
-  SYMBOL_ASSET_ID_MAP,
 } from 'src/common/constants/pairs';
 import { RebalanceHistory } from 'src/common/entities/rebalance-asset.entity';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 @Injectable()
 export class RebalanceService {
@@ -139,7 +92,7 @@ export class RebalanceService {
             symbol,
           );
 
-        const mixinAssetID = SYMBOL_ASSET_ID_MAP[symbol];
+        const mixinAssetID = '(symbol to id)' // SYMBOL_ASSET_ID_MAP[symbol];
         const mixinAmount = BigNumber(mixinBalance);
         if (mixinAmount.lte(minAmount)) {
           this.logger.log(`Rebalance ${symbol} from exchange to Mixin`);
@@ -208,7 +161,8 @@ export class RebalanceService {
 
       // Get mixin deposit address
       const mixinDeposit = await this.snapshotService.depositAddress(
-        SYMBOL_ASSET_ID_MAP[symbol],
+        'symbol to id'
+        // SYMBOL_ASSET_ID_MAP[symbol],
       );
 
       const network = ASSET_ID_NETWORK_MAP[assetId];
@@ -308,7 +262,7 @@ export class RebalanceService {
       return;
     }
 
-    const assetID = SYMBOL_ASSET_ID_MAP[symbol];
+    const assetID = 'symbol to id' // SYMBOL_ASSET_ID_MAP[symbol];
     // Get network by asset id
     const network = ASSET_ID_NETWORK_MAP[assetID];
 

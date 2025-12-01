@@ -3,9 +3,13 @@
     import { _ } from "svelte-i18n";
 </script>
 
-<div class="carousel-item w-full flex h-36 space-x-0" aria-hidden="true" on:click={() => {
-    goto("/grow/market_making");
-}}>
+<div
+    class="carousel-item w-full flex h-36 space-x-0"
+    aria-hidden="true"
+    on:click={() => {
+        goto("/market-making");
+    }}
+>
     <div class="flex items-center avatar px-6 pl-8">
         <div class="w-12 rounded-xl opacity-60">
             <svg
@@ -32,12 +36,23 @@
         <button
             class="flex items-center space-x-1 shadow-none no-animation px-0 rounded-full mb-3 w-1/2 text-base-content/80 text-success"
             on:click={() => {
-                goto("/grow/market_making");
+                goto("/market-making");
             }}
         >
             <span class="text-sm font-bold">{$_("start_now")}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="size-4"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
             </svg>
         </button>
     </div>

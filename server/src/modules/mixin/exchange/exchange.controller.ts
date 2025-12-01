@@ -1,7 +1,7 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { ExchangeService } from './exchange.service';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 

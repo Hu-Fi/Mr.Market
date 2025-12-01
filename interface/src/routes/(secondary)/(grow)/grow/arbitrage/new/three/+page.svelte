@@ -4,7 +4,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
-  import PairIcon from "$lib/components/common/pairIcon.svelte";
+  import PairIcon from "$lib/components/common/tradingPairIcon.svelte";
   import { createArbPair, createArbPairSearch } from "$lib/stores/grow";
 </script>
 

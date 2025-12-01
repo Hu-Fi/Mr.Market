@@ -12,7 +12,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import {
   BroadcastMessageDto,
   PrivateMessageDto,

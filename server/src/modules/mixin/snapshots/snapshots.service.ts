@@ -21,9 +21,8 @@ import {
   SafeMixinRecipient,
   SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
-import { SymbolAssetIdMapValue } from 'src/common/types/pairs/pairs';
 import {
   memoPreDecode,
   decodeArbitrageCreateMemo,
@@ -406,7 +405,7 @@ export class SnapshotsService {
     }
   }
 
-  async getAssetBalance(asset_id: SymbolAssetIdMapValue): Promise<string> {
+  async getAssetBalance(asset_id: string): Promise<string> {
     try {
       return await this.client.utxo.safeAssetBalance({ asset: asset_id });
     } catch (e) {
@@ -416,7 +415,7 @@ export class SnapshotsService {
   }
 
   async checkMixinBalanceEnough(
-    asset_id: SymbolAssetIdMapValue,
+    asset_id: string,
     amount: string,
   ): Promise<boolean> {
     try {

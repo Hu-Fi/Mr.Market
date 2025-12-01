@@ -4,9 +4,9 @@
   import { goto } from "$app/navigation";
   import { _, locale } from "svelte-i18n";
   import { langs } from "../../../i18n/i18n";
+  import { isMixinIOS } from "$lib/stores/home";
   import { showSettingShortcut, toggleTheme } from "$lib/stores/theme";
   import { bottomModeLastRoute, bottomTradeDialog } from "$lib/stores/spot";
-    import { isMixinIOS } from "$lib/stores/home";
 
   const items = [
     {title: $_("spot"), route: '/spot'},

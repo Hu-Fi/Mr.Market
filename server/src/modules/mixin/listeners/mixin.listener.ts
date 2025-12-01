@@ -44,15 +44,21 @@ import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { CustomConfigService } from 'src/modules/infrastructure/custom-config/custom-config.service';
+import { MarketMakingDepositEvent } from 'src/modules/market-making/events/market-making.event';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
+import { WithdrawalService } from 'src/modules/market-making/withdrawal/withdrawal.service';
 
 @Injectable()
 export class MixinListener {
+  private readonly logger = new CustomLogger(MixinListener.name);
+
   constructor(
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
     private configService: CustomConfigService,
-  ) {}
+    private withdrawalService: WithdrawalService,
+  ) { }
 
   @OnEvent('mixin.release')
   async handleReleaseTokenEvent(e: MixinReleaseTokenEvent) {
@@ -97,12 +103,26 @@ export class MixinListener {
       STATE_TEXT_MAP['MIXIN_RELEASED'],
     );
 
-    // Record the release history
     await this.exchangeService.addMixinReleaseHistory({
       orderId: e.orderId,
       snapshotId: requests[0].snapshot_id,
       createdAt: getRFC3339Timestamp(),
       fee,
+    });
+  }
+
+  @OnEvent('market_making.deposit')
+  async handleMarketMakingDeposit(e: MarketMakingDepositEvent) {
+    this.logger.log(`Received deposit from user ${e.userId} for asset ${e.assetId}`);
+
+    await this.withdrawalService.createWithdrawal({
+      userId: e.userId,
+      amount: Number(e.amount),
+      assetId: e.assetId,
+      symbol: e.symbol,
+      mixinTxId: e.mixinTxId,
+      type: 'deposit_to_exchange',
+      status: 'pending',
     });
   }
 }

@@ -1,91 +1,3 @@
-/**
- * ExchangeService
- *
- * This service handles interactions with various cryptocurrency exchanges using the CCXT library.
- * It supports operations such as reading multiple API keys, fetching balances, creating orders, and managing
- * deposits and withdrawals. The service also includes methods for updating order states and handling
- * scheduled tasks.
- *
- * Dependencies:
- * - ccxt: Cryptocurrency exchange trading library.
- * - BigNumber: Library for handling arbitrary-precision decimal arithmetic.
- * - Cron: NestJS schedule module for defining cron jobs.
- * - EventEmitter2: Event emitter for managing custom events.
- * - CustomLogger: Custom logging service for recording errors and log information.
- * - ExchangeRepository: Repository for interacting with exchange-related data in the database.
- * - Utils: Helper functions such as getRFC3339Timestamp and getSymbolByAssetID.
- * - Constants: Includes mappings like STATE_TEXT_MAP and types such as SpotOrderStatus.
- *
- * Methods:
- *
- * - constructor: Initializes the service with the injected ExchangeRepository and EventEmitter2, and loads API keys.
- *
- * - loadAPIKeys(): Loads API keys from the repository and initializes exchange instances.
- *
- * - readAllAPIKeys(): Retrieves all API keys from the repository.
- *
- * - getAllAPIKeysBalance(): Fetches balances for all API keys and returns successful results.
- *
- * - aggregateBalancesByExchange(successfulBalances: any[]): Aggregates balances by exchange.
- *
- * - getBalance(exchange: string, apiKey: string, apiSecret: string): Fetches balance for a specific exchange.
- *
- * - getBalanceBySymbol(exchange: string, apiKey: string, apiSecret: string, symbol: string): Fetches balance for a specific symbol on an exchange.
- *
- * - getDepositAddress(data: ExchangeDepositDto): Retrieves deposit address for a specific exchange and symbol.
- *
- * - _getDepositAddress(params: { exchange: string, apiKey: string, apiSecret: string, symbol: string, network: string }): Internal method to fetch or create a deposit address.
- *
- * - createWithdrawal(data: ExchangeWithdrawalDto): Initiates a withdrawal on a specific exchange.
- *
- * - _createWithdrawal(params: { exchange: string, apiKey: string, apiSecret: string, symbol: string, network: string, address: string, tag: string, amount: string }): Internal method to handle the withdrawal process.
- *
- * - checkExchangeBalanceEnough(exchange: string, apiKey: string, apiSecret: string, symbol: string, amount: string): Checks if the exchange balance is sufficient for a specific symbol.
- *
- * - pickAPIKeyOnDemand(exchange: string, asset_id: string, amount: string): Picks an API key based on demand and available balance.
- *
- * - estimateSpotAmount(exchange: string, symbol: string, buy: boolean, amount: string, limit_price?: string): Estimates the amount for spot orders.
- *
- * - getAllSpotOrders(): Retrieves all spot orders from the repository.
- *
- * - addApiKey(key: APIKeysConfig): Adds a new API key to the repository.
- *
- * - readAPIKey(keyId: string): Reads an API key by its ID from the repository.
- *
- * - findFirstAPIKeyByExchange(exchange: string): Finds the first API key for a specific exchange.
- *
- * - removeAPIKey(keyId: string): Removes an API key by its ID from the repository.
- *
- * - createSpotOrder(order: SpotOrder): Creates a new spot order in the repository.
- *
- * - updateSpotOrderState(orderId: string, state: SpotOrderStatus): Updates the state of a spot order.
- *
- * - updateSpotOrderApiKeyId(orderId: string, api_key_id: string): Updates the API key ID of a spot order.
- *
- * - readOrdersByUser(userId: string): Retrieves orders by user ID from the repository.
- *
- * - readOrderById(orderId: string): Reads an order by its ID from the repository.
- *
- * - readOrdersByState(state: SpotOrderStatus): Retrieves orders by their state from the repository.
- *
- * - addMixinReleaseToken(data: MixinReleaseToken): Adds a Mixin release token to the repository.
- *
- * - readMixinReleaseToken(orderId: string): Reads a Mixin release token by order ID.
- *
- * - addMixinReleaseHistory(data: MixinReleaseHistory): Adds Mixin release history to the repository.
- *
- * - readMixinReleaseHistory(orderId: string): Reads Mixin release history by order ID.
- *
- * - placeOrder(orderId: string, exchange: string, limit: boolean, buy: boolean, apiKeyId: string, apiKey: string, apiSecret: string, symbol: string, amount: string, limit_price?: string): Places an order on an exchange.
- *
- * - placedOrderUpdater(): Scheduled task to update the status of placed orders every 3 seconds.
- *
- * Notes:
- * - The service manages API keys and exchange instances, ensuring secure and efficient interactions with exchanges.
- * - Error handling is implemented to log and manage errors during API interactions.
- * - Scheduled tasks are used to periodically update the status of placed orders.
- */
-
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
@@ -93,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   getRFC3339Timestamp,
-  getSymbolByAssetID,
 } from 'src/common/helpers/utils';
 import {
   STATE_TEXT_MAP,
@@ -108,7 +19,7 @@ import {
   MixinReleaseHistory,
   MixinReleaseToken,
 } from 'src/common/types/exchange/mixinRelease';
-import { CustomLogger } from 'src/modules/logger/logger.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
@@ -129,7 +40,7 @@ export class ExchangeService {
   private async loadAPIKeys() {
     const apiKeys = await this.exchangeRepository.readAllAPIKeys();
     if (!apiKeys?.length) {
-      this.logger.error('No API Keys loaded');
+      this.logger.warn('No API Keys loaded');
       return;
     }
     for (const key of apiKeys) {
@@ -455,7 +366,7 @@ export class ExchangeService {
     asset_id: string,
     amount: string,
   ): Promise<SuccessResponse | ErrorResponse> {
-    const symbol = getSymbolByAssetID(asset_id);
+    const symbol = '' // getSymbolByAssetID(asset_id);
     const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
       exchange,
     );
@@ -480,9 +391,8 @@ export class ExchangeService {
     });
     return {
       type: 'error',
-      error: `no API key available (${exchange}:${
-        symbol || asset_id
-      }:${amount})`,
+      error: `no API key available (${exchange}:${symbol || asset_id
+        }:${amount})`,
     };
   }
 

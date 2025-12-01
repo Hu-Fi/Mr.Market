@@ -88,10 +88,10 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
     target_symbol: 'USDT',
     base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
+      'https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     enable: true,
@@ -104,10 +104,10 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
     target_symbol: 'USDT',
     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
+      'https://images.mixin.one/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     enable: true,
@@ -120,10 +120,10 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
     target_symbol: 'USDT',
     base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
+      'https://images.mixin.one/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     enable: true,
@@ -136,10 +136,10 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
     target_symbol: 'USDT',
     base_asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
+      'https://images.mixin.one/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     enable: true,
@@ -154,10 +154,10 @@ export const defaultArbitragePairs: GrowdataArbitragePair[] = [
     target_symbol: 'USDT',
     base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
+      'https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     base_exchange_id: 'okx',
@@ -171,10 +171,10 @@ export const defaultArbitragePairs: GrowdataArbitragePair[] = [
     target_symbol: 'USDT',
     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
+      'https://images.mixin.one/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     base_exchange_id: 'okx',
@@ -188,10 +188,10 @@ export const defaultArbitragePairs: GrowdataArbitragePair[] = [
     target_symbol: 'USDT',
     base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
+      'https://images.mixin.one/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     base_exchange_id: 'okx',
@@ -205,10 +205,10 @@ export const defaultArbitragePairs: GrowdataArbitragePair[] = [
     target_symbol: 'USDT',
     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
     base_icon_url:
-      'https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
+      'https://images.mixin.one/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
     target_icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
     base_exchange_id: 'okx',
@@ -223,7 +223,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'Bitcoin',
     symbol: 'BTC',
     icon_url:
-      'https://mixin-images.zeromesh.net/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
+      'https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
     apy: '',
     enable: true,
   },
@@ -232,7 +232,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'Ethereum',
     symbol: 'ETH',
     icon_url:
-      'https://mixin-images.zeromesh.net/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
+      'https://images.mixin.one/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
     apy: '',
     enable: true,
   },
@@ -241,7 +241,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'USDT@ERC20',
     symbol: 'USDT@ERC20',
     icon_url:
-      'https://mixin-images.zeromesh.net/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     apy: '',
     enable: true,
   },
@@ -250,7 +250,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'USDC@ERC20',
     symbol: 'USDC@ERC20',
     icon_url:
-      'https://mixin-images.zeromesh.net/w3Lb-pMrgcmmrzamf7FG_0c6Dkh3w_NRbysqzpuacwdVhMYSOtnX2zedWqiSG7JuZ3jd4xfhAJduQXY1rPidmywn=s128',
+      'https://images.mixin.one/w3Lb-pMrgcmmrzamf7FG_0c6Dkh3w_NRbysqzpuacwdVhMYSOtnX2zedWqiSG7JuZ3jd4xfhAJduQXY1rPidmywn=s128',
     apy: '',
     enable: true,
   },
@@ -259,7 +259,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'Human',
     symbol: 'HMT',
     icon_url:
-      'https://mixin-images.zeromesh.net/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
+      'https://images.mixin.one/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
     apy: '',
     enable: true,
   },
@@ -268,7 +268,7 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     name: 'Mixin',
     symbol: 'XIN',
     icon_url:
-      'https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
+      'https://images.mixin.one/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
     apy: '',
     enable: true,
   },

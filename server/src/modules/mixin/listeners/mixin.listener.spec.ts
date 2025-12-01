@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MixinListener } from './mixin.listener';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
-import { CustomConfigService } from 'src/modules/customConfig/customConfig.service';
+import { CustomConfigService } from 'src/modules/infrastructure/custom-config/custom-config.service';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import * as uuid from 'uuid';
 import { STATE_TEXT_MAP } from 'src/common/types/orders/states';

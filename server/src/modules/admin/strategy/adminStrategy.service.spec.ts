@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AdminStrategyService } from './adminStrategy.service';
-import { StrategyService } from '../../strategy/strategy.service';
-import { PerformanceService } from '../../performance/performance.service';
+import { StrategyService } from '../../market-making/strategy/strategy.service';
+import { PerformanceService } from '../../market-making/performance/performance.service';
 import { BadRequestException } from '@nestjs/common';
 import {
   StartStrategyDto,
@@ -9,7 +9,7 @@ import {
   GetDepositAddressDto,
 } from './admin-strategy.dto';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { ExchangeInitService } from '../../exchangeInit/exchangeInit.service';
+import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import { Web3Service } from '../../web3/web3.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Contribution } from 'src/common/entities/contribution.entity';

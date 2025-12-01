@@ -4,12 +4,11 @@ import { get } from "svelte/store";
 import authorize from "$lib/helpers/mixin-oauth";
 import { getOauth } from "$lib/helpers/hufi/auth";
 import { getOrdersByUser } from "$lib/helpers/hufi/spot";
-import { decodeSymbolToAssetID } from "$lib/helpers/utils";
 import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
 import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
-import { buildMixinOneSafePaymentUri, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
+import { buildMixinOneSafePaymentUri, getInvoiceString, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
 import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
-import { GenerateSpotTradingMemo, encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
+import { encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
 import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
@@ -43,6 +42,33 @@ export const mixinShare = (url: string, title: string, description: string, icon
     title,
   };
   window.open(`mixin://send?category=app_card&data=${encodeURIComponent(btoa(JSON.stringify(data)))}`)
+}
+
+type MixinInvoiceParams = {
+  recipient: string,
+  asset_id: string,
+  amount: string,
+  memo?: string,
+  trace_id?: string,
+};
+
+export const mixinInvoice = async ({ recipient, asset_id, amount, memo = "", trace_id }: MixinInvoiceParams) => {
+  const invoice = {
+    version: 0,
+    recipient,
+    items: [
+      {
+        trace_id: trace_id ?? getUuid(),
+        asset_id,
+        amount,
+        memo,
+        references: [],
+      },
+    ],
+  };
+
+  const invoiceStr = getInvoiceString(invoice);
+  return `https://mixin.one/pay/${invoiceStr}`;
 }
 
 export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
@@ -251,23 +277,23 @@ export const mixinAuthWrapper = async (pkce: boolean = false) => {
 
 export const AfterMixinOauth = async (token: string) => {
   // if (pkce) {
-    const data = await mixinUserMe(token)
-    if (!data) {
-      console.log('!UserMe, remove mixin-oauth')
-      localStorage.removeItem('mixin-oauth')
-      return
-    }
-    if (data.full_name === '') {
-      console.log('!UserMeError, remove mixin-oauth')
-      localStorage.removeItem('mixin-oauth')
-      return
-    }
-    user.set(data)
-    mixinConnected.set(true)
-    localStorage.setItem("mixin-oauth", token)
-    getUserBalances(data.user_id, token)
-    getUserSpotOrders(data.user_id)
-    // getUserStrategyOrders(data.user_id)
+  const data = await mixinUserMe(token)
+  if (!data) {
+    console.log('!UserMe, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  if (data.full_name === '') {
+    console.log('!UserMeError, remove mixin-oauth')
+    localStorage.removeItem('mixin-oauth')
+    return
+  }
+  user.set(data)
+  mixinConnected.set(true)
+  localStorage.setItem("mixin-oauth", token)
+  getUserBalances(data.user_id, token)
+  getUserSpotOrders(data.user_id)
+  // getUserStrategyOrders(data.user_id)
   // }
 }
 
@@ -278,23 +304,23 @@ export const MixinDisconnect = () => {
 }
 
 export const SpotPay = ({ exchange, symbol, limit, price, buy, amount, trace }: { exchange: string, symbol: string, limit: boolean, price: string, buy: boolean, amount: string, trace: string }) => {
-  if (!exchange || !symbol || !amount || !trace) {
-    console.error('Invalid input parameters');
-    return;
-  }
-  if (!price) {
-    price = '0'
-  }
-  const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol)
-  if (!firstAssetID || !secondAssetID) {
-    console.error('Failed to get asset id because invaild symbol submmited')
-    return;
-  }
-  const memo = GenerateSpotTradingMemo({ limit, buy, symbol, price, exchange });
-  if (buy) {
-    return mixinPay({ asset_id: secondAssetID, amount, memo, trace_id: trace });
-  }
-  return mixinPay({ asset_id: firstAssetID, amount, memo, trace_id: trace });
+  // if (!exchange || !symbol || !amount || !trace) {
+  //   console.error('Invalid input parameters');
+  //   return;
+  // }
+  // if (!price) {
+  //   price = '0'
+  // }
+  // const { firstAssetID, secondAssetID } = decodeSymbolToAssetID(symbol)
+  // if (!firstAssetID || !secondAssetID) {
+  //   console.error('Failed to get asset id because invaild symbol submmited')
+  //   return;
+  // }
+  // const memo = GenerateSpotTradingMemo({ limit, buy, symbol, price, exchange });
+  // if (buy) {
+  //   return mixinPay({ asset_id: secondAssetID, amount, memo, trace_id: trace });
+  // }
+  // return mixinPay({ asset_id: firstAssetID, amount, memo, trace_id: trace });
 }
 
 export const ArbitrageCreatePay = ({
@@ -320,7 +346,7 @@ export const ArbitrageCreatePay = ({
     console.error('Invalid input parameters for ArbitragePay');
     return;
   }
-  
+
   const mixinTraceId = getUuid();
   const memoParams = {
     version: 1,

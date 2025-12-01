@@ -8,7 +8,7 @@
   import AppIcon from "../home/applications/appIcon.svelte";
   
   $: active = $page.url.pathname.includes('/home') ? 0 : 
-    $page.url.pathname.includes('/market_making') ? 3 :
+    $page.url.pathname.includes('/market-making') ? 3 :
     $page.url.pathname.includes('/market') ? 1 : 
     $page.url.pathname.includes('/spot') ? 2 :
     $page.url.pathname.includes('/wallet') ? 4 : 2;
@@ -16,7 +16,7 @@
     {icon: 'home', route: '/home', title: $_('home')},
     {icon: 'market', route: '/market/token', title: $_('market')},
     {icon: 'trade', route: '/spot', title: $_('trade')},
-    {icon: 'market_making', route: '/market_making', title: $_('mm_short')},
+    {icon: 'market-making', route: '/market-making', title: $_('mm_short')},
     {icon: 'wallet', route: '/wallet', title: $_('wallet')},
   ]
   const routing = (route: string) => {
@@ -46,7 +46,7 @@
 </script>
 
 <div class={clsx(
-  "dock dock-sm bg-base-100 shadow-[0_-1px_1px_rgb(0_0_0_/_12%)]",
+  "dock dock-sm bg-base-100 shadow-[0_-1px_1px_rgb(0_0_0/12%)",
   $darkTheme ? "border-base-content/20" : "border-base-300/70"
 )}>
   {#each routes as route, i}
@@ -79,9 +79,9 @@
         {:else if route.icon === 'market'}
           <!-- Market -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
-        {:else if route.icon === 'market_making'}
+        {:else if route.icon === 'market-making'}
           <!-- Market making -->
-          <AppIcon icon="market_making" />
+          <AppIcon icon="market-making" />
         {:else if route.icon === 'wallet'}
           <!-- Wallet -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" /></svg>

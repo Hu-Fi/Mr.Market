@@ -3,7 +3,7 @@ import { ArbitrageListener } from './arbitrage.listener';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { StrategyUserService } from 'src/modules/strategy/strategy-user.service';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
-import { GrowdataService } from 'src/modules/growdata/growdata.service';
+import { GrowdataService } from 'src/modules/data/grow-data/grow-data.service';
 import { DataSource } from 'typeorm';
 
 jest.mock('src/modules/mixin/snapshots/snapshots.service');
