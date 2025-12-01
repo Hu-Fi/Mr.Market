@@ -14,7 +14,7 @@
   <div class="flex justify-center grow join w-full p-4 pb-0 px-8 text-sm">
     <button
       class={clsx(
-        "btn btn-md w-[50%] max-w-52 join-item rounded-l-xl bg-base-100",
+        "btn btn-md w-[45%] max-w-52 join-item rounded-l-xl bg-base-100",
         mode === "both_token" && "btn-active bg-base-200",
       )}
       on:click={() => (mode = "both_token")}
@@ -24,7 +24,7 @@
       </span>
     </button>
     <div
-      class="dropdown dropdown-bottom dropdown-end w-[50%] max-w-52 join-item group"
+      class="dropdown dropdown-bottom dropdown-end w-[45%] max-w-52 join-item group"
     >
       <button
         tabindex="0"

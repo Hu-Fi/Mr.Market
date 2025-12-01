@@ -12,7 +12,7 @@
     <div>
       <button
         class="flex items-center justify-center text-start h-8 p-0 m-0 bg-slate-400 hover:bg-slate-400 hover:text-base-content btn-outline border-none no-animation rounded-full"
-        on:click={() => goto("/grow/market_making/intro")}
+        on:click={() => goto("/market-making/intro")}
       >
         <span class="px-3 py-1.5 text-slate-50 text-sm">
           {$_("whats_market_making")}

@@ -41,7 +41,7 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: baseSymbol ?? "" },
           })}
-          class="focus:outline-none text-xl!"
+          class="focus:outline-none text-sm! min-w-64"
         />
       </label>
       <div class="flex justify-between">
@@ -54,7 +54,7 @@
   {/if}
 
   {#if showQuote}
-    <div class="flex flex-col p-4 fieldset">
+    <div class="flex flex-col p-4 fieldset w-full">
       <label
         class="input input-xl rounded-xl flex items-center w-full justify-between"
       >
@@ -71,7 +71,7 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: quoteSymbol ?? "" },
           })}
-          class="focus:outline-none text-xl!"
+          class="focus:outline-none text-sm! min-w-64"
         />
       </label>
       <div class="flex justify-between">

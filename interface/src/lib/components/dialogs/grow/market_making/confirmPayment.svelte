@@ -67,7 +67,7 @@
         const state = await getOrderPaymentState(orderId);
         if (state.data.firstSnapshotId && state.data.secondSnapshotId) {
           clearInterval(OrderCreationInterval);
-          goto(`/grow/market_making/${orderId}`);
+          goto(`/market-making/${orderId}`);
         }
         totalTime += ORDER_STATE_FETCH_INTERVAL;
         if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
