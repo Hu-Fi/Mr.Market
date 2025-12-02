@@ -1,4 +1,5 @@
 import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+
 import type { SpotInfo } from "$lib/types/hufi/spot";
 
 export const getSpotInfo = async (): Promise<SpotInfo> => {

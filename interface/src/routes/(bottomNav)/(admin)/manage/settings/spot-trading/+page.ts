@@ -1,7 +1,8 @@
 import { getSpotInfo } from "$lib/helpers/hufi/spot";
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ depends }) {
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = async ({ depends }) => {
   depends('admin:settings:spot-trading');
   return {
     spotInfo: await getSpotInfo(),

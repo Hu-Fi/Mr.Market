@@ -7,6 +7,8 @@
   import {
     getSupportedExchanges,
     updateExchange,
+    getAllCcxtExchanges,
+    getCcxtExchangeDetails,
   } from "$lib/helpers/hufi/admin/growdata";
   import {
     addExchange,
@@ -14,6 +16,7 @@
   } from "$lib/helpers/hufi/admin/growdata";
 
   $: supportedExchanges = [] as string[];
+  $: allCcxtExchanges = [] as string[];
   $: exchanges = $page.data.growInfo.exchanges as {
     exchange_id: string;
     name: string;
@@ -110,6 +113,7 @@
     const token = localStorage.getItem("admin-access-token");
     if (!token) return;
     supportedExchanges = (await getSupportedExchanges(token)) as string[];
+    allCcxtExchanges = await getAllCcxtExchanges(token);
   });
 </script>
 
@@ -150,6 +154,53 @@
           <div class="flex flex-col gap-4">
             <div class="form-control w-full">
               <label class="label">
+                <span class="label-text font-medium">{$_("exchange_id")}</span>
+                <span class="label-text-alt text-base-content/60">ccxt id</span>
+              </label>
+              <input
+                list="ccxt-exchanges"
+                type="text"
+                class="input input-bordered w-full focus:input-primary transition-all"
+                placeholder={$_("placeholder_exchange_id")}
+                bind:value={AddNewExchangeId}
+                on:change={async () => {
+                  if (
+                    AddNewExchangeId &&
+                    allCcxtExchanges.includes(AddNewExchangeId)
+                  ) {
+                    // Auto-fill name
+                    if (!AddNewName) {
+                      AddNewName =
+                        AddNewExchangeId.charAt(0).toUpperCase() +
+                        AddNewExchangeId.slice(1);
+                    }
+
+                    // Auto-fill icon
+                    try {
+                      const token = localStorage.getItem("admin-access-token");
+                      if (token) {
+                        const details = await getCcxtExchangeDetails(
+                          AddNewExchangeId,
+                          token,
+                        );
+                        if (details.urls && details.urls.logo) {
+                          AddNewIconUrl = details.urls.logo;
+                        }
+                      }
+                    } catch (e) {
+                      console.error("Failed to load exchange details", e);
+                    }
+                  }
+                }}
+              />
+              <datalist id="ccxt-exchanges">
+                {#each allCcxtExchanges as exchangeId}
+                  <option value={exchangeId} />
+                {/each}
+              </datalist>
+            </div>
+            <div class="form-control w-full">
+              <label class="label">
                 <span class="label-text font-medium">{$_("display_name")}</span>
               </label>
               <input
@@ -157,18 +208,6 @@
                 class="input input-bordered w-full focus:input-primary transition-all"
                 placeholder={$_("placeholder_exchange_name")}
                 bind:value={AddNewName}
-              />
-            </div>
-            <div class="form-control w-full">
-              <label class="label">
-                <span class="label-text font-medium">{$_("exchange_id")}</span>
-                <span class="label-text-alt text-base-content/60">ccxt id</span>
-              </label>
-              <input
-                type="text"
-                class="input input-bordered w-full focus:input-primary transition-all"
-                placeholder={$_("placeholder_exchange_id")}
-                bind:value={AddNewExchangeId}
               />
             </div>
             <div class="form-control w-full">

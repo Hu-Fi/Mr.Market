@@ -250,3 +250,31 @@ export const updateArbitragePair = async (id: string, modifications: ArbitragePa
     throw error;
   }
 };
+
+
+// CCXT Methods
+export const getAllCcxtExchanges = async (token: string): Promise<string[]> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/ccxt-supported`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting all CCXT exchanges:', error);
+    throw error;
+  }
+};
+
+export const getCcxtExchangeDetails = async (exchangeId: string, token: string): Promise<any> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/details/${exchangeId}`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting CCXT exchange details:', error);
+    throw error;
+  }
+};
