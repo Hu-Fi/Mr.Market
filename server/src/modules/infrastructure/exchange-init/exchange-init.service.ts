@@ -2,6 +2,7 @@ import * as ccxt from 'ccxt';
 import {
   Injectable,
   InternalServerErrorException,
+  BadRequestException,
   Scope,
 } from '@nestjs/common';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
@@ -363,7 +364,7 @@ export class ExchangeInitService {
 
   private startKeepAlive() {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
-  
+
     setInterval(async () => {
       this.logger.log('Running keep-alive checks for all exchanges...');
       for (const [exchangeName, accounts] of this.exchanges) {
@@ -378,7 +379,7 @@ export class ExchangeInitService {
                 );
                 continue;
               }
-  
+
               // Check for open orders
               const openOrders = await exchange.fetchOpenOrders();
               if (openOrders.length > 0) {
@@ -387,7 +388,7 @@ export class ExchangeInitService {
                 );
                 continue; // Do not signIn
               }
-  
+
               // Otherwise, signIn if no open orders
               await exchange.signIn();
               this.logger.log(`ProBit ${label} re-signed in successfully.`);
@@ -403,7 +404,7 @@ export class ExchangeInitService {
     }, intervalMs);
   }
 
-  
+
 
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
@@ -483,6 +484,35 @@ export class ExchangeInitService {
         `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error.message}`,
       );
       throw new InternalServerErrorException('Failed to get deposit address.');
+    }
+  }
+
+  getAllCcxtExchanges(): string[] {
+    return (ccxt as any).exchanges;
+  }
+
+  async getCcxtExchangeDetails(exchangeId: string): Promise<any> {
+    if (!(ccxt as any).exchanges.includes(exchangeId)) {
+      throw new BadRequestException(`Exchange ${exchangeId} is not supported by CCXT.`);
+    }
+
+    try {
+      // Instantiate the exchange to get its properties
+      // We don't need API keys for this
+      const exchangeClass = ccxt[exchangeId];
+      const exchange = new exchangeClass();
+
+      return {
+        id: exchange.id,
+        name: exchange.name,
+        urls: exchange.urls,
+        countries: exchange.countries,
+        version: exchange.version,
+        // Add other metadata if needed
+      };
+    } catch (error) {
+      this.logger.error(`Failed to get details for ${exchangeId}: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to get details for ${exchangeId}`);
     }
   }
 }

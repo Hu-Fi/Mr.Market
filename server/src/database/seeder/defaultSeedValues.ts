@@ -20,6 +20,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '150000',
     base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -35,6 +36,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '100000',
     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -50,6 +52,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '10000',
     base_asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -65,18 +68,19 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '1000',
     base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
 ];
 
 export const defaultExchanges: GrowdataExchange[] = [
-  { exchange_id: 'okx', name: 'OKX', enable: true },
-  { exchange_id: 'mexc', name: 'MEXC', enable: true },
-  { exchange_id: 'bigone', name: 'BigONE', enable: true },
-  { exchange_id: 'kraken', name: 'Kraken', enable: true },
-  { exchange_id: 'binance', name: 'Binance', enable: true },
-  { exchange_id: 'bitget', name: 'Bitget', enable: true },
-  { exchange_id: 'bybit', name: 'Bybit', enable: true },
+  { exchange_id: 'okx', name: 'OKX', icon_url: '', enable: true },
+  { exchange_id: 'mexc', name: 'MEXC', icon_url: '', enable: true },
+  { exchange_id: 'bigone', name: 'BigONE', icon_url: '', enable: true },
+  { exchange_id: 'kraken', name: 'Kraken', icon_url: '', enable: true },
+  { exchange_id: 'binance', name: 'Binance', icon_url: '', enable: true },
+  { exchange_id: 'bitget', name: 'Bitget', icon_url: '', enable: true },
+  { exchange_id: 'bybit', name: 'Bybit', icon_url: '', enable: true },
 ];
 
 export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
@@ -94,6 +98,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -110,6 +115,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -126,6 +132,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -142,6 +149,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
 ];

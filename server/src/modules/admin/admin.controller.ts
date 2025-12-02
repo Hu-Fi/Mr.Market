@@ -45,7 +45,7 @@ export class AdminController {
     private readonly adminStrategyService: AdminStrategyService,
     private readonly adminGrowService: AdminGrowService,
     private readonly adminSpotService: AdminSpotService,
-  ) {}
+  ) { }
 
   // Admin strategy endpoints
   @Post('strategy/start')
@@ -265,6 +265,18 @@ export class AdminController {
   @ApiOperation({ summary: 'Get supported exchanges by backend' })
   async getSupportedExchanges() {
     return this.adminStrategyService.getSupportedExchanges();
+  }
+
+  @Get('grow/exchange/ccxt-supported')
+  @ApiOperation({ summary: 'Get all CCXT supported exchanges' })
+  async getAllCcxtExchanges() {
+    return this.adminStrategyService.getAllCcxtExchanges();
+  }
+
+  @Get('grow/exchange/details/:id')
+  @ApiOperation({ summary: 'Get CCXT exchange details including icon' })
+  async getCcxtExchangeDetails(@Param('id') id: string) {
+    return this.adminStrategyService.getCcxtExchangeDetails(id);
   }
 
   @Delete('grow/exchange/remove/:exchange_id')
