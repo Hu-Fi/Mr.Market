@@ -31,5 +31,6 @@ export type SpotTradingPair = {
   max_sell_amount: string;
   base_asset_id: string;
   quote_asset_id: string;
+  custom_fee_rate?: string;
   enable: boolean;
 }

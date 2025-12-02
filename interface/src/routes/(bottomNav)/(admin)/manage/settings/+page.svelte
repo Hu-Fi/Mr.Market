@@ -1,45 +1,84 @@
 <script>
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import Config from "$lib/components/admin/settings/config/config.svelte";
-  import Exchanges from "$lib/components/admin/settings/exchanges/exchanges.svelte";
-  import Arbitrage from "$lib/components/admin/settings/arbitrage/arbitrage.svelte";
-  import SimplyGrow from "$lib/components/admin/settings/simplyGrow/simplyGrow.svelte";
-  import SpotTrading from "$lib/components/admin/settings/spotTrading/spotTrading.svelte";
-  import MarketMaking from "$lib/components/admin/settings/marketMaking/marketMaking.svelte";
+  import { page } from "$app/stores";
 
-  let modes = ["config", "spot_trading", "exchanges", "arbitrage", "market_making", "simply_grow"];
-  let mode = "config";
+  const links = [
+    {
+      name: "exchanges",
+      path: "/manage/settings/exchanges",
+      icon: "M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    },
+    {
+      name: "spot_trading",
+      path: "/manage/settings/spot-trading",
+      icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z",
+    },
+    {
+      name: "market_making",
+      path: "/manage/settings/market-making",
+      icon: "M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z",
+    },
+    {
+      name: "fees",
+      path: "/manage/settings/fees",
+      icon: "M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    },
+  ];
 </script>
 
-<div class="p-8">
-  <div class="flex flex-col space-y-4 items-start mb-8">
-    <div class="flex flex-row space-x-8">
-      <ul class="menu menu-vertical lg:menu-horizontal lg:w-full outline outline-1 outline-base-content/20 rounded-md gap-2">
-        {#each modes as m}
-          <li>
-            <button class={clsx("btn btn-sm btn-ghost rounded-md no-animation", mode === m && "bg-base-300")} on:click={() => mode = m}>
-              <span class="text-base">
-                {$_(m)}
-              </span>
-            </button>
-          </li>
-        {/each}
-      </ul>
-    </div>
+<div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+  <div class="flex flex-col space-y-2">
+    <h1
+      class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent w-fit"
+    >
+      {$_("settings")}
+    </h1>
+    <p class="text-base-content/60 text-lg">
+      {$_("manage_your_application_configuration")}
+    </p>
   </div>
-  
-  {#if mode === "config"}
-    <Config />
-  {:else if mode === "spot_trading"}
-    <SpotTrading />
-  {:else if mode === "exchanges"}
-    <Exchanges />
-  {:else if mode === "arbitrage"}
-    <Arbitrage />
-  {:else if mode === "market_making"}
-    <MarketMaking />
-  {:else if mode === "simply_grow"} 
-    <SimplyGrow />
-  {/if}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {#each links as link}
+      <a
+        href={link.path}
+        class="group relative overflow-hidden rounded-2xl bg-base-100 border border-base-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        ></div>
+        <div class="p-6 flex items-start space-x-4 relative z-10">
+          <div
+            class="p-3 bg-base-200 rounded-xl text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-8 h-8"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d={link.icon}
+              />
+            </svg>
+          </div>
+          <div class="space-y-1">
+            <h2
+              class="card-title text-xl font-bold group-hover:text-primary transition-colors duration-300"
+            >
+              {$_(link.name)}
+            </h2>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              {$_(`manage_${link.name}`)}
+            </p>
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
 </div>

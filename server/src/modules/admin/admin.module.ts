@@ -19,6 +19,11 @@ import { ExchangeInitModule } from '../infrastructure/exchange-init/exchange-ini
 import { AdminSpotService } from './admin-spot-management/admin-spot-management.service';
 import { SpotdataModule } from '../data/spot-data/spot-data.module';
 import { AdminMarketMakingConfigModule } from './market-making-config/admin-market-making-config.module';
+import { AdminFeeController } from './fee/admin-fee.controller';
+import { AdminFeeService } from './fee/admin-fee.service';
+import { CustomConfigEntity } from 'src/common/entities/custom-config.entity';
+import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
+import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
 
 @Module({
   imports: [
@@ -32,12 +37,15 @@ import { AdminMarketMakingConfigModule } from './market-making-config/admin-mark
       MixinUser,
       Contribution,
       Performance,
+      CustomConfigEntity,
+      GrowdataMarketMakingPair,
+      SpotdataTradingPair,
     ]),
     TradeModule,
     Web3Module,
     AdminMarketMakingConfigModule,
   ],
-  controllers: [AdminController],
+  controllers: [AdminController, AdminFeeController],
   providers: [
     AdminStrategyService,
     StrategyService,
@@ -46,11 +54,13 @@ import { AdminMarketMakingConfigModule } from './market-making-config/admin-mark
     ExchangeInitService,
     AdminGrowService,
     AdminSpotService,
+    AdminFeeService,
   ],
   exports: [
     AdminStrategyService,
     AdminGrowService,
     AdminSpotService,
+    AdminFeeService,
   ],
 })
 export class AdminModule { }

@@ -8,6 +8,10 @@ export class GrowdataExchangeDto {
   @IsString()
   name: string;
 
+  @IsString()
+  @IsOptional()
+  icon_url: string;
+
   @IsBoolean()
   enable: boolean;
 }
@@ -114,6 +118,10 @@ export class GrowdataMarketMakingPairDto {
 
   @IsString()
   exchange_id: string;
+
+  @IsString()
+  @IsOptional()
+  custom_fee_rate: string;
 
   @IsBoolean()
   enable: boolean;

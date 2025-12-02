@@ -38,6 +38,9 @@ export class SpotdataTradingPair {
   @Column()
   quote_asset_id: string;
 
+  @Column({ nullable: true })
+  custom_fee_rate: string;
+
   @Column()
   enable: boolean;
 }

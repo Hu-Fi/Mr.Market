@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsUUID } from 'class-validator';
+import { IsString, IsBoolean, IsUUID, IsOptional } from 'class-validator';
 
 // DTO for SpotdataTradingPair
 export class SpotdataTradingPairDto {
@@ -37,6 +37,10 @@ export class SpotdataTradingPairDto {
 
   @IsString()
   quote_asset_id: string;
+
+  @IsString()
+  @IsOptional()
+  custom_fee_rate: string;
 
   @IsBoolean()
   enable: boolean;

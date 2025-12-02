@@ -1,6 +1,7 @@
 export interface Exchange {
   exchange_id: string;
   name: string;
+  icon_url?: string;
   enable: boolean;
 }
 
@@ -13,7 +14,7 @@ export interface SimplyGrowToken {
   enable: boolean;
 }
 
-export interface SimplyGrowTokenDto extends SimplyGrowToken {}
+export interface SimplyGrowTokenDto extends SimplyGrowToken { }
 
 export interface ArbitragePair {
   id: string;
@@ -30,8 +31,8 @@ export interface ArbitragePair {
   target_exchange_id: string;
   enable: boolean;
 }
-  
-export interface ArbitragePairDto extends ArbitragePair {}
+
+export interface ArbitragePairDto extends ArbitragePair { }
 
 export interface MarketMakingPair {
   id: string;
@@ -45,10 +46,11 @@ export interface MarketMakingPair {
   base_price?: string;
   target_price?: string;
   exchange_id: string;
+  custom_fee_rate?: string;
   enable: boolean;
 }
 
-export interface MarketMakingPairDto extends MarketMakingPair {}
+export interface MarketMakingPairDto extends MarketMakingPair { }
 
 export interface GrowInfo {
   exchanges: Exchange[];

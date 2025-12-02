@@ -174,7 +174,7 @@ export const removeAllMarketMakingPairs = async (token: string): Promise<unknown
   }
 };
 
-export const updateMarketMakingPair = async (id: string, modifications: MarketMakingPairDto, token: string): Promise<string> => {
+export const updateMarketMakingPair = async (id: string, modifications: Partial<MarketMakingPairDto>, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
       method: 'POST',
