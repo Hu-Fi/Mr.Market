@@ -15,13 +15,14 @@ export const AdminPassword = async (password: string): Promise<AdminPasswordResp
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Login failed: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
     console.error('Error during fetch:', error);
-    throw error; // Or handle the error as appropriate for your application
+    throw error;
   }
 };
 
@@ -29,8 +30,13 @@ export const checkPassword = async (pass: string): Promise<string> => {
   if (!pass) {
     return '';
   }
-  const r: { access_token: string } = await AdminPassword(pass)
-  return r.access_token;
+  try {
+    const r: { access_token: string } = await AdminPassword(pass)
+    return r.access_token;
+  } catch (e) {
+    console.error(e)
+    return ''
+  }
 }
 
 export const autoCheckPassword = async (path: string = '/manage/dashboard'): Promise<boolean> => {

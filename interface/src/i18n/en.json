@@ -175,6 +175,7 @@
   "next_step": "Next step",
   "back": "Back",
   "enter_amount": "Enter amount",
+  "enter_deposit_amount": "Enter deposit amount",
   "enter_symbol_amount": "Enter {symbol} amount",
   "mixin_id": "Mixin ID:  {id}",
   "faq": "FAQ",
