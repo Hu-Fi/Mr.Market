@@ -278,3 +278,16 @@ export const getCcxtExchangeDetails = async (exchangeId: string, token: string):
     throw error;
   }
 };
+
+export const getCcxtExchangeMarkets = async (exchangeId: string, token: string): Promise<any> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/markets/${exchangeId}`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting CCXT exchange markets:', error);
+    throw error;
+  }
+};

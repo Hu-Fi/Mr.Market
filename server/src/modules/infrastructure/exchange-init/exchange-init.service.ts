@@ -515,4 +515,34 @@ export class ExchangeInitService {
       throw new InternalServerErrorException(`Failed to get details for ${exchangeId}`);
     }
   }
+
+  async getCcxtExchangeMarkets(exchangeId: string): Promise<any> {
+    if (!(ccxt as any).exchanges.includes(exchangeId)) {
+      throw new BadRequestException(`Exchange ${exchangeId} is not supported by CCXT.`);
+    }
+
+    try {
+      const exchangeClass = ccxt[exchangeId];
+      const exchange = new exchangeClass();
+
+      // Some exchanges require loading markets to get the list
+      // Since we are not authenticated, we can only get public markets
+      await exchange.loadMarkets();
+
+      return Object.values(exchange.markets).map((market: any) => ({
+        symbol: market.symbol,
+        base: market.base,
+        quote: market.quote,
+        baseId: market.baseId,
+        quoteId: market.quoteId,
+        active: market.active,
+        id: market.id,
+        precision: market.precision,
+        limits: market.limits,
+      }));
+    } catch (error) {
+      this.logger.error(`Failed to get markets for ${exchangeId}: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to get markets for ${exchangeId}`);
+    }
+  }
 }

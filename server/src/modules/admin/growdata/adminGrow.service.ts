@@ -20,7 +20,7 @@ export class AdminGrowService {
   constructor(
     private readonly growDataService: GrowdataService,
     private readonly growdataRepository: GrowdataRepository,
-  ) {}
+  ) { }
 
   // Exchange
   async addExchange(exchange: GrowdataExchange) {

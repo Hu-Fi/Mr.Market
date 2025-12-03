@@ -279,6 +279,12 @@ export class AdminController {
     return this.adminStrategyService.getCcxtExchangeDetails(id);
   }
 
+  @Get('grow/exchange/markets/:id')
+  @ApiOperation({ summary: 'Get CCXT exchange markets' })
+  async getCcxtExchangeMarkets(@Param('id') id: string) {
+    return this.adminStrategyService.getCcxtExchangeMarkets(id);
+  }
+
   @Delete('grow/exchange/remove/:exchange_id')
   @ApiOperation({ summary: 'Remove an exchange' })
   async removeExchange(@Param('exchange_id') exchange_id: string) {

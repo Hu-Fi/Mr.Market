@@ -58,7 +58,7 @@
 
 <div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
   <div class="space-y-1">
-    <h1 class="text-3xl font-bold tracking-tight">{$_("fees")}</h1>
+    <span class="text-3xl font-bold text-left">{$_("fees")}</span>
     <p class="text-base-content/60">{$_("manage_global_fees_and_overrides")}</p>
   </div>
 

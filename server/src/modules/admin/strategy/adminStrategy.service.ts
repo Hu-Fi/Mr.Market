@@ -129,6 +129,10 @@ export class AdminStrategyService {
     return this.exchangeInitService.getCcxtExchangeDetails(exchangeId);
   }
 
+  async getCcxtExchangeMarkets(exchangeId: string) {
+    return this.exchangeInitService.getCcxtExchangeMarkets(exchangeId);
+  }
+
   async getChainInfo(chainId: number): Promise<any> {
     try {
       // Call the utility function to get chain info from chainId

@@ -124,7 +124,7 @@
     class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
   >
     <div class="space-y-1">
-      <h1 class="text-3xl font-bold tracking-tight">{$_("market_making")}</h1>
+      <span class="text-3xl font-bold text-left">{$_("market_making")}</span>
       <p class="text-base-content/60">{$_("manage_market_making_pairs")}</p>
     </div>
 
@@ -150,7 +150,7 @@
           {$_("add_pair")}
         </summary>
         <div
-          class="menu dropdown-content bg-base-100 rounded-box z-[1] p-6 shadow-xl border border-base-200 w-[32rem] mt-2 max-h-[80vh] overflow-y-auto"
+          class="dropdown-content bg-base-100 rounded-box p-6 shadow-xl border border-base-200 w-[32rem] mt-2 max-h-[80vh] overflow-y-auto"
         >
           <h3 class="font-bold text-lg mb-4">{$_("add_new_pair")}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
