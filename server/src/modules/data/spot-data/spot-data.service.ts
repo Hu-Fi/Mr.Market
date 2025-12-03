@@ -107,6 +107,7 @@ export class SpotdataService {
               max_sell_amount: pair.max_sell_amount,
               buy_decimal_digits: pair.buy_decimal_digits,
               sell_decimal_digits: pair.sell_decimal_digits,
+              custom_fee_rate: pair.custom_fee_rate,
               enable: pair.enable,
               change: tickers[pair.symbol]?.percentage || '0',
             }));
@@ -129,6 +130,7 @@ export class SpotdataService {
               max_sell_amount: pair.max_sell_amount,
               buy_decimal_digits: pair.buy_decimal_digits,
               sell_decimal_digits: pair.sell_decimal_digits,
+              custom_fee_rate: pair.custom_fee_rate,
               enable: pair.enable,
               change: '0',
             }));

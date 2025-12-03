@@ -29,6 +29,7 @@ describe('SpotdataService', () => {
       price_significant_figures: '2',
       buy_decimal_digits: '2',
       sell_decimal_digits: '2',
+      custom_fee_rate: '0.001',
     },
     {
       id: 'a87fe0c1-898f-457a-9303-b83bb81b09b5',
@@ -44,6 +45,7 @@ describe('SpotdataService', () => {
       price_significant_figures: '2',
       buy_decimal_digits: '2',
       sell_decimal_digits: '2',
+      custom_fee_rate: '0.001',
     },
   ];
 

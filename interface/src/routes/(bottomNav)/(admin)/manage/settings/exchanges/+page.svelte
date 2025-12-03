@@ -48,7 +48,28 @@
     class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
   >
     <div class="space-y-1">
-      <span class="text-3xl font-bold text-left">{$_("exchanges")}</span>
+      <div class="flex items-center gap-2">
+        <button
+          on:click={() => window.history.back()}
+          class="btn btn-ghost btn-circle btn-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            />
+          </svg>
+        </button>
+        <span class="text-3xl font-bold text-left">{$_("exchanges")}</span>
+      </div>
       <p class="text-base-content/60">{$_("manage_connected_exchanges")}</p>
     </div>
 

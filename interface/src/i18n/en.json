@@ -460,5 +460,8 @@
   "asset_name": "Name",
   "chain_id": "Chain ID",
   "chain": "Chain",
-  "copied": "Copied"
+  "copied": "Copied",
+  "confirm_changes": "Confirm Changes",
+  "are_you_sure_update_fees": "Are you sure you want to update the global fees?",
+  "cancel": "Cancel"
 }

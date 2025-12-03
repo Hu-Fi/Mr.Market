@@ -2,7 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
-  import { invalidate } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import {
     getGlobalFees,
     updateGlobalFees,
@@ -58,7 +58,28 @@
 
 <div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
   <div class="space-y-1">
-    <span class="text-3xl font-bold text-left">{$_("fees")}</span>
+    <div class="flex items-center gap-2">
+      <button
+        on:click={() => window.history.back()}
+        class="btn btn-ghost btn-circle btn-sm"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+      </button>
+      <span class="text-3xl font-bold text-left">{$_("fees")}</span>
+    </div>
     <p class="text-base-content/60">{$_("manage_global_fees_and_overrides")}</p>
   </div>
 
@@ -145,8 +166,9 @@
             <div class="card-actions justify-end mt-6">
               <button
                 class="btn btn-primary w-full"
-                on:click={async () => {
-                  await UpdateGlobalFees(globalFee);
+                on:click={() => {
+                  // @ts-ignore
+                  document.getElementById("confirm_modal").showModal();
                 }}
               >
                 <span
@@ -161,6 +183,24 @@
           </div>
         </div>
       </div>
+
+      <dialog id="confirm_modal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">{$_("confirm_changes")}</h3>
+          <p class="py-4">{$_("are_you_sure_update_fees")}</p>
+          <div class="modal-action">
+            <form method="dialog">
+              <button class="btn">{$_("cancel")}</button>
+              <button
+                class="btn btn-primary"
+                on:click={async () => {
+                  await UpdateGlobalFees(globalFee);
+                }}>{$_("confirm")}</button
+              >
+            </form>
+          </div>
+        </div>
+      </dialog>
 
       <!-- Fee Overrides Section -->
       <div class="lg:col-span-2 space-y-6">
@@ -233,9 +273,9 @@
                       <td>
                         {#if override.type === "spot"}
                           <div
-                            class="badge badge-secondary badge-outline badge-sm"
+                            class="badge badge-base-200 badge-outline badge-sm"
                           >
-                            SPOT
+                            Spot
                           </div>
                         {:else}
                           <div
@@ -248,17 +288,23 @@
                       <td class="font-medium font-mono">{override.symbol}</td>
                       <td>
                         <span class="badge badge-primary badge-sm"
-                          >{override.fee_rate}</span
+                          >{override.custom_fee_rate}</span
                         >
                       </td>
                       <td class="text-right">
-                        <a
-                          href={override.type === "spot"
-                            ? "/manage/settings/spot-trading"
-                            : "/manage/settings/market-making"}
+                        <button
+                          on:click={() => {
+                            goto(
+                              override.type === "spot"
+                                ? "/manage/settings/spot-trading"
+                                : "/manage/settings/market-making",
+                            );
+                          }}
                           class="btn btn-xs btn-ghost gap-1"
                         >
-                          {$_("manage")}
+                          <span class="text-xs">
+                            {$_("manage")}
+                          </span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -273,7 +319,7 @@
                               d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
                             />
                           </svg>
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   {/each}

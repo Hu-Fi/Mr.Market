@@ -78,6 +78,7 @@
         <thead class="bg-base-200/50 text-base-content/70">
           <tr>
             <th>{$_("icon")}</th>
+            <th>{$_("exchange")}</th>
             <th>{$_("symbol")}</th>
             <th>{$_("base_symbol")}</th>
             <th>{$_("target_symbol")}</th>
@@ -91,7 +92,7 @@
         <tbody>
           {#if marketMakingPairs.length === 0}
             <tr>
-              <td colspan="9" class="text-center py-12 text-base-content/40">
+              <td colspan="10" class="text-center py-12 text-base-content/40">
                 {$_("no_pairs_found")}
               </td>
             </tr>
@@ -113,6 +114,11 @@
                   />
                 </div>
               </td>
+              <td class="font-medium"
+                ><span class="badge badge-ghost font-mono"
+                  >{pair.exchange_id}</span
+                ></td
+              >
               <td class="font-medium"
                 ><span class="badge badge-ghost font-mono">{pair.symbol}</span
                 ></td
