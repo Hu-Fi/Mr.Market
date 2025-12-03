@@ -18,90 +18,28 @@
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import AmountTypeTab from "$lib/components/grow/marketMaking/createNew/amount/amountTypeTab.svelte";
 
-  // Load supported exchanges for market making in +page.ts
-  // Mr.Market backend api should return
-  // 1. supported market making exchanges: [
-  //   {
-  //     'id': 'binance',
-  //     'name': 'Binance',
-  //     'enabled': true,
-  //   },
-  // ]
-  // 2. supported trading pairs:
-  // [
-  //   {
-  //     'symbol': 'BTC/USDT',
-  //     'baseSymbol': 'BTC',
-  //     'quoteSymbol': 'USDT',
-  //     'baseUsdPrice': 100000,
-  //     'quoteUsdPrice': 1,
-  //     'baseAssetId': 'uuid',
-  //     'quoteAssetId': 'uuid',
-  //     'enabled': true,
-  //   },
-  // ]
-  //
-  //
-  const supportedMarketMakingExchanges = [
-    "binance",
-    "bybit",
-    "kucoin",
-    "okx",
-    "huobi",
-    "mexc",
-    "binance",
-    "bybit",
-    "kucoin",
-    "okx",
-    "huobi",
-    "mexc",
-    "binance",
-    "bybit",
-    "kucoin",
-    "okx",
-    "huobi",
-    "mexc",
-  ];
+  import { onMount } from "svelte";
+  import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
 
-  const supportedTradingpairs = [
-    "BTC/USDT",
-    "ETH/USDT",
-    "LTC/USDT",
-    "XRP/USDT",
-    "ADA/USDT",
-    "DOT/USDT",
-    "SOL/USDT",
-    "DOGE/USDT",
-    "AVAX/USDT",
-    "SHIB/USDT",
-    "MATIC/USDT",
-    "LINK/USDT",
-    "UNI/USDT",
-    "ATOM/USDT",
-    "ALGO/USDT",
-    "VET/USDT",
-    "ICP/USDT",
-    "FIL/USDT",
-    "TRX/USDT",
-    "ETC/USDT",
-    "XLM/USDT",
-    "AAVE/USDT",
-    "EOS/USDT",
-    "THETA/USDT",
-    "XTZ/USDT",
-    "CRO/USDT",
-    "FTM/USDT",
-    "NEAR/USDT",
-    "KSM/USDT",
-    "ZIL/USDT",
-    "DASH/USDT",
-    "MKR/USDT",
-    "COMP/USDT",
-    "SNX/USDT",
-  ];
+  let supportedMarketMakingExchanges: string[] = [];
+  let supportedTradingpairs: string[] = [];
 
-  // ------------------------------ Above are mock values for API fetching ------------------------------
-  // ----------------------------------------------------------------------------------------------------
+  onMount(async () => {
+    const data = await getGrowBasicInfo();
+    if (data) {
+      if (data.exchanges) {
+        supportedMarketMakingExchanges = data.exchanges
+          .filter((e) => e.enable)
+          .map((e) => e.exchange_id);
+      }
+      if (data.market_making && data.market_making.pairs) {
+        supportedTradingpairs = data.market_making.pairs
+          .filter((p) => p.enable)
+          .map((p) => p.symbol);
+      }
+    }
+  });
+
   const selectExchange = (exchangeName: string) => {
     const newUrl = new URL($dPage.url);
     newUrl.searchParams.set("exchange", exchangeName);
