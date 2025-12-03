@@ -446,5 +446,19 @@
   "fill_all_fields_msg": "Please fill all required fields",
   "no_exchanges_configured_msg": "No exchanges configured. Please go to Settings > Exchanges to add one.",
   "go_to_exchanges": "Go to Exchanges",
-  "search_or_enter_uuid_or_symbol": "Search symbol or enter UUID"
+  "search_or_enter_uuid_or_symbol": "Search symbol or enter UUID",
+  "select_exchange_placeholder": "Select an exchange",
+  "search_pair_placeholder": "Search for a pair (e.g. BTC/USDT)",
+  "loading_markets": "Loading markets...",
+  "no_markets_found": "No markets found",
+  "searching": "Searching...",
+  "no_assets_found": "No assets found",
+  "search_or_enter_uuid": "Search or enter UUID",
+  "auth_token_missing": "Authentication token not found",
+  "failed_to_load_data": "Failed to load data",
+  "reload": "Reload",
+  "asset_name": "Name",
+  "chain_id": "Chain ID",
+  "chain": "Chain",
+  "copied": "Copied"
 }

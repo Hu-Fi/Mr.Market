@@ -51,7 +51,8 @@
                 on:click={() => item.fn()}
                 class={clsx(
                   "w-full text-base text-gray-900 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 group cursor-pointer",
-                  $page.url.pathname.includes(item.key) && "bg-gray-100",
+                  $page.url.pathname.includes(`manage/${item.key}`) &&
+                    "bg-gray-100",
                 )}
               >
                 <SideBarIcons name={item.key} />

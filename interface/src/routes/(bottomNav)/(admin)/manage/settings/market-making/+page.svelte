@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
-  import { getRandomDelay } from "$lib/helpers/utils";
+
   import type { MarketMakingPair } from "$lib/types/hufi/grow";
   import AddMarketMakingPair from "$lib/components/admin/settings/marketMaking/AddMarketMakingPair.svelte";
   import MarketMakingPairList from "$lib/components/admin/settings/marketMaking/MarketMakingPairList.svelte";
@@ -16,9 +16,7 @@
   async function RefreshMarketMakingPairs() {
     isRefreshing = true;
     await invalidate("admin:settings:market-making").finally(() => {
-      setTimeout(() => {
-        isRefreshing = false;
-      }, getRandomDelay());
+      isRefreshing = false;
     });
   }
 </script>

@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
-  import { getRandomDelay } from "$lib/helpers/utils";
+
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
   import Loading from "$lib/components/common/loading.svelte";
   import AddTradingPair from "$lib/components/admin/settings/spotTrading/AddTradingPair.svelte";
@@ -14,9 +14,7 @@
   async function RefreshSpotTradingPairs() {
     isRefreshing = true;
     await invalidate("admin:settings:spot-trading").finally(() => {
-      setTimeout(() => {
-        isRefreshing = false;
-      }, getRandomDelay());
+      isRefreshing = false;
     });
   }
 

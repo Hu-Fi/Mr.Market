@@ -77,6 +77,7 @@
       <table class="table table-lg">
         <thead class="bg-base-200/50 text-base-content/70">
           <tr>
+            <th>{$_("icon")}</th>
             <th>{$_("symbol")}</th>
             <th>{$_("base_symbol")}</th>
             <th>{$_("target_symbol")}</th>

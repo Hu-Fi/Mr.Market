@@ -1,13 +1,13 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  import { invalidate } from "$app/navigation";
+  import { invalidate, goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { getRandomDelay } from "$lib/helpers/utils";
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
   import { addSpotTradingPair } from "$lib/helpers/hufi/admin/spotdata";
   import { getCcxtExchangeMarkets } from "$lib/helpers/hufi/admin/growdata";
   import { MIXIN_API_BASE_URL } from "$lib/helpers/constants";
+  import AssetSelect from "../common/AssetSelect.svelte";
 
   import toast from "svelte-french-toast";
 
@@ -54,6 +54,11 @@
     AddNewQuoteAssetId = "";
     AddNewCustomFeeRate = "";
     availableMarkets = [];
+    selectedBaseAsset = null;
+    selectedQuoteAsset = null;
+    availableMarkets = [];
+    selectedBaseAsset = null;
+    selectedQuoteAsset = null;
   };
 
   async function AddSpotTradingPair(pair: SpotTradingPair) {
@@ -64,22 +69,19 @@
       !pair.base_asset_id ||
       !pair.quote_asset_id
     ) {
-      toast.error(
-        $_("fill_all_fields_msg") || "Please fill all required fields",
-      );
+      toast.error($_("fill_all_fields_msg"));
       return;
     }
     isAdding = true;
     const token = localStorage.getItem("admin-access-token");
     if (!token) {
-      toast.error("Authentication token not found");
+      toast.error($_("auth_token_missing"));
       return;
     }
 
     toast.promise(
       addSpotTradingPair(pair, token)
         .then(async () => {
-          await new Promise((resolve) => setTimeout(resolve, getRandomDelay()));
           await invalidate("admin:settings:spot-trading");
           cleanUpStates();
         })
@@ -147,60 +149,8 @@
   }
 
   // Asset Search Logic
-  let isBaseAssetDropdownOpen = false;
-  let isQuoteAssetDropdownOpen = false;
-  let baseAssetSearchResults: any[] = [];
-  let quoteAssetSearchResults: any[] = [];
-  let isSearchingBaseAsset = false;
-  let isSearchingQuoteAsset = false;
-  let searchTimeout: any;
-
-  async function searchMixinAssets(keyword: string): Promise<any[]> {
-    if (!keyword) return [];
-    try {
-      const response = await fetch(
-        `${MIXIN_API_BASE_URL}/network/assets/search/${keyword}`,
-      );
-      const data = await response.json();
-      return data.data || [];
-    } catch (error) {
-      console.error("Failed to search Mixin assets", error);
-      return [];
-    }
-  }
-
-  function handleAssetSearch(keyword: string, type: "base" | "quote") {
-    if (searchTimeout) clearTimeout(searchTimeout);
-
-    if (type === "base") {
-      isBaseAssetDropdownOpen = true;
-      isSearchingBaseAsset = true;
-    } else {
-      isQuoteAssetDropdownOpen = true;
-      isSearchingQuoteAsset = true;
-    }
-
-    searchTimeout = setTimeout(async () => {
-      const results = await searchMixinAssets(keyword);
-      if (type === "base") {
-        baseAssetSearchResults = results;
-        isSearchingBaseAsset = false;
-      } else {
-        quoteAssetSearchResults = results;
-        isSearchingQuoteAsset = false;
-      }
-    }, 500);
-  }
-
-  function selectAsset(asset: any, type: "base" | "quote") {
-    if (type === "base") {
-      AddNewBaseAssetId = asset.asset_id;
-      isBaseAssetDropdownOpen = false;
-    } else {
-      AddNewQuoteAssetId = asset.asset_id;
-      isQuoteAssetDropdownOpen = false;
-    }
-  }
+  let selectedBaseAsset: any = null;
+  let selectedQuoteAsset: any = null;
 
   function handleClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -210,19 +160,8 @@
     if (isMarketDropdownOpen && !target.closest(".market-dropdown")) {
       isMarketDropdownOpen = false;
     }
-    if (
-      isBaseAssetDropdownOpen &&
-      !target.closest("#base-asset-id-input") &&
-      !target.closest(".dropdown-content")
-    ) {
-      isBaseAssetDropdownOpen = false;
-    }
-    if (
-      isQuoteAssetDropdownOpen &&
-      !target.closest("#quote-asset-id-input") &&
-      !target.closest(".dropdown-content")
-    ) {
-      isQuoteAssetDropdownOpen = false;
+    if (isMarketDropdownOpen && !target.closest(".market-dropdown")) {
+      isMarketDropdownOpen = false;
     }
   }
 </script>
@@ -252,8 +191,27 @@
   <div
     class=" dropdown-content bg-base-100 rounded-box p-6 shadow-xl border border-base-200 w-[32rem] mt-2 max-h-[80vh] overflow-y-auto"
   >
-    <div class="mb-4">
+    <div class="mb-4 flex justify-between items-center">
       <span class="font-bold text-lg">{$_("add_new_pair")}</span>
+      <button
+        class="btn btn-sm btn-circle btn-ghost"
+        on:click={() => (addDialog = false)}
+      >
+        <!-- Close Icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1"
+          stroke="currentColor"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18 18 6M6 6l12 12"
+          /></svg
+        ></button
+      >
     </div>
 
     {#if configuredExchanges.length === 0}
@@ -270,10 +228,7 @@
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
           /></svg
         >
-        <span
-          >{$_("no_exchanges_configured_msg") ||
-            "No exchanges configured. Please go to Settings > Exchanges to add one."}</span
-        >
+        <span>{$_("no_exchanges_configured_msg")}</span>
         <div>
           <a href="/manage/settings/exchanges" class="btn btn-sm"
             >{$_("go_to_exchanges")}</a
@@ -297,7 +252,7 @@
               bind:value={AddNewExchangeId}
               on:focus={() => (isExchangeDropdownOpen = true)}
               on:input={() => (isExchangeDropdownOpen = true)}
-              placeholder="Select an exchange"
+              placeholder={$_("select_exchange_placeholder")}
             />
             {#if isExchangeDropdownOpen}
               <ul
@@ -327,6 +282,30 @@
                     </button>
                   </li>
                 {/each}
+                <div class="divider my-1"></div>
+                <li>
+                  <button
+                    type="button"
+                    class="w-full text-left flex items-center gap-2 text-primary"
+                    on:click={() => goto("/manage/settings/exchanges")}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-4 h-4"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                    {$_("add_new_exchange")}
+                  </button>
+                </li>
               </ul>
             {/if}
           </div>
@@ -350,7 +329,7 @@
               bind:value={AddNewSymbol}
               on:focus={() => (isMarketDropdownOpen = true)}
               on:input={() => (isMarketDropdownOpen = true)}
-              placeholder="Search for a pair (e.g. BTC/USDT)"
+              placeholder={$_("search_pair_placeholder")}
               disabled={!AddNewExchangeId}
             />
             {#if isMarketDropdownOpen && AddNewExchangeId}
@@ -360,12 +339,14 @@
                 {#if isLoadingMarkets}
                   <li class="disabled">
                     <span
-                      ><span class="loading loading-spinner loading-xs"></span> Loading
-                      markets...</span
+                      ><span class="loading loading-spinner loading-xs"></span>
+                      {$_("loading_markets")}</span
                     >
                   </li>
                 {:else if availableMarkets.length === 0}
-                  <li class="disabled"><span>No markets found</span></li>
+                  <li class="disabled">
+                    <span>{$_("no_markets_found")}</span>
+                  </li>
                 {:else}
                   {#each availableMarkets
                     .filter((m) => m.symbol
@@ -389,7 +370,7 @@
         </div>
 
         <div class="form-control w-full">
-          <label class="label" for="ccxt-id-input">
+          <label class="label w-full" for="ccxt-id-input">
             <span class="label-text font-medium">{$_("ccxt_id")}</span>
           </label>
           <input
@@ -406,121 +387,21 @@
           {$_("assets")}
         </div>
 
-        <div class="form-control w-full">
-          <label class="label" for="base-asset-id-input">
-            <span class="label-text font-medium">{$_("base_asset_id")}</span>
-          </label>
-          <div
-            class="dropdown w-full"
-            class:dropdown-open={isBaseAssetDropdownOpen}
-          >
-            <input
-              id="base-asset-id-input"
-              type="text"
-              class="input input-bordered w-full focus:input-primary transition-all"
-              bind:value={AddNewBaseAssetId}
-              on:input={(e) => handleAssetSearch(e.currentTarget.value, "base")}
-              on:focus={() => {
-                if (baseAssetSearchResults.length > 0)
-                  isBaseAssetDropdownOpen = true;
-              }}
-              placeholder="Search or enter UUID"
-            />
-            {#if isBaseAssetDropdownOpen}
-              <ul
-                class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full max-h-60 overflow-y-auto block z-[50] mt-1 border border-base-200"
-              >
-                {#if isSearchingBaseAsset}
-                  <li class="disabled">
-                    <span
-                      ><span class="loading loading-spinner loading-xs"></span> Searching...</span
-                    >
-                  </li>
-                {:else if baseAssetSearchResults.length === 0}
-                  <li class="disabled"><span>No assets found</span></li>
-                {:else}
-                  {#each baseAssetSearchResults as asset}
-                    <li>
-                      <button
-                        type="button"
-                        class="flex items-center gap-2"
-                        on:click={() => selectAsset(asset, "base")}
-                      >
-                        <img
-                          src={asset.icon_url}
-                          alt={asset.symbol}
-                          class="w-6 h-6 rounded-full"
-                        />
-                        <div class="flex flex-col items-start">
-                          <span class="font-bold">{asset.symbol}</span>
-                          <span class="text-xs opacity-50">{asset.name}</span>
-                        </div>
-                      </button>
-                    </li>
-                  {/each}
-                {/if}
-              </ul>
-            {/if}
-          </div>
-        </div>
-        <div class="form-control w-full">
-          <label class="label" for="quote-asset-id-input">
-            <span class="label-text font-medium">{$_("quote_asset_id")}</span>
-          </label>
-          <div
-            class="dropdown w-full"
-            class:dropdown-open={isQuoteAssetDropdownOpen}
-          >
-            <input
-              id="quote-asset-id-input"
-              type="text"
-              class="input input-bordered w-full focus:input-primary transition-all"
-              bind:value={AddNewQuoteAssetId}
-              on:input={(e) =>
-                handleAssetSearch(e.currentTarget.value, "quote")}
-              on:focus={() => {
-                if (quoteAssetSearchResults.length > 0)
-                  isQuoteAssetDropdownOpen = true;
-              }}
-              placeholder={$_("search_or_enter_uuid_or_symbol")}
-            />
-            {#if isQuoteAssetDropdownOpen}
-              <ul
-                class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full max-h-60 overflow-y-auto block z-[50] mt-1 border border-base-200"
-              >
-                {#if isSearchingQuoteAsset}
-                  <li class="disabled">
-                    <span
-                      ><span class="loading loading-spinner loading-xs"></span> Searching...</span
-                    >
-                  </li>
-                {:else if quoteAssetSearchResults.length === 0}
-                  <li class="disabled"><span>No assets found</span></li>
-                {:else}
-                  {#each quoteAssetSearchResults as asset}
-                    <li>
-                      <button
-                        type="button"
-                        class="flex items-center gap-2"
-                        on:click={() => selectAsset(asset, "quote")}
-                      >
-                        <img
-                          src={asset.icon_url}
-                          alt={asset.symbol}
-                          class="w-6 h-6 rounded-full"
-                        />
-                        <div class="flex flex-col items-start">
-                          <span class="font-bold">{asset.symbol}</span>
-                          <span class="text-xs opacity-50">{asset.name}</span>
-                        </div>
-                      </button>
-                    </li>
-                  {/each}
-                {/if}
-              </ul>
-            {/if}
-          </div>
-        </div>
+        <AssetSelect
+          id="base-asset-id-input"
+          label={$_("base_asset_id")}
+          bind:value={AddNewBaseAssetId}
+          bind:selectedAsset={selectedBaseAsset}
+          placeholder={$_("search_or_enter_uuid")}
+        />
+
+        <AssetSelect
+          id="quote-asset-id-input"
+          label={$_("quote_asset_id")}
+          bind:value={AddNewQuoteAssetId}
+          bind:selectedAsset={selectedQuoteAsset}
+          placeholder={$_("search_or_enter_uuid_or_symbol")}
+        />
 
         <div
           class="divider col-span-2 text-xs font-bold opacity-50 uppercase tracking-widest"
