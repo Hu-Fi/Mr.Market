@@ -78,12 +78,10 @@
 
     toast.promise(
       addSpotTradingPair(pair, token)
-        .then(() => {
-          setTimeout(() => {
-            invalidate("admin:settings:spot-trading").finally(() => {
-              cleanUpStates();
-            });
-          }, getRandomDelay());
+        .then(async () => {
+          await new Promise((resolve) => setTimeout(resolve, getRandomDelay()));
+          await invalidate("admin:settings:spot-trading");
+          cleanUpStates();
         })
         .catch((error) => {
           cleanUpStates();
@@ -91,11 +89,9 @@
           throw error;
         }),
       {
-        loading: $_("adding_pair_msg") || "Adding trading pair...",
-        success:
-          $_("add_pair_success_msg") || "Trading pair added successfully!",
-        error: (err) =>
-          `${$_("add_pair_failed_msg") || "Failed to add trading pair"}: ${err.message || err}`,
+        loading: $_("adding_pair_msg"),
+        success: $_("add_pair_success_msg"),
+        error: (err) => `${$_("add_pair_failed_msg")}: ${err.message || err}`,
       },
     );
   }
@@ -486,7 +482,7 @@
                 if (quoteAssetSearchResults.length > 0)
                   isQuoteAssetDropdownOpen = true;
               }}
-              placeholder="Search or enter UUID"
+              placeholder={$_("search_or_enter_uuid_or_symbol")}
             />
             {#if isQuoteAssetDropdownOpen}
               <ul
@@ -616,7 +612,7 @@
           <label class="label" for="custom-fee-rate-input">
             <span class="label-text font-medium">{$_("custom_fee_rate")}</span>
             <span class="label-text-alt text-base-content/60"
-              >{$_("optional")}</span
+              >({$_("optional")})</span
             >
           </label>
           <input

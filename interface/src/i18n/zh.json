@@ -321,5 +321,11 @@
   "review_selection": "检查您的选择",
   "review_selection_intro": "确认支付前请再次核对信息",
   "fee_usage_note": "手续费用于覆盖资金划转相关费用",
-  "processing": "处理中..."
+  "processing": "处理中...",
+  "adding_pair_msg": "正在添加交易对...",
+  "add_pair_success_msg": "交易对添加成功",
+  "add_pair_failed_msg": "添加交易对失败",
+  "fill_all_fields_msg": "请填写所有必填字段",
+  "no_exchanges_configured_msg": "未配置交易所。请前往设置 > 交易所添加一个。",
+  "go_to_exchanges": "前往交易所"
 }

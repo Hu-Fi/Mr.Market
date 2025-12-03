@@ -439,5 +439,12 @@
   "placeholder_exchange_name": "e.g. Binance",
   "placeholder_exchange_id": "e.g. binance",
   "placeholder_url": "https://...",
-  "example_pair": "e.g. BTC/USDT"
+  "example_pair": "e.g. BTC/USDT",
+  "adding_pair_msg": "Adding pair...",
+  "add_pair_success_msg": "Pair added successfully",
+  "add_pair_failed_msg": "Failed to add pair",
+  "fill_all_fields_msg": "Please fill all required fields",
+  "no_exchanges_configured_msg": "No exchanges configured. Please go to Settings > Exchanges to add one.",
+  "go_to_exchanges": "Go to Exchanges",
+  "search_or_enter_uuid_or_symbol": "Search symbol or enter UUID"
 }

@@ -29,8 +29,9 @@
   };
 </script>
 
-<div
+<form
   class="w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800"
+  on:submit|preventDefault={() => login(password)}
 >
   <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
     {$_("login")}
@@ -60,9 +61,6 @@
   {/if}
   <button
     type="submit"
-    on:click={() => {
-      login(password);
-    }}
     class="flex items-center justify-center w-full px-5 py-3 text-base font-medium text-center text-white bg-slate-800 rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
   >
     {#if $loginLoading}
@@ -71,4 +69,4 @@
       <span>{$_("login")}</span>
     {/if}
   </button>
-</div>
+</form>
