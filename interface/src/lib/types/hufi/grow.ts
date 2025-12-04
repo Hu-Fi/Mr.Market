@@ -62,5 +62,6 @@ export interface GrowInfo {
   };
   market_making: {
     pairs: MarketMakingPair[];
+    exchanges: Exchange[];
   };
 }

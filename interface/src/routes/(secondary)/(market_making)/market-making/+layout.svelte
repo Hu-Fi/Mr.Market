@@ -64,7 +64,7 @@
   <div
     class="flex md:px-0 items-center justify-between py-[4pt] my-[4pt] h-[36px]! min-h-[36px]!"
   >
-    <button on:click={handleBack}>
+    <button on:click={handleBack} class="cursor-pointer">
       <!-- Chevron left Icon -->
       <svg
         class="w-6 h-6"

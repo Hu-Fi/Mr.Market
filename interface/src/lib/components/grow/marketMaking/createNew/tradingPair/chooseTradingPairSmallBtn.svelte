@@ -17,7 +17,7 @@
 
 <button
   class="flex items-center justify-center space-x-2 py-3 px-2
-    bg-base-100 border border-slate-200 rounded-xl text-start"
+    bg-base-100 border border-slate-200 rounded-xl text-start cursor-pointer"
   on:click={() => {
     onClick();
   }}

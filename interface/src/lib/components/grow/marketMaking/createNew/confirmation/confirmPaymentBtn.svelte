@@ -12,7 +12,7 @@
 </script>
 
 <button
-  class="btn bg-base-content text-base-100 w-full rounded-full no-animation"
+  class="btn bg-base-content text-base-100 w-full rounded-full no-animation max-w-md"
   class:btn-disabled={disabled || loading}
   class:opacity-50={disabled || loading}
   class:cursor-not-allowed={disabled || loading}
@@ -27,4 +27,3 @@
     {$_("pay")}
   {/if}
 </button>
-

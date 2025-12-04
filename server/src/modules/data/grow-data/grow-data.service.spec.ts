@@ -73,8 +73,28 @@ describe('GrowdataService', () => {
         exchanges: [],
         simply_grow: { tokens: [] },
         arbitrage: { pairs: [] },
-        market_making: { pairs: [] },
+        market_making: { pairs: [], exchanges: [] },
       });
+    });
+
+    it('should filter exchanges in market_making based on pairs', async () => {
+      const exchanges = [
+        { exchange_id: 'exchange-1', name: 'Exchange 1' },
+        { exchange_id: 'exchange-2', name: 'Exchange 2' },
+      ];
+      const marketMakingPairs = [
+        { id: 'pair-1', exchange_id: 'exchange-1' },
+      ];
+
+      jest.spyOn(repository, 'findAllExchanges').mockResolvedValue(exchanges as any);
+      jest.spyOn(repository, 'findAllSimplyGrowTokens').mockResolvedValue([]);
+      jest.spyOn(repository, 'findAllArbitragePairs').mockResolvedValue([]);
+      // Mock the service method directly to avoid price fetching logic which is not relevant for this test
+      jest.spyOn(service, 'getAllMarketMakingPairs').mockResolvedValue(marketMakingPairs as any);
+
+      const result = await service.getGrowData();
+      expect(result.market_making.exchanges).toHaveLength(1);
+      expect(result.market_making.exchanges[0].exchange_id).toBe('exchange-1');
     });
   });
 

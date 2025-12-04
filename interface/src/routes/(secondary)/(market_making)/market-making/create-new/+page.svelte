@@ -20,22 +20,25 @@
 
   import { onMount } from "svelte";
   import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
+  import type { MarketMakingPair } from "$lib/types/hufi/grow";
 
   let supportedMarketMakingExchanges: string[] = [];
-  let supportedTradingpairs: string[] = [];
+  let allMarketMakingPairs: MarketMakingPair[] = [];
+
+  $: supportedTradingpairs = allMarketMakingPairs
+    .filter((p) => !exchangeName || p.exchange_id === exchangeName)
+    .map((p) => p.symbol);
 
   onMount(async () => {
     const data = await getGrowBasicInfo();
     if (data) {
-      if (data.exchanges) {
-        supportedMarketMakingExchanges = data.exchanges
+      if (data.market_making && data.market_making.pairs) {
+        allMarketMakingPairs = data.market_making.pairs.filter((p) => p.enable);
+      }
+      if (data.market_making && data.market_making.exchanges) {
+        supportedMarketMakingExchanges = data.market_making.exchanges
           .filter((e) => e.enable)
           .map((e) => e.exchange_id);
-      }
-      if (data.market_making && data.market_making.pairs) {
-        supportedTradingpairs = data.market_making.pairs
-          .filter((p) => p.enable)
-          .map((p) => p.symbol);
       }
     }
   });
@@ -250,7 +253,7 @@
       {baseAmountUsd}
       {quoteAmountUsd}
     />
-    <div class="px-6 w-full">
+    <div class="px-6 w-full flex justify-center">
       <ConfirmPaymentBtn onConfirm={confirmPayment} />
     </div>
   </div>
