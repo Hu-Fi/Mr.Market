@@ -5,10 +5,8 @@ import { MarketDataGateway } from './market-data.gateway';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ExchangeInitModule } from '../../infrastructure/exchange-init/exchange-init.module';
 
-import { AdminMarketMakingConfigModule } from '../../admin/market-making-config/admin-market-making-config.module';
-
 @Module({
-  imports: [CacheModule.register(), ExchangeInitModule, AdminMarketMakingConfigModule],
+  imports: [CacheModule.register(), ExchangeInitModule],
   controllers: [MarketDataController],
   providers: [MarketDataGateway, MarketdataService],
   exports: [MarketDataGateway, MarketdataService, CacheModule],

@@ -18,6 +18,6 @@ export async function load() {
     }
   } catch (e) {
     console.log(e)
-		return {}
+    return {}
   }
 }

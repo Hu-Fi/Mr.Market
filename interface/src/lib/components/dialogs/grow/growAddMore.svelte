@@ -18,7 +18,7 @@
     },
     {
       name: $_("market_making"),
-      intro: $_("market_making_intro"),
+      intro: $_("market_making"),
       icon: "market_making",
       fn: () => goto("/market-making"),
     },

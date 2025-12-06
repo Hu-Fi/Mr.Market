@@ -29,7 +29,7 @@ export class AdminStrategyService {
     private contributionRepository: Repository<Contribution>,
     @InjectRepository(MixinUser)
     private mixinuserrepository: Repository<MixinUser>,
-  ) {}
+  ) { }
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
     const { strategyType, arbitrageParams, marketMakingParams, volumeParams } =
@@ -119,6 +119,18 @@ export class AdminStrategyService {
 
   async getSupportedExchanges() {
     return this.exchangeInitService.getSupportedExchanges();
+  }
+
+  async getAllCcxtExchanges() {
+    return this.exchangeInitService.getAllCcxtExchanges();
+  }
+
+  async getCcxtExchangeDetails(exchangeId: string) {
+    return this.exchangeInitService.getCcxtExchangeDetails(exchangeId);
+  }
+
+  async getCcxtExchangeMarkets(exchangeId: string) {
+    return this.exchangeInitService.getCcxtExchangeMarkets(exchangeId);
   }
 
   async getChainInfo(chainId: number): Promise<any> {

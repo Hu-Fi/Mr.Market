@@ -8,8 +8,6 @@
   } from "$lib/stores/grow";
   import ArbitrageStatusNav from "$lib/components/bottomNav/arbitrageStatusNav.svelte";
   import MarketMakingStatusNav from "$lib/components/bottomNav/marketMakingStatusNav.svelte";
-  import EditArbitrageDialog from "$lib/components/dialogs/grow/arbitrage/editArbitrage.svelte";
-  import EditMarketMakingDialog from "$lib/components/dialogs/market-making/editMarketMaking.svelte";
 </script>
 
 <header class="sticky top-0 z-20 bg-base-100">
@@ -27,9 +25,6 @@
 {:else if $isSimplyGrowPage}
   <!--  -->
 {/if}
-
-<EditArbitrageDialog />
-<EditMarketMakingDialog />
 
 <style>
   .arbitrage-title {

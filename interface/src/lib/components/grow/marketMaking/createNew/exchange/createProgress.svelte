@@ -9,7 +9,7 @@
 <div class="flex flex-col space-y-2">
   <progress
     class="progress w-80 mt-4 h-1.5 opacity-60"
-    value={step === 1 ? "20" : step === 2 ? "55" : "98"}
+    value={step === 1 ? "15" : step === 2 ? "52" : "98"}
     max="100"
   ></progress>
   <div class="grid grid-cols-3 w-80">

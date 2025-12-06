@@ -9,8 +9,6 @@ export const easyAdvancedMode = writable(0)
 
 export const mmCoin0 = writable()
 export const mmCoin1 = writable()
-// 0 asset, 1 amount
-export const mmEasyStep = writable(0)
 export const addMoreDialog = writable(false)
 
 export const currentArbitrageStatus = writable()
@@ -26,17 +24,8 @@ export const createArbExchange2: Writable<string> = writable()
 export const createArbExchange1Search = writable('')
 export const createArbExchange2Search = writable('')
 export const createArbPair: Writable<ArbitragePair> = writable()
-export const createArbPairSearch: Writable<string>= writable('')
+export const createArbPairSearch: Writable<string> = writable('')
 export const createArbAmount = writable([])
-
-
-// Create new market making
-export const createMMConfirmDialog = writable(false)
-export const editMarketMakingDialog = writable(false)
-export const createMMEasyPair = writable<MarketMakingPair>()
-export const createMMEasyAmounts = writable([])
-export const createMMSelectPairEasyFilter = writable('all')
-export const createMMSelectPairEasySearch = writable('')
 
 // Create new just grow
 export const createSimplyGrowAsset = writable<SimplyGrowToken>()

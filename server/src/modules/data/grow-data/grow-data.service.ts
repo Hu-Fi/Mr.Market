@@ -13,7 +13,7 @@ export class GrowdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly growdataRepository: GrowdataRepository,
-  ) {}
+  ) { }
 
   private cachingTTL = 600; // 10 minutes
 
@@ -34,6 +34,11 @@ export class GrowdataService {
         },
         market_making: {
           pairs: marketMakingPairs,
+          exchanges: exchanges.filter((exchange) =>
+            marketMakingPairs.some(
+              (pair) => pair.exchange_id === exchange.exchange_id,
+            ),
+          ),
         },
       };
     } catch (error) {

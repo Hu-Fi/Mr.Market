@@ -3,6 +3,7 @@
 
 import * as dotenv from 'dotenv';
 import { DataSource, Repository } from 'typeorm';
+import { CustomConfigEntity } from '../../common/entities/custom-config.entity';
 import {
   GrowdataExchange,
   GrowdataMarketMakingPair,
@@ -10,11 +11,12 @@ import {
   GrowdataSimplyGrowToken,
 } from '../../common/entities/grow-data.entity';
 import {
-  defaultArbitragePairs,
+
   defaultExchanges,
   defaultMarketMakingPairs,
   defaultSimplyGrowTokens,
   defaultSpotdataTradingPairs,
+  defaultCustomConfig,
 } from './defaultSeedValues';
 import { SpotdataTradingPair } from '../../common/entities/spot-data.entity';
 
@@ -33,6 +35,7 @@ async function connectToDatabase() {
       GrowdataArbitragePair,
       GrowdataSimplyGrowToken,
       SpotdataTradingPair,
+      CustomConfigEntity,
     ],
     synchronize: false,
     ssl: process.env.POSTGRES_SSL === 'true',
@@ -84,17 +87,7 @@ async function seedGrowdataMarketMakingPair(
   console.log('Seeding GrowdataMarketMakingPair complete!');
 }
 
-async function seedGrowdataArbitragePair(
-  repository: Repository<GrowdataArbitragePair>,
-) {
-  for (const pair of defaultArbitragePairs) {
-    const exists = await repository.findOneBy({ id: pair.id });
-    if (!exists) {
-      await repository.save(pair);
-    }
-  }
-  console.log('Seeding GrowdataArbitragePair complete!');
-}
+
 
 async function seedGrowdataSimplyGrowToken(
   repository: Repository<GrowdataSimplyGrowToken>,
@@ -108,6 +101,16 @@ async function seedGrowdataSimplyGrowToken(
   console.log('Seeding GrowdataSimplyGrowToken complete!');
 }
 
+async function seedCustomConfig(repository: Repository<CustomConfigEntity>) {
+  const exists = await repository.findOneBy({
+    config_id: defaultCustomConfig.config_id,
+  });
+  if (!exists) {
+    await repository.save(defaultCustomConfig);
+  }
+  console.log('Seeding CustomConfigEntity complete!');
+}
+
 async function run() {
   const dataSource = await connectToDatabase();
   await seedSpotdataTradingPair(dataSource.getRepository(SpotdataTradingPair));
@@ -115,12 +118,11 @@ async function run() {
   await seedGrowdataMarketMakingPair(
     dataSource.getRepository(GrowdataMarketMakingPair),
   );
-  await seedGrowdataArbitragePair(
-    dataSource.getRepository(GrowdataArbitragePair),
-  );
+
   await seedGrowdataSimplyGrowToken(
     dataSource.getRepository(GrowdataSimplyGrowToken),
   );
+  await seedCustomConfig(dataSource.getRepository(CustomConfigEntity));
   await dataSource.destroy();
 }
 

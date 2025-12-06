@@ -174,7 +174,7 @@ export const removeAllMarketMakingPairs = async (token: string): Promise<unknown
   }
 };
 
-export const updateMarketMakingPair = async (id: string, modifications: MarketMakingPairDto, token: string): Promise<string> => {
+export const updateMarketMakingPair = async (id: string, modifications: Partial<MarketMakingPairDto>, token: string): Promise<string> => {
   try {
     const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
       method: 'POST',
@@ -247,6 +247,47 @@ export const updateArbitragePair = async (id: string, modifications: ArbitragePa
     return 'ok';
   } catch (error) {
     console.error('Error updating arbitrage pair:', error);
+    throw error;
+  }
+};
+
+
+// CCXT Methods
+export const getAllCcxtExchanges = async (token: string): Promise<string[]> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/ccxt-supported`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting all CCXT exchanges:', error);
+    throw error;
+  }
+};
+
+export const getCcxtExchangeDetails = async (exchangeId: string, token: string): Promise<any> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/details/${exchangeId}`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting CCXT exchange details:', error);
+    throw error;
+  }
+};
+
+export const getCcxtExchangeMarkets = async (exchangeId: string, token: string): Promise<any> => {
+  try {
+    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/markets/${exchangeId}`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Error getting CCXT exchange markets:', error);
     throw error;
   }
 };

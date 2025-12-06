@@ -8,7 +8,7 @@ export class SpotdataRepository {
   constructor(
     @InjectRepository(SpotdataTradingPair)
     private readonly tradingPairRepository: Repository<SpotdataTradingPair>,
-  ) {}
+  ) { }
 
   // TradingPair Methods
   async addTradingPair(pair: SpotdataTradingPair) {
@@ -22,6 +22,15 @@ export class SpotdataRepository {
   async findTradingPairById(id: string) {
     return this.tradingPairRepository.findOne({
       where: { id },
+    });
+  }
+
+  async findTradingPairByExchangeAndSymbol(
+    exchange_id: string,
+    symbol: string,
+  ) {
+    return this.tradingPairRepository.findOne({
+      where: { exchange_id, symbol },
     });
   }
 

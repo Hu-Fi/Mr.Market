@@ -8,6 +8,9 @@ export class GrowdataExchange {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  icon_url: string;
+
   @Column({ default: true })
   enable: boolean;
 }
@@ -109,6 +112,9 @@ export class GrowdataMarketMakingPair {
 
   @Column()
   exchange_id: string;
+
+  @Column({ nullable: true })
+  custom_fee_rate: string;
 
   @Column({ default: true })
   enable: boolean;

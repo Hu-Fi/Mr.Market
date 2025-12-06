@@ -1,10 +1,10 @@
 import {
-  GrowdataArbitragePair,
   GrowdataExchange,
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from 'src/common/entities/grow-data.entity';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
+import { CustomConfigEntity } from 'src/common/entities/custom-config.entity';
 
 export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
   {
@@ -20,6 +20,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '150000',
     base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -35,6 +36,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '100000',
     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -50,6 +52,7 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '10000',
     base_asset_id: 'c94ac88f-4671-3976-b60a-09064f1811e8',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -65,18 +68,19 @@ export const defaultSpotdataTradingPairs: SpotdataTradingPair[] = [
     max_sell_amount: '1000',
     base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
     quote_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+    custom_fee_rate: '',
     enable: true,
   },
 ];
 
 export const defaultExchanges: GrowdataExchange[] = [
-  { exchange_id: 'okx', name: 'OKX', enable: true },
-  { exchange_id: 'mexc', name: 'MEXC', enable: true },
-  { exchange_id: 'bigone', name: 'BigONE', enable: true },
-  { exchange_id: 'kraken', name: 'Kraken', enable: true },
-  { exchange_id: 'binance', name: 'Binance', enable: true },
-  { exchange_id: 'bitget', name: 'Bitget', enable: true },
-  { exchange_id: 'bybit', name: 'Bybit', enable: true },
+  { exchange_id: 'okx', name: 'OKX', icon_url: 'https://user-images.githubusercontent.com/1294454/152485636-38b19e4a-bece-4dec-979a-5982859ffc04.jpg', enable: true },
+  { exchange_id: 'mexc', name: 'MEXC', icon_url: 'https://user-images.githubusercontent.com/1294454/137283979-8b2a818d-8633-461b-bfca-de89e8c446b2.jpg', enable: true },
+  { exchange_id: 'bigone', name: 'BigONE', icon_url: 'https://user-images.githubusercontent.com/1294454/69354403-1d532180-0c91-11ea-88ed-44c06cefdf87.jpg', enable: true },
+  { exchange_id: 'kraken', name: 'Kraken', icon_url: 'https://user-images.githubusercontent.com/51840849/76173629-fc67fb00-61b1-11ea-84fe-f2de582f58a3.jpg', enable: true },
+  { exchange_id: 'binance', name: 'Binance', icon_url: 'https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg', enable: true },
+  { exchange_id: 'bitget', name: 'Bitget', icon_url: 'https://user-images.githubusercontent.com/1294454/195989417-4253ddb0-afbe-4a1c-9dea-9dbcd121fa5d.jpg', enable: true },
+  { exchange_id: 'bybit', name: 'Bybit', icon_url: 'https://user-images.githubusercontent.com/51840849/76547799-daff5b80-649e-11ea-87fb-3be9bac08954.jpg', enable: true },
 ];
 
 export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
@@ -94,6 +98,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -110,6 +115,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -126,6 +132,7 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
   {
@@ -142,80 +149,81 @@ export const defaultMarketMakingPairs: GrowdataMarketMakingPair[] = [
       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
     base_price: '',
     target_price: '',
+    custom_fee_rate: '',
     enable: true,
   },
 ];
 
-export const defaultArbitragePairs: GrowdataArbitragePair[] = [
-  {
-    id: '7fef38d5-5644-42e9-9abb-9f8e1a51ff36',
-    symbol: 'BTC/USDT',
-    base_symbol: 'BTC',
-    target_symbol: 'USDT',
-    base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
-    base_icon_url:
-      'https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
-    target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    target_icon_url:
-      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
-    base_price: '',
-    target_price: '',
-    base_exchange_id: 'okx',
-    target_exchange_id: 'lbank',
-    enable: true,
-  },
-  {
-    id: '9684ecfa-198a-4074-8add-3a38ceafe0d6',
-    symbol: 'ETH/USDT',
-    base_symbol: 'ETH',
-    target_symbol: 'USDT',
-    base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
-    base_icon_url:
-      'https://images.mixin.one/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
-    target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    target_icon_url:
-      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
-    base_price: '',
-    target_price: '',
-    base_exchange_id: 'okx',
-    target_exchange_id: 'lbank',
-    enable: true,
-  },
-  {
-    id: '4e1d4a23-3218-4f3a-b6e2-c59f42e64b70',
-    symbol: 'HMT/USDT',
-    base_symbol: 'HMT',
-    target_symbol: 'USDT',
-    base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
-    base_icon_url:
-      'https://images.mixin.one/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
-    target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    target_icon_url:
-      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
-    base_price: '',
-    target_price: '',
-    base_exchange_id: 'okx',
-    target_exchange_id: 'lbank',
-    enable: true,
-  },
-  {
-    id: '4e1d4a23-3218-4f3a-b6e2-c59f42e64b70',
-    symbol: 'XIN/USDT',
-    base_symbol: 'XIN',
-    target_symbol: 'USDT',
-    base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
-    base_icon_url:
-      'https://images.mixin.one/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
-    target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    target_icon_url:
-      'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
-    base_price: '',
-    target_price: '',
-    base_exchange_id: 'okx',
-    target_exchange_id: 'lbank',
-    enable: true,
-  },
-];
+// export const defaultArbitragePairs: GrowdataArbitragePair[] = [
+//   {
+//     id: '7fef38d5-5644-42e9-9abb-9f8e1a51ff36',
+//     symbol: 'BTC/USDT',
+//     base_symbol: 'BTC',
+//     target_symbol: 'USDT',
+//     base_asset_id: 'c6d0c728-2624-429b-8e0d-d9d19b6592fa',
+//     base_icon_url:
+//       'https://images.mixin.one/HvYGJsV5TGeZ-X9Ek3FEQohQZ3fE9LBEBGcOcn4c4BNHovP4fW4YB97Dg5LcXoQ1hUjMEgjbl1DPlKg1TW7kK6XP=s128',
+//     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+//     target_icon_url:
+//       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+//     base_price: '',
+//     target_price: '',
+//     base_exchange_id: 'okx',
+//     target_exchange_id: 'lbank',
+//     enable: true,
+//   },
+//   {
+//     id: '9684ecfa-198a-4074-8add-3a38ceafe0d6',
+//     symbol: 'ETH/USDT',
+//     base_symbol: 'ETH',
+//     target_symbol: 'USDT',
+//     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
+//     base_icon_url:
+//       'https://images.mixin.one/zVDjOxNTQvVsA8h2B4ZVxuHoCF3DJszufYKWpd9duXUSbSapoZadC7_13cnWBqg0EmwmRcKGbJaUpA8wFfpgZA=s128',
+//     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+//     target_icon_url:
+//       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+//     base_price: '',
+//     target_price: '',
+//     base_exchange_id: 'okx',
+//     target_exchange_id: 'lbank',
+//     enable: true,
+//   },
+//   {
+//     id: '4e1d4a23-3218-4f3a-b6e2-c59f42e64b70',
+//     symbol: 'HMT/USDT',
+//     base_symbol: 'HMT',
+//     target_symbol: 'USDT',
+//     base_asset_id: '30e340a7-3284-3f04-8594-fbdd8f2da79f',
+//     base_icon_url:
+//       'https://images.mixin.one/rXVPsR7G8pZsAuWB2-UUDd1q8Ok4amyZwkBaRJt9qFDHruTnYKR0tffYoDwzz4-nHwnsKRyy26wRJaVXc5_kOj6eP3JKlgJYVCGMJg=s128',
+//     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+//     target_icon_url:
+//       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+//     base_price: '',
+//     target_price: '',
+//     base_exchange_id: 'okx',
+//     target_exchange_id: 'lbank',
+//     enable: true,
+//   },
+//   {
+//     id: '4e1d4a23-3218-4f3a-b6e2-c59f42e64b70',
+//     symbol: 'XIN/USDT',
+//     base_symbol: 'XIN',
+//     target_symbol: 'USDT',
+//     base_asset_id: '43d61dcd-e413-450d-80b8-101d5e903357',
+//     base_icon_url:
+//       'https://images.mixin.one/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128',
+//     target_asset_id: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
+//     target_icon_url:
+//       'https://images.mixin.one/ndNBEpObYs7450U08oAOMnSEPzN66SL8Mh-f2pPWBDeWaKbXTPUIdrZph7yj8Z93Rl8uZ16m7Qjz-E-9JFKSsJ-F=s128',
+//     base_price: '',
+//     target_price: '',
+//     base_exchange_id: 'okx',
+//     target_exchange_id: 'lbank',
+//     enable: true,
+//   },
+// ];
 
 export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
   {
@@ -273,3 +281,14 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
     enable: true,
   },
 ];
+
+export const defaultCustomConfig: CustomConfigEntity = {
+  config_id: 1,
+  spot_fee: '0.002',
+  market_making_fee: '0.002',
+  enable_spot_fee: true,
+  enable_market_making_fee: true,
+  max_balance_mixin_bot: '0',
+  max_balance_single_api_key: '0',
+  funding_account: '',
+};
