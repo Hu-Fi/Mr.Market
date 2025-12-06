@@ -6,7 +6,6 @@ import { createCompositeKey } from 'src/common/helpers/subscriptionKey';
 import { CustomLogger } from '../../infrastructure/logger/logger.service';
 import { decodeTicker } from 'src/common/helpers/marketdata/decoder';
 import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
-import { AdminMarketMakingConfigService } from '../../admin/market-making-config/admin-market-making-config.service';
 
 export type marketDataType = 'orderbook' | 'OHLCV' | 'ticker' | 'tickers';
 
@@ -23,7 +22,6 @@ export class MarketdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private ExchangeInitService: ExchangeInitService,
-    private adminConfigService: AdminMarketMakingConfigService,
   ) { }
 
   async getSupportedExchanges(): Promise<string[]> {
@@ -104,7 +102,8 @@ export class MarketdataService {
   }
 
   async _getSupportedPairs(): Promise<any> {
-    const enabledConfigs = await this.adminConfigService.getEnabledPairs();
+    // const enabledConfigs = await this.adminConfigService.getEnabledPairs();
+    const enabledConfigs = [];
     const results = [];
 
     for (const config of enabledConfigs) {
@@ -318,9 +317,10 @@ export class MarketdataService {
   }
 
   async getSupportedSymbols(exchangeName: string): Promise<string[]> {
-    const enabledConfigs = await this.adminConfigService.getEnabledPairs(
-      exchangeName,
-    );
+    // const enabledConfigs = await this.adminConfigService.getEnabledPairs(
+    //   exchangeName,
+    // );
+    const enabledConfigs = [];
     return enabledConfigs.map((config) => config.symbol);
   }
 

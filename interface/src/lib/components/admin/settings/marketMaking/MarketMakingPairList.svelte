@@ -101,14 +101,14 @@
           {#each marketMakingPairs as pair}
             <tr class="hover:bg-base-200/30 transition-colors">
               <td>
-                <div class="flex -space-x-3 overflow-hidden">
+                <div class="flex -space-x-3">
                   <img
-                    class="inline-block h-8 w-8 rounded-full ring-2 ring-base-100"
+                    class="inline-block min-w-8 min-h-8 h-8 w-8 rounded-full ring-2 ring-base-100"
                     src={pair.base_icon_url}
                     alt=""
                   />
                   <img
-                    class="inline-block h-8 w-8 rounded-full ring-2 ring-base-100"
+                    class="inline-block min-w-8 min-h-8 h-8 w-8 rounded-full ring-2 ring-base-100"
                     src={pair.target_icon_url}
                     alt=""
                   />

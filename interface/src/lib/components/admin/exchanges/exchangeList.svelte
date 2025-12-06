@@ -113,7 +113,7 @@
             <tr class="hover:bg-base-200/30 transition-colors">
               <td class="p-3">
                 {#if exchange.icon_url}
-                  <div class="w-full h-full rounded-xl bg-base-200">
+                  <div class="w-full h-full rounded-xl bg-base-200 min-w-12">
                     <img src={exchange.icon_url} alt={exchange.name} />
                   </div>
                 {:else}
