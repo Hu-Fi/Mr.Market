@@ -41,7 +41,6 @@ describe('MarketMakingListener', () => {
       action: 'create',
       marketMakingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
       orderId: '1043e42c-dd12-4260-a443-d1896b64eae4',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
     };
 
     const mockSnapshot: SafeSnapshot = {
@@ -93,7 +92,6 @@ describe('MarketMakingListener', () => {
       action: 'create',
       marketMakingPairId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
       orderId: '1043e42c-dd12-4260-a443-d1896b64eae4',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
     };
 
     const mockSnapshot: SafeSnapshot = {

@@ -2,12 +2,10 @@ import {
   TARDING_TYPE_MAP,
   SPOT_ORDER_TYPE_MAP,
   SPOT_EXCHANGE_MAP,
-  ARBITRAGE_MEMO_ACTION_MAP,
   MARKET_MAKING_MEMO_ACTION_MAP,
   SIMPLY_GROW_MEMO_ACTION_MAP,
 } from 'src/common/constants/memo';
 import {
-  ArbitrageCreateMemoDetails,
   ExchangeIndexValue,
   SpotMemoDetails,
   SpotOrderTypeValue,
@@ -19,8 +17,13 @@ import { base58, getAddress } from 'ethers/lib/utils';
 import { createHash } from 'crypto';
 
 export const computeMemoChecksum = (buffer: Buffer): Buffer => {
-  const hash = createHash('sha256').update(buffer).digest();
-  return createHash('sha256').update(hash).digest().subarray(0, 4);
+  const hash = createHash('sha256')
+    .update(buffer as unknown as Uint8Array)
+    .digest();
+  return createHash('sha256')
+    .update(hash as unknown as Uint8Array)
+    .digest()
+    .subarray(0, 4);
 };
 
 function bufferToUuid(buffer: Buffer): string {
@@ -63,8 +66,7 @@ export const encodeSimplyGrowCreateMemo = (details: {
   tradingType: string;
   action: string;
   orderId: string;
-  rewardAddress: string;
-}): string => {
+}): string => { // Remove rewardAddress argument
   // Get numeric keys for tradingType and action
   const tradingTypeKey = Number(
     Object.keys(TARDING_TYPE_MAP).find(
@@ -87,10 +89,6 @@ export const encodeSimplyGrowCreateMemo = (details: {
   const actionBuffer = Buffer.from([actionKey]);
 
   const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
-  const rewardAddressBuffer = Buffer.from(
-    details.rewardAddress.replace(/^0x/, ''),
-    'hex',
-  ); // Ethereum address as binary
 
   // Concatenate all parts
   const payload = Buffer.concat([
@@ -98,66 +96,13 @@ export const encodeSimplyGrowCreateMemo = (details: {
     tradingTypeBuffer,
     actionBuffer,
     orderIdBuffer,
-    rewardAddressBuffer,
-  ]);
+  ] as Uint8Array[]);
 
   // Compute checksum
   const checksum = computeMemoChecksum(payload);
 
   // Concatenate payload and checksum
-  const completeBuffer = Buffer.concat([payload, checksum]);
-  return base58.encode(completeBuffer);
-};
-
-export const encodeArbitrageCreateMemo = (
-  details: ArbitrageCreateMemoDetails,
-): string => {
-  // Get numeric keys for tradingType and action
-  const tradingTypeKey = Number(
-    Object.keys(TARDING_TYPE_MAP).find(
-      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
-    ),
-  );
-  const actionKey = Number(
-    Object.keys(ARBITRAGE_MEMO_ACTION_MAP).find(
-      (key) => ARBITRAGE_MEMO_ACTION_MAP[key] === details.action,
-    ),
-  );
-
-  if (tradingTypeKey === undefined || actionKey === undefined) {
-    throw new Error('Invalid memo details');
-  }
-
-  // Serialize fields into binary
-  const versionBuffer = Buffer.from([details.version]);
-  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
-  const actionBuffer = Buffer.from([actionKey]);
-
-  const arbitragePairIdBuffer = Buffer.from(
-    details.arbitragePairId.replace(/-/g, ''),
-    'hex',
-  ); // UUID as binary
-  const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
-  const rewardAddressBuffer = Buffer.from(
-    details.rewardAddress.replace(/^0x/, ''),
-    'hex',
-  ); // Ethereum address as binary
-
-  // Concatenate all parts
-  const payload = Buffer.concat([
-    versionBuffer,
-    tradingTypeBuffer,
-    actionBuffer,
-    arbitragePairIdBuffer,
-    orderIdBuffer,
-    rewardAddressBuffer,
-  ]);
-
-  // Compute checksum
-  const checksum = computeMemoChecksum(payload);
-
-  // Concatenate payload and checksum
-  const completeBuffer = Buffer.concat([payload, checksum]);
+  const completeBuffer = Buffer.concat([payload, checksum] as Uint8Array[]);
   return base58.encode(completeBuffer);
 };
 
@@ -190,10 +135,6 @@ export const encodeMarketMakingCreateMemo = (
     'hex',
   ); // UUID as binary
   const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
-  const rewardAddressBuffer = Buffer.from(
-    details.rewardAddress.replace(/^0x/, ''),
-    'hex',
-  ); // Ethereum address as binary
 
   // Concatenate all parts
   const payload = Buffer.concat([
@@ -202,14 +143,13 @@ export const encodeMarketMakingCreateMemo = (
     actionBuffer,
     marketMakingPairIdBuffer,
     orderIdBuffer,
-    rewardAddressBuffer,
-  ]);
+  ] as Uint8Array[]);
 
   // Compute checksum
   const checksum = computeMemoChecksum(payload);
 
   // Concatenate payload and checksum
-  const completeBuffer = Buffer.concat([payload, checksum]);
+  const completeBuffer = Buffer.concat([payload, checksum] as Uint8Array[]);
   return base58.encode(completeBuffer);
 };
 
@@ -267,10 +207,6 @@ export const decodeSimplyGrowCreateMemo = (
   offset += 16;
   const orderId = bufferToUuid(orderIdBuffer);
 
-  // RewardAddressBuffer (remaining bytes)
-  const rewardAddressBuffer = payload.subarray(offset);
-  const rewardAddress = getAddress(`0x${rewardAddressBuffer.toString('hex')}`);
-
   // Map tradingTypeKey and actionKey back to their values
   const tradingType = TARDING_TYPE_MAP[tradingTypeKey];
   const action = SIMPLY_GROW_MEMO_ACTION_MAP[actionKey];
@@ -285,61 +221,6 @@ export const decodeSimplyGrowCreateMemo = (
     tradingType,
     action,
     orderId,
-    rewardAddress,
-  };
-
-  return details;
-};
-
-export const decodeArbitrageCreateMemo = (
-  payload: Buffer,
-): ArbitrageCreateMemoDetails => {
-  // Memo is base58 decoded, now parse the payload
-  let offset = 0;
-
-  // Version (1 byte)
-  const version = payload.readUInt8(offset);
-  offset += 1;
-
-  // TradingTypeKey (1 byte)
-  const tradingTypeKey = payload.readUInt8(offset);
-  offset += 1;
-
-  // ActionKey (1 byte)
-  const actionKey = payload.readUInt8(offset);
-  offset += 1;
-
-  // ArbitragePairIdBuffer (16 bytes for UUID)
-  const arbitragePairIdBuffer = payload.subarray(offset, offset + 16);
-  offset += 16;
-  const arbitragePairId = bufferToUuid(arbitragePairIdBuffer);
-
-  // OrderIdBuffer (16 bytes for UUID)
-  const orderIdBuffer = payload.subarray(offset, offset + 16);
-  offset += 16;
-  const orderId = bufferToUuid(orderIdBuffer);
-
-  // RewardAddressBuffer (remaining bytes)
-  const rewardAddressBuffer = payload.subarray(offset);
-  // Convert to Ethereum address
-  const rewardAddress = getAddress(`0x${rewardAddressBuffer.toString('hex')}`);
-
-  // Map tradingTypeKey and actionKey back to their values
-  const tradingType = TARDING_TYPE_MAP[tradingTypeKey];
-  const action = ARBITRAGE_MEMO_ACTION_MAP[actionKey];
-
-  if (tradingType === undefined || action === undefined) {
-    throw new Error('Invalid tradingType or action');
-  }
-
-  // Construct the ArbitrageCreateMemoDetails object
-  const details: ArbitrageCreateMemoDetails = {
-    version,
-    tradingType,
-    action,
-    arbitragePairId,
-    orderId,
-    rewardAddress,
   };
 
   return details;
@@ -373,10 +254,6 @@ export const decodeMarketMakingCreateMemo = (
   offset += 16;
   const orderId = bufferToUuid(orderIdBuffer);
 
-  // RewardAddressBuffer (remaining bytes)
-  const rewardAddressBuffer = payload.subarray(offset);
-  const rewardAddress = getAddress(`0x${rewardAddressBuffer.toString('hex')}`);
-
   // Map tradingTypeKey and actionKey back to their values
   const tradingType = TARDING_TYPE_MAP[tradingTypeKey];
   const action = MARKET_MAKING_MEMO_ACTION_MAP[actionKey];
@@ -392,7 +269,6 @@ export const decodeMarketMakingCreateMemo = (
     action,
     marketMakingPairId,
     orderId,
-    rewardAddress,
   };
 
   return details;

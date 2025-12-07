@@ -1,5 +1,4 @@
 import {
-  ARBITRAGE_MEMO_ACTION_MAP,
   MARKET_MAKING_MEMO_ACTION_MAP,
   SIMPLY_GROW_MEMO_ACTION_MAP,
   SPOT_EXCHANGE_MAP,
@@ -11,10 +10,6 @@ import {
 export type TradingType = keyof typeof TARDING_TYPE_MAP;
 export type SpotOrderType = keyof typeof SPOT_ORDER_TYPE_MAP;
 export type ExchangeIndex = keyof typeof SPOT_EXCHANGE_MAP;
-
-export type ArbitrageMemoActionType = keyof typeof ARBITRAGE_MEMO_ACTION_MAP;
-export type ArbitrageMemoActionValueType =
-  (typeof ARBITRAGE_MEMO_ACTION_MAP)[keyof typeof ARBITRAGE_MEMO_ACTION_MAP];
 
 export type MarketMakingMemoActionType =
   keyof typeof MARKET_MAKING_MEMO_ACTION_MAP;
@@ -41,31 +36,12 @@ export interface SpotMemoDetails {
   refId?: string;
 }
 
-// New
-
-export interface ArbitrageCreateMemoDetails {
-  version: number;
-  tradingType: TradingTypeValue;
-  action: ArbitrageMemoActionType;
-  arbitragePairId: string;
-  orderId: string;
-  rewardAddress: string;
-}
-
-export interface ArbitrageAddMemoDetails {
-  version: number;
-  tradingType: TradingTypeValue;
-  action: ArbitrageMemoActionType;
-  orderId: string;
-}
-
 export interface MarketMakingCreateMemoDetails {
   version: number;
   tradingType: TradingTypeValue;
   action: MarketMakingMemoActionType;
   marketMakingPairId: string;
   orderId: string;
-  rewardAddress: string;
 }
 
 export interface MarketMakingAddMemoDetails {
@@ -80,7 +56,6 @@ export interface SimplyGrowCreateMemoDetails {
   tradingType: TradingTypeValue;
   action: SimplyGrowMemoActionType;
   orderId: string;
-  rewardAddress: string;
 }
 
 export interface SimplyGrowAddMemoDetails {
