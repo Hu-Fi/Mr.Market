@@ -17,6 +17,7 @@
   import emptyToken from "$lib/images/empty-token.svg";
   import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import AmountTypeTab from "$lib/components/grow/marketMaking/createNew/amount/amountTypeTab.svelte";
+  import Loading from "$lib/components/common/loading.svelte";
 
   import { onMount } from "svelte";
   import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
@@ -24,6 +25,7 @@
 
   let supportedMarketMakingExchanges: string[] = [];
   let allMarketMakingPairs: MarketMakingPair[] = [];
+  let loading = true;
 
   $: supportedTradingpairs = allMarketMakingPairs
     .filter((p) => !exchangeName || p.exchange_id === exchangeName)
@@ -41,6 +43,7 @@
           .map((e) => e.exchange_id);
       }
     }
+    loading = false;
   });
 
   const selectExchange = (exchangeName: string) => {
@@ -132,31 +135,37 @@
 
 <!-- Step 1: Choose Exchange -->
 {#if !exchangeName}
-  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
-    <div class="text-center">
-      <ChooseExchange />
+  {#if loading}
+    <div class="flex flex-col items-center justify-center grow h-[calc(90vh)]">
+      <Loading />
     </div>
-    <div
-      class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
-        bg-gradient-radial from-sky-100 via-white to-white
-        max-h-[50vh] overflow-y-auto"
-    >
-      {#each supportedMarketMakingExchanges as exchangeName}
-        <ChooseExchangeSmallBtn
-          {exchangeName}
-          onClick={() => selectExchange(exchangeName)}
-        />
-      {/each}
+  {:else}
+    <div class="flex flex-col items-center grow h-[calc(100vh-64px)] mt-[10vh]">
+      <div class="text-center">
+        <ChooseExchange />
+      </div>
+      <div
+        class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
+          bg-gradient-radial from-sky-100 via-white to-white
+          max-h-[50vh] overflow-y-auto"
+      >
+        {#each supportedMarketMakingExchanges as exchangeName}
+          <ChooseExchangeSmallBtn
+            {exchangeName}
+            onClick={() => selectExchange(exchangeName)}
+          />
+        {/each}
+      </div>
     </div>
-  </div>
 
-  <div class="absolute bottom-24 w-full flex justify-center space-x-2">
-    <SearchExchange onSearch={() => {}} />
-  </div>
-  <SearchExchangeDialog
-    supportedExchanges={supportedMarketMakingExchanges}
-    onSelect={selectExchange}
-  />
+    <div class="absolute bottom-24 w-full flex justify-center space-x-2">
+      <SearchExchange onSearch={() => {}} />
+    </div>
+    <SearchExchangeDialog
+      supportedExchanges={supportedMarketMakingExchanges}
+      onSelect={selectExchange}
+    />
+  {/if}
 
   <!-- Step 2: Choose Trading Pair -->
 {:else if !tradingPair}
