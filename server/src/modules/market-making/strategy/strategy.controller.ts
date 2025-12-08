@@ -183,7 +183,11 @@ export class StrategyController {
     @Query('pair') pair: string,
     @Query('direction') direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
   ) {
-    return this.feeService.calculateInitializationFee(exchange, pair, direction);
+    return await this.feeService.calculateMoveFundsFee(
+      exchange,
+      pair,
+      direction,
+    );
   }
 
   @Post('/execute-volume-strategy')
