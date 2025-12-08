@@ -25,7 +25,6 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
 import {
   memoPreDecode,
-  decodeArbitrageCreateMemo,
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from 'src/common/helpers/mixin/memo';
@@ -530,14 +529,6 @@ export class SnapshotsService {
             break;
           }
           this.events.emit('market_making.create', mmDetails, snapshot);
-          break;
-        case 4:
-          // Arbitrage
-          const arbDetails = decodeArbitrageCreateMemo(payload);
-          if (!arbDetails) {
-            break;
-          }
-          this.events.emit('arbitrage.create', arbDetails, snapshot);
           break;
         default:
           // Refund
