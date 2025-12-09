@@ -2,7 +2,9 @@ import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { WithdrawalService } from './withdrawal.service';
 import { UserOrdersService } from '../user-orders/user-orders.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Exchange')
 @Controller('withdrawals')
 export class UserWithdrawalController {
   constructor(

@@ -129,21 +129,16 @@ export class SnapshotsService {
       // the index of ghost keys must be the same with the index of outputs
       // but withdrawal output doesnt need ghost key, so index + 1
       const ghosts = await this.client.utxo.ghostKey(
-        recipients
-          .filter((r) => 'members' in r)
-          .map((r, i) => ({
-            hint: randomUUID(),
-            receivers: (r as SafeMixinRecipient).members,
-            index: i + 1,
-          })),
+        recipients,
+        randomUUID(),
+        this.spendKey,
       );
       const tx = buildSafeTransaction(
         utxos,
         recipients,
-        [undefined, ...ghosts],
-        memo,
+        ghosts,
+        Buffer.from(memo),
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
 
@@ -164,21 +159,17 @@ export class SnapshotsService {
         );
       }
       const feeGhosts = await this.client.utxo.ghostKey(
-        feeRecipients.map((r, i) => ({
-          hint: randomUUID(),
-          // @ts-expect-error type
-          receivers: r.members,
-          index: i,
-        })),
+        feeRecipients,
+        randomUUID(),
+        this.spendKey,
       );
       const feeTx = buildSafeTransaction(
         feeUtxos,
         feeRecipients,
         feeGhosts,
-        'withdrawal-fee-memo',
+        Buffer.from('withdrawal-fee-memo'),
         [ref],
       );
-      // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
 
       const txId = randomUUID();
@@ -194,10 +185,8 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const signedFeeRaw = signSafeTransaction(
-        // @ts-expect-error type
         feeTx,
         txs[1].views,
         this.spendKey,
@@ -248,22 +237,17 @@ export class SnapshotsService {
       // the index of ghost keys must be the same with the index of outputs
       // but withdrawal output doesnt need ghost key, so index + 1
       const ghosts = await this.client.utxo.ghostKey(
-        recipients
-          .filter((r) => 'members' in r)
-          .map((r, i) => ({
-            hint: randomUUID(),
-            receivers: (r as SafeMixinRecipient).members,
-            index: i + 1,
-          })),
+        recipients,
+        randomUUID(),
+        this.spendKey,
       );
       // spare the 0 inedx for withdrawal output, withdrawal output doesnt need ghost key
       const tx = buildSafeTransaction(
         utxos,
         recipients,
-        [undefined, ...ghosts],
-        'withdrawal-memo',
+        ghosts,
+        Buffer.from('withdrawal-memo'),
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
@@ -274,7 +258,6 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const res = await this.client.utxo.sendTransactions([
         {
@@ -323,14 +306,11 @@ export class SnapshotsService {
       );
     }
     const ghosts = await this.client.utxo.ghostKey(
-      recipients.map((r, i) => ({
-        hint: randomUUID(),
-        receivers: r[0].members,
-        index: i,
-      })),
+      recipients,
+      randomUUID(),
+      this.spendKey,
     );
-    const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
-    // @ts-expect-error type
+    const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from('Refund'));
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -342,7 +322,6 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
-      // @ts-expect-error type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -376,7 +355,6 @@ export class SnapshotsService {
 
       // Group outputs by asset ID
       const groupedByAssetId = outputs.reduce((acc, output) => {
-        // @ts-expect-error SDK type is wrong
         const assetId = output.asset_id;
         if (!acc[assetId]) {
           acc[assetId] = [];

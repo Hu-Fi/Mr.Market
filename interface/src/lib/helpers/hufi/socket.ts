@@ -11,7 +11,7 @@ import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrd
 
 // /spot
 export const connectOrderBook = (): Socket => {
-  const socket = io(`${HUFI_SOCKET_URL}/marketdata`);
+  const socket = io(`${HUFI_SOCKET_URL}/market`);
 
   socket.on("connect", () => {
     subscribeOrderBook(socket);
@@ -59,7 +59,7 @@ export const switchSpotPair = (socket: Socket, p: PairsData) => {
 
 // /market/candle/{EXCHANGE}/{PAIR}
 export const connectCandleStick = (): Socket => {
-  const socket = io(`${HUFI_SOCKET_URL}/marketdata`);
+  const socket = io(`${HUFI_SOCKET_URL}/market`);
 
   socket.on("connect", () => {
     subscribeCandleStick(socket);

@@ -27,7 +27,7 @@ import { StrategyInstance } from 'src/common/entities/strategy-instances.entity'
 import { AdminStrategyService } from '../../admin/strategy/adminStrategy.service';
 import { FeeService } from './fee.service'; // Assuming FeeService is needed, if not remove it. Wait, it was used in estimateFees which I kept.
 
-@ApiTags('strategy')
+@ApiTags('Trading Engine')
 @Controller('strategy')
 export class StrategyController {
   constructor(

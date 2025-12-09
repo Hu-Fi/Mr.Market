@@ -29,7 +29,7 @@
     "migration:seed": "ts-node src/database/seeder/seed.ts"
   },
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^7.0.8",
+    "@mixin.dev/mixin-node-sdk": "^7.4.7",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bull": "^11.0.4",
     "@nestjs/cache-manager": "^2.1.1",

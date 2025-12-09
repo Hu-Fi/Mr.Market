@@ -3,10 +3,10 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { MarketdataService } from './market-data.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('marketdata')
-@Controller('marketdata')
+@ApiTags('Data')
+@Controller('market')
 export class MarketDataController {
-  constructor(private marketDataService: MarketdataService) {}
+  constructor(private marketDataService: MarketdataService) { }
 
   @Get('/ohlcv')
   @ApiOperation({ summary: 'Get OHLCV data' })

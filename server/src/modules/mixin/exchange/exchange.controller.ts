@@ -6,13 +6,13 @@ import { ExchangeService } from './exchange.service';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 
 // This API is used for admin page to do rebalance
-@ApiTags('exchange')
+@ApiTags('Exchange')
 @Controller('exchange')
 @UseGuards(JwtAuthGuard)
 export class ExchangeController {
   private readonly logger = new CustomLogger(ExchangeController.name);
 
-  constructor(private readonly exchagneService: ExchangeService) {}
+  constructor(private readonly exchagneService: ExchangeService) { }
 
   @Post('/withdrawal/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })

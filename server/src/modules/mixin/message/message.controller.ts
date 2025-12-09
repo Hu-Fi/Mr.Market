@@ -20,13 +20,13 @@ import {
 } from './message.dto';
 import { MessageService } from './message.service';
 
-@ApiTags('message')
-@Controller('message')
+@ApiTags('Mixin')
+@Controller('mixin/message')
 @UseGuards(JwtAuthGuard)
 export class MessageController {
   private readonly logger = new CustomLogger(MessageController.name);
 
-  constructor(private readonly messageService: MessageService) {}
+  constructor(private readonly messageService: MessageService) { }
 
   @Post('/broadcast')
   @ApiOperation({ summary: 'Broadcast message to all users' })
@@ -46,7 +46,7 @@ export class MessageController {
     }
   }
 
-  @Post('/pm')
+  @Post('/private_message')
   @ApiOperation({ summary: 'Private message to specific user' })
   @ApiResponse({ status: 200, description: 'Message sent successfully.' })
   @ApiBadRequestResponse({ description: 'Send message failed.' })
