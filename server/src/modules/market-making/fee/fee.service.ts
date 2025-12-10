@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { MixinApi, KeystoreClientReturnType, SafeWithdrawalFee } from '@mixin.dev/mixin-node-sdk';
 import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import { CustomLogger } from '../../infrastructure/logger/logger.service';
+import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class FeeService {
@@ -81,7 +82,7 @@ export class FeeService {
 
         const base_mixin_fee = this.getMixinDepositFee(base_asset.chain_id);
         const quote_mixin_fee = this.getMixinDepositFee(quote_asset.chain_id);
-        mixin_deposit_fee = base_mixin_fee + quote_mixin_fee;
+        mixin_deposit_fee = BigNumber(base_mixin_fee).plus(quote_mixin_fee).toNumber();
 
       } else if (direction === 'withdraw_external') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
