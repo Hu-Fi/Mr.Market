@@ -25,6 +25,10 @@ export class MessageService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    if (!this.client) {
+      this.logger.warn('Mixin client is not initialized, skipping message handler');
+      return;
+    }
     this.client.blaze.loop(this.messageHandler);
     this.logger.log('Start handling mixin messages');
   }
