@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MixinApi, KeystoreClientReturnType, SafeWithdrawalFee } from '@mixin.dev/mixin-node-sdk';
+import { KeystoreClientReturnType, SafeWithdrawalFee } from '@mixin.dev/mixin-node-sdk';
 import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import { CustomLogger } from '../../infrastructure/logger/logger.service';
 import BigNumber from 'bignumber.js';
+import { MixinClientService } from '../../mixin/client/mixin-client.service';
 
 @Injectable()
 export class FeeService {
@@ -35,21 +35,9 @@ export class FeeService {
 
   constructor(
     private readonly exchangeInitService: ExchangeInitService,
-    private readonly configService: ConfigService,
+    private readonly mixinClientService: MixinClientService,
   ) {
-    const keystore = {
-      app_id: this.configService.get<string>('mixin.app_id'),
-      session_id: this.configService.get<string>('mixin.session_id'),
-      server_public_key: this.configService.get<string>(
-        'mixin.server_public_key',
-      ),
-      session_private_key: this.configService.get<string>(
-        'mixin.session_private_key',
-      ),
-    };
-    this.client = MixinApi({
-      keystore: keystore,
-    });
+    this.client = this.mixinClientService.client;
   }
 
   async calculateMoveFundsFee(

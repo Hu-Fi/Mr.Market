@@ -25,4 +25,4 @@ import { ExchangeUserController } from './exchange-client.controller';
   exports: [ExchangeService, ExchangeRepository],
   controllers: [ExchangeController, ExchangeUserController],
 })
-export class ExchangeModule {}
+export class ExchangeModule { }

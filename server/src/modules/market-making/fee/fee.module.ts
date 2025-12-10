@@ -5,8 +5,10 @@ import { ExchangeInitModule } from '../../infrastructure/exchange-init/exchange-
 
 import { FeeController } from './fee.controller';
 
+import { MixinClientModule } from '../../mixin/client/mixin-client.module';
+
 @Module({
-  imports: [ConfigModule, ExchangeInitModule],
+  imports: [ConfigModule, ExchangeInitModule, MixinClientModule],
   controllers: [FeeController],
   providers: [FeeService],
   exports: [FeeService],

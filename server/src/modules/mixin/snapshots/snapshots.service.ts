@@ -1,11 +1,9 @@
 import { randomUUID } from 'crypto';
 import BigNumber from 'bignumber.js';
-import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  MixinApi,
   SafeSnapshot,
   KeystoreClientReturnType,
   buildSafeTransactionRecipient,
@@ -28,9 +26,12 @@ import {
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from 'src/common/helpers/mixin/memo';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { MixinClientService } from '../client/mixin-client.service';
 
 @Injectable()
-export class SnapshotsService {
+export class SnapshotsService implements OnApplicationBootstrap {
   private events: EventEmitter2;
   private keystore: Keystore;
   private spendKey: string;
@@ -42,26 +43,22 @@ export class SnapshotsService {
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
     private snapshotsRepository: SnapshotsRepository,
+    @InjectQueue('snapshots') private snapshotsQueue: Queue,
+    private mixinClientService: MixinClientService,
   ) {
-    this.keystore = {
-      app_id: this.configService.get<string>('mixin.app_id'),
-      session_id: this.configService.get<string>('mixin.session_id'),
-      server_public_key: this.configService.get<string>(
-        'mixin.server_public_key',
-      ),
-      session_private_key: this.configService.get<string>(
-        'mixin.session_private_key',
-      ),
-    };
-    this.spendKey = this.configService.get<string>('mixin.spend_private_key');
-    this.client = MixinApi({
-      keystore: this.keystore,
-    });
+
+    this.keystore = this.mixinClientService.keystore;
+    this.spendKey = this.mixinClientService.spendKey;
+    this.client = this.mixinClientService.client;
     this.events = this.eventEmitter;
 
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
     this.logger.debug(this.enableCron);
+  }
+
+  async onApplicationBootstrap() {
+    await this.startSnapshotLoop();
   }
 
   async depositAddress(asset_id: string) {
@@ -414,23 +411,34 @@ export class SnapshotsService {
     }
   }
 
-  async fetchAndProcessSnapshots() {
+  async fetchSnapshotsOnly(): Promise<SafeSnapshot[]> {
     try {
       const snapshots = await this.client.safe.fetchSafeSnapshots({});
       if (!snapshots) {
-        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
-        return;
+        this.logger.error(`fetchSnapshotsOnly()=> No snapshots`);
+        return [];
       }
+      return snapshots;
+    } catch (error) {
+      this.logger.error(`Failed to fetch snapshots: ${error}`);
+      return [];
+    }
+  }
+
+  // Legacy method, kept if needed but now logic is distributed
+  async fetchAndProcessSnapshots() {
+    try {
+      const snapshots = await this.fetchSnapshotsOnly();
       snapshots.forEach(async (snapshot: SafeSnapshot) => {
         await this.handleSnapshot(snapshot);
       });
       return snapshots;
     } catch (error) {
-      this.logger.error(`Failed to fetch snapshots: ${error}`);
+      this.logger.error(`Failed to fetch and process snapshots: ${error}`);
     }
   }
 
-  private async handleSnapshot(snapshot: SafeSnapshot) {
+  async handleSnapshot(snapshot: SafeSnapshot) {
     const exist = await this.snapshotsRepository.checkSnapshotExist(
       snapshot.snapshot_id,
     );
@@ -519,13 +527,21 @@ export class SnapshotsService {
     }
   }
 
-  @Cron('*/5 * * * * *') // Every 5 seconds
-  async handleSnapshots(): Promise<void> {
-    // Check if the cron is enabled
+  async startSnapshotLoop() {
     if (this.enableCron) {
-      await this.fetchAndProcessSnapshots();
-    } else {
-      return;
+      this.logger.log('Starting snapshot polling loop via Bull...');
+      // remove old jobs to avoid duplicates on restart if not using repeatable
+      // For recursive jobs, just add one.
+      await this.snapshotsQueue.add('poll_snapshots', {}, {
+        removeOnComplete: true,
+      });
     }
+  }
+
+  // Replaced by Bull Processor
+  // @Cron('*/5 * * * * *') // Every 5 seconds
+  async handleSnapshots(): Promise<void> {
+    // Legacy cron handler - disabled in favor of Bull
+    return;
   }
 }

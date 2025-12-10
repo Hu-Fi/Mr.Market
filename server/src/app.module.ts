@@ -71,7 +71,6 @@ import { MetricsModule } from './modules/market-making/metrics/metrics.module';
 import { Withdrawal } from './common/entities/withdrawal.entity';
 import { Campaign } from './common/entities/campaign.entity';
 import { CampaignParticipation } from './common/entities/campaign-participation.entity';
-import { WithdrawalModule } from './modules/market-making/withdrawal/withdrawal.module';
 import { MmCampaignModule } from './modules/market-making/campaign/mm-campaign.module';
 
 dotenv.config();
@@ -157,7 +156,6 @@ dotenv.config();
     Web3Module,
     MetricsModule,
     UserOrdersModule,
-    WithdrawalModule,
     MmCampaignModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],

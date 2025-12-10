@@ -4,7 +4,6 @@ import { SnapshotsModule } from './snapshots/snapshots.module';
 // import { RebalanceModule } from './rebalance/rebalance.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { UserModule } from './user/user.module';
-import { WithdrawalModule } from '../market-making/withdrawal/withdrawal.module';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { WithdrawalModule } from '../market-making/withdrawal/withdrawal.module'
     MessageModule,
     UserModule,
     // RebalanceModule,
-    forwardRef(() => WithdrawalModule),
   ],
   exports: [
     ExchangeModule,
