@@ -20,7 +20,7 @@ import {
   SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
-import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
+
 import {
   memoPreDecode,
   decodeMarketMakingCreateMemo,
@@ -42,7 +42,6 @@ export class SnapshotsService implements OnApplicationBootstrap {
   constructor(
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
-    private snapshotsRepository: SnapshotsRepository,
     @InjectQueue('snapshots') private snapshotsQueue: Queue,
     private mixinClientService: MixinClientService,
   ) {
@@ -403,25 +402,35 @@ export class SnapshotsService implements OnApplicationBootstrap {
     }
   }
 
-  async createSnapshot(snapshot: SafeSnapshot) {
-    try {
-      return await this.snapshotsRepository.createSnapshot(snapshot);
-    } catch (e) {
-      this.logger.error(`createSnapshot()=> ${e}`);
-    }
-  }
-
   async fetchSnapshotsOnly(): Promise<SafeSnapshot[]> {
     try {
-      const snapshots = await this.client.safe.fetchSafeSnapshots({});
-      if (!snapshots) {
-        this.logger.error(`fetchSnapshotsOnly()=> No snapshots`);
+      const redis = (this.snapshotsQueue as any).client;
+      const cursor = await redis.get('snapshots:cursor');
+      const offset = cursor || new Date().toISOString();
+
+      const snapshots = await this.client.safe.fetchSafeSnapshots({
+        offset,
+        limit: 500,
+        order: 'DESC',
+      } as any);
+
+      if (!snapshots || snapshots.length === 0) {
         return [];
       }
+
       return snapshots;
     } catch (error) {
       this.logger.error(`Failed to fetch snapshots: ${error}`);
       return [];
+    }
+  }
+
+  async updateSnapshotCursor(timestamp: string) {
+    try {
+      const redis = (this.snapshotsQueue as any).client;
+      await redis.set('snapshots:cursor', timestamp);
+    } catch (error) {
+      this.logger.error(`Failed to update snapshot cursor: ${error}`);
     }
   }
 
@@ -439,38 +448,15 @@ export class SnapshotsService implements OnApplicationBootstrap {
   }
 
   async handleSnapshot(snapshot: SafeSnapshot) {
-    const exist = await this.snapshotsRepository.checkSnapshotExist(
-      snapshot.snapshot_id,
-    );
-    if (exist) {
-      return;
-    }
     if (!snapshot.memo) {
-      await this.createSnapshot(snapshot);
       this.logger.warn('snapshot no memo, return');
       return;
     }
     if (snapshot.memo.length === 0) {
-      await this.createSnapshot(snapshot);
       this.logger.warn('snapshot.memo.length === 0, return');
-      // await this.refund(snapshot);
       return;
     }
     try {
-      const exist = await this.snapshotsRepository.checkSnapshotExist(
-        snapshot.snapshot_id,
-      );
-
-      // Snapshot already being processed
-      if (exist) {
-        return;
-      }
-
-      // Snapshot has no memo, store and refund
-      if (!snapshot.memo || snapshot.memo.length === 0) {
-        return;
-      }
-
       this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
       // Hex and Base58 decode memo, verify checksum, refund if invalid
       const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
@@ -522,26 +508,15 @@ export class SnapshotsService implements OnApplicationBootstrap {
       }
     } catch (error) {
       this.logger.error(`handleSnapshot()=> ${error}`);
-    } finally {
-      await this.createSnapshot(snapshot);
     }
   }
 
   async startSnapshotLoop() {
     if (this.enableCron) {
       this.logger.log('Starting snapshot polling loop via Bull...');
-      // remove old jobs to avoid duplicates on restart if not using repeatable
-      // For recursive jobs, just add one.
-      await this.snapshotsQueue.add('poll_snapshots', {}, {
+      await this.snapshotsQueue.add('process_snapshots', {}, {
         removeOnComplete: true,
       });
     }
-  }
-
-  // Replaced by Bull Processor
-  // @Cron('*/5 * * * * *') // Every 5 seconds
-  async handleSnapshots(): Promise<void> {
-    // Legacy cron handler - disabled in favor of Bull
-    return;
   }
 }

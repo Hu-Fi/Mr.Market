@@ -13,9 +13,9 @@ export class SnapshotsProcessor {
     private readonly snapshotsService: SnapshotsService,
   ) { }
 
-  @Process('poll_snapshots')
+  @Process('process_snapshots')
   async handlePollSnapshots(job: Job) {
-    this.logger.log('Polling snapshots...');
+    this.logger.log('Processing snapshots...');
     try {
       const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
 
@@ -27,16 +27,12 @@ export class SnapshotsProcessor {
             removeOnComplete: true,
           });
         }
+        await this.snapshotsService.updateSnapshotCursor(snapshots[0].created_at);
       }
     } catch (error) {
       this.logger.error(`Error polling snapshots: ${error.message}`, error.stack);
     } finally {
-      // Re-queue the poll job
-      // We use a recursive strategy here to ensure we don't overlap polls too aggressively
-      // Alternatively, we could use a Repeatable Job, but this allows dynamic delay if needed.
-      // However, for "best practice" looping, a Repeatable Job is often cleaner if the interval is fixed.
-      // But if we want to ensure "wait 5s AFTER finish", we do this:
-      await (job.queue as any).add('poll_snapshots', {}, {
+      await (job.queue as any).add('process_snapshots', {}, {
         delay: 5000,
         removeOnComplete: true
       });

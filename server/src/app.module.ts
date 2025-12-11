@@ -26,7 +26,7 @@ import { Trade } from './common/entities/trade.entity';
 import { Transaction } from './common/entities/transaction.entity';
 import { UserBalance } from './common/entities/user-balance.entity';
 import { Performance } from './common/entities/performance.entity';
-import { Snapshot } from './common/entities/snapshots.entity';
+
 import { SpotOrder } from './common/entities/spot-order.entity';
 import { APIKeysConfig } from './common/entities/api-keys.entity';
 import { CustomConfigEntity } from './common/entities/custom-config.entity';
@@ -103,7 +103,6 @@ dotenv.config();
         Performance,
         Transaction,
         UserBalance,
-        Snapshot,
         SpotOrder,
         APIKeysConfig,
         CustomConfigEntity,
