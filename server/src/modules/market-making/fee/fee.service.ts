@@ -23,21 +23,23 @@ export class FeeService {
     pair: string,
     direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
   ) {
-    const [base, quote] = pair.split('/');
+    const [base_symbol, quote_symbol] = pair.split('/');
     let base_fee, quote_fee;
+    let base_fee_asset_id, quote_fee_asset_id;
     let mixin_deposit_fee = 0;
     const creation_fee = 1;
 
-    const base_asset_list = await this.client.network.searchAssets(base);
-    const base_asset = base_asset_list[0];
-    const quote_asset_list = await this.client.network.searchAssets(quote);
-    const quote_asset = quote_asset_list[0];
+    const base_asset_list = await this.client.network.searchAssets(base_symbol);
+    const base = base_asset_list[0].asset_id;
+    const base_asset = await this.client.safe.fetchAsset(base);
+    const quote_asset_list = await this.client.network.searchAssets(quote_symbol);
+    const quote = quote_asset_list[0].asset_id;
+    const quote_asset = await this.client.safe.fetchAsset(quote);
 
     try {
       if (direction === 'deposit_to_exchange') {
-        base_fee = await this.getMixinWithdrawalFee(base_asset.asset_id);
-        quote_fee = await this.getMixinWithdrawalFee(quote_asset.asset_id);
-
+        base_fee = await this.getMixinWithdrawalFee(base);
+        quote_fee = await this.getMixinWithdrawalFee(quote);
       } else if (direction === 'withdraw_to_mixin') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
         if (exchange) {
@@ -66,6 +68,8 @@ export class FeeService {
     return {
       base_asset_id: base_asset.asset_id,
       quote_asset_id: quote_asset.asset_id,
+      base_fee_id: base_asset.chain_id,
+      quote_fee_id: quote_asset.chain_id,
       base_asset_fee: base_fee?.amount,
       quote_asset_fee: quote_fee?.amount,
       creation_fee,
