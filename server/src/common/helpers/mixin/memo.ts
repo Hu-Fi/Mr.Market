@@ -13,7 +13,7 @@ import {
   MarketMakingCreateMemoDetails,
   SimplyGrowCreateMemoDetails,
 } from 'src/common/types/memo/memo';
-import { base58, getAddress } from 'ethers/lib/utils';
+import { base58 } from 'ethers/lib/utils';
 import { createHash } from 'crypto';
 
 export const computeMemoChecksum = (buffer: Buffer): Buffer => {
@@ -68,20 +68,19 @@ export const encodeSimplyGrowCreateMemo = (details: {
   orderId: string;
 }): string => { // Remove rewardAddress argument
   // Get numeric keys for tradingType and action
-  const tradingTypeKey = Number(
-    Object.keys(TARDING_TYPE_MAP).find(
-      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
-    ),
+  const tradingTypeKeyStr = Object.keys(TARDING_TYPE_MAP).find(
+    (key) => TARDING_TYPE_MAP[key] === details.tradingType,
   );
-  const actionKey = Number(
-    Object.keys(SIMPLY_GROW_MEMO_ACTION_MAP).find(
-      (key) => SIMPLY_GROW_MEMO_ACTION_MAP[key] === details.action,
-    ),
+  const actionKeyStr = Object.keys(SIMPLY_GROW_MEMO_ACTION_MAP).find(
+    (key) => SIMPLY_GROW_MEMO_ACTION_MAP[key] === details.action,
   );
 
-  if (tradingTypeKey === undefined || actionKey === undefined) {
+  if (tradingTypeKeyStr === undefined || actionKeyStr === undefined) {
     throw new Error('Invalid memo details');
   }
+
+  const tradingTypeKey = Number(tradingTypeKeyStr);
+  const actionKey = Number(actionKeyStr);
 
   // Serialize fields into binary
   const versionBuffer = Buffer.from([details.version]);
@@ -110,20 +109,19 @@ export const encodeMarketMakingCreateMemo = (
   details: MarketMakingCreateMemoDetails,
 ): string => {
   // Get numeric keys for tradingType and action
-  const tradingTypeKey = Number(
-    Object.keys(TARDING_TYPE_MAP).find(
-      (key) => TARDING_TYPE_MAP[key] === details.tradingType,
-    ),
+  const tradingTypeKeyStr = Object.keys(TARDING_TYPE_MAP).find(
+    (key) => TARDING_TYPE_MAP[key] === details.tradingType,
   );
-  const actionKey = Number(
-    Object.keys(MARKET_MAKING_MEMO_ACTION_MAP).find(
-      (key) => MARKET_MAKING_MEMO_ACTION_MAP[key] === details.action,
-    ),
+  const actionKeyStr = Object.keys(MARKET_MAKING_MEMO_ACTION_MAP).find(
+    (key) => MARKET_MAKING_MEMO_ACTION_MAP[key] === details.action,
   );
 
-  if (tradingTypeKey === undefined || actionKey === undefined) {
+  if (tradingTypeKeyStr === undefined || actionKeyStr === undefined) {
     throw new Error('Invalid memo details');
   }
+
+  const tradingTypeKey = Number(tradingTypeKeyStr);
+  const actionKey = Number(actionKeyStr);
 
   // Serialize fields into binary
   const versionBuffer = Buffer.from([details.version]);

@@ -8,11 +8,11 @@
 
   const paths = [
     "dashboard",
-    "orders",
+    // "orders",
     "users",
-    "exchanges",
-    "rebalance",
-    "health",
+    // "exchanges",
+    // "rebalance",
+    // "health",
     "message",
     "settings",
     "exit",

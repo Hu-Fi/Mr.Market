@@ -25,7 +25,6 @@ export class FeeService {
   ) {
     const [base_symbol, quote_symbol] = pair.split('/');
     let base_fee, quote_fee;
-    let base_fee_asset_id, quote_fee_asset_id;
     let mixin_deposit_fee = 0;
     const creation_fee = 1;
 

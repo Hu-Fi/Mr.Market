@@ -466,16 +466,18 @@ export class SnapshotsService implements OnApplicationBootstrap {
         memoPreDecode(hexDecodedMemo);
       if (!payload) {
         this.logger.log(
-          `Snapshot memo is invalid, store and refund: ${snapshot.snapshot_id}`,
+          `Snapshot memo is invalid, refund: ${snapshot.snapshot_id}`,
         );
+        await this.refund(snapshot);
         return;
       }
 
       // Only memo version 1 is supported
       if (version !== 1) {
         this.logger.log(
-          `Snapshot memo version is not 1, store and refund: ${snapshot.snapshot_id}`,
+          `Snapshot memo version is not 1, refund: ${snapshot.snapshot_id}`,
         );
+        await this.refund(snapshot);
         return;
       }
 
@@ -504,6 +506,10 @@ export class SnapshotsService implements OnApplicationBootstrap {
           break;
         default:
           // Refund
+          this.logger.log(
+            `Snapshot memo trading type is not supported, refund: ${snapshot.snapshot_id}`,
+          );
+          await this.refund(snapshot);
           break;
       }
     } catch (error) {
