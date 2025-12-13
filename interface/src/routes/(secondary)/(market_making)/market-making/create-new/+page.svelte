@@ -22,6 +22,7 @@
   import { onMount } from "svelte";
   import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
   import type { MarketMakingPair } from "$lib/types/hufi/grow";
+  import BigNumber from "bignumber.js";
 
   let supportedMarketMakingExchanges: string[] = [];
   let allMarketMakingPairs: MarketMakingPair[] = [];
@@ -90,6 +91,16 @@
     ? findCoinIconBySymbol(quoteSymbol) || emptyToken
     : emptyToken;
 
+  $: selectedPairInfo = allMarketMakingPairs.find(
+    (p) => p.exchange_id === exchangeName && p.symbol === tradingPair,
+  );
+  $: basePrice = selectedPairInfo?.base_price
+    ? parseFloat(selectedPairInfo.base_price)
+    : 0;
+  $: quotePrice = selectedPairInfo?.target_price
+    ? parseFloat(selectedPairInfo.target_price)
+    : 0;
+
   let baseAmountInput = "";
   let quoteAmountInput = "";
   let lastTradingPair: string | null = null;
@@ -105,9 +116,12 @@
     amountMode === "both_token" ||
     (amountMode === "single_token" && singleTokenType === "quote");
 
-  // Will be fetched from backend
-  $: baseAmountUsd = null;
-  $: quoteAmountUsd = null;
+  $: baseAmountUsd = baseAmount
+    ? BigNumber(basePrice).times(baseAmount).toNumber()
+    : null;
+  $: quoteAmountUsd = quoteAmount
+    ? BigNumber(quotePrice).times(quoteAmount).toNumber()
+    : null;
 
   $: isValidAmount =
     amountMode === "both_token"
@@ -223,6 +237,8 @@
         {quoteSymbol}
         {showBase}
         {showQuote}
+        {basePrice}
+        {quotePrice}
         bind:baseAmount={baseAmountInput}
         bind:quoteAmount={quoteAmountInput}
       />
