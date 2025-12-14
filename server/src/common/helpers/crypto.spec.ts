@@ -1,4 +1,4 @@
-import { generateKeyPair, encrypt, decrypt } from './crypto';
+import { generateKeyPair, encrypt, decrypt, getPublicKeyFromPrivate } from './crypto';
 
 describe('Crypto Helpers', () => {
   it('should generate valid key pair', () => {
@@ -37,5 +37,11 @@ describe('Crypto Helpers', () => {
     const { privateKey } = { privateKey: 'MgQ3LwWFc2kdkOzkNk3jWVH832qiTjPMuBT8jV2DEBE=' };
     const decrypted = decrypt('invalid-base64', privateKey);
     expect(decrypted).toBeNull();
+  });
+
+  it('should derive public key from private key', () => {
+    const { publicKey, privateKey } = generateKeyPair();
+    const derivedPublicKey = getPublicKeyFromPrivate(privateKey);
+    expect(derivedPublicKey).toBe(publicKey);
   });
 });

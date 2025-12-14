@@ -9,6 +9,7 @@
   import { getAllCcxtExchanges } from "$lib/helpers/hufi/admin/growdata";
   import { encryptSecret } from "$lib/helpers/crypto";
   import { onMount } from "svelte";
+  import toast from "svelte-french-toast";
 
   let allCcxtExchanges: string[] = [];
 
@@ -52,12 +53,13 @@
         { exchange, name, api_key, api_secret: encryptedSecret },
         token,
       );
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      encryptionError = $_("add_key_failed");
+      encryptionError = e.message || $_("add_key_failed");
       isAdding = false;
       return;
     }
+    toast.success($_("success"));
     setTimeout(() => {
       invalidate("admin:settings:api-keys").finally(() => {
         isAdding = false;
@@ -94,6 +96,9 @@
       console.error(e);
     }
   });
+  $: if (!addDialog) {
+    encryptionError = "";
+  }
 </script>
 
 <svelte:window on:click={handleClickOutside} />
@@ -119,9 +124,30 @@
     {$_("add_api_key")}
   </summary>
   <div
-    class="menu dropdown-content bg-base-100 rounded-box p-6 shadow-xl border border-base-200 w-96 mt-2"
+    class="dropdown-content bg-base-100 rounded-box p-6 shadow-xl border border-base-200 w-[32rem] mt-2 max-h-[80vh] overflow-y-auto"
   >
-    <h3 class="font-bold text-lg mb-4">{$_("add_new_api_key")}</h3>
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-bold text-lg">{$_("add_new_api_key")}</h3>
+      <button
+        class="btn btn-sm btn-circle btn-ghost"
+        on:click={() => (addDialog = false)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
     <div class="flex flex-col gap-4">
       <div class="form-control w-full">
         <span class="label">
@@ -194,7 +220,31 @@
           placeholder={$_("placeholder_api_secret")}
           bind:value={AddNewApiSecret}
         />
+        <div class="label mt-2">
+          <span class="label-text-alt text-base-content/60 text-xs">
+            {$_("api_secret_note")}
+          </span>
+        </div>
       </div>
+
+      {#if encryptionError}
+        <div class="alert alert-error shadow-lg my-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="break-all">{encryptionError}</span>
+        </div>
+      {/if}
       <button
         class="btn btn-primary w-full mt-2"
         on:click={async () => {

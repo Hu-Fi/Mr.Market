@@ -2,7 +2,9 @@ import type { PageLoad } from './$types';
 import { getAllAPIKeys } from '$lib/helpers/hufi/admin/exchanges';
 import { browser } from '$app/environment';
 
-export const load: PageLoad = async () => {
+export const load: PageLoad = async ({ depends }) => {
+  depends('admin:settings:api-keys');
+
   if (browser) {
     const token = localStorage.getItem('admin-access-token');
     if (token) {

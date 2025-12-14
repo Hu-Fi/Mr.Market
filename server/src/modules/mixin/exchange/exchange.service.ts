@@ -1,7 +1,7 @@
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   getRFC3339Timestamp,
@@ -494,22 +494,28 @@ export class ExchangeService {
     const privateKey =
       this.configService.get<string>('admin.encryption_private_key') || '';
     if (!privateKey) {
-      throw new Error('Server encryption private key not configured');
+      throw new InternalServerErrorException(
+        'Server encryption private key not configured',
+      );
     }
 
     // 1. Decrypt transport layer
-    let rawSecret = '';
+    let rawSecret: string | null = null;
     try {
       rawSecret = decrypt(key.api_secret, privateKey);
     } catch (e) {
-      throw new Error('Failed to decrypt API secret (Transport Layer)');
+      this.logger.error(`Decryption threw error: ${e.message}`);
+    }
+
+    if (rawSecret === null) {
+      throw new BadRequestException('Failed to decrypt API secret. The provided key might be invalid or corrupted.');
     }
 
     // 2. Validate with CCXT
     try {
       const exchangeClass = ccxt[key.exchange];
       if (!exchangeClass) {
-        throw new Error(`Exchange ${key.exchange} not supported`);
+        throw new BadRequestException(`Exchange ${key.exchange} not supported`);
       }
       const exchangeInstance = new exchangeClass({
         apiKey: key.api_key,
@@ -518,9 +524,11 @@ export class ExchangeService {
       // Try to fetch balance to validate keys
       await exchangeInstance.fetchBalance();
     } catch (e) {
-      this.logger.error(`Failed to validate API Key for ${key.exchange}: ${e.message}`);
-      throw new Error(
-        `Invalid API Key or Secret for ${key.exchange}. Verification failed.`,
+      this.logger.error(
+        `Failed to validate API Key for ${key.exchange}: ${e.message}`,
+      );
+      throw new BadRequestException(
+        `Invalid API Key or Secret for ${key.exchange}. Verification failed: ${e.message}`,
       );
     }
 

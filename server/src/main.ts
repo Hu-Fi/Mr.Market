@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as encryption from './common/helpers/crypto';
@@ -27,17 +28,16 @@ async function bootstrap() {
 
   if (!process.env.ENCRYPTION_PRIVATE_KEY) {
     console.log('ENCRYPTION_PRIVATE_KEY is not set. Generating a new one...');
-    const { privateKey, publicKey } = encryption.generateKeyPair();
+    const { privateKey } = encryption.generateKeyPair();
 
     process.env.ENCRYPTION_PRIVATE_KEY = privateKey;
-    process.env.ENCRYPTION_PUBLIC_KEY = publicKey;
 
     const envFile = '.env';
     try {
       if (fs.existsSync(envFile)) {
-        fs.appendFileSync(envFile, `\nENCRYPTION_PRIVATE_KEY="${privateKey}"\nENCRYPTION_PUBLIC_KEY="${publicKey}"\n`);
+        fs.appendFileSync(envFile, `\nENCRYPTION_PRIVATE_KEY="${privateKey}"\n`);
       } else {
-        fs.writeFileSync(envFile, `ENCRYPTION_PRIVATE_KEY="${privateKey}"\nENCRYPTION_PUBLIC_KEY="${publicKey}"\n`);
+        fs.writeFileSync(envFile, `ENCRYPTION_PRIVATE_KEY="${privateKey}"\n`);
       }
       console.log(`ENCRYPTION_KEYS saved to ${envFile}`);
     } catch (err) {

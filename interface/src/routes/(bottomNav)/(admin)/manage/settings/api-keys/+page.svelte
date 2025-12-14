@@ -2,6 +2,7 @@
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
+  import toast from "svelte-french-toast";
   import { invalidate } from "$app/navigation";
   import { page } from "$app/stores";
   import {
@@ -17,13 +18,17 @@
 
   let isRefreshing = false;
 
-  async function RefreshKeys() {
-    isRefreshing = true;
-    setTimeout(() => {
-      invalidate("admin:settings:api-keys").finally(() => {
-        isRefreshing = false;
-      });
-    }, getRandomDelay());
+  async function RefreshKeys(showLoading = true) {
+    if (showLoading) {
+      isRefreshing = true;
+      setTimeout(() => {
+        invalidate("admin:settings:api-keys").finally(() => {
+          isRefreshing = false;
+        });
+      }, getRandomDelay());
+    } else {
+      invalidate("admin:settings:api-keys");
+    }
   }
 
   function getRandomDelay() {
@@ -36,9 +41,20 @@
     const token = localStorage.getItem("admin-access-token");
     if (!token) return;
 
-    if (confirm($_("confirm_delete_api_key"))) {
-      await removeAPIKey(keyId, token);
-      RefreshKeys();
+    const promise = removeAPIKey(keyId, token);
+    toast.promise(promise, {
+      loading: $_("deleting_api_key"),
+      success: () => {
+        RefreshKeys(false);
+        return $_("delete_api_key_success");
+      },
+      error: $_("delete_api_key_failed"),
+    });
+
+    try {
+      await promise;
+    } catch (e) {
+      console.error(e);
     }
   }
 </script>
