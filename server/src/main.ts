@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import * as encryption from './common/helpers/crypto';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -21,6 +22,26 @@ async function bootstrap() {
       console.log(`JWT_SECRET saved to ${envFile}`);
     } catch (err) {
       console.error('Failed to write JWT_SECRET to .env file', err);
+    }
+  }
+
+  if (!process.env.ENCRYPTION_PRIVATE_KEY) {
+    console.log('ENCRYPTION_PRIVATE_KEY is not set. Generating a new one...');
+    const { privateKey, publicKey } = encryption.generateKeyPair();
+
+    process.env.ENCRYPTION_PRIVATE_KEY = privateKey;
+    process.env.ENCRYPTION_PUBLIC_KEY = publicKey;
+
+    const envFile = '.env';
+    try {
+      if (fs.existsSync(envFile)) {
+        fs.appendFileSync(envFile, `\nENCRYPTION_PRIVATE_KEY="${privateKey}"\nENCRYPTION_PUBLIC_KEY="${publicKey}"\n`);
+      } else {
+        fs.writeFileSync(envFile, `ENCRYPTION_PRIVATE_KEY="${privateKey}"\nENCRYPTION_PUBLIC_KEY="${publicKey}"\n`);
+      }
+      console.log(`ENCRYPTION_KEYS saved to ${envFile}`);
+    } catch (err) {
+      console.error('Failed to write ENCRYPTION_KEYS to .env file', err);
     }
   }
   const logger = new CustomLogger(AppModule.name);
