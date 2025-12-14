@@ -1,0 +1,109 @@
+<script lang="ts">
+  import clsx from "clsx";
+  import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
+  import { invalidate } from "$app/navigation";
+  import { page } from "$app/stores";
+  import {
+    getAllAPIKeys,
+    removeAPIKey,
+  } from "$lib/helpers/hufi/admin/exchanges";
+  import type { AdminSingleKey } from "$lib/types/hufi/admin";
+  import AddApiKey from "$lib/components/admin/exchanges/addAPIKey.svelte";
+  import KeyList from "$lib/components/admin/exchanges/keyList.svelte";
+
+  let keys: AdminSingleKey[] = [];
+  $: keys = $page.data.apiKeys || [];
+
+  let isRefreshing = false;
+
+  async function RefreshKeys() {
+    isRefreshing = true;
+    setTimeout(() => {
+      invalidate("admin:settings:api-keys").finally(() => {
+        isRefreshing = false;
+      });
+    }, getRandomDelay());
+  }
+
+  function getRandomDelay() {
+    return Math.floor(Math.random() * (3000 - 2000 + 1)) + 2000;
+  }
+
+  async function HandleDelete(event: CustomEvent<string>) {
+    const keyId = event.detail;
+    if (!keyId) return;
+    const token = localStorage.getItem("admin-access-token");
+    if (!token) return;
+
+    if (confirm($_("confirm_delete_api_key"))) {
+      await removeAPIKey(keyId, token);
+      RefreshKeys();
+    }
+  }
+</script>
+
+<div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+  <div
+    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+  >
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <button
+          on:click={() => window.history.back()}
+          class="btn btn-ghost btn-circle btn-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            />
+          </svg>
+        </button>
+        <span class="text-3xl font-bold text-left">{$_("api_keys")}</span>
+      </div>
+      <p class="text-base-content/60">{$_("manage_exchange_api_keys")}</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <AddApiKey />
+
+      <button class="btn btn-ghost btn-circle" on:click={() => RefreshKeys()}>
+        <span
+          class={clsx(isRefreshing && "loading loading-spinner loading-sm")}
+        >
+          {#if !isRefreshing}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+          {/if}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="card bg-base-100 shadow-sm border border-base-200 overflow-hidden"
+  >
+    <KeyList {keys} on:delete={HandleDelete} />
+  </div>
+</div>

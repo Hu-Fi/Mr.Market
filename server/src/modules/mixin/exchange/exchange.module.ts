@@ -1,6 +1,7 @@
 // exchange.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
@@ -14,6 +15,7 @@ import { ExchangeUserController } from './exchange-client.controller';
 
 @Module({
   imports: [
+    ConfigModule,
     TypeOrmModule.forFeature([
       APIKeysConfig,
       SpotOrder,

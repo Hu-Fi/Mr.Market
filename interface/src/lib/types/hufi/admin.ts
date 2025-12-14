@@ -22,8 +22,12 @@ export interface AdminSwapOrder {
 }
 
 export interface AdminSingleKey {
-  exchange: string,
-  state: string,
-  last_update: string,
-  key: string,
+  key_id: string;
+  exchange: string;
+  exchange_index: string;
+  name: string;
+  api_key: string;
+  api_secret: string;
+  state?: string; // Optional, computed or missing
+  last_update?: string; // Optional
 }

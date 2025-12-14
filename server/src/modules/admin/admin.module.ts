@@ -23,9 +23,11 @@ import { AdminFeeService } from './fee/admin-fee.service';
 import { CustomConfigEntity } from 'src/common/entities/custom-config.entity';
 import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
 import { SpotdataTradingPair } from 'src/common/entities/spot-data.entity';
+import { AdminExchangesModule } from './exchanges/exchanges.module';
 
 @Module({
   imports: [
+    AdminExchangesModule,
     ExchangeInitModule,
     GrowdataModule,
     SpotdataModule,

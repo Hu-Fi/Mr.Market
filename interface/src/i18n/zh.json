@@ -324,5 +324,15 @@
   "add_pair_failed_msg": "添加交易对失败",
   "fill_all_fields_msg": "请填写所有必填字段",
   "no_exchanges_configured_msg": "未配置交易所。请前往设置 > 交易所添加一个。",
-  "go_to_exchanges": "前往交易所"
+  "go_to_exchanges": "前往交易所",
+  "api_keys": "API密钥",
+  "manage_exchange_api_keys": "管理交易所API密钥",
+  "api_key": "API Key",
+  "api_secret": "API Secret",
+  "placeholder_key_name": "例如: 我的理财Key",
+  "placeholder_api_key": "在此粘贴您的API Key",
+  "placeholder_api_secret": "在此粘贴您的API Secret",
+  "confirm_delete_api_key": "您确定要删除此API密钥吗？",
+  "add_new_api_key": "添加新的API密钥",
+  "manage_api_keys": "管理交易所API密钥"
 }

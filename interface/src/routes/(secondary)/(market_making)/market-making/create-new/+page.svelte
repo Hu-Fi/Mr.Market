@@ -20,32 +20,9 @@
   import Loading from "$lib/components/common/loading.svelte";
 
   import { onMount } from "svelte";
-  import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
-  import type { MarketMakingPair } from "$lib/types/hufi/grow";
   import BigNumber from "bignumber.js";
 
-  let supportedMarketMakingExchanges: string[] = [];
-  let allMarketMakingPairs: MarketMakingPair[] = [];
-  let loading = true;
-
-  $: supportedTradingpairs = allMarketMakingPairs
-    .filter((p) => !exchangeName || p.exchange_id === exchangeName)
-    .map((p) => p.symbol);
-
-  onMount(async () => {
-    const data = await getGrowBasicInfo();
-    if (data) {
-      if (data.market_making && data.market_making.pairs) {
-        allMarketMakingPairs = data.market_making.pairs.filter((p) => p.enable);
-      }
-      if (data.market_making && data.market_making.exchanges) {
-        supportedMarketMakingExchanges = data.market_making.exchanges
-          .filter((e) => e.enable)
-          .map((e) => e.exchange_id);
-      }
-    }
-    loading = false;
-  });
+  export let data;
 
   const selectExchange = (exchangeName: string) => {
     const newUrl = new URL($dPage.url);
@@ -91,16 +68,6 @@
     ? findCoinIconBySymbol(quoteSymbol) || emptyToken
     : emptyToken;
 
-  $: selectedPairInfo = allMarketMakingPairs.find(
-    (p) => p.exchange_id === exchangeName && p.symbol === tradingPair,
-  );
-  $: basePrice = selectedPairInfo?.base_price
-    ? parseFloat(selectedPairInfo.base_price)
-    : 0;
-  $: quotePrice = selectedPairInfo?.target_price
-    ? parseFloat(selectedPairInfo.target_price)
-    : 0;
-
   let baseAmountInput = "";
   let quoteAmountInput = "";
   let lastTradingPair: string | null = null;
@@ -115,13 +82,6 @@
   $: showQuote =
     amountMode === "both_token" ||
     (amountMode === "single_token" && singleTokenType === "quote");
-
-  $: baseAmountUsd = baseAmount
-    ? BigNumber(basePrice).times(baseAmount).toNumber()
-    : null;
-  $: quoteAmountUsd = quoteAmount
-    ? BigNumber(quotePrice).times(quoteAmount).toNumber()
-    : null;
 
   $: isValidAmount =
     amountMode === "both_token"
@@ -148,12 +108,37 @@
 </script>
 
 <!-- Step 1: Choose Exchange -->
-{#if !exchangeName}
-  {#if loading}
-    <div class="flex flex-col items-center justify-center grow h-[calc(90vh)]">
-      <Loading />
-    </div>
-  {:else}
+{#await data.growBasicInfo}
+  <div class="flex flex-col items-center justify-center grow h-[calc(90vh)]">
+    <Loading />
+  </div>
+{:then growInfo}
+  {@const allMarketMakingPairs =
+    growInfo?.market_making?.pairs?.filter((p) => p.enable) || []}
+  {@const supportedMarketMakingExchanges =
+    growInfo?.market_making?.exchanges
+      ?.filter((e) => e.enable)
+      .map((e) => e.exchange_id) || []}
+  {@const supportedTradingpairs = allMarketMakingPairs
+    .filter((p) => !exchangeName || p.exchange_id === exchangeName)
+    .map((p) => p.symbol)}
+  {@const selectedPairInfo = allMarketMakingPairs.find(
+    (p) => p.exchange_id === exchangeName && p.symbol === tradingPair,
+  )}
+  {@const basePrice = selectedPairInfo?.base_price
+    ? parseFloat(selectedPairInfo.base_price)
+    : 0}
+  {@const quotePrice = selectedPairInfo?.target_price
+    ? parseFloat(selectedPairInfo.target_price)
+    : 0}
+  {@const baseAmountUsd = baseAmount
+    ? BigNumber(basePrice).times(baseAmount).toNumber()
+    : null}
+  {@const quoteAmountUsd = quoteAmount
+    ? BigNumber(quotePrice).times(quoteAmount).toNumber()
+    : null}
+
+  {#if !exchangeName}
     <div class="flex flex-col items-center grow h-[calc(100vh-64px)] mt-[10vh]">
       <div class="text-center">
         <ChooseExchange />
@@ -179,107 +164,107 @@
       supportedExchanges={supportedMarketMakingExchanges}
       onSelect={selectExchange}
     />
-  {/if}
 
-  <!-- Step 2: Choose Trading Pair -->
-{:else if !tradingPair}
-  <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
-    <div class="text-center">
-      <ChooseTradingPair {exchangeName} />
-    </div>
-    <div
-      class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white
+    <!-- Step 2: Choose Trading Pair -->
+  {:else if !tradingPair}
+    <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
+      <div class="text-center">
+        <ChooseTradingPair {exchangeName} />
+      </div>
+      <div
+        class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white
       max-h-[50vh] overflow-y-auto"
-    >
-      {#each supportedTradingpairs as tradingPair}
-        <ChooseTradingPairSmallBtn
-          {tradingPair}
-          {exchangeName}
-          onClick={() => selectTradingPair(tradingPair)}
-        />
-      {/each}
+      >
+        {#each supportedTradingpairs as tradingPair}
+          <ChooseTradingPairSmallBtn
+            {tradingPair}
+            {exchangeName}
+            onClick={() => selectTradingPair(tradingPair)}
+          />
+        {/each}
+      </div>
     </div>
-  </div>
 
-  <div class="absolute bottom-24 w-full flex justify-center">
-    <SearchTradingPair onSearch={() => {}} />
-  </div>
-  <SearchTradingPairDialog
-    supportedTradingPairs={supportedTradingpairs}
-    {exchangeName}
-    onSelect={selectTradingPair}
-  />
-
-  <!-- Step 3: Enter Amount -->
-{:else if !isValidAmount}
-  <div
-    class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] space-y-4"
-  >
-    <div class="text-center">
-      <AmountText {exchangeName} {tradingPair} />
+    <div class="absolute bottom-24 w-full flex justify-center">
+      <SearchTradingPair onSearch={() => {}} />
     </div>
-    <AmountTypeTab
-      bind:mode={amountMode}
-      bind:tokenType={singleTokenType}
-      {baseSymbol}
-      {quoteSymbol}
-      {baseIcon}
-      {quoteIcon}
+    <SearchTradingPairDialog
+      supportedTradingPairs={supportedTradingpairs}
+      {exchangeName}
+      onSelect={selectTradingPair}
     />
+
+    <!-- Step 3: Enter Amount -->
+  {:else if !isValidAmount}
     <div
-      class="mx-4 gap-6 grid grid-cols-1 bg-white
-      max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
+      class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] space-y-4"
     >
-      <AmountInput
-        {baseIcon}
-        {quoteIcon}
+      <div class="text-center">
+        <AmountText {exchangeName} {tradingPair} />
+      </div>
+      <AmountTypeTab
+        bind:mode={amountMode}
+        bind:tokenType={singleTokenType}
         {baseSymbol}
         {quoteSymbol}
-        {showBase}
-        {showQuote}
-        {basePrice}
-        {quotePrice}
-        bind:baseAmount={baseAmountInput}
-        bind:quoteAmount={quoteAmountInput}
+        {baseIcon}
+        {quoteIcon}
       />
+      <div
+        class="mx-4 gap-6 grid grid-cols-1 bg-white
+      max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
+      >
+        <AmountInput
+          {baseIcon}
+          {quoteIcon}
+          {baseSymbol}
+          {quoteSymbol}
+          {showBase}
+          {showQuote}
+          {basePrice}
+          {quotePrice}
+          bind:baseAmount={baseAmountInput}
+          bind:quoteAmount={quoteAmountInput}
+        />
+      </div>
     </div>
-  </div>
 
-  <div class="absolute bottom-24 w-full flex justify-center">
-    <div class="w-full flex justify-center mt-4">
-      <AmountNextStepBtn
-        baseAmount={baseAmountInput}
-        quoteAmount={quoteAmountInput}
-        mode={amountMode}
-        tokenType={singleTokenType}
-      />
+    <div class="absolute bottom-24 w-full flex justify-center">
+      <div class="w-full flex justify-center mt-4">
+        <AmountNextStepBtn
+          baseAmount={baseAmountInput}
+          quoteAmount={quoteAmountInput}
+          mode={amountMode}
+          tokenType={singleTokenType}
+        />
+      </div>
     </div>
-  </div>
-  <SearchTradingPairDialog
-    supportedTradingPairs={supportedTradingpairs}
-    {exchangeName}
-    onSelect={selectTradingPair}
-  />
-
-  <!-- Step 4: Confirm Payment -->
-{:else}
-  <div
-    class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4"
-  >
-    <ConfirmPaymentInfo
+    <SearchTradingPairDialog
+      supportedTradingPairs={supportedTradingpairs}
       {exchangeName}
-      {tradingPair}
-      {baseSymbol}
-      {quoteSymbol}
-      {baseIcon}
-      {quoteIcon}
-      {baseAmount}
-      {quoteAmount}
-      {baseAmountUsd}
-      {quoteAmountUsd}
+      onSelect={selectTradingPair}
     />
-    <div class="px-6 w-full flex justify-center">
-      <ConfirmPaymentBtn onConfirm={confirmPayment} />
+
+    <!-- Step 4: Confirm Payment -->
+  {:else}
+    <div
+      class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4"
+    >
+      <ConfirmPaymentInfo
+        {exchangeName}
+        {tradingPair}
+        {baseSymbol}
+        {quoteSymbol}
+        {baseIcon}
+        {quoteIcon}
+        {baseAmount}
+        {quoteAmount}
+        {baseAmountUsd}
+        {quoteAmountUsd}
+      />
+      <div class="px-6 w-full flex justify-center">
+        <ConfirmPaymentBtn onConfirm={confirmPayment} />
+      </div>
     </div>
-  </div>
-{/if}
+  {/if}
+{/await}
