@@ -19,9 +19,17 @@
     { key: $_("24h_volume"), value: "1234" },
     { key: $_("market_cap"), value: "1234" },
     { key: $_("circulating_supply"), value: "1234" },
-  ]
+  ];
 
-  $: showItems=10
+  $: showItems = 10;
+
+  const sortTickers = (tickers: any[]) => {
+    return tickers.sort((a: any, b: any) => {
+      const aa = MARKET_TOKEN_EXCHANGES.includes(a.market.identifier);
+      const bb = MARKET_TOKEN_EXCHANGES.includes(b.market.identifier);
+      return Number(bb) - Number(aa);
+    });
+  };
 </script>
 
 {#await $page.data.coin}
@@ -56,19 +64,18 @@
       </div>
 
       <!-- Pairs -->
-      {#each coin.tickers
-        .sort((a, b) => {
-          const aa = MARKET_TOKEN_EXCHANGES.includes(a.market.identifier);
-          const bb = MARKET_TOKEN_EXCHANGES.includes(b.market.identifier);
-          return (bb - aa);
-        })
-        .slice(0, showItems) as pair}
+      {#each sortTickers(coin.tickers).slice(0, showItems) as pair}
         <SinglePair {pair} />
       {/each}
 
       {#if showItems < coin.tickers.length}
         <div class="flex justify-center items-center opacity-60">
-          <button class="btn btn-xs bg-base-100 border-base-300 hover:bg-base-100 hover:border-base-300 no-animation flex items-center justify-center focus:bg-base-100 focus:border-base-300 rounded-2xl" on:click={()=>showItems+=10}> {$_('show_more')} </button>
+          <button
+            class="btn btn-xs bg-base-100 border-base-300 hover:bg-base-100 hover:border-base-300 no-animation flex items-center justify-center focus:bg-base-100 focus:border-base-300 rounded-2xl"
+            on:click={() => (showItems += 10)}
+          >
+            {$_("show_more")}
+          </button>
         </div>
       {/if}
     </div>
@@ -100,6 +107,5 @@
     </div>
   {/if}
 {:catch _}
-    <CoinInfoLoader />
+  <CoinInfoLoader />
 {/await}
-

@@ -1,24 +1,28 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { OutputAsset, OutputAssetDialog, OutputAssetSearch } from "$lib/stores/swap";
+  import {
+    OutputAsset,
+    OutputAssetDialog,
+    OutputAssetSearch,
+  } from "$lib/stores/swap";
   import SingleSwapAsset from "$lib/components/swap/singleSwapAsset.svelte";
 
   import mixinChains from "$lib/constants/mixinChains.json";
   import NoResult from "$lib/components/common/NoResult.svelte";
-  const placeholders = mixinChains
+  const placeholders = mixinChains;
 
   $: filteredAssets = placeholders.filter((item) => {
     try {
       return (
         item.symbol.toUpperCase().match($OutputAssetSearch.toUpperCase()) ||
         item.name.toUpperCase().match($OutputAssetSearch.toUpperCase())
-      )
+      );
     } catch (e) {
-      return item
+      return item;
     }
-  })
+  });
 
-  $: $OutputAssetDialog, OutputAssetSearch.set('')
+  $: $OutputAssetDialog, OutputAssetSearch.set("");
 </script>
 
 <dialog
@@ -30,14 +34,16 @@
     <button on:click={() => OutputAssetDialog.set(false)}></button>
   </form>
   <div class="modal-box h-[90vh] pt-0">
-    <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 py-4 flex flex-col space-y-4">
+    <div
+      class="sticky top-0 bg-opacity-100 bg-base-100 z-10 py-4 flex flex-col space-y-4"
+    >
       <!-- Title -->
       <div class="flex justify-between">
         <div class="w-5" />
 
         <!-- Swap to -->
         <span class="font-semibold text-lg">
-          {$_('swap_to')}
+          {$_("swap_to")}
         </span>
 
         <!-- Close -->
@@ -58,24 +64,47 @@
           >
         </button>
       </div>
-  
+
       <!-- Search -->
       <div class="join w-full">
         <!-- Search Icon -->
         <div class="bg-base-200 join-item flex items-center rounded-full pl-3">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            /></svg
+          >
         </div>
-        <input bind:value={$OutputAssetSearch} class="input input-md h-[2.5rem] w-full pl-2 focus:outline-none focus:border-base-200 rounded-full bg-base-200 join-item" placeholder={$_('search')} />
+        <input
+          bind:value={$OutputAssetSearch}
+          class="input input-md h-[2.5rem] w-full pl-2 focus:outline-none focus:border-base-200 rounded-full bg-base-200 join-item"
+          placeholder={$_("search")}
+        />
       </div>
     </div>
 
     <!-- Asset list -->
     <div class="flex flex-col">
-      {#if filteredAssets.length === 0 }
+      {#if filteredAssets.length === 0}
         <NoResult />
       {:else}
         {#each filteredAssets as asset, i}
-          <SingleSwapAsset {asset} fn={()=>{OutputAsset.set(asset); OutputAssetDialog.set(false)}} testid={i} />
+          <SingleSwapAsset
+            {asset}
+            fn={() => {
+              OutputAsset.set(asset);
+              OutputAssetDialog.set(false);
+            }}
+            testid={String(i)}
+          />
         {/each}
       {/if}
     </div>

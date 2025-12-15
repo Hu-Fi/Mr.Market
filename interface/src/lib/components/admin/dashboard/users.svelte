@@ -16,6 +16,7 @@
       created_at: "2023-01-27 21:23:42",
       is_verified: false,
       is_scam: false,
+      has_safe: false,
     },
     {
       type: "user",
@@ -31,6 +32,7 @@
       created_at: "2023-01-27 21:23:42",
       is_verified: false,
       is_scam: false,
+      has_safe: false,
     },
     {
       type: "user",
@@ -46,6 +48,7 @@
       created_at: "2023-01-27 21:23:42",
       is_verified: false,
       is_scam: false,
+      has_safe: false,
     },
     {
       type: "user",
@@ -61,6 +64,7 @@
       created_at: "2023-01-27 21:23:42",
       is_verified: false,
       is_scam: false,
+      has_safe: false,
     },
     {
       type: "user",
@@ -76,6 +80,7 @@
       created_at: "2023-01-27 21:23:42",
       is_verified: false,
       is_scam: false,
+      has_safe: false,
     },
   ];
 </script>

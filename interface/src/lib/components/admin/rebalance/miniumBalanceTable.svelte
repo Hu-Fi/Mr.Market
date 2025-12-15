@@ -8,8 +8,8 @@
 
   const TEMPORARY_SKIP = true;
 
-  $: exchanges = [];
-  let table: unknown[] = [];
+  let exchanges: any[] = [];
+  let table: any[] = [];
 
   const fetchData = async () => {
     const token = localStorage.getItem("admin-access-token");
@@ -17,11 +17,11 @@
       console.error("Unable to fetch admin endpoint without jwt token");
       return;
     }
-    exchanges = await fetchRebalanceExchanges(token);
+    exchanges = (await fetchRebalanceExchanges(token)) as any[];
     return await fetchMiniumBalanceSettings(token);
   };
   (async () => {
-    table = await fetchData();
+    table = (await fetchData()) as any[];
   })();
 </script>
 

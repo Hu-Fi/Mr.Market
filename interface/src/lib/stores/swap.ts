@@ -1,8 +1,8 @@
 import { get, writable } from "svelte/store";
 import MixinChains from "$lib/constants/mixinChains.json"
 
-export const Input = writable()
-export const Output = writable()
+export const Input = writable("")
+export const Output = writable("")
 export const InputAsset = writable(MixinChains[8])
 export const OutputAsset = writable(MixinChains[9])
 export const InputAssetDialog = writable(false)

@@ -18,7 +18,7 @@ export const detectSystemDark = () => {
   if (!mixinContext) {
     return
   }
-  if (mixinContext.appearance === 'dark') {
+  if ((mixinContext as any).appearance === 'dark') {
     theme.set('dark')
   }
 }

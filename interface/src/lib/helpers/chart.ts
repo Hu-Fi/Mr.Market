@@ -128,7 +128,7 @@ export const MALineOptions = {
   priceLineVisible: false,
 }
 
-export const getMA = (source: object[], r: number = 5) => {
+export const getMA = (source: any[], r: number = 5) => {
   const final = []
   const closes = source.map(item => item.close);
   const arr = sma({ period: r, values: closes })

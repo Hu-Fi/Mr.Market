@@ -1,5 +1,5 @@
 export type UserAssets = {
-  balances: { [key: string]: number },
+  balances: any[],
   totalUSDBalance: number,
   totalBTCBalance: number
 }

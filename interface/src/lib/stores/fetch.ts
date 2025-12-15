@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 
 export default function (url: string) {
 	const loading = writable(false)
-	const error = writable(false)
+	const error = writable<any>(false)
 	const data = writable({})
 
 	async function get() {

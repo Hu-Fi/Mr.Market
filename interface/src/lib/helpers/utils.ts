@@ -187,7 +187,7 @@ export const daysBetweenToday = (d1: string) => {
   return Math.round(diff / (1000 * 3600 * 24)).toString()
 }
 
-export const toggleItemInArray = (array: Array<object>, field: string, item: object) => {
+export const toggleItemInArray = (array: Array<Record<string, any>>, field: string, item: Record<string, any>) => {
   const index = array.findIndex(obj => obj[field] === item[field]);
 
   if (index === -1) {
@@ -199,7 +199,7 @@ export const toggleItemInArray = (array: Array<object>, field: string, item: obj
   }
 }
 
-export const itemInArray = (array: Array<object>, field: string, item: object) => {
+export const itemInArray = (array: Array<Record<string, any>>, field: string, item: Record<string, any>) => {
   const index = array.findIndex(obj => obj[field] === item[field]);
 
   if (index === -1) {

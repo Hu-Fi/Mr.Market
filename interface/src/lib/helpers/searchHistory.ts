@@ -1,15 +1,16 @@
-export const getSearchHistory = (): [] => {
-  if (!localStorage.getItem('search-history')) return []
-  return JSON.parse(localStorage.getItem('search-history'))
+export const getSearchHistory = (): any[] => {
+  const history = localStorage.getItem('search-history');
+  if (!history) return []
+  return JSON.parse(history)
 }
 
-export const addSearchHistory = (item: object) => {
+export const addSearchHistory = (item: any) => {
   // console.log('addSearchHistory:', item)
-  if (!item) return 
+  if (!item) return
   const history = getSearchHistory()
   // console.log('history:', history)
-  
-  const index = history.findIndex(h => h.symbol === item.symbol);
+
+  const index = history.findIndex((h: any) => h.symbol === item.symbol);
   if (index === -1) {
     history.push(item);
   } else {

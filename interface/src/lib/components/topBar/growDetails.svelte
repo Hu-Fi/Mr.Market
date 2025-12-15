@@ -42,7 +42,9 @@
   };
 
   $: pageName = Object.keys(pageNameMappings).reduce((acc, key) => {
-    return $page.url.pathname.includes(key) ? pageNameMappings[key] : acc;
+    return $page.url.pathname.includes(key)
+      ? (pageNameMappings as any)[key]
+      : acc;
   }, "");
 </script>
 

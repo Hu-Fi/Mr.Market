@@ -29,6 +29,7 @@ export const checkMixinTokenExist = () => {
 export const autoConnectMixin = async () => {
   if (!browser) return;
   let token = localStorage.getItem('mixin-oauth')
+  if (!token) return;
   try {
     token = token.replace(/\n/g, '');
   } catch (e) {
