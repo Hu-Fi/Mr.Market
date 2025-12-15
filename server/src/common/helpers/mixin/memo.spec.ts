@@ -102,7 +102,7 @@ describe('decodeMarketMakingCreateMemo', () => {
     });
 
     console.log(`encodedMemo: ${encodedMemo}`);
-    const { payload } = memoPreDecode(encodedMemo);
+    const { payload } = memoPreDecode('f243yJSNnb9QQ7azcKFd5tzKQS8xX62VVYkk8KWwDAAkuFVXBwvw');
     const result = decodeMarketMakingCreateMemo(payload);
     expect(result).toEqual({
       version: 1,

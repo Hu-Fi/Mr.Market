@@ -1,16 +1,13 @@
 import base58 from "bs58";
+import { createHash } from 'crypto';
 
 // related to 
 // /server/src/common/helpers/mixin/memo.ts
 // /server/src/common/constants/memo.ts
 export const TARDING_TYPE_MAP: Record<string, string> = {
   0: 'Spot',
-  1: 'Swap',
+  1: 'Market Making',
   2: 'Simply Grow',
-  3: 'Market Making',
-  4: 'Arbitrage',
-  5: 'Leverage',
-  6: 'Perpetual',
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {
@@ -52,6 +49,16 @@ export const REVERSED_SPOT_ORDER_TYPE_MAP: Record<string, string> = Object.entri
 
 export const REVERSED_SPOT_EXCHANGE_MAP: Record<string, string> = Object.entries(SPOT_EXCHANGE_MAP)
   .reduce((acc, [key, value]) => ({ ...acc, [value]: key }), {});
+
+export const computeMemoChecksum = (buffer: Buffer): Buffer => {
+  const hash = createHash('sha256')
+    .update(buffer as unknown as Uint8Array)
+    .digest();
+  return createHash('sha256')
+    .update(hash as unknown as Uint8Array)
+    .digest()
+    .subarray(0, 4);
+};
 
 export const encodeSimplyGrowCreateMemo = (details: {
   version: number;
@@ -170,7 +177,6 @@ export const encodeMarketMakingCreateMemo = (
     action: string;
     marketMakingPairId: string;
     orderId: string;
-    rewardAddress: string;
   },
 ): string => {
   // Get numeric keys for tradingType and action
@@ -199,10 +205,6 @@ export const encodeMarketMakingCreateMemo = (
     'hex',
   ); // UUID as binary
   const orderIdBuffer = Buffer.from(details.orderId.replace(/-/g, ''), 'hex'); // UUID as binary
-  const rewardAddressBuffer = Buffer.from(
-    details.rewardAddress.replace(/^0x/, ''),
-    'hex',
-  ); // Ethereum address as binary
 
   // Concatenate all parts
   const payload = Buffer.concat([
@@ -211,7 +213,6 @@ export const encodeMarketMakingCreateMemo = (
     actionBuffer,
     marketMakingPairIdBuffer,
     orderIdBuffer,
-    rewardAddressBuffer,
   ]);
 
   // Compute checksum

@@ -14,20 +14,6 @@ vi.mock('$env/dynamic/public', () => {
   }
 });
 
-describe('Arbitrage Memo', () => {
-  it('Generate correcnt create arbitrage memo', () => {
-    const memo = encodeArbitrageCreateMemo({
-      version: 1,
-      tradingType: 'Arbitrage',
-      action: 'create',
-      arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
-      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
-    });
-    expect(memo).toBe('3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h7MFgy3')
-  })
-})
-
 describe('Market making Memo', () => {
   it('Generate correcnt create market making memo', () => {
     const encodedMemo = encodeMarketMakingCreateMemo({
@@ -36,9 +22,9 @@ describe('Market making Memo', () => {
       action: 'create',
       marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
     });
-    expect(encodedMemo).toBe('3MeYVTmBgmvTWQr8q9LKscJs1zr8qeG3vkFPk17hqueCyUesJDBPRTyBoh4frse7DKSrisBYfci34bjm')
+    console.log(`encodedMemo: ${encodedMemo}`)
+    expect(encodedMemo).toBe('f243yJSNnb9QQ7azcKFd5tzKQS8xX62VVYkk8KWwDAAkuFVXBwvw')
   })
 })
 
