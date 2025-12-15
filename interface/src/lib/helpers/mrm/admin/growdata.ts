@@ -1,6 +1,6 @@
 import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import type { ArbitragePairDto, MarketMakingPairDto, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
-import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import { getHeaders, handleApiResponse } from "$lib/helpers/mrm/common";
 
 // Exchange Methods
 export const addExchange = async (exchangeDto: Record<string, unknown>, token: string): Promise<unknown> => {

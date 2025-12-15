@@ -5,9 +5,9 @@
   import {
     addAPIKey,
     getEncryptionPublicKey,
-  } from "$lib/helpers/hufi/admin/exchanges";
-  import { getAllCcxtExchanges } from "$lib/helpers/hufi/admin/growdata";
-  import { encryptSecret } from "$lib/helpers/crypto";
+  } from "$lib/helpers/mrm/admin/exchanges";
+  import { getAllCcxtExchanges } from "$lib/helpers/mrm/admin/growdata";
+  import { encryptSecret } from "$lib/helpers/encryption/crypto";
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
 

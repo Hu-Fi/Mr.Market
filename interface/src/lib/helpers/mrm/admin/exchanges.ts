@@ -1,5 +1,5 @@
 import { MRM_BACKEND_URL } from "$lib/helpers/constants";
-import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import { getHeaders, handleApiResponse } from "$lib/helpers/mrm/common";
 import type { AdminSingleKey } from "$lib/types/hufi/admin";
 
 export const getAllAPIKeys = async (token: string): Promise<AdminSingleKey[]> => {

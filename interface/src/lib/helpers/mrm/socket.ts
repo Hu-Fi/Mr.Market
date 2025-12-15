@@ -7,7 +7,7 @@ import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/spot";
 import type { CandleTab, MarketDataType, PairsData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
 import { CandleChartLoaded, CandleOrderBookLoaded, CandlePriceLoaded, CandlePair, CandlePairSelectorDialog, CandleTimeRange, CandleLoadingFailed } from "$lib/stores/market";
-import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/hufi/marketDataDecoder";
+import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrderbook } from "$lib/helpers/mrm/marketDataDecoder";
 
 // /spot
 export const connectOrderBook = (): Socket => {

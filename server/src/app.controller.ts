@@ -1,6 +1,7 @@
 import { Controller, Get, Redirect } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { getRFC3339Timestamp } from './common/helpers/utils';
 
 @Controller()
 @ApiTags('General')
@@ -19,6 +20,8 @@ export class AppController {
   getInfo() {
     return {
       mixin_app_id: this.configService.get<string>('mixin.app_id'),
+      version: '1',
+      timestamp: getRFC3339Timestamp(),
     };
   }
 }

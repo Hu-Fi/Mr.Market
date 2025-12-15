@@ -5,7 +5,7 @@
   import { page } from "$app/stores";
   import { locale } from "svelte-i18n";
   import { formatChartPrice } from "$lib/helpers/utils";
-  import { coinMarketChart } from "$lib/helpers/hufi/coin";
+  import { coinMarketChart } from "$lib/helpers/mrm/coin";
   import { Chart, LineSeries } from "svelte-lightweight-charts";
   import type { TokenChartTimeFrame } from "$lib/types/hufi/exchanges";
   import { coinChartOptions as chartOptions } from "$lib/helpers/chart";

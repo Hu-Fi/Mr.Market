@@ -9,7 +9,7 @@
   import {
     updateMarketMakingPair,
     removeMarketMakingPair,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
 
   export let marketMakingPairs: MarketMakingPair[] = [];
 

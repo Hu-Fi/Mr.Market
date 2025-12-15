@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import type { ApiCampaign } from "$lib/helpers/hufi/campaignFormatter";
+  import type { ApiCampaign } from "$lib/helpers/mrm/campaignFormatter";
   import {
     formatAmount,
     formatDate,
@@ -14,7 +14,7 @@
     calculateOracleFees,
     getCampaignResults,
     getSymbolIcon,
-  } from "$lib/helpers/hufi/campaignFormatter";
+  } from "$lib/helpers/mrm/campaignFormatter";
 
   export let campaign: ApiCampaign;
 

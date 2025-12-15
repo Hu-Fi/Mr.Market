@@ -83,9 +83,7 @@
 <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-xl font-bold leading-none text-gray-900">
-        Latest Users
-      </h3>
+      <h3 class="text-xl font-bold leading-none text-gray-900">Latest Users</h3>
       <a
         href="/manage/users"
         class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
@@ -113,9 +111,7 @@
                   {user.identity_number}
                 </p>
               </div>
-              <div
-                class="inline-flex items-center text-base text-gray-900"
-              >
+              <div class="inline-flex items-center text-base text-gray-900">
                 {user.created_at}
               </div>
             </div>

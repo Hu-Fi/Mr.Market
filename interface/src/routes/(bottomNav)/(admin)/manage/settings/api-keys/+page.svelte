@@ -8,7 +8,7 @@
   import {
     getAllAPIKeys,
     removeAPIKey,
-  } from "$lib/helpers/hufi/admin/exchanges";
+  } from "$lib/helpers/mrm/admin/exchanges";
   import type { AdminSingleKey } from "$lib/types/hufi/admin";
   import AddApiKey from "$lib/components/admin/exchanges/addAPIKey.svelte";
   import KeyList from "$lib/components/admin/exchanges/keyList.svelte";

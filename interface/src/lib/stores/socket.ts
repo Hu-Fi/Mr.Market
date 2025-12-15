@@ -1,7 +1,7 @@
 // src/stores/socketStore.js
 import io from 'socket.io-client';
 import { writable, get } from 'svelte/store';
-import { CandlePair } from './CandlePair'; // Import your CandlePair store
+import { CandlePair } from './market'; // Import your CandlePair store
 
 function createSocket() {
   const { subscribe, set } = writable(null);

@@ -1,18 +1,18 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { addMinimumBalanceSetting } from "$lib/helpers/hufi/admin/minBalances";
+  import { addMinimumBalanceSetting } from "$lib/helpers/mrm/admin/minBalances";
 
   let loading: boolean, showError: boolean, resultMessage: string;
   let items = {
-    'asset_id': '',
-    'symbol': '',
-    'exchange_name': '',
-    'minimum_balance': '',
-  }
-  
+    asset_id: "",
+    symbol: "",
+    exchange_name: "",
+    minimum_balance: "",
+  };
+
   const createNewMinimumBalance = async () => {
-    loading=true;
+    loading = true;
     const token = localStorage.getItem("admin-access-token");
     if (!token) {
       console.error("Unable to fetch admin endpoint without jwt token");
@@ -20,22 +20,22 @@
     }
 
     try {
-      await addMinimumBalanceSetting(token, { 
+      await addMinimumBalanceSetting(token, {
         symbol: items.symbol,
         assetId: items.asset_id,
         exchangeName: items.exchange_name,
         minimumBalance: items.minimum_balance,
-      })
+      });
       loading = false;
       showError = false;
-      resultMessage = '';
-    } catch(e: unknown) {
+      resultMessage = "";
+    } catch (e: unknown) {
       loading = false;
-      showError=true;
-      resultMessage=e.message;
+      showError = true;
+      resultMessage = e.message;
     }
-    return 
-  }
+    return;
+  };
 </script>
 
 <div>
@@ -79,8 +79,13 @@
     {/each}
 
     <div>
-      <button on:click={()=>{createNewMinimumBalance()}} class="btn">
-        <span class={loading ? 'loading':''}> {$_('create')} </span>
+      <button
+        on:click={() => {
+          createNewMinimumBalance();
+        }}
+        class="btn"
+      >
+        <span class={loading ? "loading" : ""}> {$_("create")} </span>
       </button>
     </div>
 

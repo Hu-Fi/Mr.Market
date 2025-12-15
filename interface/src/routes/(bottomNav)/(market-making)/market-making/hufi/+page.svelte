@@ -1,7 +1,7 @@
 <script lang="ts">
   import CampaignSmallCard from "$lib/components/grow/marketMaking/hufi/CampaignSmallCard.svelte";
   import IntroCard from "$lib/components/grow/marketMaking/hufi/IntroCard.svelte";
-  import { formatCampaigns } from "$lib/helpers/hufi/campaignFormatter";
+  import { formatCampaigns } from "$lib/helpers/mrm/campaignFormatter.js";
 
   export let data;
 

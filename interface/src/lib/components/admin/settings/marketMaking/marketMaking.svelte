@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { invalidate } from "$app/navigation";
-  import { mixinAsset } from "$lib/helpers/mixin";
+  import { mixinAsset } from "$lib/helpers/mixin/mixin";
   import { getRandomDelay } from "$lib/helpers/utils";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import type {
@@ -15,7 +15,7 @@
     addMarketMakingPair,
     updateMarketMakingPair,
     removeMarketMakingPair,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
 
   $: marketMakingPairs = $page.data.growInfo.market_making
     .pairs as MarketMakingPair[];

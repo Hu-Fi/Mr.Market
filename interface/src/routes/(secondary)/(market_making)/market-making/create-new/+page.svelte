@@ -20,14 +20,14 @@
   import Loading from "$lib/components/common/loading.svelte";
 
   import BigNumber from "bignumber.js";
-  import { encodeMarketMakingCreateMemo } from "$lib/helpers/memo";
+  import { encodeMarketMakingCreateMemo } from "$lib/helpers/mixin/memo";
   import {
     createMixinInvoice,
     getPaymentUrl,
     type InvoiceItem,
-  } from "$lib/helpers/mixin-invoice";
+  } from "$lib/helpers/mixin/mixin-invoice";
   import { v4 as uuidv4 } from "uuid";
-  import { BOT_ID } from "$lib/helpers/constants";
+  import { botId } from "$lib/stores/home";
 
   import type { GrowInfo } from "$lib/types/hufi/grow";
 
@@ -115,7 +115,7 @@
         },
       ];
 
-      const invoiceMin = createMixinInvoice(BOT_ID, items);
+      const invoiceMin = createMixinInvoice($botId, items);
       if (invoiceMin) {
         const url = getPaymentUrl(invoiceMin);
         window.open(url);

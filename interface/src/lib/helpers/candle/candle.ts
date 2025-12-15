@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { fetchOHLCV } from "$lib/helpers/hufi/coin";
+import { fetchOHLCV } from "$lib/helpers/mrm/coin";
 import { CandlePair, CandleTimeRange } from "$lib/stores/market";
 import type { OHLCVData } from "$lib/types/hufi/exchanges";
 

@@ -7,7 +7,7 @@
   import {
     getSupportedExchanges,
     getAllCcxtExchanges,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
   import AddExchange from "$lib/components/admin/exchanges/addExchange.svelte";
   import ExchangeList from "$lib/components/admin/exchanges/exchangeList.svelte";
 

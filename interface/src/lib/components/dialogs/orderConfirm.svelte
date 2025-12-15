@@ -16,33 +16,52 @@
     marketTotal,
     spotCreating,
   } from "$lib/stores/spot";
-  import { SpotPay } from "$lib/helpers/mixin";
+  import { SpotPay } from "$lib/helpers/mixin/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { getOrderById } from "$lib/helpers/hufi/spot";
-  import {formatFixedOrderBookPrice, formatUSNumber} from "$lib/helpers/utils";
-  import { HARDCODED_FEE, ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
-  
-  const precisionLimit = () =>  Math.max(1, (`${formatUSNumber($limitPrice)}`.split('.')[1] || '').length);
-  const precisionCurrent = () =>  Math.max(1, (`${formatUSNumber($current)}`.split('.')[1] || '').length);
+  import { getOrderById } from "$lib/helpers/mrm/spot";
+  import {
+    formatFixedOrderBookPrice,
+    formatUSNumber,
+  } from "$lib/helpers/utils";
+  import {
+    HARDCODED_FEE,
+    ORDER_STATE_FETCH_INTERVAL,
+    ORDER_STATE_TIMEOUT_DURATION,
+  } from "$lib/helpers/constants";
 
-  $: limitPriceWithFee = $limitPrice ? formatFixedOrderBookPrice(Number($limitPrice) * HARDCODED_FEE, precisionLimit()) : $limitPrice;
-  $: currentWithFee = $current ? formatFixedOrderBookPrice(Number($current) * HARDCODED_FEE, precisionCurrent()) : $current;
+  const precisionLimit = () =>
+    Math.max(1, (`${formatUSNumber($limitPrice)}`.split(".")[1] || "").length);
+  const precisionCurrent = () =>
+    Math.max(1, (`${formatUSNumber($current)}`.split(".")[1] || "").length);
+
+  $: limitPriceWithFee = $limitPrice
+    ? formatFixedOrderBookPrice(
+        Number($limitPrice) * HARDCODED_FEE,
+        precisionLimit(),
+      )
+    : $limitPrice;
+  $: currentWithFee = $current
+    ? formatFixedOrderBookPrice(
+        Number($current) * HARDCODED_FEE,
+        precisionCurrent(),
+      )
+    : $current;
   $: infos = [
     {
       title: $_("payment_amount"),
-      value: $orderTypeLimit ?
-        $buy
+      value: $orderTypeLimit
+        ? $buy
           ? `${$limitTotal} ${$pair.symbol.split("/")[1]}`
           : `${$limitAmount} ${$pair.symbol.split("/")[0]}`
-      : $orderTypeMarket ?
-        $buy
-          ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
-          : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
-      : ''
+        : $orderTypeMarket
+          ? $buy
+            ? `${$marketAmount} ${$pair.symbol.split("/")[1]}`
+            : `${$marketAmount} ${$pair.symbol.split("/")[0]}`
+          : "",
     },
     {
       title: $_("estimated_price"),
-      value: $orderTypeLimit ? limitPriceWithFee : currentWithFee
+      value: $orderTypeLimit ? limitPriceWithFee : currentWithFee,
     },
     { title: $_("recipient"), value: $_("mixin_wallet") },
   ];
@@ -69,8 +88,8 @@
       exchange: $pair.exchange,
       price: String($limitPrice),
       amount: String(payAmount),
-      trace
-    })
+      trace,
+    });
 
     let totalTime = 0;
 
@@ -85,7 +104,7 @@
         goto(`/spot/history/${trace}`);
       } else if (totalTime >= ORDER_STATE_TIMEOUT_DURATION) {
         clearInterval(interval);
-        console.log('Timeout reached, stopping execution.');
+        console.log("Timeout reached, stopping execution.");
       }
     }, ORDER_STATE_FETCH_INTERVAL);
 
@@ -105,8 +124,13 @@
     <div class="sticky top-0 bg-opacity-100 bg-base-100 z-10 pt-4">
       <!-- Title -->
       <div class="flex justify-between">
-        <span class="font-semibold" data-testid="confirm_order_title"> {$_("confirm_order")} </span>
-        <button on:click={() => orderConfirmDialog.set(false)} data-testid="close_order_modal">
+        <span class="font-semibold" data-testid="confirm_order_title">
+          {$_("confirm_order")}
+        </span>
+        <button
+          on:click={() => orderConfirmDialog.set(false)}
+          data-testid="close_order_modal"
+        >
           <!-- Close Icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +167,10 @@
       <!-- Infos -->
       <div class="flex flex-col space-y-4 my-2 mb-4" data-testid="order_infos">
         {#each infos as info, i}
-          <div class="flex justify-between text-sm" data-testid={`order_info_${i}`}>
+          <div
+            class="flex justify-between text-sm"
+            data-testid={`order_info_${i}`}
+          >
             <span class="text-base-content/60">
               {info.title}
             </span>

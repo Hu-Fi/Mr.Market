@@ -3,13 +3,13 @@ import { lineOptions } from "$lib/helpers/chart";
 import type { Chart } from "svelte-lightweight-charts";
 import type { OHLCVData, OrderBookPriceFormat, SupportedTimeFrame, TickerData } from "$lib/types/hufi/exchanges";
 import { activeCoinTab } from "$lib/stores/home";
-import { getCoingeckoMarket } from "$lib/helpers/hufi/coin";
+import { getCoingeckoMarket } from "$lib/helpers/mrm/coin";
 import { CoinsTypeTabs } from "$lib/helpers/constants";
 import type { CoingeckoToken } from "$lib/types/coingecko/token";
 
 // Coin
 export const activeSpotTab: Writable<number> = writable(0);
-export const currentCoin = writable({"id": "bitcoin","symbol": "btc","name": "Bitcoin","image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400","current_price": 42647,"market_cap": 835106968766,"market_cap_rank": 1,"fully_diluted_valuation": 895363344292,"total_volume": 12072391201,"high_24h": 42782,"low_24h": 42095,"price_change_24h": 153.96,"price_change_percentage_24h": 0.36232,"market_cap_change_24h": 3004861113,"market_cap_change_percentage_24h": 0.36112,"circulating_supply": 19586737,"total_supply": 21000000,"max_supply": 21000000,"ath": 69045,"ath_change_percentage": -38.24065,"ath_date": "2021-11-10T14:24:11.849Z","atl": 67.81,"atl_change_percentage": 62784.86453,"atl_date": "2013-07-06T00:00:00.000Z","roi": null,"last_updated": "2024-01-01T14:46:24.444Z"})
+export const currentCoin = writable({ "id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1696501400", "current_price": 42647, "market_cap": 835106968766, "market_cap_rank": 1, "fully_diluted_valuation": 895363344292, "total_volume": 12072391201, "high_24h": 42782, "low_24h": 42095, "price_change_24h": 153.96, "price_change_percentage_24h": 0.36232, "market_cap_change_24h": 3004861113, "market_cap_change_percentage_24h": 0.36112, "circulating_supply": 19586737, "total_supply": 21000000, "max_supply": 21000000, "ath": 69045, "ath_change_percentage": -38.24065, "ath_date": "2021-11-10T14:24:11.849Z", "atl": 67.81, "atl_change_percentage": 62784.86453, "atl_date": "2013-07-06T00:00:00.000Z", "roi": null, "last_updated": "2024-01-01T14:46:24.444Z" })
 export const currentCoinChart = writable()
 export const showCoinPrice = writable(true)
 export const ChartPrice = writable([])
@@ -46,7 +46,7 @@ export const CandleOrderBookLoaded = writable(false)
 export const CandleLoadingFailed = writable(false)
 
 export const CandleChart = writable<Chart>()
-export const CandleTimeRange = writable({k: '4h', v: '4h' as SupportedTimeFrame})
+export const CandleTimeRange = writable({ k: '4h', v: '4h' as SupportedTimeFrame })
 export const CandleTimeRangeDialog = writable(false)
 export const CandleIndicatorDialog = writable(false)
 export const CandleBids = writable<OrderBookPriceFormat[]>([])

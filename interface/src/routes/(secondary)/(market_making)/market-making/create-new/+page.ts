@@ -1,5 +1,5 @@
-import { getSupportedExchanges } from "$lib/helpers/hufi/campaignLauncher.js";
-import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
+import { getSupportedExchanges } from "$lib/helpers/mrm/campaignLauncher.js";
+import { getGrowBasicInfo } from "$lib/helpers/mrm/grow";
 export const ssr = false;
 
 /** @type {import('./$types').LayoutServerLoad} */

@@ -1,5 +1,5 @@
 import { MRM_BACKEND_URL } from "$lib/helpers/constants";
-import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import { getHeaders, handleApiResponse } from "$lib/helpers/mrm/common";
 
 export const getGlobalFees = async (token: string) => {
   const response = await fetch(`${MRM_BACKEND_URL}/admin/fee/global`, {

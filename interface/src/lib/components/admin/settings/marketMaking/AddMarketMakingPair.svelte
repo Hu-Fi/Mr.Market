@@ -5,14 +5,14 @@
   import { _ } from "svelte-i18n";
   import toast from "svelte-french-toast";
   import { goto } from "$app/navigation";
-  import { mixinAsset } from "$lib/helpers/mixin";
+  import { mixinAsset } from "$lib/helpers/mixin/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { getCcxtExchangeMarkets } from "$lib/helpers/hufi/admin/growdata";
+  import { getCcxtExchangeMarkets } from "$lib/helpers/mrm/admin/growdata";
 
   import { MIXIN_API_BASE_URL } from "$lib/helpers/constants";
   import AssetSelect from "../common/AssetSelect.svelte";
   import type { MarketMakingPairDto } from "$lib/types/hufi/grow";
-  import { addMarketMakingPair } from "$lib/helpers/hufi/admin/growdata";
+  import { addMarketMakingPair } from "$lib/helpers/mrm/admin/growdata";
 
   export let configuredExchanges: {
     exchange_id: string;

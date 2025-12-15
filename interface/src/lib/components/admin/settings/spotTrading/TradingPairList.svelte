@@ -7,7 +7,7 @@
   import {
     updateSpotTradingPair,
     removeSpotTradingPair,
-  } from "$lib/helpers/hufi/admin/spotdata";
+  } from "$lib/helpers/mrm/admin/spotdata";
 
   export let tradingPairs: SpotTradingPair[] = [];
 

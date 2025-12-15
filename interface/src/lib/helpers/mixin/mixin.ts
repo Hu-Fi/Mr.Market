@@ -1,14 +1,14 @@
 // @ts-nocheck
 import axios from "axios";
 import { get } from "svelte/store";
-import authorize from "$lib/helpers/mixin-oauth";
-import { getOauth } from "$lib/helpers/hufi/auth";
-import { getOrdersByUser } from "$lib/helpers/hufi/spot";
-import { getAllStrategyByUser } from "$lib/helpers/hufi/strategy";
-import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
+import authorize from "$lib/helpers/mixin/mixin-oauth";
+import { getOauth } from "$lib/helpers/mrm/auth";
+import { getOrdersByUser } from "$lib/helpers/mrm/spot";
+import { getAllStrategyByUser } from "$lib/helpers/mrm/strategy";
+import { mixinConnectLoading, mixinConnected, botId } from "$lib/stores/home";
 import { buildMixinOneSafePaymentUri, getInvoiceString, getUuid, hashMembers } from "@mixin.dev/mixin-node-sdk";
-import { AppURL, BOT_ID, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
-import { encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/memo";
+import { AppURL, BTC_UUID, MIXIN_API_BASE_URL, OAUTH_SCOPE } from "$lib/helpers/constants";
+import { encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from "$lib/helpers/mixin/memo";
 import { topAssetsCache, user, userAssets, userSpotOrders, userSpotOrdersLoaded, userStrategyOrdersLoaded } from "$lib/stores/wallet";
 
 export const isIOS = () => {
@@ -36,7 +36,7 @@ export const getMixinContext = () => {
 export const mixinShare = (url: string, title: string, description: string, icon_url: string) => {
   const data = {
     action: `${AppURL}${url}`,
-    app_id: BOT_ID,
+    app_id: get(botId),
     description,
     icon_url,
     title,
@@ -73,7 +73,7 @@ export const mixinInvoice = async ({ recipient, asset_id, amount, memo = "", tra
 
 export const mixinPay = ({ asset_id, amount, memo, trace_id }: { asset_id: string, amount: string, memo: string, trace_id: string }) => {
   window.open(buildMixinOneSafePaymentUri({
-    uuid: BOT_ID,
+    uuid: get(botId),
     asset: asset_id,
     amount: amount,
     memo: memo,
@@ -249,7 +249,7 @@ export const getUserStrategyOrders = async (user_id: string) => {
 export const mixinAuthWrapper = async (pkce: boolean = false) => {
   mixinConnectLoading.set(true);
   authorize(
-    { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce },
+    { clientId: get(botId), scope: OAUTH_SCOPE, pkce },
     {
       onShowUrl: (url: string) => {
         window.open(url);

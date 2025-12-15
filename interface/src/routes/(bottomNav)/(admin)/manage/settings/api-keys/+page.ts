@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { getAllAPIKeys } from '$lib/helpers/hufi/admin/exchanges';
+import { getAllAPIKeys } from '$lib/helpers/mrm/admin/exchanges';
 import { browser } from '$app/environment';
 
 export const load: PageLoad = async ({ depends }) => {

@@ -1,4 +1,4 @@
-import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
+import { getGrowBasicInfo } from "$lib/helpers/mrm/grow";
 
 import type { PageLoad } from './$types';
 

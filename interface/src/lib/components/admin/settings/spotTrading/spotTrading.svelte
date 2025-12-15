@@ -11,7 +11,7 @@
     addSpotTradingPair,
     updateSpotTradingPair,
     removeSpotTradingPair,
-  } from "$lib/helpers/hufi/admin/spotdata";
+  } from "$lib/helpers/mrm/admin/spotdata";
 
   let AddNewSymbol = "";
   let AddNewExchangeId = "";

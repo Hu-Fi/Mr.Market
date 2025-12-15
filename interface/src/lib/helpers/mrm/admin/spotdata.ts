@@ -1,6 +1,6 @@
 import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import type { SpotTradingPair } from "$lib/types/hufi/spot";
-import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
+import { getHeaders, handleApiResponse } from "$lib/helpers/mrm/common";
 
 // Add a new spot trading pair
 export const addSpotTradingPair = async (pair: SpotTradingPair, token: string): Promise<unknown> => {

@@ -1,6 +1,6 @@
-import  { page } from "$app/stores";
+import { page } from "$app/stores";
 import type { Socket } from "socket.io-client";
-import { getOrderById } from "$lib/helpers/hufi/spot";
+import { getOrderById } from "$lib/helpers/mrm/spot";
 import { derived, writable, type Writable } from "svelte/store";
 import { ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
 import type { OrderBookPriceFormat, PairsData } from "$lib/types/hufi/exchanges";
@@ -19,9 +19,9 @@ export const pairSelectorDialog = writable(false)
 export const pairSelectorLoaded = writable(false)
 export const pairExchangeFilter = writable("all")
 // 0 limit, 1 market, ...
-export const orderType = writable({index: 0, name: "Limit order"})
-export const orderTypeLimit = derived(orderType, ($orderType)=>{return $orderType.index===0})
-export const orderTypeMarket = derived(orderType, ($orderType)=>{return $orderType.index===1})
+export const orderType = writable({ index: 0, name: "Limit order" })
+export const orderTypeLimit = derived(orderType, ($orderType) => { return $orderType.index === 0 })
+export const orderTypeMarket = derived(orderType, ($orderType) => { return $orderType.index === 1 })
 export const orderTypeDialog = writable(false)
 export const orderConfirmDialog = writable(false)
 

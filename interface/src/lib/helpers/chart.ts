@@ -128,19 +128,19 @@ export const MALineOptions = {
   priceLineVisible: false,
 }
 
-export const getMA = (source:object[], r: number = 5) => {
+export const getMA = (source: object[], r: number = 5) => {
   const final = []
   const closes = source.map(item => item.close);
-  const arr = sma({period: r, values:closes})
+  const arr = sma({ period: r, values: closes })
 
   console.log('closes.length:', closes.length)
   console.log('arr.length:', arr.length)
 
 
-  for (let i=0; i<arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     final.push(
       {
-        time: source[i+r-1].time,
+        time: source[i + r - 1].time,
         value: formatDecimals(arr[i], 3)
       }
     )

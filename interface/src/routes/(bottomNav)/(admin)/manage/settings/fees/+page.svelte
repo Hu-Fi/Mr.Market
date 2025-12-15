@@ -7,7 +7,7 @@
     getGlobalFees,
     updateGlobalFees,
     getFeeOverrides,
-  } from "$lib/helpers/hufi/admin/fee";
+  } from "$lib/helpers/mrm/admin/fee";
   import Loading from "$lib/components/common/loading.svelte";
 
   let globalFee: any = null;

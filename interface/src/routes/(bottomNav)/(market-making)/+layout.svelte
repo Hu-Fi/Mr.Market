@@ -1,7 +1,7 @@
 <script>
   import { page } from "$app/stores";
   import BackBar from "$lib/components/topBar/backBar.svelte";
-  import { isMixin } from "$lib/helpers/mixin";
+  import { isMixin } from "$lib/helpers/mixin/mixin";
   import clsx from "clsx";
 
   $: path = $page.url.pathname;
