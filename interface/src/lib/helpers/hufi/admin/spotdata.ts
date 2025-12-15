@@ -1,11 +1,11 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import type { SpotTradingPair } from "$lib/types/hufi/spot";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
 // Add a new spot trading pair
 export const addSpotTradingPair = async (pair: SpotTradingPair, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/spot/trading-pair/add`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/spot/trading-pair/add`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(pair),
@@ -20,7 +20,7 @@ export const addSpotTradingPair = async (pair: SpotTradingPair, token: string): 
 // Update an existing spot trading pair
 export const updateSpotTradingPair = async (id: string, modifications: Partial<SpotTradingPair>, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/spot/trading-pair/update/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/spot/trading-pair/update/${id}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
@@ -35,7 +35,7 @@ export const updateSpotTradingPair = async (id: string, modifications: Partial<S
 // Remove a spot trading pair
 export const removeSpotTradingPair = async (id: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/spot/trading-pair/remove/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/spot/trading-pair/remove/${id}`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -49,7 +49,7 @@ export const removeSpotTradingPair = async (id: string, token: string): Promise<
 // Remove all spot trading pairs
 export const removeAllSpotTradingPairs = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/spot/trading-pair/remove-all`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/spot/trading-pair/remove-all`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });

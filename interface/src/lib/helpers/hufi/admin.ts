@@ -1,12 +1,12 @@
 import { createHash } from "crypto";
 import { goto } from "$app/navigation";
-import { HUFI_BACKEND_URL } from "../constants"
+import { MRM_BACKEND_URL } from "../constants"
 import type { AdminPasswordResp } from "$lib/types/hufi/admin"
 import { submitted, checked, correct } from "$lib/stores/admin";
 
 export const AdminPassword = async (password: string): Promise<AdminPasswordResp> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/auth/login`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

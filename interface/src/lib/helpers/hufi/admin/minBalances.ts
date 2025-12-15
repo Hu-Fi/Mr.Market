@@ -1,7 +1,7 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 
 export const fetchRebalanceExchanges = async (jwtToken: string): Promise<unknown> => {
-  const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/exchanges`;
+  const url = `${MRM_BACKEND_URL}/rebalance/minimum_balance/exchanges`;
 
   try {
     const response = await fetch(url, {
@@ -24,7 +24,7 @@ export const fetchRebalanceExchanges = async (jwtToken: string): Promise<unknown
   }
 }
 export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<unknown> => {
-  const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/all`;
+  const url = `${MRM_BACKEND_URL}/rebalance/minimum_balance/all`;
 
   try {
     const response = await fetch(url, {
@@ -48,7 +48,7 @@ export const fetchMiniumBalanceSettings = async (jwtToken: string): Promise<unkn
 }
 
 export const addMinimumBalanceSetting = async (jwtToken: string, settings: { symbol: string; assetId: string; exchangeName: string; minimumBalance: string; }): Promise<unknown> => {
-  const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/add`;
+  const url = `${MRM_BACKEND_URL}/rebalance/minimum_balance/add`;
 
   try {
     const response = await fetch(url, {
@@ -73,7 +73,7 @@ export const addMinimumBalanceSetting = async (jwtToken: string, settings: { sym
 }
 
 export const updateMinimumBalanceSetting = async (jwtToken: string, settings: { assetId: string; exchangeName: string; minimumBalance: string; }): Promise<unknown> => {
-  const url = `${HUFI_BACKEND_URL}/rebalance/minimum_balance/update`;
+  const url = `${MRM_BACKEND_URL}/rebalance/minimum_balance/update`;
 
   try {
     const response = await fetch(url, {
@@ -91,7 +91,7 @@ export const updateMinimumBalanceSetting = async (jwtToken: string, settings: { 
 
     const data = await response.json();
     return {
-        message: data.message,
+      message: data.message,
     };
   } catch (error) {
     console.error('Failed to update minimum balance setting:', error);

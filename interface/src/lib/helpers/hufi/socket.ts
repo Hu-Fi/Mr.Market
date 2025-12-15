@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import { io } from "socket.io-client";
 import { goto } from "$app/navigation";
 import type { Socket } from "socket.io-client";
-import { HUFI_SOCKET_URL } from "$lib/helpers/constants";
+import { MRM_SOCKET_URL } from "$lib/helpers/constants";
 import { fetchCandleChartData } from "$lib/helpers/candle/candle";
 import { orderBookLoaded, pair, pairSelectorDialog } from "$lib/stores/spot";
 import type { CandleTab, MarketDataType, PairsData, SupportedExchanges, TickerData } from "$lib/types/hufi/exchanges";
@@ -11,7 +11,7 @@ import { decodeCandleStick, decodeOrderBook, decodeCandleTicker, decodeCandleOrd
 
 // /spot
 export const connectOrderBook = (): Socket => {
-  const socket = io(`${HUFI_SOCKET_URL}/market`);
+  const socket = io(`${MRM_SOCKET_URL}/market`);
 
   socket.on("connect", () => {
     subscribeOrderBook(socket);
@@ -59,7 +59,7 @@ export const switchSpotPair = (socket: Socket, p: PairsData) => {
 
 // /market/candle/{EXCHANGE}/{PAIR}
 export const connectCandleStick = (): Socket => {
-  const socket = io(`${HUFI_SOCKET_URL}/market`);
+  const socket = io(`${MRM_SOCKET_URL}/market`);
 
   socket.on("connect", () => {
     subscribeCandleStick(socket);

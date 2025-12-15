@@ -1,5 +1,5 @@
 // Hufi backend
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import type { OHLCVData, SupportedExchanges, SupportedPairs, SupportedTimeFrame, TokenChartTimeFrame } from "$lib/types/hufi/exchanges";
 import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
 
@@ -9,14 +9,14 @@ import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
 // {/coingecko/coins/:id/market_chart/range, GET}
 
 export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> => {
-  const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/${name}`)
+  const r = await fetch(`${MRM_BACKEND_URL}/coingecko/coins/${name}`)
   return await r.json()
 }
 
 export const getCoingeckoMarket = async (category: string = 'all', page: number = 1) => {
   try {
     const pathCategory = category ? `/category/${category}` : ''
-    const r = await fetch(`${HUFI_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
+    const r = await fetch(`${MRM_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
     const re = await r.json()
     return re
   } catch (e) {
@@ -27,7 +27,7 @@ export const getCoingeckoMarket = async (category: string = 'all', page: number 
 
 export const getSpotTradingPairs = async () => {
   try {
-    const r = await fetch(`${HUFI_BACKEND_URL}/market/tickers/pairs`)
+    const r = await fetch(`${MRM_BACKEND_URL}/market/tickers/pairs`)
     const re = await r.json()
     return re
   } catch (e) {
@@ -37,7 +37,7 @@ export const getSpotTradingPairs = async () => {
 }
 
 export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): Promise<OHLCVData[]> => {
-  const r = await fetch(`${HUFI_BACKEND_URL}/market/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
+  const r = await fetch(`${MRM_BACKEND_URL}/market/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
   if (!r.ok) {
     console.error(`fetchOHLCV failed with status: ${r.status}`)
     return [];
@@ -53,13 +53,13 @@ export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame,
   const oneHourBefore = currentTs - 3600;
   switch (ranges) {
     case '1h':
-      url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart/range?from=${oneHourBefore}&to=${currentTs}&vs_currency=${vs_currency}`
+      url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart/range?from=${oneHourBefore}&to=${currentTs}&vs_currency=${vs_currency}`
       break;
-    case "24h": days = 1; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1w": days = 7; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1m": days = 30; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "1y": days = 365; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
-    case "all": days = 'max'; url = `${HUFI_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "24h": days = 1; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1w": days = 7; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1m": days = 30; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1y": days = 365; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "all": days = 'max'; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
   }
 
   const r = await fetch(url)

@@ -1,11 +1,11 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import type { ArbitragePairDto, MarketMakingPairDto, SimplyGrowTokenDto } from "$lib/types/hufi/grow";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
 // Exchange Methods
 export const addExchange = async (exchangeDto: Record<string, unknown>, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/add`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/add`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(exchangeDto),
@@ -19,7 +19,7 @@ export const addExchange = async (exchangeDto: Record<string, unknown>, token: s
 
 export const getSupportedExchanges = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/supported`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/supported`, {
       method: 'GET',
       headers: getHeaders(token),
     });
@@ -32,7 +32,7 @@ export const getSupportedExchanges = async (token: string): Promise<unknown> => 
 
 export const removeExchange = async (exchangeId: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove/${exchangeId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/remove/${exchangeId}`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -45,7 +45,7 @@ export const removeExchange = async (exchangeId: string, token: string): Promise
 
 export const removeAllExchanges = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/remove-all`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/remove-all`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -58,7 +58,7 @@ export const removeAllExchanges = async (token: string): Promise<unknown> => {
 
 export const updateExchange = async (exchangeId: string, modifications: Record<string, unknown>, token: string): Promise<string> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/update/${exchangeId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/update/${exchangeId}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
@@ -77,7 +77,7 @@ export const updateExchange = async (exchangeId: string, modifications: Record<s
 // SimplyGrow Token Methods
 export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/add`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/simply-grow/add`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(tokenDto),
@@ -91,7 +91,7 @@ export const addSimplyGrowToken = async (tokenDto: SimplyGrowTokenDto, token: st
 
 export const removeSimplyGrowToken = async (assetId: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/remove/${assetId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/simply-grow/remove/${assetId}`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -104,7 +104,7 @@ export const removeSimplyGrowToken = async (assetId: string, token: string): Pro
 
 export const removeAllSimplyGrowTokens = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/remove-all`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/simply-grow/remove-all`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -117,7 +117,7 @@ export const removeAllSimplyGrowTokens = async (token: string): Promise<unknown>
 
 export const updateSimplyGrowToken = async (assetId: string, modifications: SimplyGrowTokenDto, token: string): Promise<string> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/simply-grow/update/${assetId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/simply-grow/update/${assetId}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
@@ -136,7 +136,7 @@ export const updateSimplyGrowToken = async (assetId: string, modifications: Simp
 // Market Making Pair Methods
 export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/add`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/market-making/add`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(pairDto),
@@ -150,7 +150,7 @@ export const addMarketMakingPair = async (pairDto: MarketMakingPairDto, token: s
 
 export const removeMarketMakingPair = async (id: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/remove/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/market-making/remove/${id}`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -163,7 +163,7 @@ export const removeMarketMakingPair = async (id: string, token: string): Promise
 
 export const removeAllMarketMakingPairs = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/remove-all`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/market-making/remove-all`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -176,7 +176,7 @@ export const removeAllMarketMakingPairs = async (token: string): Promise<unknown
 
 export const updateMarketMakingPair = async (id: string, modifications: Partial<MarketMakingPairDto>, token: string): Promise<string> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/market-making/update/${id}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
@@ -195,7 +195,7 @@ export const updateMarketMakingPair = async (id: string, modifications: Partial<
 // Arbitrage Pair Methods
 export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/add`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/arbitrage/add`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(pairDto),
@@ -209,7 +209,7 @@ export const addArbitragePair = async (pairDto: ArbitragePairDto, token: string)
 
 export const removeArbitragePair = async (id: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/remove/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/arbitrage/remove/${id}`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -222,7 +222,7 @@ export const removeArbitragePair = async (id: string, token: string): Promise<un
 
 export const removeAllArbitragePairs = async (token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/remove-all`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/arbitrage/remove-all`, {
       method: 'DELETE',
       headers: getHeaders(token),
     });
@@ -235,7 +235,7 @@ export const removeAllArbitragePairs = async (token: string): Promise<unknown> =
 
 export const updateArbitragePair = async (id: string, modifications: ArbitragePairDto, token: string): Promise<string> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/arbitrage/update/${id}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/arbitrage/update/${id}`, {
       method: 'POST',
       headers: getHeaders(token),
       body: JSON.stringify(modifications),
@@ -255,7 +255,7 @@ export const updateArbitragePair = async (id: string, modifications: ArbitragePa
 // CCXT Methods
 export const getAllCcxtExchanges = async (token: string): Promise<string[]> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/ccxt-supported`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/ccxt-supported`, {
       method: 'GET',
       headers: getHeaders(token),
     });
@@ -268,7 +268,7 @@ export const getAllCcxtExchanges = async (token: string): Promise<string[]> => {
 
 export const getCcxtExchangeDetails = async (exchangeId: string, token: string): Promise<any> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/details/${exchangeId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/details/${exchangeId}`, {
       method: 'GET',
       headers: getHeaders(token),
     });
@@ -281,7 +281,7 @@ export const getCcxtExchangeDetails = async (exchangeId: string, token: string):
 
 export const getCcxtExchangeMarkets = async (exchangeId: string, token: string): Promise<any> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/grow/exchange/markets/${exchangeId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/exchange/markets/${exchangeId}`, {
       method: 'GET',
       headers: getHeaders(token),
     });

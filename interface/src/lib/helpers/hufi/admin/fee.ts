@@ -1,8 +1,8 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 
 export const getGlobalFees = async (token: string) => {
-  const response = await fetch(`${HUFI_BACKEND_URL}/admin/fee/global`, {
+  const response = await fetch(`${MRM_BACKEND_URL}/admin/fee/global`, {
     method: 'GET',
     headers: getHeaders(token),
   });
@@ -10,7 +10,7 @@ export const getGlobalFees = async (token: string) => {
 }
 
 export const updateGlobalFees = async (data: any, token: string) => {
-  const response = await fetch(`${HUFI_BACKEND_URL}/admin/fee/global`, {
+  const response = await fetch(`${MRM_BACKEND_URL}/admin/fee/global`, {
     method: 'POST',
     headers: getHeaders(token),
     body: JSON.stringify(data),
@@ -19,7 +19,7 @@ export const updateGlobalFees = async (data: any, token: string) => {
 }
 
 export const getFeeOverrides = async (token: string) => {
-  const response = await fetch(`${HUFI_BACKEND_URL}/admin/fee/overrides`, {
+  const response = await fetch(`${MRM_BACKEND_URL}/admin/fee/overrides`, {
     method: 'GET',
     headers: getHeaders(token),
   });

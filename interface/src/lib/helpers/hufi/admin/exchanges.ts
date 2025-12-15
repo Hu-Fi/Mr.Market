@@ -1,10 +1,10 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 import { getHeaders, handleApiResponse } from "$lib/helpers/hufi/common";
 import type { AdminSingleKey } from "$lib/types/hufi/admin";
 
 export const getAllAPIKeys = async (token: string): Promise<AdminSingleKey[]> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchanges/keys`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/exchanges/keys`, {
       method: "GET",
       headers: getHeaders(token),
     });
@@ -17,7 +17,7 @@ export const getAllAPIKeys = async (token: string): Promise<AdminSingleKey[]> =>
 
 export const addAPIKey = async (keyDto: Partial<AdminSingleKey>, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchanges/keys`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/exchanges/keys`, {
       method: "POST",
       headers: getHeaders(token),
       body: JSON.stringify(keyDto),
@@ -31,7 +31,7 @@ export const addAPIKey = async (keyDto: Partial<AdminSingleKey>, token: string):
 
 export const removeAPIKey = async (keyId: string, token: string): Promise<unknown> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchanges/keys/${keyId}`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/exchanges/keys/${keyId}`, {
       method: "DELETE",
       headers: getHeaders(token),
     });
@@ -44,7 +44,7 @@ export const removeAPIKey = async (keyId: string, token: string): Promise<unknow
 
 export const getEncryptionPublicKey = async (token: string): Promise<{ publicKey: string }> => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/admin/exchanges/key-pair`, {
+    const response = await fetch(`${MRM_BACKEND_URL}/admin/exchanges/key-pair`, {
       method: "GET",
       headers: getHeaders(token),
     });

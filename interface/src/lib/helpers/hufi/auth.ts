@@ -1,8 +1,8 @@
-import { HUFI_BACKEND_URL } from "$lib/helpers/constants";
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
 
 export const getOauth = async (code: string) => {
   try {
-    const response = await fetch(`${HUFI_BACKEND_URL}/auth/oauth?code=${code}`);
+    const response = await fetch(`${MRM_BACKEND_URL}/auth/oauth?code=${code}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
