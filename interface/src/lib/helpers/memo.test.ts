@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { encodeArbitrageCreateMemo, encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from './memo';
+import { encodeMarketMakingCreateMemo, encodeSimplyGrowCreateMemo } from './memo';
 
 vi.mock('$env/dynamic/public', () => {
   return {

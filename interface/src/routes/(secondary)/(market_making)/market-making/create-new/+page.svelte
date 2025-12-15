@@ -19,10 +19,32 @@
   import AmountTypeTab from "$lib/components/grow/marketMaking/createNew/amount/amountTypeTab.svelte";
   import Loading from "$lib/components/common/loading.svelte";
 
-  import { onMount } from "svelte";
   import BigNumber from "bignumber.js";
+  import { encodeMarketMakingCreateMemo } from "$lib/helpers/memo";
+  import {
+    createMixinInvoice,
+    getPaymentUrl,
+    type InvoiceItem,
+  } from "$lib/helpers/mixin-invoice";
+  import { v4 as uuidv4 } from "uuid";
+  import { BOT_ID } from "$lib/helpers/constants";
+
+  import type { GrowInfo } from "$lib/types/hufi/grow";
 
   export let data;
+
+  let growInfo: GrowInfo | null = null;
+  $: data.growBasicInfo.then((res: GrowInfo) => (growInfo = res));
+
+  $: allMarketMakingPairs =
+    growInfo?.market_making?.pairs?.filter((p) => p.enable) || [];
+  $: selectedPairInfo = allMarketMakingPairs.find(
+    (p) =>
+      exchangeName &&
+      tradingPair &&
+      p.exchange_id === exchangeName &&
+      p.symbol === tradingPair,
+  );
 
   const selectExchange = (exchangeName: string) => {
     const newUrl = new URL($dPage.url);
@@ -52,7 +74,55 @@
   };
 
   const confirmPayment = () => {
-    // Invoke mixin invoice payment
+    if (
+      !selectedPairInfo ||
+      !baseAmountInput ||
+      !quoteAmountInput ||
+      !baseAmount ||
+      !quoteAmount
+    ) {
+      return;
+    }
+
+    const orderId = uuidv4();
+
+    // Fee Config
+    const feeAssetId = "4d8c508b-91c5-375b-92b0-ee7ca2a58710"; // USDT
+    const feeAmount = "25";
+
+    try {
+      const memo = encodeMarketMakingCreateMemo({
+        version: 1,
+        tradingType: "Market Making",
+        action: "create",
+        marketMakingPairId: selectedPairInfo.id,
+        orderId: orderId,
+      });
+
+      const items: InvoiceItem[] = [
+        {
+          assetId: selectedPairInfo.base_asset_id,
+          amount: baseAmount,
+          extra: memo,
+        },
+        {
+          assetId: selectedPairInfo.target_asset_id,
+          amount: quoteAmount,
+        },
+        {
+          assetId: feeAssetId,
+          amount: feeAmount,
+        },
+      ];
+
+      const invoiceMin = createMixinInvoice(BOT_ID, items);
+      if (invoiceMin) {
+        const url = getPaymentUrl(invoiceMin);
+        window.open(url);
+      }
+    } catch (e) {
+      console.error("Error in confirmPayment:", e);
+    }
   };
 
   $: exchangeName = $dPage.url.searchParams.get("exchange");

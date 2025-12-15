@@ -41,20 +41,15 @@
     const token = localStorage.getItem("admin-access-token");
     if (!token) return;
 
-    const promise = removeAPIKey(keyId, token);
-    toast.promise(promise, {
-      loading: $_("deleting_api_key"),
-      success: () => {
-        RefreshKeys(false);
-        return $_("delete_api_key_success");
-      },
-      error: $_("delete_api_key_failed"),
-    });
+    const toastId = toast.loading($_("deleting_api_key"));
 
     try {
-      await promise;
+      await removeAPIKey(keyId, token);
+      toast.success($_("delete_api_key_success"), { id: toastId });
+      RefreshKeys(false);
     } catch (e) {
       console.error(e);
+      toast.error($_("delete_api_key_failed"), { id: toastId });
     }
   }
 </script>

@@ -14,7 +14,6 @@
 			await autoConnectMixin();
 		}
 	};
-
 </script>
 
 <meta
@@ -28,8 +27,8 @@
 	<div class="app text-base-content select-none" data-theme={$theme}>
 		<slot />
 	</div>
-	<Toaster />
 {/await}
+<Toaster />
 
 <style>
 	.app {
