@@ -1,12 +1,16 @@
-<script>
+<script lang="ts">
   import { _ } from "svelte-i18n";
   export let onSearch = () => {};
+
+  const handleClick = () => {
+    (document.getElementById("mm_search_exchange") as any).showModal();
+    onSearch();
+  };
 </script>
 
 <button
   class="btn btn-sm rounded-full bg-base-100 opacity-70 shadow"
-  onclick={"mm_search_exchange.showModal()"}
-  on:click={() => onSearch()}
+  on:click={handleClick}
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"

@@ -9,7 +9,7 @@
     updateExchange,
   } from "$lib/helpers/mrm/admin/growdata";
   import { addExchange, removeExchange } from "$lib/helpers/mrm/admin/growdata";
-  $: supportedExchanges = [];
+  let supportedExchanges: string[] = [];
   $: exchanges = $page.data.growInfo.exchanges as {
     exchange_id: string;
     name: string;
@@ -89,7 +89,7 @@
   onMount(async () => {
     const token = localStorage.getItem("admin-access-token");
     if (!token) return;
-    supportedExchanges = await getSupportedExchanges(token);
+    supportedExchanges = (await getSupportedExchanges(token)) as string[];
   });
 </script>
 

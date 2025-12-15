@@ -1,7 +1,6 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
   import { userAssets } from "$lib/stores/wallet";
@@ -397,6 +396,7 @@
   }
   input[type="range"] {
     -webkit-appearance: none;
+    appearance: none;
   }
   .range-green::-webkit-slider-thumb {
     color: theme("colors.green.400");

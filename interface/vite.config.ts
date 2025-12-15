@@ -10,7 +10,7 @@ const browserOnlyPolyfills = nodePolyfills({
 
 browserOnlyPolyfills.apply = (config) => {
   // Skip the polyfill aliasing for SSR builds so Node keeps its native modules.
-  if (config?.ssrBuild) {
+  if (config?.build?.ssr) {
     return false;
   }
 

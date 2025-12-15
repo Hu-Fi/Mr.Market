@@ -12,36 +12,43 @@
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp"
+      alt="Market making introduction"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.webp"
+      alt="Benefits of market making"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp"
+      alt="Hu-Fi platform overview"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1494253109108-2e30c049369b.webp"
+      alt="Importance of market making"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp"
+      alt="How Mr.Market works"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp"
+      alt="Getting started with market making"
     />
   </div>
   <div class="carousel-item h-full">
     <img
       src="https://img.daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.webp"
+      alt="Security features and fund protection"
     />
   </div>
 </div>

@@ -10,10 +10,9 @@
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
   onDestroy(() => {
-    createSimplyGrowAsset.set({});
-    createSimplyGrowAmount.set('');
+    createSimplyGrowAsset.set(undefined);
+    createSimplyGrowAmount.set("");
     createSimplyGrowSearch.set("");
-    createSimplyGrowAsset.set({});
   });
 </script>
 
@@ -29,11 +28,17 @@
     <div class="flex items-center space-x-2">
       <div class="avatar">
         <div class="mask mask-squircle w-5 h-5">
-          <AssetIcon assetIcon={findCoinIconBySymbol($createSimplyGrowAsset.symbol) || $createSimplyGrowAsset.icon_url} clazz="w-5 h-5" claxx="w-2 h-2" />
+          <AssetIcon
+            assetIcon={findCoinIconBySymbol(
+              $createSimplyGrowAsset?.symbol || "",
+            ) || $createSimplyGrowAsset?.icon_url}
+            clazz="w-5 h-5"
+            claxx="w-2 h-2"
+          />
         </div>
       </div>
       <span class="font-semibold text-sm text-nowrap">
-        {$createSimplyGrowAsset.symbol}
+        {$createSimplyGrowAsset?.symbol}
       </span>
     </div>
   </div>
@@ -48,8 +53,8 @@
 
     <div class="flex items-center space-x-2">
       <span class="font-semibold">
-        {'-'}
+        {"-"}
       </span>
     </div>
-  </div>  
+  </div>
 </div>

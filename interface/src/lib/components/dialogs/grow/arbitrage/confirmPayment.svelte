@@ -81,29 +81,31 @@
   const payment = (type: string) => {
     if (type === "1") {
       btn1Loading = true;
-      mixinTraceId1 = ArbitrageCreatePay({
-        action: "create",
-        rewardAddress: $createSimplyGrowRewardAddress,
-        amount: baseAssetAmount,
-        assetId: $createArbPair.base_asset_id,
-        firstAssetId: $createArbPair.base_asset_id,
-        secondAssetId: $createArbPair.target_asset_id,
-        arbitragePairId: $createArbPair.id,
-        orderId,
-      });
+      mixinTraceId1 =
+        ArbitrageCreatePay({
+          action: "create",
+          rewardAddress: $createSimplyGrowRewardAddress,
+          amount: baseAssetAmount,
+          assetId: $createArbPair.base_asset_id,
+          firstAssetId: $createArbPair.base_asset_id,
+          secondAssetId: $createArbPair.target_asset_id,
+          arbitragePairId: $createArbPair.id,
+          orderId,
+        }) ?? "";
     }
     if (type === "2") {
       btn2Loading = true;
-      mixinTraceId2 = ArbitrageCreatePay({
-        action: "create",
-        rewardAddress: $createSimplyGrowRewardAddress,
-        amount: targetAssetAmount,
-        assetId: $createArbPair.target_asset_id,
-        firstAssetId: $createArbPair.base_asset_id,
-        secondAssetId: $createArbPair.target_asset_id,
-        arbitragePairId: $createArbPair.id,
-        orderId,
-      });
+      mixinTraceId2 =
+        ArbitrageCreatePay({
+          action: "create",
+          rewardAddress: $createSimplyGrowRewardAddress,
+          amount: targetAssetAmount,
+          assetId: $createArbPair.target_asset_id,
+          firstAssetId: $createArbPair.base_asset_id,
+          secondAssetId: $createArbPair.target_asset_id,
+          arbitragePairId: $createArbPair.id,
+          orderId,
+        }) ?? "";
     }
     if (btn1Loading) {
       checkPaymentState(mixinTraceId1, true);

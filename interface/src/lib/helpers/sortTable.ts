@@ -1,4 +1,5 @@
 import type { CoingeckoToken } from "$lib/types/coingecko/token";
+import type { PairsData } from "$lib/types/hufi/exchanges";
 
 export const sortByString = (colHeader: string, data: any[], ascendingOrder: boolean) => {
   try {
@@ -56,7 +57,7 @@ export const sortCoins = (colHeader: string, data: CoingeckoToken[], ascendingOr
   }
 };
 
-export const sortSpot = (colHeader: string, data: CoingeckoToken[], ascendingOrder: boolean) => {
+export const sortSpot = (colHeader: string, data: PairsData[], ascendingOrder: boolean): PairsData[] => {
   try {
     if (colHeader === 'symbol') {
       return sortByString(colHeader, data, ascendingOrder);
@@ -66,5 +67,6 @@ export const sortSpot = (colHeader: string, data: CoingeckoToken[], ascendingOrd
     return data;
   } catch (e) {
     console.error(e);
+    return data;
   }
 };

@@ -7,20 +7,22 @@
     toggleItemInArray,
   } from "$lib/helpers/utils";
   import mixinChains from "$lib/constants/mixinChains.json";
-  import {
-    createAIAssets,
-    createAISelectAssetSearch,
-  } from "$lib/stores/grow";
+  import { createAIAssets, createAISelectAssetSearch } from "$lib/stores/grow";
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
-  let assets = mixinChains.map(item => ({ ...item, selected: false }))
-  $: placeholders =  $createAISelectAssetSearch ? 
-    assets.filter((item) => {
-      return (
-        item.name.toUpperCase().match($createAISelectAssetSearch.toUpperCase()) ||
-        item.symbol.toUpperCase().match($createAISelectAssetSearch.toUpperCase())
-      );
-  }) : assets;
+  let assets = mixinChains.map((item) => ({ ...item, selected: false }));
+  $: placeholders = $createAISelectAssetSearch
+    ? assets.filter((item) => {
+        return (
+          item.name
+            .toUpperCase()
+            .match($createAISelectAssetSearch.toUpperCase()) ||
+          item.symbol
+            .toUpperCase()
+            .match($createAISelectAssetSearch.toUpperCase())
+        );
+      })
+    : assets;
 
   const toggleHighlight = async (item: object) => {
     toggleItemInArray($createAIAssets, "chain_id", item);
@@ -59,11 +61,13 @@
       <button
         class={clsx(
           "flex just items-center justify-center space-x-1 mx-1 my-2 p-2 bg-base-100 border border-base-300 shadow-sm rounded-xl text-start",
-          itemInArray($createAIAssets, 'chain_id', item) ? 'border-primary' : '',
+          itemInArray($createAIAssets, "chain_id", item)
+            ? "border-primary"
+            : "",
         )}
         on:click={() => {
-          toggleHighlight(item, i);
-          item.selected = !item.selected
+          toggleHighlight(item);
+          item.selected = !item.selected;
         }}
       >
         <AssetIcon

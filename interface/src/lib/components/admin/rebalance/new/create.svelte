@@ -4,7 +4,7 @@
   import { addMinimumBalanceSetting } from "$lib/helpers/mrm/admin/minBalances";
 
   let loading: boolean, showError: boolean, resultMessage: string;
-  let items = {
+  let items: { [key: string]: string } = {
     asset_id: "",
     symbol: "",
     exchange_name: "",
@@ -32,7 +32,7 @@
     } catch (e: unknown) {
       loading = false;
       showError = true;
-      resultMessage = e.message;
+      resultMessage = e instanceof Error ? e.message : String(e);
     }
     return;
   };

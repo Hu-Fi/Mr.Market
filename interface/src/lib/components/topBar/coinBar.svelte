@@ -9,6 +9,10 @@
   import { ChartActiveTab, currentCoin } from "$lib/stores/market";
 
   let like = false;
+
+  const getImageUrl = (image: any) => {
+    return image?.thumb || image;
+  };
 </script>
 
 <div
@@ -73,7 +77,7 @@
             values: { symbol: $currentCoin.symbol.toUpperCase() },
           }),
           AppName,
-          $currentCoin.image.thumb,
+          getImageUrl($currentCoin.image),
         );
       }}
     >

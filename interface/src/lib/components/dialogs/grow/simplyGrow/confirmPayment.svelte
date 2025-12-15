@@ -26,12 +26,13 @@
 
   const confirmPayment = () => {
     loading = true;
-    mixinTraceId = SimplyGrowCreatePay({
-      assetId: $createSimplyGrowAsset.asset_id,
-      amount: $createSimplyGrowAmount,
-      orderId,
-      rewardAddress: $createSimplyGrowRewardAddress,
-    });
+    mixinTraceId =
+      SimplyGrowCreatePay({
+        assetId: $createSimplyGrowAsset?.asset_id ?? "",
+        amount: $createSimplyGrowAmount,
+        orderId,
+        rewardAddress: $createSimplyGrowRewardAddress,
+      }) ?? "";
 
     if (mixinTraceId) {
       console.log("mixinTraceId: ", mixinTraceId);

@@ -103,7 +103,7 @@
     
     {#if $Input}
       <span class={clsx("text-[10px] mx-2 my-0.5 capitalize opacity-60")}>
-        {formatUSMoney(123*$Input)}
+        {formatUSMoney(123*Number($Input))}
       </span>
     {/if}
   </div>

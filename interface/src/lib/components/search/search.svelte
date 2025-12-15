@@ -6,14 +6,14 @@
   import Filtered from "$lib/components/search/filtered.svelte";
 
   // In case access directly, no cache hit
-  if (!$marketData) {
-    getCoingeckoMarket("")
-      .then((x) => marketData.set(x))
-      .catch((e) => {
-        console.log(e);
-        goto("/home");
-      });
-  }
+  // if (!$marketData) {
+  //   getCoingeckoMarket("")
+  //     .then((x) => marketData.set(x))
+  //     .catch((e) => {
+  //       console.log(e);
+  //       goto("/home");
+  //     });
+  // }
 </script>
 
 <div>

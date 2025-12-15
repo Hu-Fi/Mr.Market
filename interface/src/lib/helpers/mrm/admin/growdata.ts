@@ -115,7 +115,7 @@ export const removeAllSimplyGrowTokens = async (token: string): Promise<unknown>
   }
 };
 
-export const updateSimplyGrowToken = async (assetId: string, modifications: SimplyGrowTokenDto, token: string): Promise<string> => {
+export const updateSimplyGrowToken = async (assetId: string, modifications: Partial<SimplyGrowTokenDto>, token: string): Promise<string> => {
   try {
     const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/simply-grow/update/${assetId}`, {
       method: 'POST',
@@ -233,7 +233,7 @@ export const removeAllArbitragePairs = async (token: string): Promise<unknown> =
   }
 };
 
-export const updateArbitragePair = async (id: string, modifications: ArbitragePairDto, token: string): Promise<string> => {
+export const updateArbitragePair = async (id: string, modifications: Partial<ArbitragePairDto>, token: string): Promise<string> => {
   try {
     const response = await fetch(`${MRM_BACKEND_URL}/admin/grow/arbitrage/update/${id}`, {
       method: 'POST',
