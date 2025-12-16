@@ -30,6 +30,7 @@
   import { botId } from "$lib/stores/home";
 
   import type { GrowInfo } from "$lib/types/hufi/grow";
+  import { getUuid } from "@mixin.dev/mixin-node-sdk";
 
   export let data;
 
@@ -99,19 +100,26 @@
         orderId: orderId,
       });
 
+      console.log(`memo: ${memo}`);
+
       const items: InvoiceItem[] = [
         {
           assetId: selectedPairInfo.base_asset_id,
           amount: baseAmount,
           extra: memo,
+          traceId: getUuid(),
         },
         {
           assetId: selectedPairInfo.target_asset_id,
           amount: quoteAmount,
+          extra: memo,
+          traceId: getUuid(),
         },
         {
           assetId: feeAssetId,
           amount: feeAmount,
+          extra: memo,
+          traceId: getUuid(),
         },
       ];
 

@@ -58,7 +58,7 @@
     "jsencrypt": "^3.5.4",
     "klinecharts": "^9.8.12",
     "libsodium-wrappers": "^0.7.15",
-    "lightweight-charts": "^5.0.0",
+    "lightweight-charts": "^4.1.1",
     "moment": "^2.30.1",
     "pako": "^2.1.0",
     "postcss": "^8.5.6",

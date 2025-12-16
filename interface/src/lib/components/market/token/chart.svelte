@@ -1,5 +1,4 @@
 <script lang="ts">
-  // @ts-nocheck
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
   import { onDestroy } from "svelte";
@@ -77,12 +76,6 @@
       console.log(e);
     }
   };
-
-  const transformChartData = (prices: Array<[number, string | number]>) =>
-    prices.map((item) => ({
-      time: (item[0] / 1000) as any,
-      value: formatChartPrice(item[1]),
-    }));
 </script>
 
 {#await $page.data.chart}
@@ -92,7 +85,10 @@
     <Chart {...chartOptions} ref={(ref) => (chartApi = ref)} {localization}>
       <LineSeries
         {...$ChartLineOption}
-        data={transformChartData(dt.prices)}
+        data={dt.prices.map((item) => ({
+          time: item[0],
+          value: formatChartPrice(item[1]),
+        })) || dt}
         reactive={true}
         ref={(api) => (series = api)}
       />

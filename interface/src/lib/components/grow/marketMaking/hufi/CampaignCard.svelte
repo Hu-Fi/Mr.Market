@@ -27,9 +27,9 @@
   const symbolIcon = getSymbolIcon(campaign.symbol);
 </script>
 
-<div class="flex flex-col space-y-6 pb-6">
+<div class="flex flex-col space-y-6 p-6 md:p-8 pb-6">
   <!-- Campaign Header -->
-  <div class="flex flex-col space-y-4 px-6 pt-6">
+  <div class="flex flex-col space-y-4">
     <div class="flex items-center gap-3">
       <img
         src={symbolIcon}
@@ -56,10 +56,10 @@
 
   <!-- Campaign Info Section -->
   <div class="flex flex-col space-y-4">
-    <span class="font-bold text-sm bg-base-200 p-3 px-6">
+    <div class="font-bold text-sm bg-slate-50 p-3 px-4 rounded-lg">
       Campaign Information
-    </span>
-    <div class="flex flex-col space-y-4 px-6">
+    </div>
+    <div class="flex flex-col space-y-4 px-2">
       <div class="flex justify-between items-center">
         <span class="text-sm font-bold">Contract Address</span>
         <div class="flex items-center gap-2">
@@ -90,7 +90,7 @@
 
       <div class="flex justify-between">
         <span class="text-sm font-bold">Duration</span>
-        <span class="text-sm"
+        <span class="text-sm text-base-content/70"
           >{formatDate(campaign.start_date)} - {formatDate(
             campaign.end_date,
           )}</span
@@ -99,7 +99,8 @@
 
       <div class="flex justify-between">
         <span class="text-sm font-bold">Exchange</span>
-        <span class="text-sm">{formatExchangeName(campaign.exchange_name)}</span
+        <span class="text-sm text-base-content/70"
+          >{formatExchangeName(campaign.exchange_name)}</span
         >
       </div>
 
@@ -114,8 +115,8 @@
 
   <!-- Funding Section -->
   <div class="flex flex-col space-y-4">
-    <span class="font-bold text-sm bg-base-200 p-3 px-6"> Funding </span>
-    <div class="flex flex-col space-y-4 px-6">
+    <div class="font-bold text-sm bg-slate-50 p-3 px-4 rounded-lg">Funding</div>
+    <div class="flex flex-col space-y-4 px-2">
       <div class="flex justify-between">
         <span class="text-sm font-bold">Total Funded Amount</span>
         <span class="text-sm font-bold text-primary"
@@ -129,7 +130,7 @@
 
       <div class="flex justify-between">
         <span class="text-sm font-bold">Amount Paid</span>
-        <span class="text-sm"
+        <span class="text-sm text-base-content/70"
           >{calculateAmountPaid(
             campaign.fund_amount,
             campaign.balance,
@@ -141,7 +142,7 @@
 
       <div class="flex justify-between">
         <span class="text-sm font-bold">Reserved Funds</span>
-        <span class="text-sm"
+        <span class="text-sm text-base-content/70"
           >{formatAmount(
             campaign.reserved_funds,
             campaign.fund_token_decimals,
@@ -168,8 +169,8 @@
 
   <!-- Results Section -->
   <div class="flex flex-col space-y-4">
-    <span class="font-bold text-sm bg-base-200 p-3 px-6"> Results </span>
-    <div class="flex flex-col space-y-4 px-6">
+    <div class="font-bold text-sm bg-slate-50 p-3 px-4 rounded-lg">Results</div>
+    <div class="flex flex-col space-y-4 px-2">
       <div class="flex justify-between items-center">
         <span class="text-sm font-bold">Campaign Results</span>
         <div class="flex items-center gap-2">
@@ -203,9 +204,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .bg-base-200 {
-    background-color: #f8fafc;
-  }
-</style>

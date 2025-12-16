@@ -3,6 +3,6 @@ import { formatCampaign } from "$lib/helpers/mrm/campaignFormatter";
 
 export const load = async ({ params }) => {
   return {
-    campaign: await getSpecificCampaginDetail(137, params.id),
+    campaign: getSpecificCampaginDetail(137, params.id),
   };
 }
