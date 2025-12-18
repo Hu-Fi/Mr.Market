@@ -6,6 +6,10 @@ import BigNumber from 'bignumber.js';
 import { MixinClientService } from '../../mixin/client/mixin-client.service';
 import { MIXIN_DEPOSIT_FEES } from 'src/common/constants/constants';
 
+interface WithdrawalFeeWithPriority extends SafeWithdrawalFee {
+  priority: number;
+}
+
 @Injectable()
 export class FeeService {
   private readonly logger = new CustomLogger(FeeService.name);
@@ -18,15 +22,23 @@ export class FeeService {
     this.client = this.mixinClientService.client;
   }
 
+  async getFeeInfo() {
+    return {
+      // Admin fee controller
+    };
+  }
+
   async calculateMoveFundsFee(
     exchangeName: string,
     pair: string,
     direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
   ) {
     const [base_symbol, quote_symbol] = pair.split('/');
-    let base_fee, quote_fee;
-    let mixin_deposit_fee = 0;
-    const creation_fee = 1;
+    let base_fee, quote_fee, direction_info;
+    let mixin_deposit_fee = '0';
+    const creation_fee = '1';
+    const creation_fee_asset_id = 'b91e18ff-a9ae-3dc7-8679-e935d9a4b34b'; // Temp: USDT-TRC20
+    const creation_fee_symbol = 'USDT'
 
     const base_asset_list = await this.client.network.searchAssets(base_symbol);
     const base = base_asset_list[0].asset_id;
@@ -35,10 +47,32 @@ export class FeeService {
     const quote = quote_asset_list[0].asset_id;
     const quote_asset = await this.client.safe.fetchAsset(quote);
 
+    if (direction === 'deposit_to_exchange') {
+      direction_info = 'mixin->exchange'
+    } else if (direction === 'withdraw_to_mixin') {
+      direction_info = 'exchange->mixin'
+    } else if (direction === 'withdraw_external') {
+      direction_info = 'exchange->external'
+    } else {
+      return;
+    }
+
     try {
       if (direction === 'deposit_to_exchange') {
         base_fee = await this.getMixinWithdrawalFee(base);
         quote_fee = await this.getMixinWithdrawalFee(quote);
+        return {
+          base_asset_id: base_asset.asset_id,
+          quote_asset_id: quote_asset.asset_id,
+          base_fee_id: base_fee?.asset_id || base_asset.chain_id,
+          quote_fee_id: quote_fee?.asset_id || quote_asset.chain_id,
+          base_asset_fee: base_fee?.amount,
+          quote_asset_fee: quote_fee?.amount,
+          creation_fee,
+          creation_fee_asset_id,
+          creation_fee_symbol,
+          direction: direction_info,
+        };
       } else if (direction === 'withdraw_to_mixin') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
         if (exchange) {
@@ -47,10 +81,20 @@ export class FeeService {
           quote_fee = exchangeFees.quoteFee;
         }
 
+        // Deposit fee in USD
         const base_mixin_fee = this.getMixinDepositFee(base_asset.chain_id);
         const quote_mixin_fee = this.getMixinDepositFee(quote_asset.chain_id);
-        mixin_deposit_fee = BigNumber(base_mixin_fee).plus(quote_mixin_fee).toNumber();
+        mixin_deposit_fee = BigNumber(base_mixin_fee).plus(quote_mixin_fee).toString();
 
+        return {
+          symbol: pair,
+          base_asset_id: base_asset.asset_id,
+          quote_asset_id: quote_asset.asset_id,
+          base_asset_fee: base_fee?.amount,
+          quote_asset_fee: quote_fee?.amount,
+          mixin_deposit_fee,
+          direction: direction_info,
+        };
       } else if (direction === 'withdraw_external') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
         if (exchange) {
@@ -58,33 +102,41 @@ export class FeeService {
           base_fee = exchangeFees.baseFee;
           quote_fee = exchangeFees.quoteFee;
         }
+        return {
+          symbol: pair,
+          base_asset_id: base_asset.asset_id,
+          quote_asset_id: quote_asset.asset_id,
+          base_asset_fee: base_fee?.amount,
+          quote_asset_fee: quote_fee?.amount,
+          direction: direction_info,
+        }
       }
-
     } catch (error) {
       this.logger.error(`Error fetching fees: ${error.message}`);
     }
 
     return {
+      symbol: pair,
       base_asset_id: base_asset.asset_id,
       quote_asset_id: quote_asset.asset_id,
-      base_fee_id: base_asset.chain_id,
-      quote_fee_id: quote_asset.chain_id,
-      base_asset_fee: base_fee?.amount,
-      quote_asset_fee: quote_fee?.amount,
-      creation_fee,
-      mixin_deposit_fee,
-      direction,
+      direction: direction_info,
     };
   }
 
-  private async getMixinWithdrawalFee(asset_id: string): Promise<SafeWithdrawalFee> {
+  private async getMixinWithdrawalFee(asset_id: string): Promise<WithdrawalFeeWithPriority> {
     try {
       const asset_detail = await this.client.safe.fetchAsset(asset_id);
       if (asset_detail) {
         // @ts-expect-error fetchFee is not in type definition but exists in SDK as per user
-        const fee = await this.client.safe.fetchFee(asset_detail.asset_id);
+        const fees: WithdrawalFeeWithPriority[] = await this.client.safe.fetchFee(asset_detail.asset_id);
 
-        return fee[0];
+        // Find the fee with maximum priority
+        if (fees && fees.length > 0) {
+          const maxPriorityFee = fees.reduce((max, current) => {
+            return current.priority > max.priority ? current : max;
+          });
+          return maxPriorityFee;
+        }
       }
     } catch (e) {
       this.logger.error(`Failed to get Mixin withdrawal fee for ${asset_id}: ${e.message}`);

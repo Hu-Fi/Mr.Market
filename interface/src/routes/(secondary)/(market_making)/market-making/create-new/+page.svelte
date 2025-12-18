@@ -31,6 +31,10 @@
 
   import type { GrowInfo } from "$lib/types/hufi/grow";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
+  import {
+    getMarketMakingFee,
+    type MarketMakingFee,
+  } from "$lib/helpers/mrm/grow";
 
   export let data;
 
@@ -80,16 +84,24 @@
       !baseAmountInput ||
       !quoteAmountInput ||
       !baseAmount ||
-      !quoteAmount
+      !quoteAmount ||
+      !feeInfo
     ) {
       return;
     }
 
     const orderId = uuidv4();
 
-    // Fee Config
-    const feeAssetId = "4d8c508b-91c5-375b-92b0-ee7ca2a58710"; // USDT
-    const feeAmount = "25";
+    // Use fee info from API
+    const baseAssetId = feeInfo.base_asset_id;
+    const quoteAssetId = feeInfo.quote_asset_id;
+    const baseFeeId = feeInfo.base_fee_id;
+    const quoteFeeId = feeInfo.quote_fee_id;
+    const baseFeeAmount = feeInfo.base_asset_fee;
+    const quoteFeeAmount = feeInfo.quote_asset_fee;
+    const creationFeeAssetId = feeInfo.creation_fee_asset_id;
+    const creationFeeSymbol = feeInfo.creation_fee_symbol;
+    const creationFeeAmount = feeInfo.creation_fee;
 
     try {
       const memo = encodeMarketMakingCreateMemo({
@@ -116,8 +128,8 @@
           traceId: getUuid(),
         },
         {
-          assetId: feeAssetId,
-          amount: feeAmount,
+          assetId: creationFeeAssetId,
+          amount: creationFeeAmount,
           extra: memo,
           traceId: getUuid(),
         },
@@ -153,6 +165,26 @@
   let lastUrlQuoteAmount: string | null = null;
   let amountMode: "both_token" | "single_token" = "both_token";
   let singleTokenType: "base" | "quote" = "base";
+  let feeInfo: MarketMakingFee | null = null;
+  let isFetchingFee = false;
+
+  // Fetch fee info when trading pair is selected
+  $: if (exchangeName && tradingPair) {
+    isFetchingFee = true;
+    getMarketMakingFee(exchangeName, tradingPair, "deposit_to_exchange")
+      .then((fee) => {
+        feeInfo = fee;
+      })
+      .catch((err) => {
+        console.error("Failed to fetch fee info:", err);
+        feeInfo = null;
+      })
+      .finally(() => {
+        isFetchingFee = false;
+      });
+  } else {
+    feeInfo = null;
+  }
 
   $: showBase =
     amountMode === "both_token" ||
@@ -339,6 +371,8 @@
         {quoteAmount}
         {baseAmountUsd}
         {quoteAmountUsd}
+        creationFeeAmount={feeInfo?.creation_fee}
+        creationFeeSymbol={feeInfo?.creation_fee_symbol}
       />
       <div class="px-6 w-full flex justify-center">
         <ConfirmPaymentBtn onConfirm={confirmPayment} />

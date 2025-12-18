@@ -18,8 +18,8 @@
   export let quoteAmount: string | number | null = null;
   export let baseAmountUsd: string | number | null = null;
   export let quoteAmountUsd: string | number | null = null;
-  export let feeAmount: string | number | null = "25";
-  export let feeSymbol: string | null = null;
+  export let creationFeeAmount: string | number | null = null;
+  export let creationFeeSymbol: string | null = null;
 
   const formatAmount = (amount: string | number | null) => {
     if (amount === null || amount === undefined || amount === "") return "0";
@@ -40,7 +40,6 @@
 
   $: baseAmountUsdFormatted = formatFiat(baseAmountUsd);
   $: quoteAmountUsdFormatted = formatFiat(quoteAmountUsd);
-  $: feeSymbolDisplay = feeSymbol || "USDT";
 </script>
 
 <div class="w-full max-w-md space-y-6 rounded-3xl bg-base-100 p-6 pt-0">
@@ -53,7 +52,10 @@
     <div class="grid grid-cols-2 gap-1 md:grid-cols-2">
       <ConfirmSummaryCard title={$_("exchange")}>
         <svelte:fragment slot="icon">
-          <ExchangeIcon exchangeName={exchangeName ?? "binance"} clazz="w-8 h-8 rounded-full" />
+          <ExchangeIcon
+            exchangeName={exchangeName ?? "binance"}
+            clazz="w-8 h-8 rounded-full"
+          />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <ExchangeName exchangeName={exchangeName ?? ""} />
@@ -81,7 +83,11 @@
         valueClass="text-base-content"
       >
         <svelte:fragment slot="icon">
-          <img src={baseIcon || emptyToken} alt={baseSymbol ?? ""} class="w-8 h-8 rounded-full object-cover" />
+          <img
+            src={baseIcon || emptyToken}
+            alt={baseSymbol ?? ""}
+            class="w-8 h-8 rounded-full object-cover"
+          />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex items-baseline gap-2 leading-tight">
@@ -102,7 +108,11 @@
         valueClass="text-base-content"
       >
         <svelte:fragment slot="icon">
-          <img src={quoteIcon || emptyToken} alt={quoteSymbol ?? ""} class="w-8 h-8 rounded-full object-cover" />
+          <img
+            src={quoteIcon || emptyToken}
+            alt={quoteSymbol ?? ""}
+            class="w-8 h-8 rounded-full object-cover"
+          />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex items-baseline gap-2 leading-tight">
@@ -123,14 +133,17 @@
         valueClass="text-xs font-semibold text-base-content"
       >
         <svelte:fragment slot="icon">
-          <div class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold">
+          <div
+            class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold"
+          >
             GAS
           </div>
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex items-center gap-3">
             <span class="text-lg font-semibold text-base-content">
-              {formatAmount(feeAmount)} {feeSymbolDisplay}
+              {formatAmount(creationFeeAmount)}
+              {creationFeeSymbol}
             </span>
             <button
               class="badge badge-xs p-1 rounded-full bg-base-300 text-base-content tooltip tooltip-bottom text-xs opacity-60"
@@ -138,9 +151,7 @@
               type="button"
               aria-label={$_("fee_usage_note")}
             >
-              <span class="text-xs">
-                ?
-              </span>
+              <span class="text-xs"> ? </span>
             </button>
           </div>
         </svelte:fragment>
@@ -148,4 +159,3 @@
     </div>
   </div>
 </div>
-
