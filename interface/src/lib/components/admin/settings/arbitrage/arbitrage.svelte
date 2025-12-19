@@ -52,11 +52,11 @@
     if (
       !pair.symbol ||
       !pair.base_symbol ||
-      !pair.target_symbol ||
+      !pair.quote_symbol ||
       !pair.base_exchange_id ||
       !pair.target_exchange_id ||
       !pair.base_asset_id ||
-      !pair.target_asset_id
+      !pair.quote_asset_id
     )
       return;
     isAdding = true;
@@ -134,14 +134,14 @@
         <tr>
           <th>{"symbol"}</th>
           <th>{"base_symbol"}</th>
-          <th>{"target_symbol"}</th>
+          <th>{"quote_symbol"}</th>
           <th>{"id"}</th>
           <th>{"base_asset_id"}</th>
-          <th>{"target_asset_id"}</th>
+          <th>{"quote_asset_id"}</th>
           <th>{"base_exchange_id"}</th>
           <th>{"target_exchange_id"}</th>
           <th>{"base_icon_url"}</th>
-          <th>{"target_icon_url"}</th>
+          <th>{"quote_icon_url"}</th>
           <th>{$_("enabled")}</th>
           <th>{$_("actions")}</th>
         </tr>
@@ -162,7 +162,7 @@
               <span class="text-xs select-text"> {pair.base_symbol} </span>
             </td>
             <td>
-              <span class="text-xs select-text"> {pair.target_symbol} </span>
+              <span class="text-xs select-text"> {pair.quote_symbol} </span>
             </td>
             <td>
               <span class="text-xs select-text"> {pair.id} </span>
@@ -171,7 +171,7 @@
               <span class="text-xs select-text"> {pair.base_asset_id} </span>
             </td>
             <td>
-              <span class="text-xs select-text"> {pair.target_asset_id} </span>
+              <span class="text-xs select-text"> {pair.quote_asset_id} </span>
             </td>
             <td>
               <span class="text-xs select-text"> {pair.base_exchange_id} </span>
@@ -194,11 +194,11 @@
             <td
               class="cursor-pointer"
               on:click={() => {
-                window.open(pair.target_icon_url, "_blank");
+                window.open(pair.quote_icon_url, "_blank");
               }}
             >
               <div class="tooltip" data-tip="Click to open in new tab">
-                <img src={pair.target_icon_url} class="w-6 h-6" alt="" />
+                <img src={pair.quote_icon_url} class="w-6 h-6" alt="" />
               </div>
             </td>
             <td>
@@ -292,7 +292,7 @@
             />
           </div>
           <div class="flex flex-col gap-2">
-            <span class="label"> {"target_symbol"} </span>
+            <span class="label"> {"quote_symbol"} </span>
             <input
               type="text"
               class="input input-bordered focus:outline-none"
@@ -308,7 +308,7 @@
             />
           </div>
           <div class="flex flex-col gap-2">
-            <span class="label"> {"target_asset_id"} </span>
+            <span class="label"> {"quote_asset_id"} </span>
             <input
               type="text"
               class="input input-bordered focus:outline-none"
@@ -360,7 +360,7 @@
             {/if}
           </div>
           <div class="flex flex-col gap-2">
-            <span class="label"> {"target_icon_url"} </span>
+            <span class="label"> {"quote_icon_url"} </span>
             {#if !AddNewTargetIconUrl && validate(AddNewTargetAssetId)}
               <button
                 class="btn btn-bordered btn-md no-animation"
@@ -396,11 +396,11 @@
                 id: getUuid(),
                 symbol: AddNewSymbol,
                 base_symbol: AddNewBaseSymbol,
-                target_symbol: AddNewTargetSymbol,
+                quote_symbol: AddNewTargetSymbol,
                 base_asset_id: AddNewBaseAssetId,
                 base_icon_url: AddNewBaseIconUrl,
-                target_asset_id: AddNewTargetAssetId,
-                target_icon_url: AddNewTargetIconUrl,
+                quote_asset_id: AddNewTargetAssetId,
+                quote_icon_url: AddNewTargetIconUrl,
                 base_exchange_id: AddNewBaseExchangeId,
                 target_exchange_id: AddNewTargetExchangeId,
                 enable: true,

@@ -74,7 +74,9 @@
             class="btn btn-xs bg-base-100 border-base-300 hover:bg-base-100 hover:border-base-300 no-animation flex items-center justify-center focus:bg-base-100 focus:border-base-300 rounded-2xl"
             on:click={() => (showItems += 10)}
           >
-            {$_("show_more")}
+            <span class="text-xs font-normal">
+              {$_("show_more")}
+            </span>
           </button>
         </div>
       {/if}

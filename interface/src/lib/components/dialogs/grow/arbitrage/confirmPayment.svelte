@@ -19,7 +19,7 @@
 
   $: baseAssetSymbol = $createArbPair ? $createArbPair.base_symbol : "";
   $: baseAssetAmount = $createArbAmount[0];
-  $: targetAssetSymbol = $createArbPair ? $createArbPair.target_symbol : "";
+  $: targetAssetSymbol = $createArbPair ? $createArbPair.quote_symbol : "";
   $: targetAssetAmount = $createArbAmount[1];
 
   let btn1Loading = false;
@@ -88,7 +88,7 @@
           amount: baseAssetAmount,
           assetId: $createArbPair.base_asset_id,
           firstAssetId: $createArbPair.base_asset_id,
-          secondAssetId: $createArbPair.target_asset_id,
+          secondAssetId: $createArbPair.quote_asset_id,
           arbitragePairId: $createArbPair.id,
           orderId,
         }) ?? "";
@@ -100,9 +100,9 @@
           action: "create",
           rewardAddress: $createSimplyGrowRewardAddress,
           amount: targetAssetAmount,
-          assetId: $createArbPair.target_asset_id,
+          assetId: $createArbPair.quote_asset_id,
           firstAssetId: $createArbPair.base_asset_id,
-          secondAssetId: $createArbPair.target_asset_id,
+          secondAssetId: $createArbPair.quote_asset_id,
           arbitragePairId: $createArbPair.id,
           orderId,
         }) ?? "";

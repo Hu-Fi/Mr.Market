@@ -19,15 +19,18 @@ export const getGrowBasicInfo = async (): Promise<GrowInfo> => {
 }
 
 export interface MarketMakingFee {
+  symbol?: string;
   base_asset_id: string;
   quote_asset_id: string;
   base_fee_id: string;
   quote_fee_id: string;
-  base_asset_fee: string;
-  quote_asset_fee: string;
-  creation_fee: string;
-  creation_fee_asset_id: string;
-  creation_fee_symbol: string;
+  base_fee_amount: string;
+  quote_fee_amount: string;
+  base_fee_symbol?: string;
+  quote_fee_symbol?: string;
+  creation_fee?: string;
+  creation_fee_asset_id?: string;
+  creation_fee_symbol?: string;
   direction: string;
 }
 

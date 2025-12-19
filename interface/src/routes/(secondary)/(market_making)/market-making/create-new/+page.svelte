@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page as dPage } from "$app/stores";
+  import emptyToken from "$lib/images/empty-token.svg";
   import ChooseExchange from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchange.svelte";
   import ChooseExchangeSmallBtn from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchangeSmallBtn.svelte";
   import SearchExchange from "$lib/components/grow/marketMaking/createNew/exchange/searchBtn.svelte";
@@ -14,12 +13,13 @@
   import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
   import ConfirmPaymentInfo from "$lib/components/grow/marketMaking/createNew/confirmation/confirmPaymentInfo.svelte";
   import ConfirmPaymentBtn from "$lib/components/grow/marketMaking/createNew/confirmation/confirmPaymentBtn.svelte";
-  import emptyToken from "$lib/images/empty-token.svg";
-  import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import AmountTypeTab from "$lib/components/grow/marketMaking/createNew/amount/amountTypeTab.svelte";
   import Loading from "$lib/components/common/loading.svelte";
 
+  import { goto } from "$app/navigation";
+  import { page as dPage } from "$app/stores";
   import BigNumber from "bignumber.js";
+  import { findCoinIconBySymbol } from "$lib/helpers/helpers";
   import { encodeMarketMakingCreateMemo } from "$lib/helpers/mixin/memo";
   import {
     createMixinInvoice,
@@ -93,14 +93,13 @@
     const orderId = uuidv4();
 
     // Use fee info from API
-    const baseAssetId = feeInfo.base_asset_id;
-    const quoteAssetId = feeInfo.quote_asset_id;
+    const baseAssetId = selectedPairInfo.base_asset_id;
+    const quoteAssetId = selectedPairInfo.quote_asset_id;
     const baseFeeId = feeInfo.base_fee_id;
     const quoteFeeId = feeInfo.quote_fee_id;
-    const baseFeeAmount = feeInfo.base_asset_fee;
-    const quoteFeeAmount = feeInfo.quote_asset_fee;
+    const baseFeeAmount = feeInfo.base_fee_amount;
+    const quoteFeeAmount = feeInfo.quote_fee_amount;
     const creationFeeAssetId = feeInfo.creation_fee_asset_id;
-    const creationFeeSymbol = feeInfo.creation_fee_symbol;
     const creationFeeAmount = feeInfo.creation_fee;
 
     try {
@@ -114,26 +113,53 @@
 
       console.log(`memo: ${memo}`);
 
-      const items: InvoiceItem[] = [
-        {
-          assetId: selectedPairInfo.base_asset_id,
-          amount: baseAmount,
-          extra: memo,
-          traceId: getUuid(),
-        },
-        {
-          assetId: selectedPairInfo.target_asset_id,
-          amount: quoteAmount,
-          extra: memo,
-          traceId: getUuid(),
-        },
-        {
+      const items: InvoiceItem[] = [];
+
+      // Base asset payment
+      items.push({
+        assetId: baseAssetId,
+        amount: baseAmount,
+        extra: memo,
+        traceId: getUuid(),
+      });
+
+      // Quote asset payment
+      items.push({
+        assetId: quoteAssetId,
+        amount: quoteAmount,
+        extra: memo,
+        traceId: getUuid(),
+      });
+
+      // Creation fee payment (if it exists)
+      if (creationFeeAssetId && creationFeeAmount) {
+        items.push({
           assetId: creationFeeAssetId,
           amount: creationFeeAmount,
           extra: memo,
           traceId: getUuid(),
-        },
-      ];
+        });
+      }
+
+      // Add base asset withdrawal fee if it exists
+      if (baseFeeAmount && parseFloat(baseFeeAmount) > 0) {
+        items.push({
+          assetId: baseFeeId,
+          amount: baseFeeAmount,
+          extra: memo,
+          traceId: getUuid(),
+        });
+      }
+
+      // Add quote asset withdrawal fee if it exists
+      if (quoteFeeAmount && parseFloat(quoteFeeAmount) > 0) {
+        items.push({
+          assetId: quoteFeeId,
+          amount: quoteFeeAmount,
+          extra: memo,
+          traceId: getUuid(),
+        });
+      }
 
       const invoiceMin = createMixinInvoice($botId, items);
       if (invoiceMin) {
@@ -254,7 +280,7 @@
         <ChooseExchange />
       </div>
       <div
-        class="mx-4 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
+        class="mx-6 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
           bg-gradient-radial from-sky-100 via-white to-white
           max-h-[50vh] overflow-y-auto"
       >
@@ -358,7 +384,7 @@
     <!-- Step 4: Confirm Payment -->
   {:else}
     <div
-      class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] px-4 space-y-4"
+      class="flex flex-col items-center grow h-[100vh-64px] mt-6 px-4 space-y-4"
     >
       <ConfirmPaymentInfo
         {exchangeName}
@@ -371,8 +397,13 @@
         {quoteAmount}
         {baseAmountUsd}
         {quoteAmountUsd}
+        baseFeeAmount={feeInfo?.base_fee_amount}
+        baseFeeSymbol={feeInfo?.base_fee_symbol}
+        quoteFeeAmount={feeInfo?.quote_fee_amount}
+        quoteFeeSymbol={feeInfo?.quote_fee_symbol}
         creationFeeAmount={feeInfo?.creation_fee}
         creationFeeSymbol={feeInfo?.creation_fee_symbol}
+        {isFetchingFee}
       />
       <div class="px-6 w-full flex justify-center">
         <ConfirmPaymentBtn onConfirm={confirmPayment} />

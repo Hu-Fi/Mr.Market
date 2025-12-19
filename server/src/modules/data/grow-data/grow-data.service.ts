@@ -79,7 +79,7 @@ export class GrowdataService {
       );
       pair.base_price = baseAssetPrice;
       const targetAssetPrice = await this.fetchExternalPriceData(
-        pair.target_asset_id,
+        pair.quote_asset_id,
       );
       pair.target_price = targetAssetPrice;
     }
@@ -99,7 +99,7 @@ export class GrowdataService {
       );
       pair.base_price = baseAssetPrice;
       const targetAssetPrice = await this.fetchExternalPriceData(
-        pair.target_asset_id,
+        pair.quote_asset_id,
       );
       pair.target_price = targetAssetPrice;
     }

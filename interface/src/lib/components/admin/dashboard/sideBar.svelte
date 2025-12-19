@@ -7,13 +7,13 @@
   import SideBarIcons from "./sideBarIcons.svelte";
 
   const paths = [
-    "dashboard",
+    // "dashboard",
     // "orders",
-    "users",
+    // "users",
     // "exchanges",
     // "rebalance",
     // "health",
-    "message",
+    // "message",
     "settings",
     "exit",
   ];

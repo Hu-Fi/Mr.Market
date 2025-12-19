@@ -4,3 +4,11 @@
 .menu :where(li:not(.disabled)) > :where(:not(ul)) {
   transition-property: none;
 }
+
+/* Hide TradingView watermark/logo from lightweight-charts */
+div[style*="pointer-events"][style*="absolute"] > img,
+div[style*="pointer-events"][style*="absolute"] > svg,
+.tv-lightweight-charts img,
+.tv-lightweight-charts svg {
+  display: none !important;
+}

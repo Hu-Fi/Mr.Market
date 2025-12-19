@@ -10,18 +10,18 @@
   $: active = $page.url.pathname.includes("/home")
     ? 0
     : $page.url.pathname.includes("/market-making")
-      ? 3
+      ? 2
       : $page.url.pathname.includes("/market")
         ? 1
         : $page.url.pathname.includes("/spot")
-          ? 2
+          ? 5
           : $page.url.pathname.includes("/wallet")
-            ? 4
-            : 2;
+            ? 3
+            : 0;
   $: routes = [
     { icon: "home", route: "/home", title: $_("home") },
     { icon: "market", route: "/market/token", title: $_("market") },
-    { icon: "trade", route: "/spot", title: $_("trade") },
+    // { icon: "trade", route: "/spot", title: $_("trade") },
     { icon: "market-making", route: "/market-making", title: $_("mm_short") },
     { icon: "wallet", route: "/wallet", title: $_("wallet") },
   ];

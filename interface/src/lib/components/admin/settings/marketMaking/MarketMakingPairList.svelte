@@ -81,9 +81,9 @@
             <th>{$_("exchange")}</th>
             <th>{$_("symbol")}</th>
             <th>{$_("base_symbol")}</th>
-            <th>{$_("target_symbol")}</th>
+            <th>{$_("quote_symbol")}</th>
             <th>{$_("base_asset_id")}</th>
-            <th>{$_("target_asset_id")}</th>
+            <th>{$_("quote_asset_id")}</th>
             <th>{$_("custom_fee_rate")}</th>
             <th class="text-center">{$_("status")}</th>
             <th class="text-right">{$_("actions")}</th>
@@ -109,7 +109,7 @@
                   />
                   <img
                     class="inline-block min-w-8 min-h-8 h-8 w-8 rounded-full ring-2 ring-base-100"
-                    src={pair.target_icon_url}
+                    src={pair.quote_icon_url}
                     alt=""
                   />
                 </div>
@@ -124,14 +124,14 @@
                 ></td
               >
               <td>{pair.base_symbol}</td>
-              <td>{pair.target_symbol}</td>
+              <td>{pair.quote_symbol}</td>
               <td
                 class="max-w-[100px] truncate text-xs opacity-50"
                 title={pair.base_asset_id}>{pair.base_asset_id}</td
               >
               <td
                 class="max-w-[100px] truncate text-xs opacity-50"
-                title={pair.target_asset_id}>{pair.target_asset_id}</td
+                title={pair.quote_asset_id}>{pair.quote_asset_id}</td
               >
               <td>
                 {#if pair.custom_fee_rate}

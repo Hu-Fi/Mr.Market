@@ -61,13 +61,17 @@ export class FeeService {
       if (direction === 'deposit_to_exchange') {
         base_fee = await this.getMixinWithdrawalFee(base);
         quote_fee = await this.getMixinWithdrawalFee(quote);
+        const base_fee_asset = await this.client.safe.fetchAsset(base_fee?.asset_id);
+        const quote_fee_asset = await this.client.safe.fetchAsset(quote_fee?.asset_id);
         return {
           base_asset_id: base_asset.asset_id,
           quote_asset_id: quote_asset.asset_id,
-          base_fee_id: base_fee?.asset_id || base_asset.chain_id,
-          quote_fee_id: quote_fee?.asset_id || quote_asset.chain_id,
-          base_asset_fee: base_fee?.amount,
-          quote_asset_fee: quote_fee?.amount,
+          base_fee_id: base_fee?.asset_id,
+          quote_fee_id: quote_fee?.asset_id,
+          base_fee_amount: base_fee?.amount,
+          quote_fee_amount: quote_fee?.amount,
+          base_fee_symbol: base_fee_asset.symbol,
+          quote_fee_symbol: quote_fee_asset.symbol,
           creation_fee,
           creation_fee_asset_id,
           creation_fee_symbol,

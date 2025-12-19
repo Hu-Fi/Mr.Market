@@ -10,7 +10,7 @@
   $: item = {
     symbol: tradingPair,
     base_symbol: tradingPair.split("/")[0],
-    target_symbol: tradingPair.split("/")[1],
+    quote_symbol: tradingPair.split("/")[1],
     exchange_id: "binance",
   };
 </script>
@@ -27,7 +27,7 @@
     clazz="w-5 h-5"
     claxx="w-2 h-2"
     asset0Icon={findCoinIconBySymbol(item.base_symbol) || emptyToken}
-    asset1Icon={findCoinIconBySymbol(item.target_symbol) || emptyToken}
+    asset1Icon={findCoinIconBySymbol(item.quote_symbol) || emptyToken}
   />
   <div class="flex flex-col">
     <span class="text-sm font-semibold">
