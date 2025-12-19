@@ -5,7 +5,7 @@
 
 {#if cardType === "exchange-info"}
   <div
-    class="rounded-none p-2 px-4 border border-base-300 first:rounded-t-xl! last:rounded-b-xl! first:border-b border-base-300"
+    class="rounded-none p-2 pl-4 border border-base-300 first:rounded-t-xl! last:rounded-b-xl! first:border-b border-base-300"
   >
     <div class="flex items-center gap-4">
       <div class="flex items-center justify-center">
@@ -23,7 +23,7 @@
   </div>
 {:else if cardType === "payment-info"}
   <div
-    class="rounded-none border border-base-300 p-4 first:rounded-t-xl! last:rounded-b-xl!"
+    class="rounded-none border border-base-300 p-2 pl-4 first:rounded-t-xl! last:rounded-b-xl!"
   >
     <div class="flex items-center gap-4">
       <div class="flex items-center justify-center">

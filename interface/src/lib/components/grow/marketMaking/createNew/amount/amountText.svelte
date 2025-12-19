@@ -6,7 +6,7 @@
 </script>
 
 <div class="flex flex-col gap-2 mx-6">
-  <span class="text-2xl font-semibold">
+  <span class="text-xl font-semibold">
     {$_("enter_deposit_amount")}
   </span>
 

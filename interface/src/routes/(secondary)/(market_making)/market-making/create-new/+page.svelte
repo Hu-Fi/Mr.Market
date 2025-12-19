@@ -275,7 +275,7 @@
     : null}
 
   {#if !exchangeName}
-    <div class="flex flex-col items-center grow h-[calc(100vh-64px)] mt-[10vh]">
+    <div class="flex flex-col items-center grow h-[calc(100vh-64px)] pt-[5vh]">
       <div class="text-center">
         <ChooseExchange />
       </div>
@@ -303,7 +303,7 @@
 
     <!-- Step 2: Choose Trading Pair -->
   {:else if !tradingPair}
-    <div class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh]">
+    <div class="flex flex-col items-center grow h-[100vh-64px] pt-[5vh]">
       <div class="text-center">
         <ChooseTradingPair {exchangeName} />
       </div>
@@ -333,7 +333,7 @@
     <!-- Step 3: Enter Amount -->
   {:else if !isValidAmount}
     <div
-      class="flex flex-col items-center grow h-[100vh-64px] mt-[10vh] space-y-4"
+      class="flex flex-col items-center grow h-[100vh-64px] pt-[5vh] space-y-4"
     >
       <div class="text-center">
         <AmountText {exchangeName} {tradingPair} />
@@ -347,7 +347,7 @@
         {quoteIcon}
       />
       <div
-        class="mx-4 gap-6 grid grid-cols-1 bg-white
+        class="px-4 gap-6 grid grid-cols-1 bg-white
       max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
       >
         <AmountInput
@@ -365,7 +365,7 @@
       </div>
     </div>
 
-    <div class="absolute bottom-24 w-full flex justify-center">
+    <div class="mt-4 w-full flex justify-center">
       <div class="w-full flex justify-center mt-4">
         <AmountNextStepBtn
           baseAmount={baseAmountInput}
