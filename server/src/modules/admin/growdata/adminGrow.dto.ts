@@ -50,7 +50,7 @@ export class GrowdataArbitragePairDto {
   base_symbol: string;
 
   @IsString()
-  target_symbol: string;
+  quote_symbol: string;
 
   @IsUUID()
   base_asset_id: string;
@@ -59,10 +59,10 @@ export class GrowdataArbitragePairDto {
   base_icon_url: string;
 
   @IsUUID()
-  target_asset_id: string;
+  quote_asset_id: string;
 
   @IsString()
-  target_icon_url: string;
+  quote_icon_url: string;
 
   @IsString()
   @IsOptional()
@@ -94,7 +94,7 @@ export class GrowdataMarketMakingPairDto {
   base_symbol: string;
 
   @IsString()
-  target_symbol: string;
+  quote_symbol: string;
 
   @IsUUID()
   base_asset_id: string;
@@ -103,10 +103,10 @@ export class GrowdataMarketMakingPairDto {
   base_icon_url: string;
 
   @IsUUID()
-  target_asset_id: string;
+  quote_asset_id: string;
 
   @IsString()
-  target_icon_url: string;
+  quote_icon_url: string;
 
   @IsString()
   @IsOptional()

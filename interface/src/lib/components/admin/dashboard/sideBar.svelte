@@ -3,17 +3,17 @@
   import { _ } from "svelte-i18n";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { exit } from "$lib/helpers/hufi/admin";
+  import { exit } from "$lib/helpers/mrm/admin";
   import SideBarIcons from "./sideBarIcons.svelte";
 
   const paths = [
-    "dashboard",
-    "orders",
-    "users",
-    "exchanges",
-    "rebalance",
-    "health",
-    "message",
+    // "dashboard",
+    // "orders",
+    // "users",
+    // "exchanges",
+    // "rebalance",
+    // "health",
+    // "message",
     "settings",
     "exit",
   ];

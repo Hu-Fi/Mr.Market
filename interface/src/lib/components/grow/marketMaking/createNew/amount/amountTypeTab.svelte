@@ -11,7 +11,7 @@
 </script>
 
 <div class="flex flex-col justify-center items-center w-full mt-4">
-  <div class="flex justify-center grow join w-full p-4 pb-0 px-8 text-sm">
+  <div class="flex justify-center grow join w-full p-4 pb-0 text-sm w-80">
     <button
       class={clsx(
         "btn btn-md w-[45%] max-w-52 join-item rounded-l-xl bg-base-100",
@@ -19,7 +19,7 @@
       )}
       on:click={() => (mode = "both_token")}
     >
-      <span class="opacity-80">
+      <span class="opacity-80 font-normal">
         {$_("both_token")}
       </span>
     </button>
@@ -35,7 +35,7 @@
         )}
         on:click={() => (mode = "single_token")}
       >
-        <span class="opacity-80">
+        <span class="opacity-80 font-normal">
           {$_("single_token")}
         </span>
         <svg

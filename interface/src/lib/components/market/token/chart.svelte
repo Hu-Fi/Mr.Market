@@ -5,7 +5,7 @@
   import { page } from "$app/stores";
   import { locale } from "svelte-i18n";
   import { formatChartPrice } from "$lib/helpers/utils";
-  import { coinMarketChart } from "$lib/helpers/hufi/coin";
+  import { coinMarketChart } from "$lib/helpers/mrm/coin";
   import { Chart, LineSeries } from "svelte-lightweight-charts";
   import type { TokenChartTimeFrame } from "$lib/types/hufi/exchanges";
   import { coinChartOptions as chartOptions } from "$lib/helpers/chart";
@@ -19,13 +19,13 @@
   } from "$lib/stores/market";
 
   onDestroy(() => ChartActiveTab.set(0));
-  $page.data.coin.then((c: unknown) => currentCoin.set(c));
+  $page.data.coin.then((c: any) => currentCoin.set(c));
 
-  const clickHandler = (param: unknown) => {
+  const clickHandler = (param: any) => {
     if (!param.point) return;
     showCoinPrice.set(true);
   };
-  const crossHandler = (param: unknown) => {
+  const crossHandler = (param: any) => {
     if (!param.point) return;
     showCoinPrice.set(false);
     const data = Array.from(param.seriesData.values())[0];
@@ -38,9 +38,9 @@
   let series: unknown;
   let chartApi: unknown;
   $: if (chartApi != undefined) {
-    chartApi.timeScale().fitContent();
-    chartApi.subscribeCrosshairMove(crossHandler);
-    chartApi.subscribeClick(clickHandler);
+    (chartApi as any).timeScale().fitContent();
+    (chartApi as any).subscribeCrosshairMove(crossHandler);
+    (chartApi as any).subscribeClick(clickHandler);
   }
   $: localization = { locale: $locale?.slice(0, 2) || "en" };
 
@@ -69,8 +69,8 @@
             value: formatChartPrice(value),
           }),
         );
-        series.setData(map);
-        chartApi.timeScale().fitContent();
+        (series as any).setData(map);
+        (chartApi as any).timeScale().fitContent();
       }
     } catch (e) {
       console.log(e);
@@ -85,9 +85,9 @@
     <Chart {...chartOptions} ref={(ref) => (chartApi = ref)} {localization}>
       <LineSeries
         {...$ChartLineOption}
-        data={dt.prices.map(([time, value]) => ({
-          time: time,
-          value: formatChartPrice(value),
+        data={dt.prices.map((item) => ({
+          time: item[0],
+          value: formatChartPrice(item[1]),
         })) || dt}
         reactive={true}
         ref={(api) => (series = api)}

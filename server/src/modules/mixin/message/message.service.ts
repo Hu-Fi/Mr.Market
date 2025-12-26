@@ -5,40 +5,30 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { UserService } from 'src/modules/mixin/user/user.service';
 import { MixinMessage } from 'src/common/entities/mixin-message.entity';
 import {
-  MixinApi,
-  Keystore,
   KeystoreClientReturnType,
   UserResponse,
 } from '@mixin.dev/mixin-node-sdk';
 import { getRFC3339Timestamp } from 'src/common/helpers/utils';
+import { MixinClientService } from '../client/mixin-client.service';
 
 @Injectable()
 export class MessageService implements OnModuleInit {
-  private keystore: Keystore;
   private client: KeystoreClientReturnType;
   private readonly logger = new CustomLogger(MessageService.name);
 
   constructor(
-    private configService: ConfigService,
     private userService: UserService,
     private messageRepository: MessageRepository,
+    private mixinClientService: MixinClientService,
   ) {
-    this.keystore = {
-      app_id: this.configService.get<string>('mixin.app_id'),
-      session_id: this.configService.get<string>('mixin.session_id'),
-      server_public_key: this.configService.get<string>(
-        'mixin.server_public_key',
-      ),
-      session_private_key: this.configService.get<string>(
-        'mixin.session_private_key',
-      ),
-    };
-    this.client = MixinApi({
-      keystore: this.keystore,
-    });
+    this.client = this.mixinClientService.client;
   }
 
   async onModuleInit() {
+    if (!this.client) {
+      this.logger.warn('Mixin client is not initialized, skipping message handler');
+      return;
+    }
     this.client.blaze.loop(this.messageHandler);
     this.logger.log('Start handling mixin messages');
   }
@@ -149,7 +139,8 @@ export class MessageService implements OnModuleInit {
       }
 
       // Add message record if not exist in db
-      const processed = this.addMessageIfNotExist({ ...msg }, msg.message_id);
+      // Wrapped in await to fix potential bug where promise object is checked as boolean
+      const processed = await this.addMessageIfNotExist({ ...msg }, msg.message_id);
       if (!processed) {
         this.logger.warn(`message ${msg.message_id} was not processed`);
         return;

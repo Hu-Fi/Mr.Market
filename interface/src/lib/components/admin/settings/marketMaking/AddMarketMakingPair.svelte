@@ -5,14 +5,14 @@
   import { _ } from "svelte-i18n";
   import toast from "svelte-french-toast";
   import { goto } from "$app/navigation";
-  import { mixinAsset } from "$lib/helpers/mixin";
+  import { mixinAsset } from "$lib/helpers/mixin/mixin";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { getCcxtExchangeMarkets } from "$lib/helpers/hufi/admin/growdata";
+  import { getCcxtExchangeMarkets } from "$lib/helpers/mrm/admin/growdata";
 
   import { MIXIN_API_BASE_URL } from "$lib/helpers/constants";
   import AssetSelect from "../common/AssetSelect.svelte";
   import type { MarketMakingPairDto } from "$lib/types/hufi/grow";
-  import { addMarketMakingPair } from "$lib/helpers/hufi/admin/growdata";
+  import { addMarketMakingPair } from "$lib/helpers/mrm/admin/growdata";
 
   export let configuredExchanges: {
     exchange_id: string;
@@ -69,10 +69,10 @@
     if (
       !pair.symbol ||
       !pair.base_symbol ||
-      !pair.target_symbol ||
+      !pair.quote_symbol ||
       !pair.exchange_id ||
       !pair.base_asset_id ||
-      !pair.target_asset_id
+      !pair.quote_asset_id
     ) {
       toast.error($_("fill_all_fields_msg"));
       return;
@@ -328,7 +328,7 @@
       </div>
       <div class="form-control w-full">
         <label class="label" for="target-symbol-input">
-          <span class="label-text font-medium">{$_("target_symbol")}</span>
+          <span class="label-text font-medium">{$_("quote_symbol")}</span>
         </label>
         <input
           id="target-symbol-input"
@@ -357,7 +357,7 @@
 
       <AssetSelect
         id="target-asset-id-input"
-        label={$_("target_asset_id")}
+        label={$_("quote_asset_id")}
         bind:value={AddNewTargetAssetId}
         bind:selectedAsset={selectedTargetAsset}
         placeholder={$_("search_or_enter_uuid_or_symbol")}
@@ -416,7 +416,7 @@
 
       <div class="form-control w-full">
         <label class="label" for="target-icon-url-input">
-          <span class="label-text font-medium">{$_("target_icon_url")}</span>
+          <span class="label-text font-medium">{$_("quote_icon_url")}</span>
         </label>
         <div class="join w-full">
           <input
@@ -486,11 +486,11 @@
               id: getUuid(),
               symbol: AddNewSymbol,
               base_symbol: AddNewBaseSymbol,
-              target_symbol: AddNewTargetSymbol,
+              quote_symbol: AddNewTargetSymbol,
               base_asset_id: AddNewBaseAssetId,
               base_icon_url: AddNewBaseIconUrl,
-              target_asset_id: AddNewTargetAssetId,
-              target_icon_url: AddNewTargetIconUrl,
+              quote_asset_id: AddNewTargetAssetId,
+              quote_icon_url: AddNewTargetIconUrl,
               exchange_id: AddNewExchangeId,
               custom_fee_rate: AddNewCustomFeeRate || undefined,
               enable: true,

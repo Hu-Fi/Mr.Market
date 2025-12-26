@@ -3,13 +3,17 @@
   import type { MixinAsset } from "$lib/types/common/asset";
   import AssetIcon from "$lib/components/common/assetIcon.svelte";
 
-  export let asset: MixinAsset;
+  export let asset: any;
   export let fn: () => void;
   export let showBalance = false;
   export let testid: string;
 </script>
 
-<button class="flex space-x-3.5 py-4 items-center" on:click={() => fn()} data-testid={`swap-asset-${testid}`}>
+<button
+  class="flex space-x-3.5 py-4 items-center"
+  on:click={() => fn()}
+  data-testid={`swap-asset-${testid}`}
+>
   <!-- Icon -->
   <AssetIcon
     assetIcon={asset.icon_url}

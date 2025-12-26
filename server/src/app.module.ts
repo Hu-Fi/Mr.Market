@@ -26,7 +26,7 @@ import { Trade } from './common/entities/trade.entity';
 import { Transaction } from './common/entities/transaction.entity';
 import { UserBalance } from './common/entities/user-balance.entity';
 import { Performance } from './common/entities/performance.entity';
-import { Snapshot } from './common/entities/snapshots.entity';
+
 import { SpotOrder } from './common/entities/spot-order.entity';
 import { APIKeysConfig } from './common/entities/api-keys.entity';
 import { CustomConfigEntity } from './common/entities/custom-config.entity';
@@ -71,7 +71,6 @@ import { MetricsModule } from './modules/market-making/metrics/metrics.module';
 import { Withdrawal } from './common/entities/withdrawal.entity';
 import { Campaign } from './common/entities/campaign.entity';
 import { CampaignParticipation } from './common/entities/campaign-participation.entity';
-import { WithdrawalModule } from './modules/market-making/withdrawal/withdrawal.module';
 import { MmCampaignModule } from './modules/market-making/campaign/mm-campaign.module';
 
 dotenv.config();
@@ -104,7 +103,6 @@ dotenv.config();
         Performance,
         Transaction,
         UserBalance,
-        Snapshot,
         SpotOrder,
         APIKeysConfig,
         CustomConfigEntity,
@@ -157,7 +155,6 @@ dotenv.config();
     Web3Module,
     MetricsModule,
     UserOrdersModule,
-    WithdrawalModule,
     MmCampaignModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],

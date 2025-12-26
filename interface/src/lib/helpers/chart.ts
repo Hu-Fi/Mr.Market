@@ -1,4 +1,3 @@
-import colors from "tailwindcss/colors";
 import { sma } from "technicalindicators";
 import { ColorType } from "lightweight-charts";
 import { formatDecimals } from "$lib/helpers/utils";
@@ -11,7 +10,7 @@ export const coinChartOptions = {
     textColor: "#d1d4dc",
     background: {
       type: ColorType.Solid,
-      color: colors.transparent,
+      color: "transparent",
     },
   },
   timeScale: {
@@ -36,10 +35,7 @@ export const coinChartOptions = {
     },
   },
   watermark: {
-    color: "lightgray",
     visible: false,
-    fontSize: 16,
-    text: "Human AI",
   },
   handleScroll: {
     mouseWheel: false,
@@ -59,10 +55,10 @@ export const candleChartOptions = {
   autoSize: true,
   height: 300,
   layout: {
-    textColor: colors.black,
+    textColor: "#000000",
     background: {
       type: ColorType.Solid,
-      color: colors.white[100],
+      color: "#ffffff",
     },
     fontSize: 10,
   },
@@ -96,10 +92,7 @@ export const candleChartOptions = {
     },
   },
   watermark: {
-    color: "lightgray",
     visible: false,
-    fontSize: 16,
-    text: "Human AI",
   },
   handleScroll: {
     mouseWheel: false,
@@ -112,15 +105,15 @@ export const lineOptions = {
   lineWidth: 2,
   lineVisible: false,
   priceLineVisible: false,
-  color: colors.green[500]
+  color: "#10b981" // green-500
 };
 
 export const candleLineOptions = {
   priceLineVisible: false,
-  wickUpColor: colors.green[700],
-  upColor: colors.green[700],
-  wickDownColor: colors.red[500],
-  downColor: colors.red[500],
+  wickUpColor: "#15803d", // green-700
+  upColor: "#15803d", // green-700
+  wickDownColor: "#ef4444", // red-500
+  downColor: "#ef4444", // red-500
   borderVisible: false,
 }
 
@@ -128,19 +121,19 @@ export const MALineOptions = {
   priceLineVisible: false,
 }
 
-export const getMA = (source:object[], r: number = 5) => {
+export const getMA = (source: any[], r: number = 5) => {
   const final = []
   const closes = source.map(item => item.close);
-  const arr = sma({period: r, values:closes})
+  const arr = sma({ period: r, values: closes })
 
   console.log('closes.length:', closes.length)
   console.log('arr.length:', arr.length)
 
 
-  for (let i=0; i<arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     final.push(
       {
-        time: source[i+r-1].time,
+        time: source[i + r - 1].time,
         value: formatDecimals(arr[i], 3)
       }
     )

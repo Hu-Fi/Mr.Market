@@ -19,19 +19,18 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 const webSocketPort = process.env.WS_PORT || '0';
 @WebSocketGateway(parseInt(webSocketPort, 10), {
-  namespace: '/marketdata',
+  namespace: '/market',
   cors: true,
 })
 export class MarketDataGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: SocketIOServer;
   private readonly logger = new CustomLogger(MarketDataGateway.name);
 
   private clientSubscriptions = new Map<string, Set<string>>();
   private clients = new Map<string, Socket>();
 
-  constructor(private marketDataService: MarketdataService) {}
+  constructor(private marketDataService: MarketdataService) { }
 
   afterInit() {
     // Any initialization logic if needed

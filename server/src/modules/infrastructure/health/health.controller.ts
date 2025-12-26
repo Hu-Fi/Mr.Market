@@ -4,10 +4,10 @@ import { HealthService } from './health.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@ApiTags('health')
+@ApiTags('System')
 @Controller('health')
 export class HealthController {
-  constructor(private healthService: HealthService) {}
+  constructor(private healthService: HealthService) { }
 
   @Get('/')
   @ApiOperation({ summary: 'Get server health status' })

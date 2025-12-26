@@ -14,9 +14,8 @@ import {
 } from '@nestjs/swagger';
 import { UserOrdersService } from './user-orders.service';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
-import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 
-@ApiTags('user-orders')
+@ApiTags('Trading Engine')
 @Controller('user-orders')
 export class UserOrdersController {
   constructor(private readonly userOrdersService: UserOrdersService) { }
@@ -34,7 +33,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findAllStrategyByUser(userId);
   }
 
-  @Get('/payment_state/:order_id')
+  @Get('/payment-state/:order_id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get payment state by id' })
   @ApiResponse({
@@ -46,7 +45,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findPaymentStateById(orderId);
   }
 
-  @Get('/simply_grow/all')
+  @Get('/simply-grow/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all simply grow orders by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -59,7 +58,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findSimplyGrowByUserId(userId);
   }
 
-  @Get('/simply_grow/:id')
+  @Get('/simply-grow/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get simply grow order by id' })
   @ApiQuery({ name: 'id', type: String, description: 'Order ID' })
@@ -72,47 +71,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findSimplyGrowByOrderId(id);
   }
 
-  @Get('/arbitrage/all')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all arbitrage by user' })
-  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'All arbitrage order of user.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getAllArbitrageByUser(@Query('userId') userId: string) {
-    return await this.userOrdersService.findArbitrageByUserId(userId);
-  }
-
-  @Get('/arbitrage/:id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all arbitrage by user' })
-  @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'The details of the arbitrage.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getArbitrageDetailsById(@Param('id') id: string) {
-    return await this.userOrdersService.findArbitrageByOrderId(id);
-  }
-
-  @Get('/arbitrage/history/:userId')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all arbitrage history by user' })
-  @ApiResponse({
-    status: 200,
-    description: 'All arbitrage history of user',
-  })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  async getUserArbitrageOrders(
-    @Param('userId') userId: string,
-  ): Promise<ArbitrageHistory[]> {
-    return await this.userOrdersService.getUserArbitrageHistorys(userId);
-  }
-
-  @Get('/market_making/all')
+  @Get('/market-making/all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -125,7 +84,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findMarketMakingByUserId(userId);
   }
 
-  @Get('/market_making/:id')
+  @Get('/market-making/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making by user' })
   @ApiQuery({ name: 'userId', type: String, description: 'User ID' })
@@ -138,7 +97,7 @@ export class UserOrdersController {
     return await this.userOrdersService.findMarketMakingByOrderId(id);
   }
 
-  @Get('/market_making/history/:userId')
+  @Get('/market-making/history/:userId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all market making history by user' })
   @ApiResponse({

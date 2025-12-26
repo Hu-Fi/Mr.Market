@@ -4,26 +4,26 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AdminFeeService } from './admin-fee.service';
 import { UpdateGlobalFeeDto } from './admin-fee.dto';
 
-@Controller('admin/fee')
+@Controller('admin')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@ApiTags('Admin Fee')
+@ApiTags('Admin')
 export class AdminFeeController {
   constructor(private readonly adminFeeService: AdminFeeService) { }
 
-  @Get('global')
+  @Get('fee/global')
   @ApiOperation({ summary: 'Get global fee settings' })
   async getGlobalFees() {
     return this.adminFeeService.getGlobalFees();
   }
 
-  @Post('global')
+  @Post('fee/global')
   @ApiOperation({ summary: 'Update global fee settings' })
   async updateGlobalFees(@Body() updateDto: UpdateGlobalFeeDto) {
     return this.adminFeeService.updateGlobalFees(updateDto);
   }
 
-  @Get('overrides')
+  @Get('fee/overrides')
   @ApiOperation({ summary: 'Get all fee overrides' })
   async getFeeOverrides() {
     return this.adminFeeService.getFeeOverrides();

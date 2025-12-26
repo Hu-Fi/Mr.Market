@@ -7,7 +7,7 @@
   import { mixinConnected } from "$lib/stores/home";
 </script>
 
-<div class="mt-0 flex flex-col space-y-2 mb-36">
+<div class="mt-0 flex flex-col space-y-2 mb-16">
   {#if $mixinConnected}
     <Balance />
   {:else}

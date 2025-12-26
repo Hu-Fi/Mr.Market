@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
   import { createHash } from "crypto";
   import { goto } from "$app/navigation";
-  import { checkPassword } from "$lib/helpers/hufi/admin";
+  import { checkPassword } from "$lib/helpers/mrm/admin";
   import { loginLoading, submitted, checked, correct } from "$lib/stores/admin";
 
   let password = "";

@@ -5,8 +5,8 @@
   import { onDestroy, onMount } from "svelte";
   import { darkTheme } from "$lib/stores/theme";
   import { manageMode } from "$lib/stores/spot";
-	import { type PairsData } from '$lib/types/hufi/exchanges';
-  import { connectOrderBook, switchSpotPair } from "$lib/helpers/hufi/socket";
+  import { type PairsData } from "$lib/types/hufi/exchanges";
+  import { connectOrderBook, switchSpotPair } from "$lib/helpers/mrm/socket";
 
   import OrderConfirm from "$lib/components/dialogs/orderConfirm.svelte";
   import Button from "$lib/components/spot/bids/button.svelte";
@@ -18,19 +18,19 @@
   import Tabs from "$lib/components/spot/manage/tabs.svelte";
   import OrderBook from "$lib/components/spot/order/orderBook.svelte";
 
-  const getRoutingParams = async () => {    
+  const getRoutingParams = async () => {
     socket.set(connectOrderBook());
-    
-    switchSpotPair($socket, { 
+
+    switchSpotPair($socket, {
       symbol: $page.data.pair,
       price: 0,
       exchange: $page.data.exchange,
-    } as PairsData)
-  }
+    } as PairsData);
+  };
   onDestroy(() => {
     $socket.disconnect();
   });
-  onMount(getRoutingParams)
+  onMount(getRoutingParams);
 </script>
 
 <!-- Trading -->
@@ -48,7 +48,9 @@
 <OrderConfirm />
 
 <!-- Orders -->
-<div class={clsx("border-t", $darkTheme ? "border-slate-900" : "border-base-200")}>
+<div
+  class={clsx("border-t", $darkTheme ? "border-slate-900" : "border-base-200")}
+>
   <div class="flex flex-col">
     <Tabs />
     {#if $manageMode === 0}

@@ -1,10 +1,10 @@
-import { getMixinContext } from "$lib/helpers/mixin"
+import { getMixinContext } from "$lib/helpers/mixin/mixin"
 import { derived, get, writable } from "svelte/store"
 
 // light, dark
 export const theme = writable('light')
-export const darkTheme = derived(theme, ($theme) => {return $theme != 'light'})
-export const showSettingShortcut= writable(false)
+export const darkTheme = derived(theme, ($theme) => { return $theme != 'light' })
+export const showSettingShortcut = writable(false)
 
 
 export const detectSystemDark = () => {
@@ -18,13 +18,13 @@ export const detectSystemDark = () => {
   if (!mixinContext) {
     return
   }
-  if (mixinContext.appearance === 'dark') {
+  if ((mixinContext as any).appearance === 'dark') {
     theme.set('dark')
   }
 }
 
 export const toggleTheme = () => {
-  switch(get(theme)) {
+  switch (get(theme)) {
     case 'light': theme.set('dark'); break;
     case 'dark': theme.set('light'); break;
     default: theme.set('light'); break;

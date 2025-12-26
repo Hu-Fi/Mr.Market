@@ -1,12 +1,12 @@
 // src/stores/socketStore.js
 import io from 'socket.io-client';
 import { writable, get } from 'svelte/store';
-import { CandlePair } from './CandlePair'; // Import your CandlePair store
+import { CandlePair } from './market'; // Import your CandlePair store
 
 function createSocket() {
   const { subscribe, set } = writable(null);
 
-  let socket;
+  let socket: any;
   let currentPair = get(CandlePair); // Get the current value of the CandlePair store
 
   const connect = () => {
@@ -29,7 +29,7 @@ function createSocket() {
     }
   };
 
-  const subscribeToOrderBook = (pair) => {
+  const subscribeToOrderBook = (pair: any) => {
     if (socket) {
       // Unsubscribe from the previous order book channel if necessary
       if (currentPair) {

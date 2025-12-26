@@ -25,15 +25,13 @@ import {
 } from './strategy.dto';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { AdminStrategyService } from '../../admin/strategy/adminStrategy.service';
-import { FeeService } from './fee.service'; // Assuming FeeService is needed, if not remove it. Wait, it was used in estimateFees which I kept.
 
-@ApiTags('strategy')
+@ApiTags('Trading Engine')
 @Controller('strategy')
 export class StrategyController {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly adminService: AdminStrategyService,
-    private readonly feeService: FeeService, // Added FeeService as it was used in estimateFees
   ) { }
 
   @Get('running')
@@ -171,19 +169,6 @@ export class StrategyController {
       clientId,
       'pureMarketMaking',
     );
-  }
-
-  @Get('/market-making/fees/estimate')
-  @ApiOperation({ summary: 'Estimate initialization fees' })
-  @ApiQuery({ name: 'exchange', type: String })
-  @ApiQuery({ name: 'pair', type: String })
-  @ApiQuery({ name: 'direction', enum: ['deposit_to_exchange', 'withdraw_to_mixin', 'withdraw_external'] })
-  async estimateFees(
-    @Query('exchange') exchange: string,
-    @Query('pair') pair: string,
-    @Query('direction') direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
-  ) {
-    return this.feeService.calculateInitializationFee(exchange, pair, direction);
   }
 
   @Post('/execute-volume-strategy')

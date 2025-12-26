@@ -1,15 +1,14 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
-  //@ts-expect-error types
   import { cleave } from "svelte-cleavejs";
   import { darkTheme } from "$lib/stores/theme";
   import { userAssets } from "$lib/stores/wallet";
-  import authorize from "$lib/helpers/mixin-oauth";
-  import { AfterMixinOauth } from "$lib/helpers/mixin";
+  import authorize from "$lib/helpers/mixin/mixin-oauth";
+  import { AfterMixinOauth } from "$lib/helpers/mixin/mixin";
   import { BN, formatDecimals, formatWalletBalance } from "$lib/helpers/utils";
-  import { mixinConnectLoading, mixinConnected } from "$lib/stores/home";
-  import { BOT_ID, OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
+  import { mixinConnectLoading, mixinConnected, botId } from "$lib/stores/home";
+  import { OAUTH_SCOPE, maskOption } from "$lib/helpers/constants";
 
   import {
     pair,
@@ -29,14 +28,23 @@
   let tooltipOpen = false;
 
   const extractBalance = (symbol: string) => {
-    const extractedData = $userAssets.balances.find((balance: { details: { symbol: string } }) => balance.details.symbol === symbol);
+    const extractedData = $userAssets.balances.find(
+      (balance: { details: { symbol: string } }) =>
+        balance.details.symbol === symbol,
+    );
     if (!extractedData) {
       return 0;
     }
     return formatWalletBalance(extractedData.balance);
   };
-  $: baseBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[1]) : 0;
-  $: targetBalance = $mixinConnected && $userAssets ? extractBalance($pair.symbol.split('/')[0]) : 0;
+  $: baseBalance =
+    $mixinConnected && $userAssets
+      ? extractBalance($pair.symbol.split("/")[1])
+      : 0;
+  $: targetBalance =
+    $mixinConnected && $userAssets
+      ? extractBalance($pair.symbol.split("/")[0])
+      : 0;
 
   // Auto hide slider after finger left
   const handleInput = () => {
@@ -55,7 +63,7 @@
       return;
     }
     if ($orderTypeMarket) {
-      console.log('getAmount()=>Market')
+      console.log("getAmount()=>Market");
       marketAmount.set(
         formatDecimals(
           BN($marketTotal).dividedBy($marketPrice).toNumber(),
@@ -84,17 +92,17 @@
     }
     if ($orderTypeMarket && $buy) {
       marketTotal.set(
-        formatDecimals(
-          BN($marketAmount).dividedBy($current).toNumber(),
-          8,
-        ) || "",
+        formatDecimals(BN($marketAmount).dividedBy($current).toNumber(), 8) ||
+          "",
       );
       return;
     }
     if ($orderTypeMarket && !$buy) {
       marketTotal.set(
-        formatDecimals(BN($marketAmount).multipliedBy($current).toNumber(), 8) ||
-          "",
+        formatDecimals(
+          BN($marketAmount).multipliedBy($current).toNumber(),
+          8,
+        ) || "",
       );
       return;
     }
@@ -162,7 +170,7 @@
   const auth = async () => {
     mixinConnectLoading.set(true);
     authorize(
-      { clientId: BOT_ID, scope: OAUTH_SCOPE, pkce: true },
+      { clientId: $botId, scope: OAUTH_SCOPE, pkce: true },
       {
         onShowUrl: (url: string) => {
           window.open(url);
@@ -183,12 +191,23 @@
   // Set total as slider change
   $: slider, setSlider();
   // Update total amount as limit price change
-  $: if ($orderTypeLimit) {$limitPrice; getTotal();}
-  $: if ($orderTypeMarket) {$current; getTotal();}
+  $: if ($orderTypeLimit) {
+    $limitPrice;
+    getTotal();
+  }
+  $: if ($orderTypeMarket) {
+    $current;
+    getTotal();
+  }
   // Show 0 when estimated price is NaN
   $: est = $limitPrice ? BN($limitPrice).multipliedBy(usdValue) : 0;
   // Clear values when buy/sell change
-  $: $buy, limitAmount.set(""), limitTotal.set(""), marketAmount.set(""), marketTotal.set(""), slider = 0;
+  $: $buy,
+    limitAmount.set(""),
+    limitTotal.set(""),
+    marketAmount.set(""),
+    marketTotal.set(""),
+    (slider = 0);
 </script>
 
 <div>
@@ -304,12 +323,13 @@
       />
     {/if}
     <span class="text-xs opacity-60">
-      {
-        $orderTypeLimit ?
-          $pair.symbol.split("/")[1] :
-          $orderTypeMarket ?
-          $buy ? $pair.symbol.split("/")[1] : $pair.symbol.split("/")[0] : ''
-      }
+      {$orderTypeLimit
+        ? $pair.symbol.split("/")[1]
+        : $orderTypeMarket
+          ? $buy
+            ? $pair.symbol.split("/")[1]
+            : $pair.symbol.split("/")[0]
+          : ""}
     </span>
   </div>
 
@@ -376,6 +396,7 @@
   }
   input[type="range"] {
     -webkit-appearance: none;
+    appearance: none;
   }
   .range-green::-webkit-slider-thumb {
     color: theme("colors.green.400");

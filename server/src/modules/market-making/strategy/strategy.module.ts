@@ -19,7 +19,7 @@ import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange
 import { AlpacaStratService } from './alpacastrat.service';
 import { StrategyInstance } from 'src/common/entities/strategy-instances.entity';
 import { AdminModule } from '../../admin/admin.module';
-import { FeeService } from './fee.service';
+import { FeeModule } from '../fee/fee.module';
 
 @Module({
   imports: [
@@ -38,13 +38,14 @@ import { FeeService } from './fee.service';
       ArbitrageHistory,
       MarketMakingHistory,
     ]),
+    FeeModule,
   ],
   controllers: [StrategyController],
   providers: [
     StrategyService,
     ExchangeInitService,
     AlpacaStratService,
-    FeeService,
+
   ],
   exports: [StrategyService],
 })

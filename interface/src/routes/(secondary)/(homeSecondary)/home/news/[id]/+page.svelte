@@ -1,26 +1,26 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { locale } from "svelte-i18n"
+  import { page } from "$app/stores";
+  import { locale } from "svelte-i18n";
   import newsEN from "../../../../../../assets/news/news-EN.json";
   import newsZH from "../../../../../../assets/news/news-ZH.json";
-  import NewsDetail from '$lib/components/home/news/newsDetail.svelte';
+  import NewsDetail from "$lib/components/home/news/newsDetail.svelte";
 
-  const getNewsByLang = () => {
+  const getNewsByLang = (): any[] => {
     switch ($locale) {
       case "en-US":
-        return newsEN
+        return newsEN;
       case "zh-CN":
       case "zh-HK":
       case "zh-TW":
-        return newsZH
+        return newsZH;
       default:
-        return newsEN
+        return newsEN;
     }
-  }
-  $: activeNews = getNewsByLang()
-  $: currentNews = activeNews.find(n => n.id === Number($page.params.id));
+  };
+  $: activeNews = getNewsByLang();
+  $: currentNews = activeNews.find((n) => n.id === Number($page.params.id));
 </script>
 
 <div>
-  <NewsDetail news={currentNews}/>
+  <NewsDetail news={currentNews} />
 </div>

@@ -1,11 +1,9 @@
 import { randomUUID } from 'crypto';
 import BigNumber from 'bignumber.js';
-import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  MixinApi,
   SafeSnapshot,
   KeystoreClientReturnType,
   buildSafeTransactionRecipient,
@@ -22,16 +20,18 @@ import {
   SafeWithdrawalRecipient,
 } from '@mixin.dev/mixin-node-sdk';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
-import { SnapshotsRepository } from 'src/modules/mixin/snapshots/snapshots.repository';
+
 import {
   memoPreDecode,
-  decodeArbitrageCreateMemo,
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from 'src/common/helpers/mixin/memo';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { MixinClientService } from '../client/mixin-client.service';
 
 @Injectable()
-export class SnapshotsService {
+export class SnapshotsService implements OnApplicationBootstrap {
   private events: EventEmitter2;
   private keystore: Keystore;
   private spendKey: string;
@@ -42,27 +42,21 @@ export class SnapshotsService {
   constructor(
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
-    private snapshotsRepository: SnapshotsRepository,
+    @InjectQueue('snapshots') private snapshotsQueue: Queue,
+    private mixinClientService: MixinClientService,
   ) {
-    this.keystore = {
-      app_id: this.configService.get<string>('mixin.app_id'),
-      session_id: this.configService.get<string>('mixin.session_id'),
-      server_public_key: this.configService.get<string>(
-        'mixin.server_public_key',
-      ),
-      session_private_key: this.configService.get<string>(
-        'mixin.session_private_key',
-      ),
-    };
-    this.spendKey = this.configService.get<string>('mixin.spend_private_key');
-    this.client = MixinApi({
-      keystore: this.keystore,
-    });
+    this.keystore = this.mixinClientService.keystore;
+    this.spendKey = this.mixinClientService.spendKey;
+    this.client = this.mixinClientService.client;
     this.events = this.eventEmitter;
 
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
     this.logger.debug(this.enableCron);
+  }
+
+  async onApplicationBootstrap() {
+    await this.startSnapshotLoop();
   }
 
   async depositAddress(asset_id: string) {
@@ -130,21 +124,16 @@ export class SnapshotsService {
       // the index of ghost keys must be the same with the index of outputs
       // but withdrawal output doesnt need ghost key, so index + 1
       const ghosts = await this.client.utxo.ghostKey(
-        recipients
-          .filter((r) => 'members' in r)
-          .map((r, i) => ({
-            hint: randomUUID(),
-            receivers: (r as SafeMixinRecipient).members,
-            index: i + 1,
-          })),
+        recipients,
+        randomUUID(),
+        this.spendKey,
       );
       const tx = buildSafeTransaction(
         utxos,
         recipients,
-        [undefined, ...ghosts],
-        memo,
+        ghosts,
+        Buffer.from(memo),
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
       const ref = blake3Hash(Buffer.from(raw, 'hex')).toString('hex');
 
@@ -165,21 +154,17 @@ export class SnapshotsService {
         );
       }
       const feeGhosts = await this.client.utxo.ghostKey(
-        feeRecipients.map((r, i) => ({
-          hint: randomUUID(),
-          // @ts-expect-error type
-          receivers: r.members,
-          index: i,
-        })),
+        feeRecipients,
+        randomUUID(),
+        this.spendKey,
       );
       const feeTx = buildSafeTransaction(
         feeUtxos,
         feeRecipients,
         feeGhosts,
-        'withdrawal-fee-memo',
+        Buffer.from('withdrawal-fee-memo'),
         [ref],
       );
-      // @ts-expect-error type
       const feeRaw = encodeSafeTransaction(feeTx);
 
       const txId = randomUUID();
@@ -195,10 +180,8 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const signedFeeRaw = signSafeTransaction(
-        // @ts-expect-error type
         feeTx,
         txs[1].views,
         this.spendKey,
@@ -249,22 +232,17 @@ export class SnapshotsService {
       // the index of ghost keys must be the same with the index of outputs
       // but withdrawal output doesnt need ghost key, so index + 1
       const ghosts = await this.client.utxo.ghostKey(
-        recipients
-          .filter((r) => 'members' in r)
-          .map((r, i) => ({
-            hint: randomUUID(),
-            receivers: (r as SafeMixinRecipient).members,
-            index: i + 1,
-          })),
+        recipients,
+        randomUUID(),
+        this.spendKey,
       );
       // spare the 0 inedx for withdrawal output, withdrawal output doesnt need ghost key
       const tx = buildSafeTransaction(
         utxos,
         recipients,
-        [undefined, ...ghosts],
-        'withdrawal-memo',
+        ghosts,
+        Buffer.from('withdrawal-memo'),
       );
-      // @ts-expect-error type
       const raw = encodeSafeTransaction(tx);
 
       const request_id = randomUUID();
@@ -275,7 +253,6 @@ export class SnapshotsService {
         },
       ]);
 
-      // @ts-expect-error type
       const signedRaw = signSafeTransaction(tx, txs[0].views, this.spendKey);
       const res = await this.client.utxo.sendTransactions([
         {
@@ -324,14 +301,11 @@ export class SnapshotsService {
       );
     }
     const ghosts = await this.client.utxo.ghostKey(
-      recipients.map((r, i) => ({
-        hint: randomUUID(),
-        receivers: r[0].members,
-        index: i,
-      })),
+      recipients,
+      randomUUID(),
+      this.spendKey,
     );
-    const tx = buildSafeTransaction(utxos, recipients, ghosts, 'Refund');
-    // @ts-expect-error type
+    const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from('Refund'));
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -343,7 +317,6 @@ export class SnapshotsService {
     ]);
 
     const signedRaw = signSafeTransaction(
-      // @ts-expect-error type
       tx,
       verifiedTx[0].views,
       this.keystore.session_private_key,
@@ -377,7 +350,6 @@ export class SnapshotsService {
 
       // Group outputs by asset ID
       const groupedByAssetId = outputs.reduce((acc, output) => {
-        // @ts-expect-error SDK type is wrong
         const assetId = output.asset_id;
         if (!acc[assetId]) {
           acc[assetId] = [];
@@ -429,63 +401,61 @@ export class SnapshotsService {
     }
   }
 
-  async createSnapshot(snapshot: SafeSnapshot) {
+  async fetchSnapshotsOnly(): Promise<SafeSnapshot[]> {
     try {
-      return await this.snapshotsRepository.createSnapshot(snapshot);
-    } catch (e) {
-      this.logger.error(`createSnapshot()=> ${e}`);
+      const redis = (this.snapshotsQueue as any).client;
+      const cursor = await redis.get('snapshots:cursor');
+      const offset = cursor || new Date().toISOString();
+
+      const snapshots = await this.client.safe.fetchSafeSnapshots({
+        offset,
+        limit: 500,
+        order: 'DESC',
+      } as any);
+
+      if (!snapshots || snapshots.length === 0) {
+        return [];
+      }
+
+      return snapshots;
+    } catch (error) {
+      this.logger.error(`Failed to fetch snapshots: ${error}`);
+      return [];
     }
   }
 
+  async updateSnapshotCursor(timestamp: string) {
+    try {
+      const redis = (this.snapshotsQueue as any).client;
+      await redis.set('snapshots:cursor', timestamp);
+    } catch (error) {
+      this.logger.error(`Failed to update snapshot cursor: ${error}`);
+    }
+  }
+
+  // Legacy method, kept if needed but now logic is distributed
   async fetchAndProcessSnapshots() {
     try {
-      const snapshots = await this.client.safe.fetchSafeSnapshots({});
-      if (!snapshots) {
-        this.logger.error(`fetchAndProcessSnapshots()=> No snapshots`);
-        return;
-      }
+      const snapshots = await this.fetchSnapshotsOnly();
       snapshots.forEach(async (snapshot: SafeSnapshot) => {
         await this.handleSnapshot(snapshot);
       });
       return snapshots;
     } catch (error) {
-      this.logger.error(`Failed to fetch snapshots: ${error}`);
+      this.logger.error(`Failed to fetch and process snapshots: ${error}`);
     }
   }
 
-  private async handleSnapshot(snapshot: SafeSnapshot) {
-    const exist = await this.snapshotsRepository.checkSnapshotExist(
-      snapshot.snapshot_id,
-    );
-    if (exist) {
-      return;
-    }
+  async handleSnapshot(snapshot: SafeSnapshot) {
     if (!snapshot.memo) {
-      await this.createSnapshot(snapshot);
       this.logger.warn('snapshot no memo, return');
       return;
     }
     if (snapshot.memo.length === 0) {
-      await this.createSnapshot(snapshot);
       this.logger.warn('snapshot.memo.length === 0, return');
-      // await this.refund(snapshot);
       return;
     }
     try {
-      const exist = await this.snapshotsRepository.checkSnapshotExist(
-        snapshot.snapshot_id,
-      );
-
-      // Snapshot already being processed
-      if (exist) {
-        return;
-      }
-
-      // Snapshot has no memo, store and refund
-      if (!snapshot.memo || snapshot.memo.length === 0) {
-        return;
-      }
-
       this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
       // Hex and Base58 decode memo, verify checksum, refund if invalid
       const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
@@ -495,16 +465,18 @@ export class SnapshotsService {
         memoPreDecode(hexDecodedMemo);
       if (!payload) {
         this.logger.log(
-          `Snapshot memo is invalid, store and refund: ${snapshot.snapshot_id}`,
+          `Snapshot memo is invalid, refund: ${snapshot.snapshot_id}`,
         );
+        await this.refund(snapshot);
         return;
       }
 
       // Only memo version 1 is supported
       if (version !== 1) {
         this.logger.log(
-          `Snapshot memo version is not 1, store and refund: ${snapshot.snapshot_id}`,
+          `Snapshot memo version is not 1, refund: ${snapshot.snapshot_id}`,
         );
+        await this.refund(snapshot);
         return;
       }
 
@@ -513,7 +485,12 @@ export class SnapshotsService {
           // Spot trading
           break;
         case 1:
-          // Swap
+          // Market making
+          const mmDetails = decodeMarketMakingCreateMemo(payload);
+          if (!mmDetails) {
+            break;
+          }
+          this.events.emit('market_making.create', mmDetails, snapshot);
           break;
         case 2:
           // Simply grow
@@ -524,39 +501,26 @@ export class SnapshotsService {
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
         case 3:
-          // Market making
-          const mmDetails = decodeMarketMakingCreateMemo(payload);
-          if (!mmDetails) {
-            break;
-          }
-          this.events.emit('market_making.create', mmDetails, snapshot);
-          break;
-        case 4:
-          // Arbitrage
-          const arbDetails = decodeArbitrageCreateMemo(payload);
-          if (!arbDetails) {
-            break;
-          }
-          this.events.emit('arbitrage.create', arbDetails, snapshot);
           break;
         default:
           // Refund
+          this.logger.log(
+            `Snapshot memo trading type is not supported, refund: ${snapshot.snapshot_id}`,
+          );
+          await this.refund(snapshot);
           break;
       }
     } catch (error) {
       this.logger.error(`handleSnapshot()=> ${error}`);
-    } finally {
-      await this.createSnapshot(snapshot);
     }
   }
 
-  @Cron('*/5 * * * * *') // Every 5 seconds
-  async handleSnapshots(): Promise<void> {
-    // Check if the cron is enabled
+  async startSnapshotLoop() {
     if (this.enableCron) {
-      await this.fetchAndProcessSnapshots();
-    } else {
-      return;
+      this.logger.log('Starting snapshot polling loop via Bull...');
+      await this.snapshotsQueue.add('process_snapshots', {}, {
+        removeOnComplete: true,
+      });
     }
   }
 }

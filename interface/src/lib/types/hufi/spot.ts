@@ -12,6 +12,8 @@ export type SpotOrder = {
   apiKeyId?: string;
   createdAt: string;
   updatedAt: string;
+  price?: number;
+  amount?: string;
 };
 
 export type SpotInfo = {

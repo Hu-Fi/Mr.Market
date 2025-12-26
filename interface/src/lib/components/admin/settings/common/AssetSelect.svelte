@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import toast from "svelte-french-toast";
-  import { mixinAsset } from "$lib/helpers/mixin";
+  import { mixinAsset } from "$lib/helpers/mixin/mixin";
   import { MIXIN_API_BASE_URL } from "$lib/helpers/constants";
 
   export let label: string;

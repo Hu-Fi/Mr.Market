@@ -1,0 +1,67 @@
+// Hufi backend
+import { MRM_BACKEND_URL } from "$lib/helpers/constants";
+import type { OHLCVData, SupportedExchanges, SupportedPairs, SupportedTimeFrame, TokenChartTimeFrame } from "$lib/types/hufi/exchanges";
+import type { CoingeckoTokenFull } from "$lib/types/coingecko/token";
+
+// {/coingecko/coins/:id, GET}
+// {/coingecko/coins/markets/:vs_currency, GET}
+// {/coingecko/coins/:id/market_chart, GET}
+// {/coingecko/coins/:id/market_chart/range, GET}
+
+export const coinQueryFn = async (name: string): Promise<CoingeckoTokenFull> => {
+  const r = await fetch(`${MRM_BACKEND_URL}/coingecko/coins/${name}`)
+  return await r.json()
+}
+
+export const getCoingeckoMarket = async (category: string = 'all', page: number = 1) => {
+  try {
+    const pathCategory = category ? `/category/${category}` : ''
+    const r = await fetch(`${MRM_BACKEND_URL}/coingecko/coins/markets/${'usd'}${pathCategory}?page=${page}`)
+    const re = await r.json()
+    return re
+  } catch (e) {
+    console.error('getCoingeckoMarket: ', e)
+    return []
+  }
+}
+
+export const getSpotTradingPairs = async () => {
+  try {
+    const r = await fetch(`${MRM_BACKEND_URL}/market/tickers/pairs`)
+    const re = await r.json()
+    return re
+  } catch (e) {
+    console.error('getSpotTradingPairs: ', e)
+    return []
+  }
+}
+
+export const fetchOHLCV = async (exchange: SupportedExchanges, symbol: SupportedPairs, timeFrame: SupportedTimeFrame, limit: number = 2000): Promise<OHLCVData[]> => {
+  const r = await fetch(`${MRM_BACKEND_URL}/market/ohlcv?exchange=${exchange}&symbol=${symbol}&timeframe=${timeFrame}&limit=${limit}`)
+  if (!r.ok) {
+    console.error(`fetchOHLCV failed with status: ${r.status}`)
+    return [];
+  }
+  const re = await r.json()
+  return re
+}
+
+export const coinMarketChart = async (name: string, ranges: TokenChartTimeFrame, vs_currency: string = 'usd') => {
+  let url = ''; let days: number | string
+
+  const currentTs = Math.floor(new Date().setSeconds(0, 0) / 1000);
+  const oneHourBefore = currentTs - 3600;
+  switch (ranges) {
+    case '1h':
+      url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart/range?from=${oneHourBefore}&to=${currentTs}&vs_currency=${vs_currency}`
+      break;
+    case "24h": days = 1; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1w": days = 7; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1m": days = 30; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "1y": days = 365; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+    case "all": days = 'max'; url = `${MRM_BACKEND_URL}/coingecko/coins/${name}/market_chart?days=${days}&vs_currency=${vs_currency}`; break;
+  }
+
+  const r = await fetch(url)
+  return await r.json()
+}

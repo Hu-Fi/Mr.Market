@@ -4,8 +4,8 @@
   import { invalidate, goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
-  import { addSpotTradingPair } from "$lib/helpers/hufi/admin/spotdata";
-  import { getCcxtExchangeMarkets } from "$lib/helpers/hufi/admin/growdata";
+  import { addSpotTradingPair } from "$lib/helpers/mrm/admin/spotdata";
+  import { getCcxtExchangeMarkets } from "$lib/helpers/mrm/admin/growdata";
   import { MIXIN_API_BASE_URL } from "$lib/helpers/constants";
   import AssetSelect from "../common/AssetSelect.svelte";
 

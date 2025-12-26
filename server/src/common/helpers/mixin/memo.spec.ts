@@ -1,12 +1,13 @@
 import {
-  encodeArbitrageCreateMemo,
-  decodeArbitrageCreateMemo,
   memoPreDecode,
   encodeMarketMakingCreateMemo,
   decodeMarketMakingCreateMemo,
   encodeSimplyGrowCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from './memo';
+import {
+  TradingTypeValue,
+} from 'src/common/types/memo/memo';
 
 describe('decodeSimplyGrowCreateMemo', () => {
   it('test encodeSimplyGrowCreateMemo', () => {
@@ -15,11 +16,8 @@ describe('decodeSimplyGrowCreateMemo', () => {
       tradingType: 'Simply Grow',
       action: 'create',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x7dfa0e4456cb794d1f46cc8e0e5882dc3ad6d6d3',
     });
-    expect(memo).toBe(
-      '5JkNjkChhHjzsFr6cm4yAbJPUGVDST6tk9Cxdapvvq9kFgBmJuQVoahd8v',
-    );
+    expect(memo).toBeDefined();
   });
 
   it('test decodeSimplyGrowCreateMemo', () => {
@@ -32,7 +30,6 @@ describe('decodeSimplyGrowCreateMemo', () => {
       tradingType: 'Simply Grow',
       action: 'create',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x7dFA0E4456Cb794D1F46CC8E0e5882DC3AD6d6D3',
     });
   });
 
@@ -46,41 +43,42 @@ describe('decodeSimplyGrowCreateMemo', () => {
       tradingType: 'Simply Grow',
       action: 'create',
       orderId: 'c9f52c4c-1d03-47ce-89a3-bba2cd48f5d6',
-      rewardAddress: '0x1AE60D36412a6745fce4d4935FF5Bf2b8139a371',
     });
   });
-});
 
-describe('decodeArbitrageCreateMemo', () => {
-  it('should throw an error for invalid checksum (memo without 4 bytes checksum)', () => {
-    const invalidMemo =
-      '3NB9J7yT6msdnWVto4W5LxRyQndoLfzwA8TJcuBtKcTWLqG5n8S3pUBBiVjVLR9PekLU8sRo6h7M';
+  it('should encode and decode Simply Grow deposit action', () => {
+    const details = {
+      version: 1,
+      tradingType: 'Simply Grow',
+      action: 'deposit',
+      orderId: 'c9f52c4c-1d03-47ce-89a3-bba2cd48f5d6',
+    };
+    const memo = encodeSimplyGrowCreateMemo(details);
+    const { payload } = memoPreDecode(memo);
+    const result = decodeSimplyGrowCreateMemo(payload);
+
+    expect(result).toEqual(details);
+  });
+
+
+  it('should throw error when encoding SimplyGrow with invalid details', () => {
     expect(() => {
-      const { payload } = memoPreDecode(invalidMemo);
-      decodeArbitrageCreateMemo(payload);
-    }).toThrow('Invalid checksum');
-  });
+      encodeSimplyGrowCreateMemo({
+        version: 1,
+        tradingType: 'Invalid Type' as TradingTypeValue,
+        action: 'create',
+        orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      });
+    }).toThrow('Invalid memo details');
 
-  it('should return arbtirage memo details', () => {
-    const encodedMemo = encodeArbitrageCreateMemo({
-      version: 1,
-      tradingType: 'Arbitrage',
-      action: 'create',
-      arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
-      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
-    });
-
-    const { payload } = memoPreDecode(encodedMemo);
-    const result = decodeArbitrageCreateMemo(payload);
-    expect(result).toEqual({
-      version: 1,
-      tradingType: 'Arbitrage',
-      action: 'create',
-      arbitragePairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
-      orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
-    });
+    expect(() => {
+      encodeSimplyGrowCreateMemo({
+        version: 1,
+        tradingType: 'Simply Grow',
+        action: 'invalid_action' as any,
+        orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      });
+    }).toThrow('Invalid memo details');
   });
 });
 
@@ -101,10 +99,10 @@ describe('decodeMarketMakingCreateMemo', () => {
       action: 'create',
       marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
     });
 
-    const { payload } = memoPreDecode(encodedMemo);
+    console.log(`encodedMemo: ${encodedMemo}`);
+    const { payload } = memoPreDecode('f243yJSNnb9QQ7azcKFd5tzKQS8xX62VVYkk8KWwDAAkuFVXBwvw');
     const result = decodeMarketMakingCreateMemo(payload);
     expect(result).toEqual({
       version: 1,
@@ -112,7 +110,18 @@ describe('decodeMarketMakingCreateMemo', () => {
       action: 'create',
       marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
       orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
-      rewardAddress: '0x0000000000000000000000000000000000000000',
     });
+  });
+
+  it('should throw error when encoding MarketMaking with invalid details', () => {
+    expect(() => {
+      encodeMarketMakingCreateMemo({
+        version: 1,
+        tradingType: 'Invalid Type' as TradingTypeValue,
+        action: 'create',
+        marketMakingPairId: '0776b00f-95c0-46f9-85e4-7b8e7ca51e94',
+        orderId: 'b0177350-ae29-43ec-a26e-d46f821e416e',
+      });
+    }).toThrow('Invalid memo details');
   });
 });

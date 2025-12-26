@@ -21,4 +21,7 @@ export class CustomConfigService {
   async readFundingAccountStatus() {
     return await this.configRepository.readFundingAccountStatus();
   }
+  async readMarketMakingFee() {
+    return await this.configRepository.readMarketMakingFee();
+  }
 }

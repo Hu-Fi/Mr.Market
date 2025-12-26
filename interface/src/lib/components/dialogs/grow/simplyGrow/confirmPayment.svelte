@@ -1,32 +1,44 @@
 <script lang="ts">
   import clsx from "clsx";
-  import { _ } from "svelte-i18n"
+  import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
   import { getUuid } from "@mixin.dev/mixin-node-sdk";
-  import { SimplyGrowCreatePay } from "$lib/helpers/mixin";
-  import { getMixinTx, getSimplyGrowDetailsById } from "$lib/helpers/hufi/strategy";
-  import { ORDER_STATE_FETCH_INTERVAL, ORDER_STATE_TIMEOUT_DURATION } from "$lib/helpers/constants";
-  import { createSimplyGrowAmount, createSimplyGrowAsset, createSimplyGrowConfirmDialog, createSimplyGrowRewardAddress } from "$lib/stores/grow";
+  import { SimplyGrowCreatePay } from "$lib/helpers/mixin/mixin";
+  import {
+    getMixinTx,
+    getSimplyGrowDetailsById,
+  } from "$lib/helpers/mrm/strategy";
+  import {
+    ORDER_STATE_FETCH_INTERVAL,
+    ORDER_STATE_TIMEOUT_DURATION,
+  } from "$lib/helpers/constants";
+  import {
+    createSimplyGrowAmount,
+    createSimplyGrowAsset,
+    createSimplyGrowConfirmDialog,
+    createSimplyGrowRewardAddress,
+  } from "$lib/stores/grow";
 
   let loading = false;
   let paymentSuccessful = false;
   const orderId = getUuid();
-  let mixinTraceId = '';
+  let mixinTraceId = "";
 
   const confirmPayment = () => {
     loading = true;
-    mixinTraceId = SimplyGrowCreatePay({
-      assetId: $createSimplyGrowAsset.asset_id,
-      amount: $createSimplyGrowAmount,
-      orderId,
-      rewardAddress: $createSimplyGrowRewardAddress,
-    });
+    mixinTraceId =
+      SimplyGrowCreatePay({
+        assetId: $createSimplyGrowAsset?.asset_id ?? "",
+        amount: $createSimplyGrowAmount,
+        orderId,
+        rewardAddress: $createSimplyGrowRewardAddress,
+      }) ?? "";
 
     if (mixinTraceId) {
-      console.log('mixinTraceId: ', mixinTraceId);
+      console.log("mixinTraceId: ", mixinTraceId);
       checkPaymentState(mixinTraceId);
     }
-  }
+  };
 
   const checkPaymentState = async (traceId: string) => {
     let totalTime = 0;
@@ -35,7 +47,7 @@
       if (state.error) {
         return;
       }
-      if (state.data.state === 'spent') {
+      if (state.data.state === "spent") {
         loading = false;
         paymentSuccessful = true;
         clearInterval(interval);
@@ -46,7 +58,7 @@
         clearInterval(interval);
       }
     }, ORDER_STATE_FETCH_INTERVAL);
-  }
+  };
 
   const checkOrderCreation = async (orderId: string) => {
     // When both payments are successful, check if the order is created, then redirect to the order page
@@ -65,7 +77,7 @@
       }, ORDER_STATE_FETCH_INTERVAL);
       return;
     }
-  }
+  };
 </script>
 
 <dialog
@@ -102,7 +114,8 @@
           {$_("payment_amount")}
         </span>
         <span class="text-3xl font-bold">
-          {$createSimplyGrowAmount} {$createSimplyGrowAsset ? $createSimplyGrowAsset.symbol : ''}
+          {$createSimplyGrowAmount}
+          {$createSimplyGrowAsset ? $createSimplyGrowAsset.symbol : ""}
         </span>
       </div>
 
@@ -112,7 +125,7 @@
           class={clsx(
             "btn btn-md w-full rounded-full bg-slate-800 hover:bg-slate-800 focus:bg-slate-800 no-animation",
           )}
-          data-testid='confirm-order-btn'
+          data-testid="confirm-order-btn"
           on:click={confirmPayment}
         >
           <span

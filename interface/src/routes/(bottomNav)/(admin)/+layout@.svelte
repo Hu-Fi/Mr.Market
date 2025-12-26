@@ -3,7 +3,7 @@
   import { page } from "$app/stores";
   import { correct } from "$lib/stores/admin";
   import Login from "$lib/components/admin/login.svelte";
-  import { autoCheckPassword } from "$lib/helpers/hufi/admin";
+  import { autoCheckPassword } from "$lib/helpers/mrm/admin";
   import SideBar from "$lib/components/admin/dashboard/sideBar.svelte";
 
   onMount(() => {

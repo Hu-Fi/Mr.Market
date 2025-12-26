@@ -5,7 +5,7 @@
   import {
     addExchange,
     getCcxtExchangeDetails,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
 
   export let allCcxtExchanges: string[] = [];
 

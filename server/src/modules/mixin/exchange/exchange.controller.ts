@@ -6,13 +6,13 @@ import { ExchangeService } from './exchange.service';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 
 // This API is used for admin page to do rebalance
-@ApiTags('exchange')
+@ApiTags('Exchange')
 @Controller('exchange')
 @UseGuards(JwtAuthGuard)
 export class ExchangeController {
   private readonly logger = new CustomLogger(ExchangeController.name);
 
-  constructor(private readonly exchagneService: ExchangeService) {}
+  constructor(private readonly exchangeService: ExchangeService) { }
 
   @Post('/withdrawal/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })
@@ -20,7 +20,7 @@ export class ExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async createWithdrawal(data: ExchangeWithdrawalDto) {
     try {
-      return this.exchagneService.createWithdrawal(data);
+      return this.exchangeService.createWithdrawal(data);
     } catch (e) {
       this.logger.error(`Create withdrawal error: ${e.message}`);
     }
@@ -32,7 +32,7 @@ export class ExchangeController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async getDepositAddress(data: ExchangeDepositDto) {
     try {
-      return this.exchagneService.getDepositAddress(data);
+      return this.exchangeService.getDepositAddress(data);
     } catch (e) {
       this.logger.error(`Get deposit address error: ${e.message}`);
     }
@@ -40,6 +40,6 @@ export class ExchangeController {
 
   @Get('/spot-orders')
   async getAllSpotOrders() {
-    return await this.exchagneService.getAllSpotOrders();
+    return await this.exchangeService.getAllSpotOrders();
   }
 }

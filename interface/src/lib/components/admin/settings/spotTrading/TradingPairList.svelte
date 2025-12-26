@@ -1,13 +1,14 @@
 <script lang="ts">
   import clsx from "clsx";
   import { _ } from "svelte-i18n";
+  import toast from "svelte-french-toast";
   import { invalidate } from "$app/navigation";
   import { getRandomDelay } from "$lib/helpers/utils";
   import type { SpotTradingPair } from "$lib/types/hufi/spot";
   import {
     updateSpotTradingPair,
     removeSpotTradingPair,
-  } from "$lib/helpers/hufi/admin/spotdata";
+  } from "$lib/helpers/mrm/admin/spotdata";
 
   export let tradingPairs: SpotTradingPair[] = [];
 
@@ -41,6 +42,11 @@
         isDeleting = "";
       });
     }, getRandomDelay());
+  }
+
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+    toast.success($_("copied"));
   }
 </script>
 
@@ -76,14 +82,64 @@
             >
             <td>{pair.exchange_id}</td>
             <td class="text-xs font-mono opacity-70">{pair.ccxt_id}</td>
-            <td
-              class="max-w-[100px] truncate text-xs opacity-50"
-              title={pair.base_asset_id}>{pair.base_asset_id}</td
-            >
-            <td
-              class="max-w-[100px] truncate text-xs opacity-50"
-              title={pair.quote_asset_id}>{pair.quote_asset_id}</td
-            >
+            <td class="max-w-[120px]">
+              <div class="flex items-center gap-1 group/id">
+                <span
+                  class="truncate text-xs opacity-50 font-mono"
+                  title={pair.base_asset_id}
+                >
+                  {pair.base_asset_id}
+                </span>
+                <button
+                  class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                  on:click={() => copyToClipboard(pair.base_asset_id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-3 h-3"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </td>
+            <td class="max-w-[120px]">
+              <div class="flex items-center gap-1 group/id">
+                <span
+                  class="truncate text-xs opacity-50 font-mono"
+                  title={pair.quote_asset_id}
+                >
+                  {pair.quote_asset_id}
+                </span>
+                <button
+                  class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                  on:click={() => copyToClipboard(pair.quote_asset_id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-3 h-3"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </td>
             <td>
               {#if pair.custom_fee_rate}
                 <span class="badge badge-primary badge-outline badge-sm"

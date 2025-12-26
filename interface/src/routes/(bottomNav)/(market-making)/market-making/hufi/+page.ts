@@ -1,4 +1,4 @@
-import { getActiveCampaigns } from "$lib/helpers/hufi/campaignLauncher.js";
+import { getActiveCampaigns } from "$lib/helpers/mrm/campaignLauncher.js";
 
 export const load = async () => {
   return {

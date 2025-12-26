@@ -5,7 +5,7 @@
   import Loading from "$lib/components/common/loading.svelte";
 
   import { browser } from "$app/environment";
-  import { page } from "$app/state";
+  import { page } from "$app/stores";
   import { mixinConnected } from "$lib/stores/home";
   import { isFirstTimeMarketMaking } from "$lib/stores/market_making";
   import Bar from "$lib/components/grow/marketMaking/baseSection/bar.svelte";
@@ -13,7 +13,8 @@
   const MARKET_MAKING_INTRO_KEY = "market-making-intro-seen";
 
   if (browser) {
-    const hasSeenIntro = localStorage.getItem(MARKET_MAKING_INTRO_KEY) === "true";
+    const hasSeenIntro =
+      localStorage.getItem(MARKET_MAKING_INTRO_KEY) === "true";
     isFirstTimeMarketMaking.set(!hasSeenIntro);
 
     if (!hasSeenIntro) {
@@ -34,14 +35,17 @@
     </div>
   </div>
 {:else}
-   {#await page.data.campaign_stats}
-   <div class="flex flex-col items-center justify-center grow h-screen">
-    <Loading />
-   </div>
-   {:then data}
-    <div class="flex flex-col grow space-y-0 mt-4 mx-4">
-      <BasicStats rewardsPool={data.rewards_pool_usd} activeCampaigns={data.n_active_campaigns} />
-      
+  {#await $page.data.campaign_stats}
+    <div class="flex flex-col items-center justify-center grow h-screen">
+      <Loading />
+    </div>
+  {:then data}
+    <div class="flex flex-col grow space-y-0 mx-4">
+      <BasicStats
+        rewardsPool={data.rewards_pool_usd}
+        activeCampaigns={data.n_active_campaigns}
+      />
+
       <Bar />
       {#if noMarketMakingCreated}
         <BaseIntro />
@@ -50,5 +54,5 @@
         <slot />
       {/if}
     </div>
-   {/await}
+  {/await}
 {/if}

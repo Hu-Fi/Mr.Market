@@ -14,13 +14,13 @@ import { RebalanceService } from './rebalance.service';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
-@ApiTags('rebalance')
-@Controller('rebalance')
+@ApiTags('Mixin')
+@Controller('mixin/rebalance')
 @UseGuards(JwtAuthGuard)
 export class RebalanceController {
   private readonly logger = new CustomLogger(RebalanceController.name);
 
-  constructor(private readonly rebalanceService: RebalanceService) {}
+  constructor(private readonly rebalanceService: RebalanceService) { }
 
   @Get('/minimum_balance/all')
   @ApiOperation({ summary: 'Get all minium balance settings' })

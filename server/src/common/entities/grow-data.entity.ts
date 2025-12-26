@@ -48,7 +48,7 @@ export class GrowdataArbitragePair {
   base_symbol: string;
 
   @Column()
-  target_symbol: string;
+  quote_symbol: string;
 
   @Column()
   base_asset_id: string;
@@ -57,10 +57,10 @@ export class GrowdataArbitragePair {
   base_icon_url: string;
 
   @Column()
-  target_asset_id: string;
+  quote_asset_id: string;
 
   @Column()
-  target_icon_url: string;
+  quote_icon_url: string;
 
   @Column({ nullable: true })
   base_price: string;
@@ -90,7 +90,7 @@ export class GrowdataMarketMakingPair {
   base_symbol: string;
 
   @Column()
-  target_symbol: string;
+  quote_symbol: string;
 
   @Column()
   base_asset_id: string;
@@ -99,10 +99,10 @@ export class GrowdataMarketMakingPair {
   base_icon_url: string;
 
   @Column()
-  target_asset_id: string;
+  quote_asset_id: string;
 
   @Column()
-  target_icon_url: string;
+  quote_icon_url: string;
 
   @Column({ nullable: true })
   base_price: string;

@@ -1,5 +1,5 @@
-import { getSpotInfo } from "$lib/helpers/hufi/spot";
-import { getGrowBasicInfo } from "$lib/helpers/hufi/grow";
+import { getSpotInfo } from "$lib/helpers/mrm/spot";
+import { getGrowBasicInfo } from "$lib/helpers/mrm/grow";
 
 import type { PageLoad } from './$types';
 

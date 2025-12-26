@@ -6,10 +6,12 @@ import { UserService } from 'src/modules/mixin/user/user.service';
 import { UserRepository } from './user.repository';
 import { UserController } from './user.controller';
 
+import { MixinClientModule } from '../client/mixin-client.module';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([MixinUser])],
+  imports: [TypeOrmModule.forFeature([MixinUser]), MixinClientModule],
   providers: [UserService, ConfigService, UserRepository],
   exports: [UserService, UserRepository],
   controllers: [UserController],
 })
-export class UserModule {}
+export class UserModule { }

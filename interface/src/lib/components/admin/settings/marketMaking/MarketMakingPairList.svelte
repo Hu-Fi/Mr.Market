@@ -2,6 +2,7 @@
   import clsx from "clsx";
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import toast from "svelte-french-toast";
   import type {
     MarketMakingPair,
     MarketMakingPairDto,
@@ -9,7 +10,7 @@
   import {
     updateMarketMakingPair,
     removeMarketMakingPair,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
 
   export let marketMakingPairs: MarketMakingPair[] = [];
 
@@ -40,6 +41,11 @@
     await removeMarketMakingPair(id, token);
     dispatch("refresh");
     isDeleting = "";
+  }
+
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+    toast.success($_("copied"));
   }
 </script>
 
@@ -81,9 +87,9 @@
             <th>{$_("exchange")}</th>
             <th>{$_("symbol")}</th>
             <th>{$_("base_symbol")}</th>
-            <th>{$_("target_symbol")}</th>
+            <th>{$_("quote_symbol")}</th>
             <th>{$_("base_asset_id")}</th>
-            <th>{$_("target_asset_id")}</th>
+            <th>{$_("quote_asset_id")}</th>
             <th>{$_("custom_fee_rate")}</th>
             <th class="text-center">{$_("status")}</th>
             <th class="text-right">{$_("actions")}</th>
@@ -109,7 +115,7 @@
                   />
                   <img
                     class="inline-block min-w-8 min-h-8 h-8 w-8 rounded-full ring-2 ring-base-100"
-                    src={pair.target_icon_url}
+                    src={pair.quote_icon_url}
                     alt=""
                   />
                 </div>
@@ -124,15 +130,65 @@
                 ></td
               >
               <td>{pair.base_symbol}</td>
-              <td>{pair.target_symbol}</td>
-              <td
-                class="max-w-[100px] truncate text-xs opacity-50"
-                title={pair.base_asset_id}>{pair.base_asset_id}</td
-              >
-              <td
-                class="max-w-[100px] truncate text-xs opacity-50"
-                title={pair.target_asset_id}>{pair.target_asset_id}</td
-              >
+              <td>{pair.quote_symbol}</td>
+              <td class="max-w-[120px]">
+                <div class="flex items-center gap-1 group/id">
+                  <span
+                    class="truncate text-xs opacity-50 font-mono"
+                    title={pair.base_asset_id}
+                  >
+                    {pair.base_asset_id}
+                  </span>
+                  <button
+                    class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                    on:click={() => copyToClipboard(pair.base_asset_id)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-3 h-3"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td class="max-w-[120px]">
+                <div class="flex items-center gap-1 group/id">
+                  <span
+                    class="truncate text-xs opacity-50 font-mono"
+                    title={pair.quote_asset_id}
+                  >
+                    {pair.quote_asset_id}
+                  </span>
+                  <button
+                    class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                    on:click={() => copyToClipboard(pair.quote_asset_id)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-3 h-3"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
               <td>
                 {#if pair.custom_fee_rate}
                   <span class="badge badge-primary badge-outline badge-sm"

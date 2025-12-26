@@ -1,7 +1,7 @@
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   getRFC3339Timestamp,
@@ -24,6 +24,12 @@ import { SpotOrder } from 'src/common/entities/spot-order.entity';
 import { APIKeysConfig } from 'src/common/entities/api-keys.entity';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 import { AggregatedBalances } from 'src/common/types/rebalance/map';
+import { ConfigService } from '@nestjs/config';
+import {
+  decrypt,
+  encrypt,
+  getPublicKeyFromPrivate,
+} from 'src/common/helpers/crypto';
 
 @Injectable()
 export class ExchangeService {
@@ -33,8 +39,18 @@ export class ExchangeService {
   constructor(
     private exchangeRepository: ExchangeRepository,
     private eventEmitter: EventEmitter2,
+    private configService: ConfigService,
   ) {
     this.loadAPIKeys();
+  }
+
+  getEncryptionPublicKey() {
+    const privateKey =
+      this.configService.get<string>('admin.encryption_private_key') || '';
+    if (!privateKey) {
+      throw new Error('Encryption private key not set');
+    }
+    return { publicKey: getPublicKeyFromPrivate(privateKey) };
   }
 
   private async loadAPIKeys() {
@@ -47,7 +63,21 @@ export class ExchangeService {
       const keyId = key.key_id;
       const exchangeName = key.exchange;
       const apiKey = key.api_key;
-      const apiSecret = key.api_secret;
+      let apiSecret = key.api_secret;
+
+      // Decrypt secret if it looks like it's encrypted (base64)
+      // We assume stored secrets are always encrypted if this feature is on.
+      const privateKey =
+        this.configService.get<string>('admin.encryption_private_key') || '';
+      if (privateKey) {
+        try {
+          apiSecret = decrypt(apiSecret, privateKey);
+        } catch (e) {
+          // If decryption fails, maybe it's plain text (legacy)?
+          // Or wrong key. For now, log and continue.
+          this.logger.warn(`Failed to decrypt key ${keyId}: ${e.message}`);
+        }
+      }
 
       if (!this.exchangeInstances[keyId]) {
         this.exchangeInstances[keyId] = new ccxt[exchangeName]({
@@ -59,7 +89,13 @@ export class ExchangeService {
   }
 
   async readAllAPIKeys() {
-    return await this.exchangeRepository.readAllAPIKeys();
+    const keys = await this.exchangeRepository.readAllAPIKeys();
+    return keys.map((k) => {
+      return {
+        ...k,
+        api_secret: '********', // Mask secret
+      };
+    });
   }
 
   async getAllAPIKeysBalance() {
@@ -455,7 +491,59 @@ export class ExchangeService {
 
   // DB related
   async addApiKey(key: APIKeysConfig) {
-    return await this.exchangeRepository.addAPIKey(key);
+    const privateKey =
+      this.configService.get<string>('admin.encryption_private_key') || '';
+    if (!privateKey) {
+      throw new InternalServerErrorException(
+        'Server encryption private key not configured',
+      );
+    }
+
+    // 1. Decrypt transport layer
+    let rawSecret: string | null = null;
+    try {
+      rawSecret = decrypt(key.api_secret, privateKey);
+    } catch (e) {
+      this.logger.error(`Decryption threw error: ${e.message}`);
+    }
+
+    if (rawSecret === null) {
+      throw new BadRequestException('Failed to decrypt API secret. The provided key might be invalid or corrupted.');
+    }
+
+    // 2. Validate with CCXT
+    try {
+      const exchangeClass = ccxt[key.exchange];
+      if (!exchangeClass) {
+        throw new BadRequestException(`Exchange ${key.exchange} not supported`);
+      }
+      const exchangeInstance = new exchangeClass({
+        apiKey: key.api_key,
+        secret: rawSecret,
+      });
+      // Try to fetch balance to validate keys
+      await exchangeInstance.fetchBalance();
+    } catch (e) {
+      this.logger.error(
+        `Failed to validate API Key for ${key.exchange}: ${e.message}`,
+      );
+      throw new BadRequestException(
+        `Invalid API Key or Secret for ${key.exchange}. Verification failed: ${e.message}`,
+      );
+    }
+
+    // 3. Encrypt for storage
+    const storageEncryptedSecret = encrypt(
+      rawSecret,
+      getPublicKeyFromPrivate(privateKey),
+    );
+
+    key.api_secret = storageEncryptedSecret;
+    const savedKey = await this.exchangeRepository.addAPIKey(key);
+
+    // reload keys to update memory
+    await this.loadAPIKeys();
+    return savedKey;
   }
 
   async readAPIKey(keyId: string) {

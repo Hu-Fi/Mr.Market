@@ -5,7 +5,7 @@
   import {
     updateExchange,
     removeExchange,
-  } from "$lib/helpers/hufi/admin/growdata";
+  } from "$lib/helpers/mrm/admin/growdata";
 
   export let exchanges: {
     exchange_id: string;

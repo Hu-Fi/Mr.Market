@@ -7,7 +7,7 @@
     getGlobalFees,
     updateGlobalFees,
     getFeeOverrides,
-  } from "$lib/helpers/hufi/admin/fee";
+  } from "$lib/helpers/mrm/admin/fee";
   import Loading from "$lib/components/common/loading.svelte";
 
   let globalFee: any = null;
@@ -122,10 +122,11 @@
             <h2 class="card-title text-lg mb-4">{$_("global_fees")}</h2>
 
             <div class="form-control w-full">
-              <label class="label">
+              <label class="label" for="spot-fee-input">
                 <span class="label-text font-medium">{$_("spot_fee")}</span>
               </label>
               <input
+                id="spot-fee-input"
                 type="text"
                 class="input input-bordered w-full focus:input-primary transition-all"
                 bind:value={globalFee.spot_fee}
@@ -143,12 +144,13 @@
             <div class="divider my-2"></div>
 
             <div class="form-control w-full">
-              <label class="label">
+              <label class="label" for="market-making-fee-input">
                 <span class="label-text font-medium"
                   >{$_("market_making_fee")}</span
                 >
               </label>
               <input
+                id="market-making-fee-input"
                 type="text"
                 class="input input-bordered w-full focus:input-primary transition-all"
                 bind:value={globalFee.market_making_fee}

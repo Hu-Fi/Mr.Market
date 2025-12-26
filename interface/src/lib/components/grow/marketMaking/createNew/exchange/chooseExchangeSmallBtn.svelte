@@ -8,7 +8,7 @@
 </script>
 
 <button
-  class="flex items-center justify-left px-4 py-2 space-x-4
+  class="flex items-center justify-left px-3 py-2 space-x-3
     bg-base-100 border border-slate-200 text-base-content
     min-h-12 w-full no-animation rounded-xl cursor-pointer"
   on:click={() => onClick()}

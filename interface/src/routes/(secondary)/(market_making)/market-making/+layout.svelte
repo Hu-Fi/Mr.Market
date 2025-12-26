@@ -87,6 +87,6 @@
     </div>
   </div>
 </header>
-<main class="mt-2 mb-20">
+<main class="mt-2">
   <slot />
 </main>

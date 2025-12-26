@@ -59,7 +59,7 @@ export class AdminFeeService {
     const mmPairs = await this.mmPairRepository.find();
 
     const spotOverrides = spotPairs
-      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined)
+      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined && p.custom_fee_rate !== '')
       .map((p) => ({
         type: 'spot',
         id: p.id,
@@ -68,7 +68,7 @@ export class AdminFeeService {
       }));
 
     const mmOverrides = mmPairs
-      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined)
+      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined && p.custom_fee_rate !== '')
       .map((p) => ({
         type: 'market_making',
         id: p.id,

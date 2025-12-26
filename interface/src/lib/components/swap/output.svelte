@@ -5,15 +5,32 @@
   import { darkTheme } from "$lib/stores/theme";
   import { maskOption } from "$lib/helpers/constants";
   import { findChainIcon, formatUSMoney } from "$lib/helpers/utils";
-	import AssetIcon from '$lib/components/common/assetIcon.svelte';
-  import { Output, OutputAssetDialog, OutputAsset, OutputBalanceDialog, OutputBalanceAccount } from "$lib/stores/swap";
+  import AssetIcon from "$lib/components/common/assetIcon.svelte";
+  import {
+    Output,
+    OutputAssetDialog,
+    OutputAsset,
+    OutputBalanceDialog,
+    OutputBalanceAccount,
+  } from "$lib/stores/swap";
 </script>
 
-<div class={clsx("flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl", $darkTheme ?  "bg-gray-800" : "bg-stone-100")}>
+<div
+  class={clsx(
+    "flex flex-col space-y-1 p-4 py-2 mx-4 rounded-xl",
+    $darkTheme ? "bg-gray-800" : "bg-stone-100",
+  )}
+>
   <!-- Text and balance/account selector -->
   <div class="flex items-center justify-between my-1">
     <span class="text-xs"> {$_("to")} </span>
-    <button class={clsx("flex items-center space-x-1")} on:click={()=>{OutputBalanceDialog.set(true)}} data-testid="to-account">
+    <button
+      class={clsx("flex items-center space-x-1")}
+      on:click={() => {
+        OutputBalanceDialog.set(true);
+      }}
+      data-testid="to-account"
+    >
       <span class="text-xs !text-[10px] opacity-60">
         {`${$OutputBalanceAccount.name}: ${$OutputBalanceAccount.balance} ${$OutputAsset.symbol}`}
       </span>
@@ -37,7 +54,12 @@
   <!-- Asset selector and amount input -->
   <div class="flex items-center">
     <button
-      class={clsx("btn !h-[2.5rem] !min-h-[2.5rem] flex items-center rounded-full border-none shadow-none no-animation px-0", $darkTheme ? "bg-gray-800 hover:bg-gray-800" : "bg-stone-100 hover:bg-stone-100")}
+      class={clsx(
+        "btn !h-[2.5rem] !min-h-[2.5rem] flex items-center rounded-full border-none shadow-none no-animation px-0",
+        $darkTheme
+          ? "bg-gray-800 hover:bg-gray-800"
+          : "bg-stone-100 hover:bg-stone-100",
+      )}
       on:click={() => OutputAssetDialog.set(!$OutputAssetDialog)}
       data-testid="select-to-asset"
     >
@@ -47,7 +69,9 @@
         clazz="w-6 h-6"
         claxx="w-2 h-2"
       />
-      <span class="font-semibold" data-testid="to-asset-symbol"> {$OutputAsset.symbol} </span>
+      <span class="font-semibold" data-testid="to-asset-symbol">
+        {$OutputAsset.symbol}
+      </span>
       <div class="w-4">
         {#if !$OutputAssetDialog}
           <!-- Caret down Icon -->
@@ -78,17 +102,20 @@
         {/if}
       </div>
     </button>
-    
+
     <input
       type="text"
       data-testid="output-amount"
       use:cleave={maskOption}
       bind:value={$Output}
-      placeholder={'0.1-1000000'}
+      placeholder={"0.1-1000000"}
       class={clsx(
-        "px-2 pr-0", "w-full",
+        "px-2 pr-0",
+        "w-full",
         "input focus:outline-none text-2xl font-bold text-right",
-        $darkTheme ? "bg-gray-800 focus:border-none placeholder-stone-600" : "bg-stone-100 focus:border-stone-100 placeholder-stone-200"
+        $darkTheme
+          ? "bg-gray-800 focus:border-none placeholder-stone-600"
+          : "bg-stone-100 focus:border-stone-100 placeholder-stone-200",
       )}
     />
   </div>
@@ -97,12 +124,10 @@
   <div class="flex items-center justify-end mb-2">
     {#if $Output}
       <span class={clsx("text-[10px] mx-2 my-0.5 capitalize opacity-60")}>
-        {formatUSMoney(123*$Output)}
+        {formatUSMoney(123 * Number($Output))}
       </span>
     {:else}
-      <span class="text-[10px] my-0.5 invisible">
-        -
-      </span>
+      <span class="text-[10px] my-0.5 invisible"> - </span>
     {/if}
   </div>
 </div>

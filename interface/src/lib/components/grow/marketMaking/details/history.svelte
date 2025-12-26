@@ -3,7 +3,7 @@
   import SingleHistory from "$lib/components/grow/marketMaking/details/singleHistory.svelte";
 
   // TODO: Set type when backend is ready
-  export let histories: Array<object>;
+  export let histories: any[];
 </script>
 
 <div class="flex items-center p-6">
