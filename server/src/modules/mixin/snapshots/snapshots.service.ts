@@ -45,7 +45,6 @@ export class SnapshotsService implements OnApplicationBootstrap {
     @InjectQueue('snapshots') private snapshotsQueue: Queue,
     private mixinClientService: MixinClientService,
   ) {
-
     this.keystore = this.mixinClientService.keystore;
     this.spendKey = this.mixinClientService.spendKey;
     this.client = this.mixinClientService.client;
@@ -486,7 +485,12 @@ export class SnapshotsService implements OnApplicationBootstrap {
           // Spot trading
           break;
         case 1:
-          // Swap
+          // Market making
+          const mmDetails = decodeMarketMakingCreateMemo(payload);
+          if (!mmDetails) {
+            break;
+          }
+          this.events.emit('market_making.create', mmDetails, snapshot);
           break;
         case 2:
           // Simply grow
@@ -497,12 +501,6 @@ export class SnapshotsService implements OnApplicationBootstrap {
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
         case 3:
-          // Market making
-          const mmDetails = decodeMarketMakingCreateMemo(payload);
-          if (!mmDetails) {
-            break;
-          }
-          this.events.emit('market_making.create', mmDetails, snapshot);
           break;
         default:
           // Refund

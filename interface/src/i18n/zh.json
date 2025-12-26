@@ -336,5 +336,6 @@
   "placeholder_api_secret": "在此粘贴您的API Secret",
   "confirm_delete_api_key": "您确定要删除此API密钥吗？",
   "add_new_api_key": "添加新的API密钥",
-  "manage_api_keys": "管理交易所API密钥"
+  "manage_api_keys": "管理交易所API密钥",
+  "total_fee_usd": "总手续费（美元）"
 }

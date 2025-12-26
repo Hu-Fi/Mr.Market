@@ -99,8 +99,17 @@
     const quoteFeeId = feeInfo.quote_fee_id;
     const baseFeeAmount = feeInfo.base_fee_amount;
     const quoteFeeAmount = feeInfo.quote_fee_amount;
-    const creationFeeAssetId = feeInfo.creation_fee_asset_id;
-    const creationFeeAmount = feeInfo.creation_fee;
+    const marketMakingFeePercentage = feeInfo.market_making_fee_percentage;
+
+    // Calculate market making fees
+    const baseMarketMakingFee = marketMakingFeePercentage
+      ? BigNumber(baseAmount).multipliedBy(marketMakingFeePercentage).toString()
+      : "0";
+    const quoteMarketMakingFee = marketMakingFeePercentage
+      ? BigNumber(quoteAmount)
+          .multipliedBy(marketMakingFeePercentage)
+          .toString()
+      : "0";
 
     try {
       const memo = encodeMarketMakingCreateMemo({
@@ -131,16 +140,6 @@
         traceId: getUuid(),
       });
 
-      // Creation fee payment (if it exists)
-      if (creationFeeAssetId && creationFeeAmount) {
-        items.push({
-          assetId: creationFeeAssetId,
-          amount: creationFeeAmount,
-          extra: memo,
-          traceId: getUuid(),
-        });
-      }
-
       // Add base asset withdrawal fee if it exists
       if (baseFeeAmount && parseFloat(baseFeeAmount) > 0) {
         items.push({
@@ -156,6 +155,26 @@
         items.push({
           assetId: quoteFeeId,
           amount: quoteFeeAmount,
+          extra: memo,
+          traceId: getUuid(),
+        });
+      }
+
+      // Add base market making fee if it exists
+      if (baseMarketMakingFee && parseFloat(baseMarketMakingFee) > 0) {
+        items.push({
+          assetId: baseAssetId,
+          amount: baseMarketMakingFee,
+          extra: memo,
+          traceId: getUuid(),
+        });
+      }
+
+      // Add quote market making fee if it exists
+      if (quoteMarketMakingFee && parseFloat(quoteMarketMakingFee) > 0) {
+        items.push({
+          assetId: quoteAssetId,
+          amount: quoteMarketMakingFee,
           extra: memo,
           traceId: getUuid(),
         });
@@ -401,8 +420,11 @@
         baseFeeSymbol={feeInfo?.base_fee_symbol}
         quoteFeeAmount={feeInfo?.quote_fee_amount}
         quoteFeeSymbol={feeInfo?.quote_fee_symbol}
-        creationFeeAmount={feeInfo?.creation_fee}
-        creationFeeSymbol={feeInfo?.creation_fee_symbol}
+        baseFeeUsdPrice={feeInfo?.base_fee_price_usd}
+        quoteFeeUsdPrice={feeInfo?.quote_fee_price_usd}
+        baseAssetUsdPrice={feeInfo?.base_asset_price_usd}
+        quoteAssetUsdPrice={feeInfo?.quote_asset_price_usd}
+        marketMakingFeePercentage={feeInfo?.market_making_fee_percentage}
         {isFetchingFee}
       />
       <div class="px-6 w-full flex justify-center">

@@ -1,10 +1,12 @@
+import BigNumber from 'bignumber.js';
 import { Injectable } from '@nestjs/common';
 import { KeystoreClientReturnType, SafeWithdrawalFee } from '@mixin.dev/mixin-node-sdk';
 import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import { CustomLogger } from '../../infrastructure/logger/logger.service';
-import BigNumber from 'bignumber.js';
 import { MixinClientService } from '../../mixin/client/mixin-client.service';
 import { MIXIN_DEPOSIT_FEES } from 'src/common/constants/constants';
+import { CustomConfigService } from '../../infrastructure/custom-config/custom-config.service';
+import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
 
 interface WithdrawalFeeWithPriority extends SafeWithdrawalFee {
   priority: number;
@@ -18,6 +20,8 @@ export class FeeService {
   constructor(
     private readonly exchangeInitService: ExchangeInitService,
     private readonly mixinClientService: MixinClientService,
+    private readonly customConfigService: CustomConfigService,
+    private readonly growDataRepository: GrowdataRepository,
   ) {
     this.client = this.mixinClientService.client;
   }
@@ -36,15 +40,23 @@ export class FeeService {
     const [base_symbol, quote_symbol] = pair.split('/');
     let base_fee, quote_fee, direction_info;
     let mixin_deposit_fee = '0';
-    const creation_fee = '1';
-    const creation_fee_asset_id = 'b91e18ff-a9ae-3dc7-8679-e935d9a4b34b'; // Temp: USDT-TRC20
-    const creation_fee_symbol = 'USDT'
 
-    const base_asset_list = await this.client.network.searchAssets(base_symbol);
-    const base = base_asset_list[0].asset_id;
+    // Fetch the trading pair configuration from database to get the correct asset IDs
+    const tradingPairConfig = await this.growDataRepository.findMarketMakingPairByExchangeAndSymbol(
+      exchangeName,
+      pair,
+    );
+
+    if (!tradingPairConfig) {
+      this.logger.error(`Trading pair configuration not found for ${exchangeName} ${pair}`);
+      throw new Error(`Trading pair configuration not found for ${exchangeName} ${pair}`);
+    }
+
+    // Use the configured asset IDs from the database
+    const base = tradingPairConfig.base_asset_id;
+    const quote = tradingPairConfig.quote_asset_id;
+
     const base_asset = await this.client.safe.fetchAsset(base);
-    const quote_asset_list = await this.client.network.searchAssets(quote_symbol);
-    const quote = quote_asset_list[0].asset_id;
     const quote_asset = await this.client.safe.fetchAsset(quote);
 
     if (direction === 'deposit_to_exchange') {
@@ -63,6 +75,10 @@ export class FeeService {
         quote_fee = await this.getMixinWithdrawalFee(quote);
         const base_fee_asset = await this.client.safe.fetchAsset(base_fee?.asset_id);
         const quote_fee_asset = await this.client.safe.fetchAsset(quote_fee?.asset_id);
+
+        // Get market making fee percentage from custom config
+        const market_making_fee_percentage = await this.customConfigService.readMarketMakingFee();
+
         return {
           base_asset_id: base_asset.asset_id,
           quote_asset_id: quote_asset.asset_id,
@@ -72,9 +88,11 @@ export class FeeService {
           quote_fee_amount: quote_fee?.amount,
           base_fee_symbol: base_fee_asset.symbol,
           quote_fee_symbol: quote_fee_asset.symbol,
-          creation_fee,
-          creation_fee_asset_id,
-          creation_fee_symbol,
+          base_fee_price_usd: base_fee_asset.price_usd,
+          quote_fee_price_usd: quote_fee_asset.price_usd,
+          base_asset_price_usd: base_asset.price_usd,
+          quote_asset_price_usd: quote_asset.price_usd,
+          market_making_fee_percentage,
           direction: direction_info,
         };
       } else if (direction === 'withdraw_to_mixin') {

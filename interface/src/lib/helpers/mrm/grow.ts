@@ -28,9 +28,11 @@ export interface MarketMakingFee {
   quote_fee_amount: string;
   base_fee_symbol?: string;
   quote_fee_symbol?: string;
-  creation_fee?: string;
-  creation_fee_asset_id?: string;
-  creation_fee_symbol?: string;
+  base_fee_price_usd?: string;
+  quote_fee_price_usd?: string;
+  base_asset_price_usd?: string;
+  quote_asset_price_usd?: string;
+  market_making_fee_percentage?: string;
   direction: string;
 }
 

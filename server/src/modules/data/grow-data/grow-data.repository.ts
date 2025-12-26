@@ -19,7 +19,7 @@ export class GrowdataRepository {
     private readonly arbitragePairRepository: Repository<GrowdataArbitragePair>,
     @InjectRepository(GrowdataMarketMakingPair)
     private readonly marketMakingPairRepository: Repository<GrowdataMarketMakingPair>,
-  ) {}
+  ) { }
 
   // Exchange Methods
   async addExchange(exchange: GrowdataExchange) {
@@ -129,6 +129,15 @@ export class GrowdataRepository {
   async findMarketMakingPairById(id: string) {
     return this.marketMakingPairRepository.findOne({
       where: { id },
+    });
+  }
+
+  async findMarketMakingPairByExchangeAndSymbol(
+    exchange_id: string,
+    symbol: string,
+  ) {
+    return this.marketMakingPairRepository.findOne({
+      where: { exchange_id, symbol },
     });
   }
 

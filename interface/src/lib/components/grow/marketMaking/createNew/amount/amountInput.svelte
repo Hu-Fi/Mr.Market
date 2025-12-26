@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { formatUSMoney } from "$lib/helpers/utils";
+  import { formatDecimals, formatUSMoney } from "$lib/helpers/utils";
 
   export let baseIcon: string;
   export let baseSymbol: string | null = null;
@@ -18,7 +18,8 @@
   const getFiatValue = (amount: string, price: number) => {
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount)) return formatUSMoney(0);
-    return formatUSMoney(numericAmount * price);
+    const fiatValue = formatDecimals(numericAmount * price, 3);
+    return formatUSMoney(fiatValue);
   };
 </script>
 

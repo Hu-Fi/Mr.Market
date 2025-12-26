@@ -17,7 +17,7 @@ export class CustomConfigEntity {
   @Column()
   spot_fee: string; // The spot trading fee
 
-  @Column({ default: '0' })
+  @Column({ default: '0.001' })
   market_making_fee: string; // The market making fee
 
   @Column({ default: true })

@@ -283,9 +283,9 @@ export const defaultSimplyGrowTokens: GrowdataSimplyGrowToken[] = [
 ];
 
 export const defaultCustomConfig: CustomConfigEntity = {
-  config_id: 1,
+  config_id: 0,
   spot_fee: '0.002',
-  market_making_fee: '0.002',
+  market_making_fee: '0.001',
   enable_spot_fee: true,
   enable_market_making_fee: true,
   max_balance_mixin_bot: '0',

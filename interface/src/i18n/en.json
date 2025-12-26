@@ -474,5 +474,13 @@
   "delete_api_key_success": "API Key deleted successfully",
   "delete_api_key_failed": "Failed to delete API Key",
   "api_secret_note": "The API secret will be transfered and stored after encryption.",
-  "no_api_keys_found": "No API keys found"
+  "no_api_keys_found": "No API keys found",
+  "withdrawal_fee": "Withdrawal fee",
+  "withdrawal_fees": "Withdrawal fees",
+  "market_making_fees": "Market making fees",
+  "network_fee": "Network fee",
+  "strategy_fee": "Strategy fee",
+  "fee_breakdown": "Fee breakdown",
+  "market_making_fee_with_pct": "Market making fee ({percent}%)",
+  "total_fee_usd": "Total Fee (USD)"
 }
