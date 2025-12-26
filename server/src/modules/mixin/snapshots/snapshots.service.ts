@@ -25,6 +25,7 @@ import {
   memoPreDecode,
   decodeMarketMakingCreateMemo,
   decodeSimplyGrowCreateMemo,
+  decodeWithdrawalMemo,
 } from 'src/common/helpers/mixin/memo';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
@@ -501,6 +502,16 @@ export class SnapshotsService implements OnApplicationBootstrap {
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
         case 3:
+          // Withdrawal
+          const withdrawalDetails = decodeWithdrawalMemo(payload);
+          if (!withdrawalDetails) {
+            this.logger.log(
+              `Failed to decode withdrawal memo, refund: ${snapshot.snapshot_id}`,
+            );
+            await this.refund(snapshot);
+            break;
+          }
+          this.events.emit('withdrawal.create', withdrawalDetails, snapshot);
           break;
         default:
           // Refund

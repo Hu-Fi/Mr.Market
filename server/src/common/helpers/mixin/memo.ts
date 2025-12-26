@@ -12,6 +12,7 @@ import {
   TradingTypeValue,
   MarketMakingCreateMemoDetails,
   SimplyGrowCreateMemoDetails,
+  WithdrawalMemoDetails,
 } from 'src/common/types/memo/memo';
 import { base58 } from 'ethers/lib/utils';
 import { createHash } from 'crypto';
@@ -271,3 +272,115 @@ export const decodeMarketMakingCreateMemo = (
 
   return details;
 };
+
+/**
+ * Encode withdrawal memo
+ * Format: version(1) + tradingType(1) + destinationLength(1) + destination(variable) + tagLength(1) + tag(variable, optional)
+ */
+export const encodeWithdrawalMemo = (
+  details: WithdrawalMemoDetails,
+): string => {
+  // Get numeric key for tradingType
+  const tradingTypeKeyStr = Object.keys(TARDING_TYPE_MAP).find(
+    (key) => TARDING_TYPE_MAP[key] === details.tradingType,
+  );
+
+  if (tradingTypeKeyStr === undefined) {
+    throw new Error('Invalid withdrawal memo details');
+  }
+
+  const tradingTypeKey = Number(tradingTypeKeyStr);
+
+  // Serialize fields into binary
+  const versionBuffer = Buffer.from([details.version]);
+  const tradingTypeBuffer = Buffer.from([tradingTypeKey]);
+
+  // Destination address (variable length, max 128 bytes)
+  const destinationBuffer = Buffer.from(details.destination, 'utf-8');
+  if (destinationBuffer.length > 128) {
+    throw new Error('Destination address too long (max 128 bytes)');
+  }
+  const destinationLengthBuffer = Buffer.from([destinationBuffer.length]);
+
+  // Destination tag (variable length, max 32 bytes, optional)
+  let tagLengthBuffer = Buffer.from([0]);
+  let tagBuffer = Buffer.from([]);
+  if (details.destinationTag) {
+    tagBuffer = Buffer.from(details.destinationTag, 'utf-8');
+    if (tagBuffer.length > 32) {
+      throw new Error('Destination tag too long (max 32 bytes)');
+    }
+    tagLengthBuffer = Buffer.from([tagBuffer.length]);
+  }
+
+  // Concatenate all parts
+  const payload = Buffer.concat([
+    versionBuffer,
+    tradingTypeBuffer,
+    destinationLengthBuffer,
+    destinationBuffer,
+    tagLengthBuffer,
+    tagBuffer,
+  ] as Uint8Array[]);
+
+  // Compute checksum
+  const checksum = computeMemoChecksum(payload);
+
+  // Concatenate payload and checksum
+  const completeBuffer = Buffer.concat([payload, checksum] as Uint8Array[]);
+  return base58.encode(completeBuffer);
+};
+
+/**
+ * Decode withdrawal memo
+ */
+export const decodeWithdrawalMemo = (
+  payload: Buffer,
+): WithdrawalMemoDetails => {
+  let offset = 0;
+
+  // Version (1 byte)
+  const version = payload.readUInt8(offset);
+  offset += 1;
+
+  // TradingTypeKey (1 byte)
+  const tradingTypeKey = payload.readUInt8(offset);
+  offset += 1;
+
+  // Destination length (1 byte)
+  const destinationLength = payload.readUInt8(offset);
+  offset += 1;
+
+  // Destination address (variable length)
+  const destinationBuffer = payload.subarray(offset, offset + destinationLength);
+  offset += destinationLength;
+  const destination = destinationBuffer.toString('utf-8');
+
+  // Tag length (1 byte)
+  const tagLength = payload.readUInt8(offset);
+  offset += 1;
+
+  // Tag (variable length, optional)
+  let destinationTag: string | undefined;
+  if (tagLength > 0) {
+    const tagBuffer = payload.subarray(offset, offset + tagLength);
+    destinationTag = tagBuffer.toString('utf-8');
+  }
+
+  // Map tradingTypeKey back to its value
+  const tradingType = TARDING_TYPE_MAP[tradingTypeKey];
+
+  if (tradingType === undefined) {
+    throw new Error('Invalid tradingType');
+  }
+
+  const details: WithdrawalMemoDetails = {
+    version,
+    tradingType,
+    destination,
+    destinationTag,
+  };
+
+  return details;
+};
+

@@ -4,6 +4,7 @@ import { SnapshotsModule } from './snapshots/snapshots.module';
 // import { RebalanceModule } from './rebalance/rebalance.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { UserModule } from './user/user.module';
+import { WithdrawalModule } from './withdrawal/withdrawal.module';
 
 @Module({
   imports: [
@@ -11,11 +12,13 @@ import { UserModule } from './user/user.module';
     ExchangeModule,
     MessageModule,
     UserModule,
+    WithdrawalModule,
     // RebalanceModule,
   ],
   exports: [
     ExchangeModule,
     SnapshotsModule,
+    WithdrawalModule,
   ],
 })
 export class MixinModule { }
