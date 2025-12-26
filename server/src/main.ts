@@ -35,9 +35,9 @@ async function bootstrap() {
     const envFile = '.env';
     try {
       if (fs.existsSync(envFile)) {
-        fs.appendFileSync(envFile, `\nENCRYPTION_PRIVATE_KEY="${privateKey}"\n`);
+        fs.appendFileSync(envFile, `\nENCRYPTION_PRIVATE_KEY=${privateKey}\n`);
       } else {
-        fs.writeFileSync(envFile, `ENCRYPTION_PRIVATE_KEY="${privateKey}"\n`);
+        fs.writeFileSync(envFile, `ENCRYPTION_PRIVATE_KEY=${privateKey}\n`);
       }
       console.log(`ENCRYPTION_KEYS saved to ${envFile}`);
     } catch (err) {
