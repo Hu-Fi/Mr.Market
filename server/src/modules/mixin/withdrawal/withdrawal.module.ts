@@ -1,15 +1,14 @@
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { Withdrawal } from 'src/common/entities/withdrawal.entity';
 import { WithdrawalService } from './withdrawal.service';
 import { WithdrawalProcessor } from './withdrawal.processor';
 import { WithdrawalConfirmationWorker } from './withdrawal-confirmation.worker';
-import { WithdrawalEventHandler } from './withdrawal.event-handler';
 import { MixinClientModule } from '../client/mixin-client.module';
 import { SnapshotsModule } from '../snapshots/snapshots.module';
-import { ConfigService } from '@nestjs/config';
-import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -32,7 +31,6 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
         WithdrawalService,
         WithdrawalProcessor,
         WithdrawalConfirmationWorker,
-        WithdrawalEventHandler,
     ],
     exports: [WithdrawalService, BullModule],
 })
@@ -46,8 +44,9 @@ export class WithdrawalModule implements OnApplicationBootstrap {
         private confirmationQueue: Queue,
     ) {
         this.enableConfirmationWorker =
-            this.configService.get<string>('strategy.mixin_withdrawal_confirmation_run') ===
-            'true';
+            this.configService.get<string>(
+                'strategy.mixin_withdrawal_confirmation_run',
+            ) === 'true';
     }
 
     async onApplicationBootstrap() {

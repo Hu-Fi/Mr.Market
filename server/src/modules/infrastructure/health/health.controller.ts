@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @ApiTags('System')
 @Controller('health')
 export class HealthController {
-  constructor(private healthService: HealthService) { }
+  constructor(private healthService: HealthService) {}
 
   @Get('/')
   @ApiOperation({ summary: 'Get server health status' })

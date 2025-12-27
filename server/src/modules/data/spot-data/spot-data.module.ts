@@ -17,4 +17,4 @@ import { MarketdataModule } from '../market-data/market-data.module';
   providers: [SpotdataService, SpotdataRepository],
   exports: [SpotdataService, CacheModule, SpotdataRepository],
 })
-export class SpotdataModule { }
+export class SpotdataModule {}

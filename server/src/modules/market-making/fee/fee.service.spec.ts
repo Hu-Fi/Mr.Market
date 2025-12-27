@@ -40,8 +40,10 @@ describe('FeeService', () => {
             get: jest.fn((key) => {
               if (key === 'mixin.app_id') return 'mock_app_id';
               if (key === 'mixin.session_id') return 'mock_session_id';
-              if (key === 'mixin.server_public_key') return 'mock_server_public_key';
-              if (key === 'mixin.session_private_key') return 'mock_session_private_key';
+              if (key === 'mixin.server_public_key')
+                return 'mock_server_public_key';
+              if (key === 'mixin.session_private_key')
+                return 'mock_session_private_key';
               return null;
             }),
           },
@@ -94,12 +96,18 @@ describe('FeeService', () => {
       mockClient.safe.fetchAsset.mockResolvedValueOnce(mockQuoteAsset);
 
       mockClient.safe.fetchFee.mockImplementation((assetId) => {
-        if (assetId === baseAssetId) return [{ amount: '0.0001', asset_id: baseAssetId }];
-        if (assetId === quoteAssetId) return [{ amount: '5', asset_id: quoteAssetId }];
+        if (assetId === baseAssetId)
+          return [{ amount: '0.0001', asset_id: baseAssetId }];
+        if (assetId === quoteAssetId)
+          return [{ amount: '5', asset_id: quoteAssetId }];
         return [];
       });
 
-      const result = await service.calculateMoveFundsFee(exchangeName, pair, direction);
+      const result = await service.calculateMoveFundsFee(
+        exchangeName,
+        pair,
+        direction,
+      );
 
       expect(mockClient.network.searchAssets).toHaveBeenCalledWith('BTC');
       expect(mockClient.network.searchAssets).toHaveBeenCalledWith('USDT');
@@ -129,16 +137,27 @@ describe('FeeService', () => {
         }),
       };
 
-      jest.spyOn(exchangeInitService, 'getExchange').mockReturnValue(mockExchange as any);
+      jest
+        .spyOn(exchangeInitService, 'getExchange')
+        .mockReturnValue(mockExchange as any);
 
       // Bitcoin Chain ID -> USD 3
       // Ethereum Chain ID -> USD 3
       // Total Mixin Deposit Fee = 3 + 3 = 6
 
-      const result = await service.calculateMoveFundsFee(exchangeName, pair, direction);
+      const result = await service.calculateMoveFundsFee(
+        exchangeName,
+        pair,
+        direction,
+      );
 
-      expect(exchangeInitService.getExchange).toHaveBeenCalledWith(exchangeName);
-      expect(mockExchange.fetchTransactionFees).toHaveBeenCalledWith(['BTC', 'USDT']);
+      expect(exchangeInitService.getExchange).toHaveBeenCalledWith(
+        exchangeName,
+      );
+      expect(mockExchange.fetchTransactionFees).toHaveBeenCalledWith([
+        'BTC',
+        'USDT',
+      ]);
 
       expect(result).toEqual({
         base_asset_id: baseAssetId,
@@ -159,8 +178,16 @@ describe('FeeService', () => {
       const ltcAssetId = '76c802a2-7c88-447f-a93e-c29c9e5dd9c8'; // Litecoin Chain
       const dogeAssetId = '6770a1e5-6086-44d5-b60f-545f9d9e8ffd'; // Dogecoin Chain
 
-      const mockLTC = { asset_id: ltcAssetId, chain_id: ltcAssetId, symbol: 'LTC' };
-      const mockDoge = { asset_id: dogeAssetId, chain_id: dogeAssetId, symbol: 'DOGE' };
+      const mockLTC = {
+        asset_id: ltcAssetId,
+        chain_id: ltcAssetId,
+        symbol: 'LTC',
+      };
+      const mockDoge = {
+        asset_id: dogeAssetId,
+        chain_id: dogeAssetId,
+        symbol: 'DOGE',
+      };
 
       mockClient.network.searchAssets.mockImplementation((query) => {
         if (query === 'LTC') return [mockLTC];
@@ -173,16 +200,22 @@ describe('FeeService', () => {
         currencies: {
           LTC: { fee: 0.001 },
           DOGE: { fee: 1 },
-        }
+        },
       };
 
-      jest.spyOn(exchangeInitService, 'getExchange').mockReturnValue(mockExchange as any);
+      jest
+        .spyOn(exchangeInitService, 'getExchange')
+        .mockReturnValue(mockExchange as any);
 
       // Litecoin -> 0.1
       // Dogecoin -> 0.1
       // Total = 0.2
 
-      const result = await service.calculateMoveFundsFee(exchangeName, pairSimple, direction);
+      const result = await service.calculateMoveFundsFee(
+        exchangeName,
+        pairSimple,
+        direction,
+      );
 
       expect(result.mixin_deposit_fee).toBe(0.2);
       expect(result.base_asset_fee).toBe(0.001);
@@ -201,9 +234,15 @@ describe('FeeService', () => {
         }),
       };
 
-      jest.spyOn(exchangeInitService, 'getExchange').mockReturnValue(mockExchange as any);
+      jest
+        .spyOn(exchangeInitService, 'getExchange')
+        .mockReturnValue(mockExchange as any);
 
-      const result = await service.calculateMoveFundsFee(exchangeName, pair, direction);
+      const result = await service.calculateMoveFundsFee(
+        exchangeName,
+        pair,
+        direction,
+      );
 
       expect(result).toEqual({
         base_asset_id: baseAssetId,
@@ -222,7 +261,11 @@ describe('FeeService', () => {
 
       jest.spyOn(exchangeInitService, 'getExchange').mockReturnValue(null);
 
-      const result = await service.calculateMoveFundsFee(exchangeName, pair, direction);
+      const result = await service.calculateMoveFundsFee(
+        exchangeName,
+        pair,
+        direction,
+      );
 
       expect(result.base_asset_fee).toBeUndefined();
       expect(result.quote_asset_fee).toBeUndefined();

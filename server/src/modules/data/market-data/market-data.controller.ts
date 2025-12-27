@@ -6,7 +6,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('Data')
 @Controller('market')
 export class MarketDataController {
-  constructor(private marketDataService: MarketdataService) { }
+  constructor(private marketDataService: MarketdataService) {}
 
   @Get('/ohlcv')
   @ApiOperation({ summary: 'Get OHLCV data' })

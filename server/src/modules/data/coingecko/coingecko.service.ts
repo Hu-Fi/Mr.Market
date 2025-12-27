@@ -47,18 +47,19 @@ export class CoingeckoProxyService {
     page = 1,
   ): Promise<CoinMarket[]> {
     try {
-      const key = `markets/${vs_currency}${category ? `/${category}` : '/'
-        }${per_page}/${page}`;
+      const key = `markets/${vs_currency}${
+        category ? `/${category}` : '/'
+      }${per_page}/${page}`;
       const cachedData = await this.cacheService.get<CoinMarket[]>(key);
       if (!cachedData) {
         const data = await this.coingecko.coinMarket(
           category
             ? {
-              vs_currency: vs_currency,
-              per_page,
-              page,
-              category,
-            }
+                vs_currency: vs_currency,
+                per_page,
+                page,
+                category,
+              }
             : { vs_currency, per_page, page },
         );
         await this.cacheService.set(key, data, this.cachingTTL);

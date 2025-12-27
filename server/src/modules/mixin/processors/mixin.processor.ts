@@ -17,7 +17,7 @@ export class MixinProcessor {
     private service: SnapshotsService,
     private exchangeService: ExchangeService,
     private configService: CustomConfigService,
-  ) { }
+  ) {}
 
   @Process('release_token')
   async handleReleaseToken(job: Job<MixinReleaseTokenEvent>) {

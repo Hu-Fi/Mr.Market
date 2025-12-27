@@ -7,7 +7,10 @@ export class AddAPIKeyDto {
   @IsNotEmpty()
   exchange: string;
 
-  @ApiProperty({ description: 'The index used in the exchange map', required: false })
+  @ApiProperty({
+    description: 'The index used in the exchange map',
+    required: false,
+  })
   exchange_index: string;
 
   @ApiProperty({ description: 'The name(alias) of API key' })

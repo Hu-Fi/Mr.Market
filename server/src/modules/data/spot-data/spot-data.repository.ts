@@ -8,7 +8,7 @@ export class SpotdataRepository {
   constructor(
     @InjectRepository(SpotdataTradingPair)
     private readonly tradingPairRepository: Repository<SpotdataTradingPair>,
-  ) { }
+  ) {}
 
   // TradingPair Methods
   async addTradingPair(pair: SpotdataTradingPair) {

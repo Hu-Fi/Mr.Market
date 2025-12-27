@@ -11,7 +11,7 @@ import { ExchangeService } from './exchange.service';
 export class ExchangeUserController {
   private readonly logger = new CustomLogger(ExchangeUserController.name);
 
-  constructor(private readonly exchagneService: ExchangeService) { }
+  constructor(private readonly exchagneService: ExchangeService) {}
 
   @Get('orders/user/:user_id')
   @ApiOperation({ summary: 'Get all orders by user id' })

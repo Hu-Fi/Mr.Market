@@ -20,7 +20,7 @@ import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 export class RebalanceController {
   private readonly logger = new CustomLogger(RebalanceController.name);
 
-  constructor(private readonly rebalanceService: RebalanceService) { }
+  constructor(private readonly rebalanceService: RebalanceService) {}
 
   @Get('/minimum_balance/all')
   @ApiOperation({ summary: 'Get all minium balance settings' })

@@ -11,8 +11,12 @@ import { MessageController } from 'src/modules/mixin/message/message.controller'
 import { MixinClientModule } from '../client/mixin-client.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MixinMessage]), UserModule, MixinClientModule],
+  imports: [
+    TypeOrmModule.forFeature([MixinMessage]),
+    UserModule,
+    MixinClientModule,
+  ],
   controllers: [MessageController],
   providers: [MessageService, ConfigService, UserService, MessageRepository],
 })
-export class MessageModule { }
+export class MessageModule {}

@@ -8,7 +8,7 @@ export class PerformanceService {
   constructor(
     @InjectRepository(Performance)
     private performanceRepository: Repository<Performance>,
-  ) { }
+  ) {}
 
   async recordPerformance(data: Partial<Performance>): Promise<Performance> {
     const performance = this.performanceRepository.create(data);

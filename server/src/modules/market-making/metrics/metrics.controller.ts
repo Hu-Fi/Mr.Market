@@ -8,7 +8,7 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 export class MetricsController {
   private readonly logger = new CustomLogger(MetricsController.name);
 
-  constructor(private readonly metricsService: MetricsService) { }
+  constructor(private readonly metricsService: MetricsService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get metrics' })

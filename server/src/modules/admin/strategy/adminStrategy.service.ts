@@ -29,7 +29,7 @@ export class AdminStrategyService {
     private contributionRepository: Repository<Contribution>,
     @InjectRepository(MixinUser)
     private mixinuserrepository: Repository<MixinUser>,
-  ) { }
+  ) {}
 
   async startStrategy(startStrategyDto: StartStrategyDto) {
     const { strategyType, arbitrageParams, marketMakingParams, volumeParams } =
@@ -55,7 +55,7 @@ export class AdminStrategyService {
         volumeParams.numTrades,
         volumeParams.userId,
         volumeParams.clientId,
-        volumeParams.pricePushRate
+        volumeParams.pricePushRate,
       );
     } else {
       throw new BadRequestException('Invalid strategy parameters');

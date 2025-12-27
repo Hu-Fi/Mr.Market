@@ -26,7 +26,7 @@ import { MessageService } from './message.service';
 export class MessageController {
   private readonly logger = new CustomLogger(MessageController.name);
 
-  constructor(private readonly messageService: MessageService) { }
+  constructor(private readonly messageService: MessageService) {}
 
   @Post('/broadcast')
   @ApiOperation({ summary: 'Broadcast message to all users' })

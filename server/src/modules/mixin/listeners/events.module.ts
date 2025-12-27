@@ -16,11 +16,7 @@ import { LoggerModule } from 'src/modules/infrastructure/logger/logger.module';
     GrowdataModule,
     LoggerModule,
   ],
-  providers: [
-    ConfigService,
-  ],
-  exports: [
-    ConfigService,
-  ],
+  providers: [ConfigService],
+  exports: [ConfigService],
 })
-export class EventListenersModule { }
+export class EventListenersModule {}

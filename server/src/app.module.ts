@@ -170,4 +170,4 @@ dotenv.config();
   controllers: [AppController, AdminController],
   providers: [CustomLogger],
 })
-export class AppModule { }
+export class AppModule {}

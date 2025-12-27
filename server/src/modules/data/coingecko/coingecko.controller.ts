@@ -11,7 +11,7 @@ import {
 @ApiTags('Data')
 @Controller('coingecko')
 export class CoingeckoController {
-  constructor(private readonly coingeckoProxy: CoingeckoProxyService) { }
+  constructor(private readonly coingeckoProxy: CoingeckoProxyService) {}
 
   @Get('/coins/:id')
   async getCoinsById(@Param('id') id: string): Promise<CoinFullInfo> {

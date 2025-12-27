@@ -18,4 +18,4 @@ import { MmCampaignProcessor } from './mm-campaign.processor';
   providers: [MmCampaignService, MmCampaignProcessor],
   exports: [MmCampaignService],
 })
-export class MmCampaignModule { }
+export class MmCampaignModule {}

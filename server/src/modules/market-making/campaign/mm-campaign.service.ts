@@ -17,7 +17,7 @@ export class MmCampaignService {
     @InjectRepository(CampaignParticipation)
     private readonly participationRepository: Repository<CampaignParticipation>,
     @InjectQueue('mm-campaigns') private readonly campaignQueue: Queue,
-  ) { }
+  ) {}
 
   async createCampaign(data: Partial<Campaign>): Promise<Campaign> {
     const campaign = this.campaignRepository.create({
@@ -27,7 +27,11 @@ export class MmCampaignService {
     return this.campaignRepository.save(campaign);
   }
 
-  async joinCampaign(userId: string, campaignId: string, orderId?: string): Promise<CampaignParticipation> {
+  async joinCampaign(
+    userId: string,
+    campaignId: string,
+    orderId?: string,
+  ): Promise<CampaignParticipation> {
     const participation = this.participationRepository.create({
       userId,
       campaignId,
@@ -57,11 +61,16 @@ export class MmCampaignService {
     await this.campaignRepository.update(id, update);
   }
 
-  async getParticipations(campaignId: string): Promise<CampaignParticipation[]> {
+  async getParticipations(
+    campaignId: string,
+  ): Promise<CampaignParticipation[]> {
     return this.participationRepository.find({ where: { campaignId } });
   }
 
-  async updateParticipation(id: string, update: Partial<CampaignParticipation>) {
+  async updateParticipation(
+    id: string,
+    update: Partial<CampaignParticipation>,
+  ) {
     await this.participationRepository.update(id, update);
   }
 }

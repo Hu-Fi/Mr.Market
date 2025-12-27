@@ -5,9 +5,7 @@ import {
   encodeSimplyGrowCreateMemo,
   decodeSimplyGrowCreateMemo,
 } from './memo';
-import {
-  TradingTypeValue,
-} from 'src/common/types/memo/memo';
+import { TradingTypeValue } from 'src/common/types/memo/memo';
 
 describe('decodeSimplyGrowCreateMemo', () => {
   it('test encodeSimplyGrowCreateMemo', () => {
@@ -60,7 +58,6 @@ describe('decodeSimplyGrowCreateMemo', () => {
     expect(result).toEqual(details);
   });
 
-
   it('should throw error when encoding SimplyGrow with invalid details', () => {
     expect(() => {
       encodeSimplyGrowCreateMemo({
@@ -102,7 +99,9 @@ describe('decodeMarketMakingCreateMemo', () => {
     });
 
     console.log(`encodedMemo: ${encodedMemo}`);
-    const { payload } = memoPreDecode('f243yJSNnb9QQ7azcKFd5tzKQS8xX62VVYkk8KWwDAAkuFVXBwvw');
+    const { payload } = memoPreDecode(
+      'f243yJSNnb9QQ7azcKFd5tzKQS8xX62VVYkk8KWwDAAkuFVXBwvw',
+    );
     const result = decodeMarketMakingCreateMemo(payload);
     expect(result).toEqual({
       version: 1,

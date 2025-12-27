@@ -12,14 +12,16 @@ export class MarketMakingProcessor {
   constructor(
     private readonly userOrdersService: UserOrdersService,
     private readonly strategyService: StrategyService,
-  ) { }
+  ) {}
 
   @Process('start_mm')
   async handleStartMM(job: Job<{ userId: string; orderId: string }>) {
     const { userId, orderId } = job.data;
     this.logger.log(`Starting MM for user ${userId}, order ${orderId}`);
 
-    const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
+    const order = await this.userOrdersService.findMarketMakingByOrderId(
+      orderId,
+    );
     if (!order) {
       this.logger.error(`MM Order ${orderId} not found`);
       return;
@@ -43,7 +45,10 @@ export class MarketMakingProcessor {
 
     // Let's implement the start which adds the first 'execute_mm_cycle' job.
 
-    await this.userOrdersService.updateMarketMakingOrderState(orderId, 'running');
+    await this.userOrdersService.updateMarketMakingOrderState(
+      orderId,
+      'running',
+    );
 
     // Add first execution cycle job
     await (job.queue as any).add('execute_mm_cycle', {
@@ -61,7 +66,7 @@ export class MarketMakingProcessor {
         amountChangePerLayer: Number(order.amountChangePerLayer),
         ceilingPrice: Number(order.ceilingPrice),
         floorPrice: Number(order.floorPrice),
-      }
+      },
     });
   }
 
@@ -70,18 +75,31 @@ export class MarketMakingProcessor {
     const { userId, orderId } = job.data;
     this.logger.log(`Stopping MM for user ${userId}, order ${orderId}`);
 
-    await this.strategyService.stopStrategyForUser(userId, orderId, 'pureMarketMaking');
-    await this.userOrdersService.updateMarketMakingOrderState(orderId, 'stopped');
+    await this.strategyService.stopStrategyForUser(
+      userId,
+      orderId,
+      'pureMarketMaking',
+    );
+    await this.userOrdersService.updateMarketMakingOrderState(
+      orderId,
+      'stopped',
+    );
   }
 
   @Process('execute_mm_cycle')
-  async handleExecuteMMCycle(job: Job<{ userId: string; orderId: string; strategyParams: any }>) {
+  async handleExecuteMMCycle(
+    job: Job<{ userId: string; orderId: string; strategyParams: any }>,
+  ) {
     const { userId, orderId, strategyParams } = job.data;
 
     // 1. Check if order is still running
-    const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
+    const order = await this.userOrdersService.findMarketMakingByOrderId(
+      orderId,
+    );
     if (!order || order.state !== 'running') {
-      this.logger.log(`MM Order ${orderId} is not running (state: ${order?.state}), stopping cycle.`);
+      this.logger.log(
+        `MM Order ${orderId} is not running (state: ${order?.state}), stopping cycle.`,
+      );
       return;
     }
 
@@ -89,12 +107,14 @@ export class MarketMakingProcessor {
     try {
       await this.strategyService.executeMMCycle(strategyParams);
     } catch (error) {
-      this.logger.error(`Error executing MM cycle for ${orderId}: ${error.message}`);
+      this.logger.error(
+        `Error executing MM cycle for ${orderId}: ${error.message}`,
+      );
     }
 
     // 3. Re-queue
     await (job.queue as any).add('execute_mm_cycle', job.data, {
-      delay: strategyParams.orderRefreshTime || 10000 // Default 10s
+      delay: strategyParams.orderRefreshTime || 10000, // Default 10s
     });
   }
 }

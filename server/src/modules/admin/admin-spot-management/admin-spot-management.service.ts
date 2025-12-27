@@ -14,7 +14,7 @@ export class AdminSpotService {
   constructor(
     private readonly spotdataRepository: SpotdataRepository,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
-  ) { }
+  ) {}
 
   private async invalidateCache() {
     await this.cacheService.del(this.cacheKey);
@@ -68,7 +68,10 @@ export class AdminSpotService {
     modifications: Partial<SpotdataTradingPair>,
   ) {
     try {
-      const result = await this.spotdataRepository.updateTradingPair(id, modifications);
+      const result = await this.spotdataRepository.updateTradingPair(
+        id,
+        modifications,
+      );
       await this.invalidateCache();
       return result;
     } catch (error) {

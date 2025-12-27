@@ -11,7 +11,6 @@ import {
   GrowdataSimplyGrowToken,
 } from '../../common/entities/grow-data.entity';
 import {
-
   defaultExchanges,
   defaultMarketMakingPairs,
   defaultSimplyGrowTokens,
@@ -86,8 +85,6 @@ async function seedGrowdataMarketMakingPair(
   }
   console.log('Seeding GrowdataMarketMakingPair complete!');
 }
-
-
 
 async function seedGrowdataSimplyGrowToken(
   repository: Repository<GrowdataSimplyGrowToken>,

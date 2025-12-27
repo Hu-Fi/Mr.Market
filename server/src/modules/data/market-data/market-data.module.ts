@@ -11,4 +11,4 @@ import { ExchangeInitModule } from '../../infrastructure/exchange-init/exchange-
   providers: [MarketDataGateway, MarketdataService],
   exports: [MarketDataGateway, MarketdataService, CacheModule],
 })
-export class MarketdataModule { }
+export class MarketdataModule {}

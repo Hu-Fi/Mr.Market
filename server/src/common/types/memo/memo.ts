@@ -64,11 +64,3 @@ export interface SimplyGrowAddMemoDetails {
   action: SimplyGrowMemoActionType;
   orderId: string;
 }
-
-export interface WithdrawalMemoDetails {
-  version: number;
-  tradingType: TradingTypeValue;
-  destination: string;
-  destinationTag?: string;
-}
-

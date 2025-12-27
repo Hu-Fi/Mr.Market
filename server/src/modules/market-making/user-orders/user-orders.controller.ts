@@ -6,19 +6,14 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserOrdersService } from './user-orders.service';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 
 @ApiTags('Trading Engine')
 @Controller('user-orders')
 export class UserOrdersController {
-  constructor(private readonly userOrdersService: UserOrdersService) { }
+  constructor(private readonly userOrdersService: UserOrdersService) {}
 
   @Get('/all')
   @HttpCode(HttpStatus.OK)

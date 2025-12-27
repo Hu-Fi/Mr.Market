@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
-import {
-  KeystoreClientReturnType,
-} from '@mixin.dev/mixin-node-sdk';
+import { KeystoreClientReturnType } from '@mixin.dev/mixin-node-sdk';
 import { mapApiResponseToMixinUser } from 'src/common/helpers/mixin/user';
 import { MixinClientService } from '../client/mixin-client.service';
 

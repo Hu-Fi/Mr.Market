@@ -32,7 +32,7 @@ export class StrategyController {
   constructor(
     private readonly strategyService: StrategyService,
     private readonly adminService: AdminStrategyService,
-  ) { }
+  ) {}
 
   @Get('running')
   @ApiOperation({ summary: 'Get all running strategies' })
@@ -144,9 +144,10 @@ export class StrategyController {
     @Body() strategyParamsDto: PureMarketMakingStrategyDto,
   ) {
     // Passing the entire DTO to the service
-    return this.strategyService.executePureMarketMakingStrategy(strategyParamsDto);
+    return this.strategyService.executePureMarketMakingStrategy(
+      strategyParamsDto,
+    );
   }
-
 
   @Get('/stop-marketmaking')
   @HttpCode(HttpStatus.OK)
@@ -178,11 +179,12 @@ export class StrategyController {
     description: `Starts a volume trading strategy between two accounts on the same exchange. 
       This strategy can randomly vary the trade amount, push the price upward by a specified rate after 
       each trade, and ensure that orders execute by placing a limit order at the current best bid/ask 
-      and immediately placing a matching order from the other account.`
+      and immediately placing a matching order from the other account.`,
   })
   @ApiResponse({
     status: 200,
-    description: 'The volume strategy has been started and will ensure execution of trades.',
+    description:
+      'The volume strategy has been started and will ensure execution of trades.',
   })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   async executeVolumeStrategy(

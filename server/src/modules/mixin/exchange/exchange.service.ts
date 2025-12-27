@@ -1,11 +1,13 @@
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
 import { Cron } from '@nestjs/schedule';
-import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  getRFC3339Timestamp,
-} from 'src/common/helpers/utils';
+  Injectable,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 import {
   STATE_TEXT_MAP,
   SpotOrderStatus,
@@ -402,7 +404,7 @@ export class ExchangeService {
     asset_id: string,
     amount: string,
   ): Promise<SuccessResponse | ErrorResponse> {
-    const symbol = '' // getSymbolByAssetID(asset_id);
+    const symbol = ''; // getSymbolByAssetID(asset_id);
     const apiKeys = await this.exchangeRepository.readAllAPIKeysByExchange(
       exchange,
     );
@@ -427,8 +429,9 @@ export class ExchangeService {
     });
     return {
       type: 'error',
-      error: `no API key available (${exchange}:${symbol || asset_id
-        }:${amount})`,
+      error: `no API key available (${exchange}:${
+        symbol || asset_id
+      }:${amount})`,
     };
   }
 
@@ -508,7 +511,9 @@ export class ExchangeService {
     }
 
     if (rawSecret === null) {
-      throw new BadRequestException('Failed to decrypt API secret. The provided key might be invalid or corrupted.');
+      throw new BadRequestException(
+        'Failed to decrypt API secret. The provided key might be invalid or corrupted.',
+      );
     }
 
     // 2. Validate with CCXT

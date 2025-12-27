@@ -41,12 +41,7 @@ import { FeeModule } from '../fee/fee.module';
     FeeModule,
   ],
   controllers: [StrategyController],
-  providers: [
-    StrategyService,
-    ExchangeInitService,
-    AlpacaStratService,
-
-  ],
+  providers: [StrategyService, ExchangeInitService, AlpacaStratService],
   exports: [StrategyService],
 })
-export class StrategyModule { }
+export class StrategyModule {}

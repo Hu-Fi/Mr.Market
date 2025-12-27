@@ -14,7 +14,7 @@ export class SpotdataService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly spotdataRepository: SpotdataRepository,
     private readonly marketdataService: MarketdataService,
-  ) { }
+  ) {}
 
   private cachingTTL = 600; // 10 minutes
 

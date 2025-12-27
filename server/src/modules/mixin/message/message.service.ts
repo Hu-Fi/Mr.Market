@@ -26,7 +26,9 @@ export class MessageService implements OnModuleInit {
 
   async onModuleInit() {
     if (!this.client) {
-      this.logger.warn('Mixin client is not initialized, skipping message handler');
+      this.logger.warn(
+        'Mixin client is not initialized, skipping message handler',
+      );
       return;
     }
     this.client.blaze.loop(this.messageHandler);
@@ -140,7 +142,10 @@ export class MessageService implements OnModuleInit {
 
       // Add message record if not exist in db
       // Wrapped in await to fix potential bug where promise object is checked as boolean
-      const processed = await this.addMessageIfNotExist({ ...msg }, msg.message_id);
+      const processed = await this.addMessageIfNotExist(
+        { ...msg },
+        msg.message_id,
+      );
       if (!processed) {
         this.logger.warn(`message ${msg.message_id} was not processed`);
         return;

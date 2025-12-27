@@ -15,4 +15,4 @@ import { MixinClientModule } from '../client/mixin-client.module';
   providers: [ConfigService, SnapshotsService, SnapshotsProcessor],
   exports: [SnapshotsService, BullModule],
 })
-export class SnapshotsModule { }
+export class SnapshotsModule {}

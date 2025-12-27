@@ -91,7 +91,10 @@ export class PureMarketMakingStrategyDto {
   @ApiProperty({ description: 'Trading pair', example: 'BTC/USDT' })
   pair: string;
 
-  @ApiProperty({ description: 'Exchange name used for execution', example: 'binance' })
+  @ApiProperty({
+    description: 'Exchange name used for execution',
+    example: 'binance',
+  })
   exchangeName: string;
 
   @ApiPropertyOptional({
@@ -159,7 +162,6 @@ export class PureMarketMakingStrategyDto {
   floorPrice?: number;
 }
 
-
 export class ExecuteVolumeStrategyDto {
   @ApiProperty({ description: 'Name of the exchange' })
   exchangeName: string;
@@ -167,10 +169,15 @@ export class ExecuteVolumeStrategyDto {
   @ApiProperty({ description: 'Symbol to trade' })
   symbol: string;
 
-  @ApiProperty({ description: 'Percentage increment for offsetting from midPrice (initial offset)' })
+  @ApiProperty({
+    description:
+      'Percentage increment for offsetting from midPrice (initial offset)',
+  })
   incrementPercentage: number;
 
-  @ApiProperty({ description: 'Time interval (in seconds) between each trade execution' })
+  @ApiProperty({
+    description: 'Time interval (in seconds) between each trade execution',
+  })
   intervalTime: number;
 
   @ApiProperty({ description: 'Base amount to trade per order' })
@@ -186,7 +193,8 @@ export class ExecuteVolumeStrategyDto {
   clientId: string;
 
   @ApiProperty({
-    description: 'Rate at which to push the price upward after each successful trade, in percent',
+    description:
+      'Rate at which to push the price upward after each successful trade, in percent',
     example: 1,
   })
   pricePushRate: number; // <--- NEW PARAM to push price after each trade

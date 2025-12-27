@@ -110,7 +110,7 @@ export class StrategyService {
           parameters.numTrades,
           parameters.userId,
           parameters.clientId,
-          parameters.pricePushRate
+          parameters.pricePushRate,
         );
         break;
       default:
@@ -286,7 +286,7 @@ export class StrategyService {
   async executeVolumeStrategy(
     exchangeName: string,
     symbol: string,
-    baseIncrementPercentage: number,  // Used to offset from midPrice initially
+    baseIncrementPercentage: number, // Used to offset from midPrice initially
     baseIntervalTime: number,
     baseTradeAmount: number,
     numTrades: number,
@@ -301,8 +301,14 @@ export class StrategyService {
     });
 
     try {
-      const exchangeAccount1 = this.exchangeInitService.getExchange(exchangeName, 'default');
-      const exchangeAccount2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
+      const exchangeAccount1 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'default',
+      );
+      const exchangeAccount2 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'account2',
+      );
 
       let useAccount1AsMaker = true;
       let tradesExecuted = 0;
@@ -327,11 +333,17 @@ export class StrategyService {
           const bestBid = orderBook.bids[0][0];
           const bestAsk = orderBook.asks[0][0];
 
-          this.logger.log(`Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`);
+          this.logger.log(
+            `Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`,
+          );
 
           // 2. Decide maker / taker accounts
-          const makerExchange = useAccount1AsMaker ? exchangeAccount1 : exchangeAccount2;
-          const takerExchange = useAccount1AsMaker ? exchangeAccount2 : exchangeAccount1;
+          const makerExchange = useAccount1AsMaker
+            ? exchangeAccount1
+            : exchangeAccount2;
+          const takerExchange = useAccount1AsMaker
+            ? exchangeAccount2
+            : exchangeAccount1;
 
           // 3. Randomize the trade amount ±5% around baseTradeAmount
           //    Range: [0.95 * baseTradeAmount, 1.05 * baseTradeAmount]
@@ -349,7 +361,7 @@ export class StrategyService {
           } else {
             // For subsequent trades, push the price up slowly
             // Example: If pricePushRate = 1, it goes up by 1% each successful trade
-            currentMakerPrice *= (1 + pricePushRate / 100);
+            currentMakerPrice *= 1 + pricePushRate / 100;
           }
 
           // Ensure we do NOT exceed the bestAsk - small offset
@@ -357,7 +369,7 @@ export class StrategyService {
 
           this.logger.log(
             `Maker placing limit BUY: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${makerExchange.id}`,
+              `@ ${makerPrice.toFixed(6)} on ${makerExchange.id}`,
           );
 
           // 5. Place the maker (BUY) order with postOnly to remain on the order book
@@ -381,7 +393,7 @@ export class StrategyService {
           // 7. Taker places a LIMIT SELL at exactly makerPrice to cross that order
           this.logger.log(
             `Taker placing limit SELL: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${takerExchange.id}`,
+              `@ ${makerPrice.toFixed(6)} on ${takerExchange.id}`,
           );
           const takerOrder = await takerExchange.createOrder(
             symbol,
@@ -392,10 +404,19 @@ export class StrategyService {
           );
 
           // 8. Check final statuses (optional but recommended)
-          const makerResult = await makerExchange.fetchOrder(makerOrder.id, symbol);
-          const takerResult = await takerExchange.fetchOrder(takerOrder.id, symbol);
+          const makerResult = await makerExchange.fetchOrder(
+            makerOrder.id,
+            symbol,
+          );
+          const takerResult = await takerExchange.fetchOrder(
+            takerOrder.id,
+            symbol,
+          );
 
-          if (makerResult.status === 'closed' || makerResult.status === 'filled') {
+          if (
+            makerResult.status === 'closed' ||
+            makerResult.status === 'filled'
+          ) {
             this.logger.log(
               `Maker order on ${makerExchange.id} filled successfully at ${makerPrice}`,
             );
@@ -405,7 +426,10 @@ export class StrategyService {
             );
           }
 
-          if (takerResult.status === 'closed' || takerResult.status === 'filled') {
+          if (
+            takerResult.status === 'closed' ||
+            takerResult.status === 'filled'
+          ) {
             this.logger.log(
               `Taker order on ${takerExchange.id} filled successfully at ${makerPrice}`,
             );
@@ -423,7 +447,8 @@ export class StrategyService {
           // 10. Determine the next trade delay randomly in [baseIntervalTime, 1.5 * baseIntervalTime]
           const minInterval = baseIntervalTime;
           const maxInterval = baseIntervalTime * 1.5;
-          const randomInterval = minInterval + Math.random() * (maxInterval - minInterval);
+          const randomInterval =
+            minInterval + Math.random() * (maxInterval - minInterval);
 
           // Optionally, round the delay to a whole number of seconds:
           const delaySeconds = Math.floor(randomInterval);
@@ -432,14 +457,14 @@ export class StrategyService {
           );
 
           setTimeout(executeTrade, delaySeconds * 1000);
-
         } catch (error) {
           this.logger.error(`Error executing trade: ${error.stack || error}`);
 
           // Retry also in that [baseIntervalTime, 1.5 * baseIntervalTime] range
           const minInterval = baseIntervalTime;
           const maxInterval = baseIntervalTime * 1.5;
-          const retryInterval = minInterval + Math.random() * (maxInterval - minInterval);
+          const retryInterval =
+            minInterval + Math.random() * (maxInterval - minInterval);
           const delaySeconds = Math.floor(retryInterval);
 
           this.logger.log(`Retrying in ${delaySeconds} seconds.`);
@@ -458,9 +483,6 @@ export class StrategyService {
       this.logger.error(`Failed to execute volume strategy: ${error.message}`);
     }
   }
-
-
-
 
   private async waitForOrderFill(
     exchange: ccxt.Exchange,
@@ -583,7 +605,8 @@ export class StrategyService {
         );
       } else {
         // The exchange we place orders on
-        const executionExchange = this.exchangeInitService.getExchange(exchangeName);
+        const executionExchange =
+          this.exchangeInitService.getExchange(exchangeName);
 
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
@@ -612,7 +635,7 @@ export class StrategyService {
         await this.manageMarketMakingOrdersWithLayers(
           userId,
           clientId,
-          exchangeName,     // We'll still execute trades on 'exchangeName'
+          exchangeName, // We'll still execute trades on 'exchangeName'
           pair,
           bidSpread,
           askSpread,
@@ -623,7 +646,7 @@ export class StrategyService {
           amountChangeType,
           ceilingPrice,
           floorPrice,
-          oracleExchangeName // Pass along to retrieve price from a different exchange if provided
+          oracleExchangeName, // Pass along to retrieve price from a different exchange if provided
         );
       } catch (error) {
         this.logger.error(
@@ -669,7 +692,7 @@ export class StrategyService {
       amountChangeType,
       ceilingPrice,
       floorPrice,
-      oracleExchangeName
+      oracleExchangeName,
     );
   }
 
@@ -695,7 +718,9 @@ export class StrategyService {
       : this.exchangeInitService.getExchange(executionExchangeName);
 
     // 2. Execution exchange is always the main exchangeName
-    const executionExchange = this.exchangeInitService.getExchange(executionExchangeName);
+    const executionExchange = this.exchangeInitService.getExchange(
+      executionExchangeName,
+    );
 
     // 3. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
@@ -736,7 +761,9 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-    const strategyInstance = await this.strategyInstanceRepository.findOne({ where: { strategyKey } });
+    const strategyInstance = await this.strategyInstanceRepository.findOne({
+      where: { strategyKey },
+    });
 
     let currentOrderAmount = baseOrderAmount;
 
@@ -745,7 +772,8 @@ export class StrategyService {
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
-          currentOrderAmount += currentOrderAmount * (amountChangePerLayer / 100);
+          currentOrderAmount +=
+            currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
 
@@ -767,7 +795,9 @@ export class StrategyService {
           buyPrice,
         );
         if (!adjustedBuyAmount || !adjustedBuyPrice) {
-          throw new Error(`Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`);
+          throw new Error(
+            `Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`,
+          );
         }
 
         const buyOrder = await this.tradeService.executeLimitTrade({
@@ -793,7 +823,9 @@ export class StrategyService {
           executedAt: new Date(),
           status: 'open',
           strategy: 'pureMarketMaking',
-          strategyInstanceId: strategyInstance ? strategyInstance.id.toString() : null,
+          strategyInstanceId: strategyInstance
+            ? strategyInstance.id.toString()
+            : null,
         });
         await this.orderRepository.save(orderEntity);
       } else {
@@ -835,7 +867,9 @@ export class StrategyService {
           status: 'open',
           strategy: 'pureMarketMaking',
           executedAt: new Date(),
-          strategyInstanceId: strategyInstance ? strategyInstance.id.toString() : null,
+          strategyInstanceId: strategyInstance
+            ? strategyInstance.id.toString()
+            : null,
         });
         await this.orderRepository.save(orderEntity);
       } else {
@@ -845,7 +879,6 @@ export class StrategyService {
       }
     }
   }
-
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,

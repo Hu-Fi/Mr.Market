@@ -17,7 +17,7 @@ export class TradeService {
   constructor(
     private tradeRepository: TradeRepository,
     private exchangeInitService: ExchangeInitService,
-  ) { }
+  ) {}
 
   private getExchange(exchangeName: string): ccxt.Exchange {
     const exchange = this.exchangeInitService.getExchange(exchangeName);

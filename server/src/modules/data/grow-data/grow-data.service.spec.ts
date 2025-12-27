@@ -82,15 +82,17 @@ describe('GrowdataService', () => {
         { exchange_id: 'exchange-1', name: 'Exchange 1' },
         { exchange_id: 'exchange-2', name: 'Exchange 2' },
       ];
-      const marketMakingPairs = [
-        { id: 'pair-1', exchange_id: 'exchange-1' },
-      ];
+      const marketMakingPairs = [{ id: 'pair-1', exchange_id: 'exchange-1' }];
 
-      jest.spyOn(repository, 'findAllExchanges').mockResolvedValue(exchanges as any);
+      jest
+        .spyOn(repository, 'findAllExchanges')
+        .mockResolvedValue(exchanges as any);
       jest.spyOn(repository, 'findAllSimplyGrowTokens').mockResolvedValue([]);
       jest.spyOn(repository, 'findAllArbitragePairs').mockResolvedValue([]);
       // Mock the service method directly to avoid price fetching logic which is not relevant for this test
-      jest.spyOn(service, 'getAllMarketMakingPairs').mockResolvedValue(marketMakingPairs as any);
+      jest
+        .spyOn(service, 'getAllMarketMakingPairs')
+        .mockResolvedValue(marketMakingPairs as any);
 
       const result = await service.getGrowData();
       expect(result.market_making.exchanges).toHaveLength(1);

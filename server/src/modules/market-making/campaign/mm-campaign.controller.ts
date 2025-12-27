@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Campaigns')
 @Controller('mm-campaigns')
 export class MmCampaignController {
-  constructor(private readonly campaignService: MmCampaignService) { }
+  constructor(private readonly campaignService: MmCampaignService) {}
 
   @Post()
   async createCampaign(@Body() data: Partial<Campaign>) {

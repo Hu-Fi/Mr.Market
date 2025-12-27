@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialSetup1766753683631 implements MigrationInterface {
-    name = 'InitialSetup1766753683631'
+  name = 'InitialSetup1766753683631';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE "withdrawal" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "userId" character varying NOT NULL,
@@ -21,7 +21,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_840e247aaad3fbd4e18129122a2" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "user_balance" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -31,7 +31,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_f3edf5a1907e7b430421b9c2ddd" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "transaction" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -46,7 +46,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_89eadb93a89810556e1cbcd6ab9" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "trade" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -63,7 +63,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_d4097908741dc408f8274ebdc53" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "spot_order" (
                 "orderId" character varying NOT NULL,
                 "snapshotId" character varying NOT NULL,
@@ -82,7 +82,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_52f30b3b642cf04fc684b2db1af" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "arbitrage_order" (
                 "orderId" character varying NOT NULL,
                 "userId" character varying NOT NULL,
@@ -99,7 +99,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_4e99f9bd26c6f499f24dd30af0d" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "market_making_order" (
                 "orderId" character varying NOT NULL,
                 "userId" character varying NOT NULL,
@@ -123,7 +123,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_dfe992849c5d888c2a803a5db25" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "simply_grow_order" (
                 "orderId" character varying NOT NULL,
                 "userId" character varying NOT NULL,
@@ -135,7 +135,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_0e115267f4e339fd5eb8f32a7b0" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "payment_state" (
                 "orderId" character varying NOT NULL,
                 "type" character varying NOT NULL,
@@ -152,7 +152,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_5bec61a79e43d6ac6b3fd7ac040" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "spotdata_trading_pairs" (
                 "id" uuid NOT NULL,
                 "ccxt_id" character varying NOT NULL,
@@ -171,7 +171,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_883d6f632aaf2cf6f953731e94f" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "mixin_user" (
                 "user_id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "type" character varying,
@@ -186,7 +186,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_2072fe6b1c04d9f4324744dc818" PRIMARY KEY ("user_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "contribution" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "userId" character varying NOT NULL,
@@ -203,7 +203,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_878330fa5bb34475732a5883d58" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "strategy_instances" (
                 "id" SERIAL NOT NULL,
                 "strategyKey" character varying NOT NULL,
@@ -218,20 +218,20 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_09080dbac0815101d4b0e883e7a" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "rebalance_token" (
                 "asset_id" character varying NOT NULL,
                 "symbol" character varying NOT NULL,
                 CONSTRAINT "PK_bd2ca6805957c97918ad1e574d3" PRIMARY KEY ("asset_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "rebalance_exchange" (
                 "name" character varying NOT NULL,
                 CONSTRAINT "PK_33433d2aad84cf4acfb50bc8e3d" PRIMARY KEY ("name")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "rebalance_token_exchange" (
                 "token_id" character varying NOT NULL,
                 "exchange_id" character varying NOT NULL,
@@ -239,7 +239,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_2cd2f896b4a565e1c2a17023c60" PRIMARY KEY ("token_id", "exchange_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "rebalance_history" (
                 "trace_id" character varying NOT NULL,
                 "from" character varying NOT NULL,
@@ -255,7 +255,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_3b48d5a5669e7753b2917bfc6b7" PRIMARY KEY ("trace_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "performance" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -267,7 +267,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_bd775d560f1a8d8e0e2e43fc57f" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "mixin_message" (
                 "message_id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "type" character varying NOT NULL,
@@ -286,7 +286,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_59511af6cfb2b6bfef074eab2c7" PRIMARY KEY ("message_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "mixin_release_token" (
                 "orderId" character varying NOT NULL,
                 "userId" character varying NOT NULL,
@@ -298,7 +298,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_a5230e1ce2d4e620926d9ea33e2" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "mixin_release_history" (
                 "orderId" character varying NOT NULL,
                 "snapshotId" character varying NOT NULL,
@@ -307,7 +307,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_1346a2bf4505550fb70a1c45988" PRIMARY KEY ("orderId")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "market_making_history" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -325,7 +325,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_e5aad4207764bbf0ba916df4d98" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "custom_config_entity" (
                 "config_id" SERIAL NOT NULL,
                 "max_balance_mixin_bot" character varying NOT NULL,
@@ -338,7 +338,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_7ba5aed5b83b9515ebb4cff37d8" PRIMARY KEY ("config_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "growdata_exchanges" (
                 "exchange_id" character varying NOT NULL,
                 "name" character varying NOT NULL,
@@ -347,7 +347,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_04b62ddb093081ed52afa3fa685" PRIMARY KEY ("exchange_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "growdata_simply_grow_tokens" (
                 "asset_id" uuid NOT NULL,
                 "name" character varying NOT NULL,
@@ -358,7 +358,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_636cc1eb38c728c0758744763d0" PRIMARY KEY ("asset_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "growdata_arbitrage_pairs" (
                 "id" uuid NOT NULL,
                 "symbol" character varying NOT NULL,
@@ -376,7 +376,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_e24c0ee878d2b4a5dc173a48642" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "growdata_market_making_pairs" (
                 "id" uuid NOT NULL,
                 "symbol" character varying NOT NULL,
@@ -394,7 +394,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_cfb9bddcc748cbef49be9476dd6" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "campaign" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
@@ -411,7 +411,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_0ce34d26e7f2eb316a3a592cdc4" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "campaign_participation" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "campaignId" character varying NOT NULL,
@@ -425,7 +425,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_e941492a791a0f79ca5a533af34" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "arbitrage_history" (
                 "id" SERIAL NOT NULL,
                 "userId" character varying NOT NULL,
@@ -443,7 +443,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_407ba393b3734915a80b664781e" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "api_keys_config" (
                 "key_id" SERIAL NOT NULL,
                 "exchange" character varying NOT NULL,
@@ -454,7 +454,7 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_de3f6c18a8f6dc9ba664034e6f8" PRIMARY KEY ("key_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "admin_market_making_config" (
                 "id" SERIAL NOT NULL,
                 "exchange" character varying NOT NULL,
@@ -469,169 +469,168 @@ export class InitialSetup1766753683631 implements MigrationInterface {
                 CONSTRAINT "PK_7008a06d0a9fef3dc7566211d4c" PRIMARY KEY ("id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "token_exchange" (
                 "token_id" character varying NOT NULL,
                 "exchange_id" character varying NOT NULL,
                 CONSTRAINT "PK_4b521d6cc7170e30a4766c00560" PRIMARY KEY ("token_id", "exchange_id")
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_ada04ab269728da74fc963ed7d" ON "token_exchange" ("token_id")
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_dc9eff53eaa8ae892d120b4160" ON "token_exchange" ("exchange_id")
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "contribution"
             ADD CONSTRAINT "FK_5ac95ac829064de9af986f64eb0" FOREIGN KEY ("strategyId") REFERENCES "strategy_instances"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "contribution"
             ADD CONSTRAINT "FK_ea79d9af9fdb9af67e20c66cab0" FOREIGN KEY ("mixinUserUserId") REFERENCES "mixin_user"("user_id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "rebalance_token_exchange"
             ADD CONSTRAINT "FK_0c61495dbae208834f3b414bcca" FOREIGN KEY ("token_id") REFERENCES "rebalance_token"("asset_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "rebalance_token_exchange"
             ADD CONSTRAINT "FK_5952b43988396221ad48ba3d03a" FOREIGN KEY ("exchange_id") REFERENCES "rebalance_exchange"("name") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "token_exchange"
             ADD CONSTRAINT "FK_ada04ab269728da74fc963ed7d9" FOREIGN KEY ("token_id") REFERENCES "rebalance_token"("asset_id") ON DELETE CASCADE ON UPDATE CASCADE
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "token_exchange"
             ADD CONSTRAINT "FK_dc9eff53eaa8ae892d120b4160f" FOREIGN KEY ("exchange_id") REFERENCES "rebalance_exchange"("name") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             ALTER TABLE "token_exchange" DROP CONSTRAINT "FK_dc9eff53eaa8ae892d120b4160f"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "token_exchange" DROP CONSTRAINT "FK_ada04ab269728da74fc963ed7d9"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "rebalance_token_exchange" DROP CONSTRAINT "FK_5952b43988396221ad48ba3d03a"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "rebalance_token_exchange" DROP CONSTRAINT "FK_0c61495dbae208834f3b414bcca"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "contribution" DROP CONSTRAINT "FK_ea79d9af9fdb9af67e20c66cab0"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "contribution" DROP CONSTRAINT "FK_5ac95ac829064de9af986f64eb0"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_dc9eff53eaa8ae892d120b4160"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP INDEX "public"."IDX_ada04ab269728da74fc963ed7d"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "token_exchange"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "admin_market_making_config"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "api_keys_config"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "arbitrage_history"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "campaign_participation"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "campaign"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "growdata_market_making_pairs"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "growdata_arbitrage_pairs"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "growdata_simply_grow_tokens"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "growdata_exchanges"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "custom_config_entity"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "market_making_history"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "mixin_release_history"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "mixin_release_token"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "mixin_message"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "performance"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "rebalance_history"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "rebalance_token_exchange"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "rebalance_exchange"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "rebalance_token"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "strategy_instances"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "contribution"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "mixin_user"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "spotdata_trading_pairs"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "payment_state"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "simply_grow_order"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "market_making_order"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "arbitrage_order"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "spot_order"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "trade"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "transaction"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "user_balance"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "withdrawal"
         `);
-    }
-
+  }
 }

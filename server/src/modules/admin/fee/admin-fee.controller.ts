@@ -1,5 +1,10 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AdminFeeService } from './admin-fee.service';
 import { UpdateGlobalFeeDto } from './admin-fee.dto';
@@ -9,7 +14,7 @@ import { UpdateGlobalFeeDto } from './admin-fee.dto';
 @ApiBearerAuth()
 @ApiTags('Admin')
 export class AdminFeeController {
-  constructor(private readonly adminFeeService: AdminFeeService) { }
+  constructor(private readonly adminFeeService: AdminFeeService) {}
 
   @Get('fee/global')
   @ApiOperation({ summary: 'Get global fee settings' })

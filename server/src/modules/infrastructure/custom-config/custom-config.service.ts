@@ -3,7 +3,7 @@ import { CustomConfigRepository } from 'src/modules/infrastructure/custom-config
 
 @Injectable()
 export class CustomConfigService {
-  constructor(private configRepository: CustomConfigRepository) { }
+  constructor(private configRepository: CustomConfigRepository) {}
   async readSpotFee() {
     return await this.configRepository.readSpotFee();
   }

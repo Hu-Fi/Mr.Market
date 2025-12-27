@@ -1,4 +1,9 @@
-import { generateKeyPair, encrypt, decrypt, getPublicKeyFromPrivate } from './crypto';
+import {
+  generateKeyPair,
+  encrypt,
+  decrypt,
+  getPublicKeyFromPrivate,
+} from './crypto';
 
 describe('Crypto Helpers', () => {
   it('should generate valid key pair', () => {
@@ -12,7 +17,10 @@ describe('Crypto Helpers', () => {
   });
 
   it('should encrypt and decrypt a message correctly', () => {
-    const { publicKey, privateKey } = { publicKey: 'm2hvSiZj1ZWpZtRyYDy2TaFHhvuwCjmdvj80NZW6pWU=', privateKey: 'MgQ3LwWFc2kdkOzkNk3jWVH832qiTjPMuBT8jV2DEBE=' };
+    const { publicKey, privateKey } = {
+      publicKey: 'm2hvSiZj1ZWpZtRyYDy2TaFHhvuwCjmdvj80NZW6pWU=',
+      privateKey: 'MgQ3LwWFc2kdkOzkNk3jWVH832qiTjPMuBT8jV2DEBE=',
+    };
     const message = 'Hello, World!';
 
     const encrypted = encrypt(message, publicKey);
@@ -24,7 +32,9 @@ describe('Crypto Helpers', () => {
   });
 
   it('should return null when decryption fails with wrong key', () => {
-    const { publicKey } = { publicKey: 'm2hvSiZj1ZWpZtRyYDy2TaFHhvuwCjmdvj80NZW6pWU=' };
+    const { publicKey } = {
+      publicKey: 'm2hvSiZj1ZWpZtRyYDy2TaFHhvuwCjmdvj80NZW6pWU=',
+    };
     const { privateKey: otherPrivateKey } = { privateKey: '123' };
     const message = 'Wrong Key Test';
     const encrypted = encrypt(message, publicKey);
@@ -34,7 +44,9 @@ describe('Crypto Helpers', () => {
   });
 
   it('should return null for malformed ciphertext', () => {
-    const { privateKey } = { privateKey: 'MgQ3LwWFc2kdkOzkNk3jWVH832qiTjPMuBT8jV2DEBE=' };
+    const { privateKey } = {
+      privateKey: 'MgQ3LwWFc2kdkOzkNk3jWVH832qiTjPMuBT8jV2DEBE=',
+    };
     const decrypted = decrypt('invalid-base64', privateKey);
     expect(decrypted).toBeNull();
   });

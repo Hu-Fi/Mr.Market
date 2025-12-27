@@ -15,10 +15,6 @@ import { WithdrawalModule } from './withdrawal/withdrawal.module';
     WithdrawalModule,
     // RebalanceModule,
   ],
-  exports: [
-    ExchangeModule,
-    SnapshotsModule,
-    WithdrawalModule,
-  ],
+  exports: [ExchangeModule, SnapshotsModule, WithdrawalModule],
 })
-export class MixinModule { }
+export class MixinModule {}

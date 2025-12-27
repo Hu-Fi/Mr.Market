@@ -36,4 +36,4 @@ import { ConfigModule } from '@nestjs/config';
   providers: [UserOrdersService, MarketMakingProcessor],
   exports: [UserOrdersService],
 })
-export class UserOrdersModule { }
+export class UserOrdersModule {}

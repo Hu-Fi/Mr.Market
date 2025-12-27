@@ -2,7 +2,6 @@ export const TARDING_TYPE_MAP: Record<string, string> = {
   0: 'Spot',
   1: 'Market Making',
   2: 'Simply Grow',
-  3: 'Withdrawal',
 };
 
 export const SPOT_ORDER_TYPE_MAP: Record<string, string> = {

@@ -404,8 +404,6 @@ export class ExchangeInitService {
     }, intervalMs);
   }
 
-
-
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
     if (!exchangeMap) {
@@ -493,7 +491,9 @@ export class ExchangeInitService {
 
   async getCcxtExchangeDetails(exchangeId: string): Promise<any> {
     if (!(ccxt as any).exchanges.includes(exchangeId)) {
-      throw new BadRequestException(`Exchange ${exchangeId} is not supported by CCXT.`);
+      throw new BadRequestException(
+        `Exchange ${exchangeId} is not supported by CCXT.`,
+      );
     }
 
     try {
@@ -511,14 +511,20 @@ export class ExchangeInitService {
         // Add other metadata if needed
       };
     } catch (error) {
-      this.logger.error(`Failed to get details for ${exchangeId}: ${error.message}`);
-      throw new InternalServerErrorException(`Failed to get details for ${exchangeId}`);
+      this.logger.error(
+        `Failed to get details for ${exchangeId}: ${error.message}`,
+      );
+      throw new InternalServerErrorException(
+        `Failed to get details for ${exchangeId}`,
+      );
     }
   }
 
   async getCcxtExchangeMarkets(exchangeId: string): Promise<any> {
     if (!(ccxt as any).exchanges.includes(exchangeId)) {
-      throw new BadRequestException(`Exchange ${exchangeId} is not supported by CCXT.`);
+      throw new BadRequestException(
+        `Exchange ${exchangeId} is not supported by CCXT.`,
+      );
     }
 
     try {
@@ -541,8 +547,12 @@ export class ExchangeInitService {
         limits: market.limits,
       }));
     } catch (error) {
-      this.logger.error(`Failed to get markets for ${exchangeId}: ${error.message}`);
-      throw new InternalServerErrorException(`Failed to get markets for ${exchangeId}`);
+      this.logger.error(
+        `Failed to get markets for ${exchangeId}: ${error.message}`,
+      );
+      throw new InternalServerErrorException(
+        `Failed to get markets for ${exchangeId}`,
+      );
     }
   }
 }

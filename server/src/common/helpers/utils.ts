@@ -32,7 +32,7 @@ export const convertAssetBalancesToSymbols = (
 
   // Iterate over each entry in the asset balances
   Object.entries(assetBalances).forEach(([assetId, balance]) => {
-    const symbol = 'id to symbol()' // Find the symbol for the current asset ID
+    const symbol = 'id to symbol()'; // Find the symbol for the current asset ID
     if (symbol) {
       // If the symbol exists, add it to the result map
       symbolBalances[symbol] = balance;
