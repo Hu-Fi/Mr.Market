@@ -11,10 +11,6 @@ import { MIXIN_DEPOSIT_FEES } from 'src/common/constants/constants';
 import { CustomConfigService } from '../../infrastructure/custom-config/custom-config.service';
 import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
 
-interface WithdrawalFeeWithPriority extends SafeWithdrawalFee {
-  priority: number;
-}
-
 @Injectable()
 export class FeeService {
   private readonly logger = new CustomLogger(FeeService.name);
@@ -173,11 +169,11 @@ export class FeeService {
 
   private async getMixinWithdrawalFee(
     asset_id: string,
-  ): Promise<WithdrawalFeeWithPriority> {
+  ): Promise<SafeWithdrawalFee> {
     try {
       const asset_detail = await this.client.safe.fetchAsset(asset_id);
       if (asset_detail) {
-        const fees: WithdrawalFeeWithPriority[] =
+        const fees: SafeWithdrawalFee[] =
           await this.client.safe.fetchFee(asset_detail.asset_id, '');
 
         // Find the fee with maximum priority
