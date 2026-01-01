@@ -13,7 +13,7 @@ import {
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from 'src/common/entities/strategy-user.entity';
+} from 'src/common/entities/user-orders.entity';
 import {
   ArbitrageStates,
   MarketMakingStates,
@@ -43,7 +43,7 @@ export class UserOrdersService {
     @InjectRepository(ArbitrageHistory)
     private readonly arbitrageHistoryRepository: Repository<ArbitrageHistory>,
     @InjectQueue('market-making') private readonly marketMakingQueue: Queue,
-  ) {}
+  ) { }
 
   async findAllStrategyByUser(userId: string) {
     try {

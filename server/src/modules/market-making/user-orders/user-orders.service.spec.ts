@@ -8,13 +8,13 @@ import {
   type MarketMakingStates,
   type SimplyGrowStates,
 } from 'src/common/types/orders/states';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from 'src/common/entities/strategy-user.entity';
+} from 'src/common/entities/user-orders.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
@@ -310,13 +310,13 @@ describe('UserOrdersService', () => {
     // Mock strategy service methods to simulate starting and pausing strategies
     const startArbitrageSpy = jest
       .spyOn(strategyService, 'startArbitrageIfNotStarted')
-      .mockImplementation(async () => {});
+      .mockImplementation(async () => { });
     const startMarketMakingSpy = jest
       .spyOn(strategyService, 'startMarketMakingIfNotStarted')
-      .mockImplementation(async () => {});
+      .mockImplementation(async () => { });
     const pauseArbitrageSpy = jest
       .spyOn(strategyService, 'pauseStrategyIfNotPaused')
-      .mockImplementation(async () => {});
+      .mockImplementation(async () => { });
 
     // Execute the method under test
     await service.updateExecutionBasedOnOrders();

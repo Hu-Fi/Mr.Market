@@ -34,6 +34,7 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
     ],
     exports: [WithdrawalService, BullModule],
 })
+
 export class WithdrawalModule implements OnApplicationBootstrap {
     private readonly logger = new CustomLogger(WithdrawalModule.name);
     private readonly enableConfirmationWorker: boolean;

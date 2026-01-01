@@ -3,17 +3,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { UserOrdersController } from './user-orders.controller';
 import { UserOrdersService } from './user-orders.service';
-import { MarketMakingProcessor } from './market-making.processor';
+import { MarketMakingOrderProcessor } from './market-making.processor';
 import { StrategyModule } from '../strategy/strategy.module';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from 'src/common/entities/strategy-user.entity';
+} from 'src/common/entities/user-orders.entity';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
-
+import { FeeModule } from '../fee/fee.module';
+import { GrowdataModule } from 'src/modules/data/grow-data/grow-data.module';
+import { SnapshotsModule } from 'src/modules/mixin/snapshots/snapshots.module';
+import { WithdrawalModule } from 'src/modules/mixin/withdrawal/withdrawal.module';
+import { MmCampaignModule } from '../campaign/mm-campaign.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -30,10 +34,18 @@ import { ConfigModule } from '@nestjs/config';
     BullModule.registerQueue({
       name: 'market-making',
     }),
+    BullModule.registerQueue({
+      name: 'withdrawal-confirmations',
+    }),
     forwardRef(() => StrategyModule),
+    FeeModule,
+    GrowdataModule,
+    SnapshotsModule,
+    WithdrawalModule,
+    MmCampaignModule,
   ],
   controllers: [UserOrdersController],
-  providers: [UserOrdersService, MarketMakingProcessor],
+  providers: [UserOrdersService, MarketMakingOrderProcessor],
   exports: [UserOrdersService],
 })
-export class UserOrdersModule {}
+export class UserOrdersModule { }

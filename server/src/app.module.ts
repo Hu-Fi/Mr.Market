@@ -41,7 +41,7 @@ import {
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from './common/entities/strategy-user.entity';
+} from './common/entities/user-orders.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/infrastructure/exchange-init/exchange-init.module';
 import { AdminModule } from './modules/admin/admin.module';

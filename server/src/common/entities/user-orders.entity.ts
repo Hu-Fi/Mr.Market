@@ -140,26 +140,56 @@ export class PaymentState {
   @Column()
   symbol: string; // the symbol of trading pair
 
+  // Market Making Assets (base + quote)
   @Column()
-  firstAssetId: string; // the mixin uuid of the first asset
+  baseAssetId: string; // base asset ID for market making
 
-  @Column()
-  firstAssetAmount: string; // the amount of the first asset
+  @Column({ default: '0' })
+  baseAssetAmount: string; // amount of base asset received
 
   @Column({ nullable: true })
-  secondAssetId: string; // the mixin uuid of the second asset
-
-  @Column({ nullable: true })
-  secondAssetAmount: string; // the amount of the second asset
+  baseAssetSnapshotId: string; // snapshot ID for base asset transfer
 
   @Column()
-  firstSnapshotId: string; // the mixin snapshot id of first transfer
+  quoteAssetId: string; // quote asset ID for market making
+
+  @Column({ default: '0' })
+  quoteAssetAmount: string; // amount of quote asset received
 
   @Column({ nullable: true })
-  secondSnapshotId: string; // the mixin snapshot id of second transfer
+  quoteAssetSnapshotId: string; // snapshot ID for quote asset transfer
+
+  // Withdrawal Fee Assets (may be same as base/quote or chain assets)
+  @Column({ nullable: true })
+  baseFeeAssetId: string; // asset ID for base withdrawal fee
+
+  @Column({ default: '0' })
+  baseFeeAssetAmount: string; // amount of base fee asset received
 
   @Column({ nullable: true })
-  state: string; // created or timeout
+  baseFeeAssetSnapshotId: string; // snapshot ID for base fee transfer
+
+  @Column({ nullable: true })
+  quoteFeeAssetId: string; // asset ID for quote withdrawal fee
+
+  @Column({ default: '0' })
+  quoteFeeAssetAmount: string; // amount of quote fee asset received
+
+  @Column({ nullable: true })
+  quoteFeeAssetSnapshotId: string; // snapshot ID for quote fee transfer
+
+  // Required fees (calculated from FeeService)
+  @Column({ nullable: true })
+  requiredBaseWithdrawalFee: string; // required amount for base withdrawal
+
+  @Column({ nullable: true })
+  requiredQuoteWithdrawalFee: string; // required amount for quote withdrawal
+
+  @Column({ nullable: true })
+  requiredMarketMakingFee: string; // required market making fee
+
+  @Column({ nullable: true })
+  state: string; // payment_pending, payment_incomplete, payment_complete, timeout
 
   @Column()
   createdAt: string; // timestamp

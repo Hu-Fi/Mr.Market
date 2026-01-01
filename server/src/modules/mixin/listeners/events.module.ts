@@ -19,4 +19,4 @@ import { LoggerModule } from 'src/modules/infrastructure/logger/logger.module';
   providers: [ConfigService],
   exports: [ConfigService],
 })
-export class EventListenersModule {}
+export class EventListenersModule { }

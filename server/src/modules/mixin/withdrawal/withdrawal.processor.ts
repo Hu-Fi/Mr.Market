@@ -19,7 +19,7 @@ export class WithdrawalProcessor {
     private readonly snapshotsService: SnapshotsService,
     @InjectRepository(Withdrawal)
     private withdrawalRepository: Repository<Withdrawal>,
-  ) {}
+  ) { }
 
   @Process('process_withdrawal')
   async handleWithdrawal(job: Job<{ withdrawalId: string }>) {
@@ -103,7 +103,7 @@ export class WithdrawalProcessor {
       }
 
       // Execute withdrawal
-      const result = await this.snapshotsService.withdrawal(
+      const result = await this.withdrawalService.executeWithdrawal(
         withdrawal.assetId,
         withdrawal.destination,
         withdrawal.destinationTag || '',
