@@ -16,6 +16,8 @@ import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { WithdrawalService } from 'src/modules/mixin/withdrawal/withdrawal.service';
 import { MmCampaignService } from '../campaign/mm-campaign.service';
+import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
+import { NetworkMappingService } from '../network-mapping/network-mapping.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 
@@ -52,6 +54,8 @@ export class MarketMakingOrderProcessor {
     private readonly snapshotsService: SnapshotsService,
     private readonly withdrawalService: WithdrawalService,
     private readonly mmCampaignService: MmCampaignService,
+    private readonly exchangeService: ExchangeService,
+    private readonly networkMappingService: NetworkMappingService,
     @InjectRepository(PaymentState)
     private readonly paymentStateRepository: Repository<PaymentState>,
     @InjectRepository(MarketMakingOrder)
@@ -456,24 +460,78 @@ export class MarketMakingOrderProcessor {
         throw new Error('Payment state or pair config not found');
       }
 
-      // Get exchange deposit address
-      // TODO: Implement getExchangeDepositAddress for the specific exchange
       const exchangeName = pairConfig.exchange_id;
-      const baseDepositAddress = 'TODO_BASE_DEPOSIT_ADDRESS';
-      const quoteDepositAddress = 'TODO_QUOTE_DEPOSIT_ADDRESS';
+
+      // Get API key for this exchange
+      const apiKey = await this.exchangeService.findFirstAPIKeyByExchange(
+        exchangeName,
+      );
+
+      if (!apiKey) {
+        throw new Error(`No API key found for exchange ${exchangeName}`);
+      }
+
+      this.logger.log(
+        `Using API key ${apiKey.key_id} for exchange ${exchangeName}`,
+      );
+
+      // Get accurate network identifiers using NetworkMappingService
+      this.logger.log(
+        `Fetching networks for base=${pairConfig.base_symbol} (${paymentState.baseAssetId}) and quote=${pairConfig.quote_symbol} (${paymentState.quoteAssetId})`,
+      );
+
+      const [baseNetwork, quoteNetwork] = await Promise.all([
+        this.networkMappingService.getNetworkForAsset(
+          paymentState.baseAssetId,
+          pairConfig.base_symbol,
+        ),
+        this.networkMappingService.getNetworkForAsset(
+          paymentState.quoteAssetId,
+          pairConfig.quote_symbol,
+        ),
+      ]);
+
+      this.logger.log(
+        `Determined networks - Base: ${baseNetwork}, Quote: ${quoteNetwork}`,
+      );
+
+      // Get deposit addresses for base and quote assets
+      const baseDepositResult = await this.exchangeService.getDepositAddress({
+        exchange: exchangeName,
+        apiKeyId: apiKey.key_id,
+        symbol: pairConfig.base_symbol,
+        network: baseNetwork,
+      });
+
+      const quoteDepositResult = await this.exchangeService.getDepositAddress({
+        exchange: exchangeName,
+        apiKeyId: apiKey.key_id,
+        symbol: pairConfig.quote_symbol,
+        network: quoteNetwork,
+      });
+
+      if (!baseDepositResult || !quoteDepositResult) {
+        throw new Error(
+          `Failed to get deposit addresses for ${pairConfig.base_symbol} or ${pairConfig.quote_symbol}`,
+        );
+      }
+
+      this.logger.log(
+        `Got deposit addresses - Base: ${baseDepositResult.address}, Quote: ${quoteDepositResult.address}`,
+      );
 
       // Execute withdrawals for base and quote
       const baseWithdrawalResult = await this.withdrawalService.executeWithdrawal(
         paymentState.baseAssetId,
-        baseDepositAddress,
-        `MM:${orderId}:base`,
+        baseDepositResult.address,
+        baseDepositResult.memo || `MM:${orderId}:base`,
         paymentState.baseAssetAmount,
       );
 
       const quoteWithdrawalResult = await this.withdrawalService.executeWithdrawal(
         paymentState.quoteAssetId,
-        quoteDepositAddress,
-        `MM:${orderId}:quote`,
+        quoteDepositResult.address,
+        quoteDepositResult.memo || `MM:${orderId}:quote`,
         paymentState.quoteAssetAmount,
       );
 

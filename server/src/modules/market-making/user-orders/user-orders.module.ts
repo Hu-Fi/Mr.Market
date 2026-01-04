@@ -18,6 +18,8 @@ import { GrowdataModule } from 'src/modules/data/grow-data/grow-data.module';
 import { SnapshotsModule } from 'src/modules/mixin/snapshots/snapshots.module';
 import { WithdrawalModule } from 'src/modules/mixin/withdrawal/withdrawal.module';
 import { MmCampaignModule } from '../campaign/mm-campaign.module';
+import { ExchangeModule } from 'src/modules/mixin/exchange/exchange.module';
+import { NetworkMappingModule } from '../network-mapping/network-mapping.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -31,18 +33,14 @@ import { ConfigModule } from '@nestjs/config';
       MarketMakingHistory,
       ArbitrageHistory,
     ]),
-    BullModule.registerQueue({
-      name: 'market-making',
-    }),
-    BullModule.registerQueue({
-      name: 'withdrawal-confirmations',
-    }),
     forwardRef(() => StrategyModule),
     FeeModule,
     GrowdataModule,
     SnapshotsModule,
     WithdrawalModule,
     MmCampaignModule,
+    ExchangeModule,
+    NetworkMappingModule,
   ],
   controllers: [UserOrdersController],
   providers: [UserOrdersService, MarketMakingOrderProcessor],
