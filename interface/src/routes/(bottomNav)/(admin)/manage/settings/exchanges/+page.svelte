@@ -43,41 +43,45 @@
   });
 </script>
 
-<div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
-  <div
-    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-  >
-    <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <button
-          on:click={() => window.history.back()}
-          class="btn btn-ghost btn-circle btn-sm"
+<div class="p-6 md:p-10 space-y-6 max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <!-- Back button centered with title/subtitle -->
+      <button
+        on:click={() => window.history.back()}
+        class="btn btn-ghost btn-circle"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-            />
-          </svg>
-        </button>
-        <span class="text-3xl font-bold text-left">{$_("exchanges")}</span>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+      </button>
+
+      <!-- Title and subtitle -->
+      <div>
+        <h1 class="text-3xl font-bold">{$_("exchanges")}</h1>
+        <p class="text-sm text-base-content/60">
+          {$_("manage_connected_exchanges")}
+        </p>
       </div>
-      <p class="text-base-content/60">{$_("manage_connected_exchanges")}</p>
     </div>
 
+    <!-- Action buttons -->
     <div class="flex items-center gap-3">
       <AddExchange {allCcxtExchanges} />
-
       <button
-        class="btn btn-ghost btn-circle"
+        class="btn btn-square btn-outline"
         on:click={() => RefreshExchanges()}
       >
         <span

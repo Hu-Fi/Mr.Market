@@ -40,13 +40,11 @@
 </script>
 
 <div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
-  <div class="flex flex-col space-y-2">
-    <h1
-      class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent w-fit"
-    >
+  <div class="flex flex-col space-y-2 text-start items-start justify-center">
+    <h1 class="text-4xl font-bold text-primary">
       {$_("settings")}
     </h1>
-    <p class="text-base-content/60 text-lg">
+    <p class="text-base-content/60">
       {$_("manage_your_application_configuration")}
     </p>
   </div>
@@ -55,20 +53,19 @@
     {#each links as link}
       <button
         on:click={() => goto(link.path)}
-        class="group relative overflow-hidden rounded-3xl bg-base-100 border border-base-200 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 w-full text-left cursor-pointer"
+        class="card bg-base-100 shadow hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-base-200 cursor-pointer text-left"
       >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        ></div>
-
-        <!-- Decorative background blob -->
-        <div
-          class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-500"
-        ></div>
-
-        <div class="p-8 flex items-start space-x-5 relative z-10">
+        <div class="card-body p-6 flex-row items-center gap-5">
           <div
-            class="p-4 bg-base-200/50 backdrop-blur-sm rounded-2xl text-primary group-hover:bg-primary group-hover:text-primary-content transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110"
+            class="p-3 rounded-xl {link.name === 'exchanges'
+              ? 'bg-blue-100 text-blue-600'
+              : link.name === 'spot_trading'
+                ? 'bg-purple-100 text-purple-600'
+                : link.name === 'market_making'
+                  ? 'bg-purple-100 text-purple-600'
+                  : link.name === 'fees'
+                    ? 'bg-green-100 text-green-600'
+                    : 'bg-yellow-100 text-yellow-600'}"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +73,7 @@
               viewBox="0 0 24 24"
               stroke-width={link.filled ? "0" : "1.5"}
               stroke={link.filled ? "none" : "currentColor"}
-              class="w-8 h-8"
+              class="w-7 h-7"
             >
               <path
                 stroke-linecap="round"
@@ -85,13 +82,11 @@
               />
             </svg>
           </div>
-          <div class="space-y-2">
-            <h2
-              class="card-title text-xl font-bold group-hover:text-primary transition-colors duration-300"
-            >
+          <div class="space-y-1 flex-1">
+            <h2 class="font-bold text-lg">
               {$_(link.name)}
             </h2>
-            <p class="text-sm text-base-content/70 leading-relaxed font-medium">
+            <p class="text-sm text-base-content/60">
               {$_(`manage_${link.name}`)}
             </p>
           </div>

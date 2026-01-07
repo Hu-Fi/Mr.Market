@@ -18,6 +18,15 @@
   let isUpdating = "";
   let isDeleting = "";
 
+  // Pagination
+  let currentPage = 1;
+  const itemsPerPage = 10;
+  $: totalPages = Math.ceil(exchanges.length / itemsPerPage);
+  $: paginatedExchanges = exchanges.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   async function UpdateExchange(
     exchange_id: string,
     name: string,
@@ -92,16 +101,23 @@
       <table class="table table-lg">
         <thead class="bg-base-200/50 text-base-content/70">
           <tr>
-            <th class="w-16">{$_("icon")}</th>
-            <th>{$_("display_name")}</th>
-            <th>{$_("exchange_id")}</th>
-            <th class="text-center">{$_("supported")}</th>
-            <th class="text-center">{$_("status")}</th>
-            <th class="text-right">{$_("actions")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("icon")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("display_name")}</th
+            >
+            <th class="uppercase text-xs font-semibold">{$_("exchange_id")}</th>
+            <th class="text-center uppercase text-xs font-semibold"
+              >{$_("supported")}</th
+            >
+            <th class="text-center uppercase text-xs font-semibold"
+              >{$_("status")}</th
+            >
+            <th class="text-right uppercase text-xs font-semibold"
+              >{$_("actions")}</th
+            >
           </tr>
         </thead>
         <tbody>
-          {#if exchanges.length === 0}
+          {#if paginatedExchanges.length === 0}
             <tr>
               <td colspan="6" class="text-center py-12 text-base-content/40">
                 {$_("no_exchanges_found")}
@@ -109,11 +125,11 @@
             </tr>
           {/if}
 
-          {#each exchanges as exchange}
+          {#each paginatedExchanges as exchange}
             <tr class="hover:bg-base-200/30 transition-colors">
               <td class="p-3">
                 {#if exchange.icon_url}
-                  <div class="w-full h-full rounded-xl bg-base-200 min-w-12">
+                  <div class="w-full h-full rounded-xl bg-base-100 min-w-12">
                     <img src={exchange.icon_url} alt={exchange.name} />
                   </div>
                 {:else}
@@ -240,6 +256,38 @@
           {/each}
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div
+      class="flex items-center justify-between px-6 py-4 border-t border-base-200 bg-base-100"
+    >
+      <div class="text-sm text-base-content/60">
+        {$_("showing")}
+        <span class="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span>
+        {$_("to")}
+        <span class="font-medium"
+          >{Math.min(currentPage * itemsPerPage, exchanges.length)}</span
+        >
+        {$_("of")} <span class="font-medium">{exchanges.length}</span>
+        {$_("exchanges")}
+      </div>
+      <div class="join">
+        <button
+          class="join-item btn btn-sm"
+          disabled={currentPage === 1}
+          on:click={() => (currentPage = Math.max(1, currentPage - 1))}
+        >
+          {$_("previous")}
+        </button>
+        <button
+          class="join-item btn btn-sm"
+          disabled={currentPage === totalPages || exchanges.length === 0}
+          on:click={() => (currentPage = Math.min(totalPages, currentPage + 1))}
+        >
+          {$_("next")}
+        </button>
+      </div>
     </div>
   </div>
 {/if}

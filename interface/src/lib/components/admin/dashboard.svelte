@@ -4,7 +4,7 @@
   import Transactions from "$lib/components/admin/dashboard/transactions.svelte";
 </script>
 
-<div id="main-content" class="flex overflow-hidden bg-white pt-8">
+<div id="main-content" class="flex overflow-hidden bg-base-100 pt-8">
   <main class="mb-20">
     <div class="pt-6 px-4 flex flex-col space-y-4">
       <Stats />
