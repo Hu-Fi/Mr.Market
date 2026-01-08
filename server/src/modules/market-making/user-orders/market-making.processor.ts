@@ -15,7 +15,8 @@ import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.reposit
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
 import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
 import { WithdrawalService } from 'src/modules/mixin/withdrawal/withdrawal.service';
-import { MmCampaignService } from '../campaign/mm-campaign.service';
+import { LocalCampaignService } from '../local-campaign/local-campaign.service';
+import { CampaignService } from 'src/modules/campaign/campaign.service';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
 import { NetworkMappingService } from '../network-mapping/network-mapping.service';
 import { InjectQueue } from '@nestjs/bull';
@@ -53,7 +54,8 @@ export class MarketMakingOrderProcessor {
     private readonly growDataRepository: GrowdataRepository,
     private readonly snapshotsService: SnapshotsService,
     private readonly withdrawalService: WithdrawalService,
-    private readonly mmCampaignService: MmCampaignService,
+    private readonly localCampaignService: LocalCampaignService,
+    private readonly hufiCampaignService: CampaignService,
     private readonly exchangeService: ExchangeService,
     private readonly networkMappingService: NetworkMappingService,
     @InjectRepository(PaymentState)
@@ -577,10 +579,21 @@ export class MarketMakingOrderProcessor {
   /**
    * Step 4: Join Campaign
    * Called after withdrawal is confirmed on exchange
+   * 
+   * This handler:
+   * 1. Joins the HuFi campaign (external Web3 integration) if campaign details provided
+   * 2. Stores local record for tracking and future reward distribution
    */
   @Process('join_campaign')
-  async handleJoinCampaign(job: Job<{ orderId: string; campaignId?: string }>) {
-    const { orderId, campaignId } = job.data;
+  async handleJoinCampaign(job: Job<{
+    orderId: string;
+    campaignId?: string;
+    hufiCampaign?: {
+      chainId: number;
+      campaignAddress: string;
+    };
+  }>) {
+    const { orderId, campaignId, hufiCampaign } = job.data;
     this.logger.log(`Joining campaign for order ${orderId}`);
 
     try {
@@ -594,16 +607,59 @@ export class MarketMakingOrderProcessor {
         throw new Error(`Order ${orderId} not found`);
       }
 
-      // Join campaign (if campaignId provided) or find/create default campaign
-      const participation = await this.mmCampaignService.joinCampaign(
+      // Step 1: Try to join HuFi campaign (external Web3 integration)
+      let hufiJoinResult = null;
+      if (hufiCampaign?.chainId && hufiCampaign?.campaignAddress) {
+        try {
+          this.logger.log(
+            `Joining HuFi campaign: chainId=${hufiCampaign.chainId}, address=${hufiCampaign.campaignAddress}`,
+          );
+
+          // Get active campaigns to find matching one
+          const campaigns = await this.hufiCampaignService.getCampaigns();
+          const matchingCampaign = campaigns.find(
+            (c) =>
+              c.chainId === hufiCampaign.chainId &&
+              c.address.toLowerCase() === hufiCampaign.campaignAddress.toLowerCase(),
+          );
+
+          if (matchingCampaign) {
+            // Use the @Cron auto-join logic from CampaignService
+            // The cron job handles Web3 auth and joining
+            this.logger.log(
+              `Found matching HuFi campaign: ${matchingCampaign.address}. Will be auto-joined by cron.`,
+            );
+            hufiJoinResult = { scheduled: true, campaign: matchingCampaign };
+          } else {
+            this.logger.warn(
+              `HuFi campaign not found: chainId=${hufiCampaign.chainId}, address=${hufiCampaign.campaignAddress}`,
+            );
+          }
+        } catch (hufiError) {
+          // HuFi join failure should not block the MM order flow
+          this.logger.error(
+            `Failed to join HuFi campaign (non-blocking): ${hufiError.message}`,
+          );
+        }
+      }
+
+      // Step 2: Store local campaign record for tracking and reward distribution
+      const localCampaignId = campaignId || `mm_${order.exchangeName}_${order.pair}`;
+      const participation = await this.localCampaignService.joinCampaign(
         order.userId,
-        campaignId || 'default_mm_campaign',
+        localCampaignId,
         orderId,
       );
 
       this.logger.log(
-        `Joined campaign for order ${orderId}: ${participation.id}`,
+        `Local campaign record created for order ${orderId}: participationId=${participation.id}`,
       );
+
+      if (hufiJoinResult) {
+        this.logger.log(
+          `HuFi campaign join scheduled for order ${orderId}`,
+        );
+      }
 
       await this.userOrdersService.updateMarketMakingOrderState(
         orderId,

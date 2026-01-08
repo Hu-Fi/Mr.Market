@@ -303,7 +303,7 @@
   />
 
   <div class="space-y-6">
-    <div class="grid grid-rows-2 gap-0 md:grid-cols-2">
+    <div class="grid grid-rows-2 gap-0">
       <ConfirmSummaryCard title={$_("exchange")} cardType="exchange-info">
         <svelte:fragment slot="icon">
           <ExchangeIcon

@@ -8,16 +8,16 @@ import { CampaignParticipation } from 'src/common/entities/campaign-participatio
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 @Injectable()
-export class MmCampaignService {
-  private readonly logger = new CustomLogger(MmCampaignService.name);
+export class LocalCampaignService {
+  private readonly logger = new CustomLogger(LocalCampaignService.name);
 
   constructor(
     @InjectRepository(Campaign)
     private readonly campaignRepository: Repository<Campaign>,
     @InjectRepository(CampaignParticipation)
     private readonly participationRepository: Repository<CampaignParticipation>,
-    @InjectQueue('mm-campaigns') private readonly campaignQueue: Queue,
-  ) {}
+    @InjectQueue('local-campaigns') private readonly campaignQueue: Queue,
+  ) { }
 
   async createCampaign(data: Partial<Campaign>): Promise<Campaign> {
     const campaign = this.campaignRepository.create({

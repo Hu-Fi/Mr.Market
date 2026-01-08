@@ -65,7 +65,7 @@ import { MetricsModule } from './modules/market-making/metrics/metrics.module';
 import { Withdrawal } from './common/entities/withdrawal.entity';
 import { Campaign } from './common/entities/campaign.entity';
 import { CampaignParticipation } from './common/entities/campaign-participation.entity';
-import { MmCampaignModule } from './modules/market-making/campaign/mm-campaign.module';
+import { LocalCampaignModule } from './modules/market-making/local-campaign/local-campaign.module';
 
 dotenv.config();
 
@@ -139,7 +139,7 @@ dotenv.config();
     Web3Module,
     MetricsModule,
     UserOrdersModule,
-    MmCampaignModule,
+    LocalCampaignModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

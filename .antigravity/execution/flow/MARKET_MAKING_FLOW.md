@@ -295,10 +295,18 @@ async handleMonitorMMWithdrawal(job: Job) {
 ### Stage 7: Join Campaign
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
+This stage joins **both** campaign systems:
+1. **HuFi Campaign** (external Web3 integration) - for blockchain rewards
+2. **Local Campaign** (internal tracking) - for analytics and reward distribution
+
 ```typescript
 @Process('join_campaign')
-async handleJoinCampaign(job: Job) {
-  const { orderId } = job.data;
+async handleJoinCampaign(job: Job<{
+  orderId: string;
+  campaignId?: string;
+  hufiCampaign?: { chainId: number; campaignAddress: string };
+}>) {
+  const { orderId, campaignId, hufiCampaign } = job.data;
   
   await this.userOrdersService.updateMarketMakingOrderState(
     orderId,
@@ -307,10 +315,29 @@ async handleJoinCampaign(job: Job) {
   
   const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
   
-  // Join HUFI campaign
-  await this.mmCampaignService.joinCampaign(
+  // Step 1: Try to join HuFi campaign (external Web3)
+  if (hufiCampaign?.chainId && hufiCampaign?.campaignAddress) {
+    try {
+      const campaigns = await this.hufiCampaignService.getCampaigns();
+      const matching = campaigns.find(c => 
+        c.chainId === hufiCampaign.chainId &&
+        c.address.toLowerCase() === hufiCampaign.campaignAddress.toLowerCase()
+      );
+      if (matching) {
+        // Will be auto-joined by CampaignService @Cron job
+        this.logger.log(`Found HuFi campaign: ${matching.address}`);
+      }
+    } catch (err) {
+      // Non-blocking - HuFi failure doesn't stop MM flow
+      this.logger.error(`HuFi join failed: ${err.message}`);
+    }
+  }
+  
+  // Step 2: Store local campaign record for tracking
+  const localCampaignId = campaignId || `mm_${order.exchangeName}_${order.pair}`;
+  await this.localCampaignService.joinCampaign(
     order.userId,
-    'default_mm_campaign',
+    localCampaignId,
     orderId
   );
   
@@ -326,6 +353,11 @@ async handleJoinCampaign(job: Job) {
   });
 }
 ```
+
+**Key Points**:
+- HuFi join is **non-blocking** - failure doesn't stop MM order
+- Local record is **always** created for tracking
+- Campaign ID defaults to `mm_{exchange}_{pair}` format
 
 ### Stage 8: Start Market Making
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
@@ -556,7 +588,7 @@ T=5m10s+  execute_mm_cycle runs continuously
 | `exchange.service.ts` | Get exchange deposit addresses |
 | `withdrawal.service.ts` | Execute Mixin withdrawals |
 | `withdrawal-confirmation.worker.ts` | Monitor withdrawal confirmations |
-| `mm-campaign.service.ts` | Campaign management |
+| `local-campaign.service.ts` | Local campaign management |
 | `strategy.service.ts` | Market making strategy execution |
 
 ---

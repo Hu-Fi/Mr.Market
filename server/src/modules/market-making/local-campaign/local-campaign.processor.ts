@@ -1,13 +1,13 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { MmCampaignService } from './mm-campaign.service';
+import { LocalCampaignService } from './local-campaign.service';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
-@Processor('mm-campaigns')
-export class MmCampaignProcessor {
-  private readonly logger = new CustomLogger(MmCampaignProcessor.name);
+@Processor('local-campaigns')
+export class LocalCampaignProcessor {
+  private readonly logger = new CustomLogger(LocalCampaignProcessor.name);
 
-  constructor(private readonly campaignService: MmCampaignService) {}
+  constructor(private readonly campaignService: LocalCampaignService) { }
 
   @Process('check_campaign_status')
   async handleCheckCampaignStatus(job: Job<{ campaignId: string }>) {
