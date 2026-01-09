@@ -15,8 +15,8 @@
   }[] = [];
   export let supportedExchanges: string[] = [];
 
-  let isUpdating = "";
-  let isDeleting = "";
+  let updatingIds: Record<string, boolean> = {};
+  let deletingIds: Record<string, boolean> = {};
 
   // Pagination
   let currentPage = 1;
@@ -34,30 +34,52 @@
     iconUrl: string,
   ) {
     if (!exchange_id) return;
-    isUpdating = exchange_id;
+    updatingIds = { ...updatingIds, [exchange_id]: true };
     const token = localStorage.getItem("admin-access-token");
-    if (!token) return;
-    await updateExchange(
-      exchange_id,
-      { exchange_id, name, enable, icon_url: iconUrl },
-      token,
-    );
+    if (!token) {
+      updatingIds = { ...updatingIds, [exchange_id]: false };
+      return;
+    }
+
+    try {
+      await updateExchange(
+        exchange_id,
+        { exchange_id, name, enable, icon_url: iconUrl },
+        token,
+      );
+    } catch (error) {
+      console.error("Failed to update exchange:", error);
+      updatingIds = { ...updatingIds, [exchange_id]: false };
+      return;
+    }
+
     setTimeout(() => {
       invalidate("admin:settings:exchanges").finally(() => {
-        isUpdating = "";
+        updatingIds = { ...updatingIds, [exchange_id]: false };
       });
     }, getRandomDelay());
   }
 
   async function DeleteExchange(exchange_id: string) {
     if (!exchange_id) return;
-    isDeleting = exchange_id;
+    deletingIds = { ...deletingIds, [exchange_id]: true };
     const token = localStorage.getItem("admin-access-token");
-    if (!token) return;
-    await removeExchange(exchange_id, token);
+    if (!token) {
+      deletingIds = { ...deletingIds, [exchange_id]: false };
+      return;
+    }
+
+    try {
+      await removeExchange(exchange_id, token);
+    } catch (error) {
+      console.error("Failed to delete exchange:", error);
+      deletingIds = { ...deletingIds, [exchange_id]: false };
+      return;
+    }
+
     setTimeout(() => {
       invalidate("admin:settings:exchanges").finally(() => {
-        isDeleting = "";
+        deletingIds = { ...deletingIds, [exchange_id]: false };
       });
     }, getRandomDelay());
   }
@@ -152,7 +174,7 @@
               >
               <td class="text-center">
                 {#if supportedExchanges.includes(exchange.exchange_id)}
-                  <div class="badge badge-success badge-sm gap-1">
+                  <div class="badge badge-success badge-sm gap-1 text-base-100">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
@@ -168,7 +190,7 @@
                     {$_("supported")}
                   </div>
                 {:else}
-                  <div class="badge badge-error badge-outline badge-sm">
+                  <div class="badge badge-error text-base-content/80 badge-sm">
                     {$_("unsupported")}
                   </div>
                 {/if}
@@ -176,10 +198,10 @@
               <td class="text-center">
                 <button
                   class={clsx(
-                    "btn btn-sm btn-circle transition-all",
+                    "btn btn-xs btn-circle transition-all",
                     exchange.enable
                       ? "btn-success text-white"
-                      : "btn-ghost text-base-content/40",
+                      : "btn-ghost text-base-content",
                   )}
                   on:click={async () => {
                     const newEnable = !exchange.enable;
@@ -190,9 +212,9 @@
                       exchange.icon_url || "",
                     );
                   }}
-                  disabled={!!isUpdating}
+                  disabled={!!updatingIds[exchange.exchange_id]}
                 >
-                  {#if isUpdating === exchange.exchange_id}
+                  {#if updatingIds[exchange.exchange_id]}
                     <span class="loading loading-spinner loading-xs"></span>
                   {:else if exchange.enable}
                     <svg
@@ -232,7 +254,7 @@
                     }
                   }}
                 >
-                  {#if isDeleting === exchange.exchange_id}
+                  {#if deletingIds[exchange.exchange_id]}
                     <span class="loading loading-spinner loading-xs"></span>
                   {:else}
                     <svg

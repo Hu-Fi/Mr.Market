@@ -175,7 +175,7 @@
             <td class="text-center">
               <button
                 class={clsx(
-                  "btn btn-sm btn-circle transition-all",
+                  "btn btn-xs btn-circle transition-all",
                   pair.enable
                     ? "btn-success text-white"
                     : "btn-ghost text-base-content/40",

@@ -49,7 +49,7 @@
   >
     <!-- App Name/Logo at Top -->
     <div class="px-6 py-5 border-b border-base-200">
-      <div class="flex items-center gap-3">
+      <button class="flex items-center gap-3" on:click={() => goto("/manage")}>
         <div class="avatar placeholder">
           <div
             class="bg-primary text-primary-content rounded-lg w-10 flex items-center justify-center"
@@ -58,7 +58,7 @@
           </div>
         </div>
         <span class="text-xl font-bold text-primary">{$_("admin")}</span>
-      </div>
+      </button>
     </div>
 
     <!-- Navigation Menu -->

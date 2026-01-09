@@ -1,0 +1,1 @@
+read docs/AGENTS.md
