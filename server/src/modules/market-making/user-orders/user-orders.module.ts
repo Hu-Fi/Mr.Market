@@ -1,10 +1,11 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { UserOrdersController } from './user-orders.controller';
 import { UserOrdersService } from './user-orders.service';
 import { MarketMakingOrderProcessor } from './market-making.processor';
 import { StrategyModule } from '../strategy/strategy.module';
+import { MixinClientModule } from 'src/modules/mixin/client/mixin-client.module';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
@@ -34,7 +35,13 @@ import { CampaignModule } from 'src/modules/campaign/campaign.module';
       MarketMakingHistory,
       ArbitrageHistory,
     ]),
-    forwardRef(() => StrategyModule),
+    BullModule.registerQueue({
+      name: 'withdrawal-confirmations',
+    }),
+    BullModule.registerQueue({
+      name: 'market-making',
+    }),
+    StrategyModule,
     FeeModule,
     GrowdataModule,
     SnapshotsModule,
@@ -43,6 +50,7 @@ import { CampaignModule } from 'src/modules/campaign/campaign.module';
     ExchangeModule,
     NetworkMappingModule,
     CampaignModule,
+    MixinClientModule,
   ],
   controllers: [UserOrdersController],
   providers: [UserOrdersService, MarketMakingOrderProcessor],

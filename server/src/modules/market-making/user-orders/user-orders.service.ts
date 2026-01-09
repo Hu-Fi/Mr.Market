@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -28,7 +28,6 @@ export class UserOrdersService {
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject(forwardRef(() => StrategyService))
     private readonly strategyService: StrategyService,
     @InjectRepository(ArbitrageOrder)
     private readonly arbitrageRepository: Repository<ArbitrageOrder>,

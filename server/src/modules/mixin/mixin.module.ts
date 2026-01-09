@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MessageModule } from './message/message.module';
 import { SnapshotsModule } from './snapshots/snapshots.module';
 // import { RebalanceModule } from './rebalance/rebalance.module';

@@ -277,20 +277,30 @@ async handleWithdrawToExchange(job: Job) {
 @Process('monitor_mm_withdrawal')
 async handleMonitorMMWithdrawal(job: Job) {
   const { orderId, baseWithdrawalTxId, quoteWithdrawalTxId } = job.data;
-  
-  // Check Mixin withdrawal status
-  const baseTx = await mixinClient.network.fetchTransaction(baseWithdrawalTxId);
-  const quoteTx = await mixinClient.network.fetchTransaction(quoteWithdrawalTxId);
-  
-  // Check exchange deposit status
-  // (via exchange API or blockchain explorer)
-  
+
+  // Check Mixin snapshot for confirmation
+  const baseSnapshot = await mixinClientService.client.safe.fetchSafeSnapshot(baseWithdrawalTxId);
+  const quoteSnapshot = await mixinClientService.client.safe.fetchSafeSnapshot(quoteWithdrawalTxId);
+
+  // Confirmed if: 1+ confirmations AND has transaction hash
+  const baseConfirmed = baseSnapshot.confirmations >= 1 && !!baseSnapshot.transaction_hash;
+  const quoteConfirmed = quoteSnapshot.confirmations >= 1 && !!quoteSnapshot.transaction_hash;
+
   // When both confirmed, queue campaign join
   if (baseConfirmed && quoteConfirmed) {
     await marketMakingQueue.add('join_campaign', { orderId });
+  } else {
+    // Retry after 30 seconds (max 30 minutes)
+    await job.queue.add('monitor_mm_withdrawal', job.data, {
+      delay: 30000,
+    });
   }
 }
 ```
+
+**Key Points**:
+- Retries every 30 seconds for up to 60 attempts (30 minutes max)
+- Confirmation requires both snapshot.confirmations >= 1 AND transaction_hash present
 
 ### Stage 7: Join Campaign
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
@@ -485,17 +495,15 @@ Stores user strategy configuration:
 ## State Transitions
 
 ```
-payment_pending
-  → payment_incomplete (partial payment)
-  → payment_complete (all assets received)
-  → withdrawing
-  → withdrawal_confirmed
-  → deposit_confirming
-  → deposit_confirmed
-  → joining_campaign
-  → campaign_joined
-  → created
-  → running (market making active)
+payment_pending           (initial state when first snapshot received)
+  → payment_complete      (all 4 assets received: base, quote, base fee, quote fee)
+  → withdrawing           (withdrawals initiated to exchange)
+  → withdrawal_confirmed  (withdrawals executed, monitoring queued)
+  → joining_campaign      (campaign join in progress)
+  → campaign_joined       (both HuFi and local campaign records created)
+  → running               (market making active, execute_mm_cycle running)
+  → stopped               (user stopped or order completed)
+  → failed                (error at any stage with timeout/refund)
 ```
 
 ## Error Handling
@@ -506,6 +514,7 @@ payment_pending
 | Unknown asset | Immediate refund |
 | Payment timeout (10 minutes) | Mark failed + refund |
 | Insufficient fees | Mark failed + refund |
+| Withdrawal timeout (30 minutes) | Mark failed |
 | Withdrawal failure | Mark failed |
 | API key not found | Throw error |
 
@@ -593,7 +602,7 @@ T=5m10s+  execute_mm_cycle runs continuously
 
 ---
 
-**Created**: 2026-01-02  
-**Updated**: 2026-01-02
-**Version**: 2.0.0  
-**Status**: Production Ready
+**Created**: 2026-01-02
+**Updated**: 2026-01-09
+**Version**: 2.1.0
+**Status**: In Progress
