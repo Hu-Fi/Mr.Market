@@ -28,6 +28,7 @@
   "current_pair_only": "Current pair only",
   "cancel_all": "Cancel all orders",
   "cancel_order": "Cancel order",
+  "modify_order": "Modify order",
   "token": "Token",
   "spot": "Spot",
   "perpetual": "Perpetual",
@@ -504,5 +505,9 @@
   "asset_ids": "Asset IDs",
   "fee_rate": "Fee Rate",
   "active": "Active",
-  "error": "Error"
+  "error": "Error",
+  "order_id": "Order ID",
+  "orders_placed": "Orders Placed",
+  "total_value": "Total Value",
+  "order_details": "Order Details"
 }

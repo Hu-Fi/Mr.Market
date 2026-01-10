@@ -114,7 +114,7 @@
                 id="password"
                 placeholder=" "
                 bind:value={password}
-                class="peer w-full px-4 py-4 bg-white/50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
+                class="peer w-full px-4 py-4 bg-white/50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-base-content dark:text-white placeholder-transparent focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                 required
               />
             {:else}
@@ -124,7 +124,7 @@
                 id="password"
                 placeholder=" "
                 bind:value={password}
-                class="peer w-full px-4 py-4 bg-white/50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
+                class="peer w-full px-4 py-4 bg-white/50 dark:bg-gray-900/50 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-base-content dark:text-white placeholder-transparent focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300"
                 required
               />
             {/if}

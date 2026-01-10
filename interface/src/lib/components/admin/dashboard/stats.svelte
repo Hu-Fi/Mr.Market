@@ -6,11 +6,12 @@
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
     <div class="flex items-center">
       <div class="flex-shrink-0">
-        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900"
+        <span
+          class="text-2xl sm:text-3xl leading-none font-bold text-base-content"
           >2,340</span
         >
         <h3 class="text-base font-normal text-gray-500">
-          {$_('total_users')}
+          {$_("total_users")}
         </h3>
       </div>
       <div
@@ -35,11 +36,12 @@
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
     <div class="flex items-center">
       <div class="flex-shrink-0">
-        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900"
+        <span
+          class="text-2xl sm:text-3xl leading-none font-bold text-base-content"
           >2,230</span
         >
         <h3 class="text-base font-normal text-gray-500">
-          {$_('active_users')}
+          {$_("active_users")}
         </h3>
       </div>
       <div
@@ -64,11 +66,12 @@
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
     <div class="flex items-center">
       <div class="flex-shrink-0">
-        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900"
+        <span
+          class="text-2xl sm:text-3xl leading-none font-bold text-base-content"
           >385</span
         >
         <h3 class="text-base font-normal text-gray-500">
-          {$_('user_signups_this_week')}
+          {$_("user_signups_this_week")}
         </h3>
       </div>
       <div

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { UserResponse } from "@mixin.dev/mixin-node-sdk";
+  import { _ } from "svelte-i18n";
 
   let users: UserResponse[] = [
     {
@@ -88,12 +89,14 @@
 <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 h-full">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-xl font-bold leading-none text-gray-900">Latest Users</h3>
+      <h3 class="text-xl font-bold leading-none text-base-content">
+        Latest Users
+      </h3>
       <a
         href="/manage/users"
         class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
       >
-        View all
+        {$_("view_all")}
       </a>
     </div>
     <div class="flow-root">
@@ -109,14 +112,14 @@
                 />
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">
+                <p class="text-sm font-medium text-base-content truncate">
                   {user.full_name}
                 </p>
                 <p class="text-sm text-gray-500 truncate">
                   {user.identity_number}
                 </p>
               </div>
-              <div class="inline-flex items-center text-base text-gray-900">
+              <div class="inline-flex items-center text-base text-base-content">
                 {user.created_at}
               </div>
             </div>
