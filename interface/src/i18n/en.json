@@ -509,5 +509,10 @@
   "order_id": "Order ID",
   "orders_placed": "Orders Placed",
   "total_value": "Total Value",
-  "order_details": "Order Details"
+  "total_revenue": "Total Revenue",
+  "pnl": "PNL",
+  "profit_from_spreads": "Profit from Spreads",
+  "order_details": "Order Details",
+  "fill_history": "Fill History",
+  "no_fill_history": "No fill history yet."
 }
