@@ -13,7 +13,7 @@
   }}
 >
   <div class="flex justify-between m-4 my-3">
-    <span class="text-normal font-normal">
+    <span class="text-sm font-normal">
       {$_("hufi_campaigns")}
     </span>
 
@@ -37,14 +37,14 @@
   <div class="grid grid-cols-2 border-t border-slate-100">
     <div class="stat p-4">
       <div class="stat-title">{$_("rewards_pool")}</div>
-      <div class="stat-value text-3xl mt-0.5 text-slate-700">
+      <div class="stat-value text-2xl mt-0.5 text-slate-700">
         {formatUSMoney(formatDecimals(rewardsPool, 1))}
       </div>
     </div>
 
     <div class="stat p-4">
       <div class="stat-title">{$_("active_campaigns")}</div>
-      <div class="stat-value text-3xl mt-0.5 text-slate-700">
+      <div class="stat-value text-2xl mt-0.5 text-slate-700">
         {activeCampaigns}
       </div>
     </div>

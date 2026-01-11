@@ -92,7 +92,7 @@
 
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4">
-            <span class="text-xl font-bold text-base-content">
+            <span class="text-lg font-bold text-base-content">
                 {$_("modify_order")}
             </span>
             <button
@@ -167,7 +167,7 @@
                         type="number"
                         bind:value={baseAmount}
                         placeholder="0.00"
-                        class="input input-lg w-full bg-base-200 border-none rounded-[20px] pl-16 text-xl font-bold text-base-content placeholder-base-content/30 focus:outline-none focus:ring-0"
+                        class="input input-lg w-full bg-base-200 border-none rounded-[20px] pl-16 text-lg font-bold text-base-content placeholder-base-content/30 focus:outline-none focus:ring-0"
                     />
                 </div>
             </div>
@@ -199,7 +199,7 @@
                         type="number"
                         bind:value={quoteAmount}
                         placeholder="0.00"
-                        class="input input-lg w-full bg-base-200 border-none rounded-[20px] pl-16 text-xl font-bold text-base-content placeholder-base-content/30 focus:outline-none focus:ring-0"
+                        class="input input-lg w-full bg-base-200 border-none rounded-[20px] pl-16 text-lg font-bold text-base-content placeholder-base-content/30 focus:outline-none focus:ring-0"
                     />
                 </div>
             </div>
@@ -207,15 +207,15 @@
             <!-- Summary Card -->
             <div class="bg-base-200 rounded-[20px] p-5 mb-8">
                 <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-base-content/60"
+                    <span class="text-xs font-medium text-base-content/60"
                         >{$_("current_balance")}</span
                     >
                     <div class="text-right">
-                        <div class="text-sm font-bold text-base-content">
+                        <div class="text-xs font-bold text-base-content">
                             {currentBaseBalance}
                             {baseSymbol}
                         </div>
-                        <div class="text-sm font-bold text-base-content">
+                        <div class="text-xs font-bold text-base-content">
                             {currentQuoteBalance}
                             {quoteSymbol}
                         </div>
@@ -225,15 +225,15 @@
                 <div class="h-px bg-base-300 w-full mb-4"></div>
 
                 <div class="flex justify-between items-start">
-                    <span class="text-sm font-medium text-base-content/60"
+                    <span class="text-xs font-medium text-base-content/60"
                         >{$_("new_balance")}</span
                     >
                     <div class="text-right">
-                        <div class="text-sm font-bold text-base-content">
+                        <div class="text-xs font-bold text-base-content">
                             {formatNumber(newBaseBalance)}
                             {baseSymbol}
                         </div>
-                        <div class="text-sm font-bold text-base-content">
+                        <div class="text-xs font-bold text-base-content">
                             {formatNumber(newQuoteBalance)}
                             {quoteSymbol}
                         </div>
@@ -244,13 +244,13 @@
             <!-- Actions -->
             <div class="flex flex-col gap-3">
                 <button
-                    class="btn bg-base-content text-base-100 hover:bg-base-content/90 rounded-full h-14 border-none text-base font-bold normal-case w-full shadow-lg"
+                    class="btn bg-base-content text-base-100 hover:bg-base-content/90 rounded-full h-14 border-none text-sm font-bold normal-case w-full shadow-lg"
                     on:click={confirm}
                 >
                     {$_("confirm_modification")}
                 </button>
                 <button
-                    class="btn btn-ghost text-base-content/40 hover:text-base-content/60 hover:bg-transparent normal-case font-bold text-base"
+                    class="btn btn-ghost text-base-content/40 hover:text-base-content/60 hover:bg-transparent normal-case font-bold text-sm"
                     on:click={close}
                 >
                     {$_("cancel")}
