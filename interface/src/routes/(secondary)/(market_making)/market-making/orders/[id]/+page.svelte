@@ -7,11 +7,13 @@
     import BottomActions from "$lib/components/market-making/order-details/BottomActions.svelte";
     import CancelOrderDialog from "$lib/components/market-making/order-details/CancelOrderDialog.svelte";
     import ModifyOrderModal from "$lib/components/market-making/order-details/ModifyOrderDialog.svelte";
+    import ExecutionDetailsDialog from "$lib/components/market-making/order-details/ExecutionDetailsDialog.svelte";
     import type { PageData } from "./$types";
 
     export let data: PageData;
 
     let showModifyModal = false;
+    let showExecutionDetails = false;
 
     // Mock data fallback if API returns null/undefined (for development/demo purposes based on provided UI)
     const mockOrder = {
@@ -73,6 +75,7 @@
         ordersPlaced={order.ordersPlaced || "0"}
         volume={order.volume || "0"}
         isActive={order.active}
+        on:click={() => (showExecutionDetails = true)}
     />
 
     <RevenueCard
@@ -127,5 +130,12 @@
         pair={order.symbol}
         on:close={() => (isCancelDialogOpen = false)}
         on:confirm={handleCancelConfirm}
+    />
+
+    <ExecutionDetailsDialog
+        isOpen={showExecutionDetails}
+        totalOrders={order.ordersPlaced}
+        totalVolume={order.volume}
+        on:close={() => (showExecutionDetails = false)}
     />
 </div>

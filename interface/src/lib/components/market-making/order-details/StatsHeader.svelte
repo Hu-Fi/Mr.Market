@@ -1,12 +1,23 @@
 <script lang="ts">
     import { _ } from "svelte-i18n";
+    import { createEventDispatcher } from "svelte";
 
     export let ordersPlaced: number | string;
     export let volume: string;
     export let isActive: boolean = true;
+
+    const dispatch = createEventDispatcher();
 </script>
 
-<div class="flex flex-col items-center py-6 bg-white">
+<div
+    class="flex flex-col items-center py-6 bg-white cursor-pointer select-none active:bg-gray-50 transition-colors"
+    on:click={() => dispatch("click")}
+    role="button"
+    tabindex="0"
+    on:keydown={(e) => {
+        if (e.key === "Enter" || e.key === " ") dispatch("click");
+    }}
+>
     {#if isActive}
         <div
             class="px-3 py-1 bg-green-50 text-green-500 font-bold text-xs rounded-md mb-4 uppercase tracking-wide"

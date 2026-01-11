@@ -524,5 +524,12 @@
   "pause_order": "Pause Order",
   "pause_order_desc": "Temporarily stop activities. Your settings and active positions are maintained.",
   "close_order_action": "Close Order",
-  "close_order_desc": "Completely end the order. Remaining funds will be returned after fee settlement."
+  "close_order_desc": "Completely end the order. Remaining funds will be returned after fee settlement.",
+  "execution_details": "Execution Details",
+  "total_orders_created": "Total Orders Created",
+  "executed": "Executed",
+  "canceled": "Canceled",
+  "total_volume": "Total Volume",
+  "rate": "Rate",
+  "done": "Done"
 }
