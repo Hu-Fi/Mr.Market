@@ -26,7 +26,7 @@
     </div>
 
     <div class="flex justify-between items-center mb-6">
-        <div class="text-3xl font-bold text-base-content tracking-tight">
+        <div class="text-2xl font-bold text-base-content tracking-tight">
             {totalRevenue}
         </div>
         <div

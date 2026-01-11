@@ -514,5 +514,15 @@
   "profit_from_spreads": "Profit from Spreads",
   "order_details": "Order Details",
   "fill_history": "Fill History",
-  "no_fill_history": "No fill history yet."
+  "no_fill_history": "No fill history yet.",
+  "confirm_modification": "Confirm Modification",
+  "available_balance_value": "Available: {amount}",
+  "current_balance": "Current Balance",
+  "new_balance": "New Balance",
+  "asset_amount": "{symbol} Amount",
+  "cancel_order_intro": "Select how you would like to end your market making activity for <b>{pair}</b>.",
+  "pause_order": "Pause Order",
+  "pause_order_desc": "Temporarily stop activities. Your settings and active positions are maintained.",
+  "close_order_action": "Close Order",
+  "close_order_desc": "Completely end the order. Remaining funds will be returned after fee settlement."
 }

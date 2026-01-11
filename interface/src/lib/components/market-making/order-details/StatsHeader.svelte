@@ -17,13 +17,13 @@
 
     <div class="flex w-full justify-center">
         <div class="flex-1 text-center border-r border-gray-100">
-            <div class="text-3xl font-bold text-gray-900">{ordersPlaced}</div>
+            <div class="text-xl font-bold text-gray-900">{ordersPlaced}</div>
             <div class="text-xs font-medium text-gray-500 mt-1">
                 {$_("orders_placed")}
             </div>
         </div>
         <div class="flex-1 text-center">
-            <div class="text-3xl font-bold text-gray-900">{volume}</div>
+            <div class="text-xl font-bold text-gray-900">{volume}</div>
             <div class="text-xs font-medium text-gray-500 mt-1">
                 {$_("volume")}
             </div>

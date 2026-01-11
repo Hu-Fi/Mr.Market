@@ -23,7 +23,8 @@
                 </div>
                 <span class="font-bold text-gray-600">{baseSymbol}</span>
             </div>
-            <span class="font-bold text-base-content text-lg">{baseAmount}</span
+            <span class="font-bold text-base-content text-base"
+                >{baseAmount}</span
             >
         </div>
 
@@ -37,7 +38,7 @@
                 </div>
                 <span class="font-bold text-gray-600">{quoteSymbol}</span>
             </div>
-            <span class="font-bold text-base-content text-lg"
+            <span class="font-bold text-base-content text-base"
                 >{quoteAmount}</span
             >
         </div>

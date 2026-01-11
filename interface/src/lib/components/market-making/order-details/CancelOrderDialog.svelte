@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import { _ } from "svelte-i18n";
     import { fade, slide } from "svelte/transition";
 
     export let isOpen = false;
@@ -38,19 +39,21 @@
 
     <!-- Modal Content -->
     <div
-        class="fixed inset-x-0 bottom-0 z-50 w-full bg-white rounded-t-[20px] md:rounded-[20px] md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[480px] overflow-hidden flex flex-col max-h-[90vh]"
+        class="fixed inset-x-0 bottom-0 z-50 w-full bg-base-100 rounded-t-[20px] md:rounded-[20px] md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[480px] overflow-hidden flex flex-col max-h-[90vh]"
         transition:slide={{ duration: 300, axis: "y" }}
     >
         <!-- Drag Handle (Mobile only visual) -->
         <div class="w-full flex justify-center pt-3 pb-1 md:hidden">
-            <div class="w-10 h-1 bg-gray-200 rounded-full" />
+            <div class="w-10 h-1 bg-base-300 rounded-full" />
         </div>
 
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4">
-            <h2 class="text-xl font-bold text-gray-900">Cancel Order</h2>
+            <span class="text-xl font-bold text-base-content">
+                {$_("cancel_order")}
+            </span>
             <button
-                class="btn btn-circle btn-sm btn-ghost bg-gray-100 text-gray-500 hover:bg-gray-200 border-none"
+                class="btn btn-circle btn-sm btn-ghost bg-base-200 text-base-content/60 hover:bg-base-300 border-none"
                 on:click={close}
             >
                 <svg
@@ -72,16 +75,18 @@
 
         <!-- Content -->
         <div class="px-6 pb-8 overflow-y-auto">
-            <p class="text-gray-500 mb-6 leading-relaxed">
-                Select how you would like to end your market making activity for <span
-                    class="font-bold text-gray-900">{pair}</span
-                >.
-            </p>
+            <div class="text-base-content/60 mb-6 leading-relaxed">
+                {@html $_("cancel_order_intro", {
+                    values: {
+                        pair: `<span class="font-bold text-base-content">${pair}</span>`,
+                    },
+                })}
+            </div>
 
             <div class="space-y-4">
                 <!-- Pause Option -->
                 <button
-                    class="w-full flex items-center gap-4 p-4 bg-gray-50 rounded-[20px] hover:bg-gray-100 transition-colors text-left group border border-transparent hover:border-gray-200"
+                    class="w-full flex items-center gap-4 p-4 bg-base-200 rounded-[20px] hover:bg-base-300 transition-colors text-left group border border-transparent hover:border-base-300"
                     on:click={selectPause}
                 >
                     <div
@@ -101,13 +106,14 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-0.5">
-                            Pause Order
-                        </h3>
-                        <p class="text-xs text-gray-500 leading-snug">
-                            Temporarily stop activities. Your settings and
-                            active positions are maintained.
-                        </p>
+                        <span class="block font-bold text-base-content mb-0.5">
+                            {$_("pause_order")}
+                        </span>
+                        <span
+                            class="block text-xs text-base-content/60 leading-snug"
+                        >
+                            {$_("pause_order_desc")}
+                        </span>
                     </div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +121,7 @@
                         viewBox="0 0 24 24"
                         stroke-width="2"
                         stroke="currentColor"
-                        class="w-4 h-4 text-gray-300 group-hover:text-gray-400"
+                        class="w-4 h-4 text-base-content/30 group-hover:text-base-content/40"
                     >
                         <path
                             stroke-linecap="round"
@@ -127,7 +133,7 @@
 
                 <!-- Close Option -->
                 <button
-                    class="w-full flex items-center gap-4 p-4 bg-gray-50 rounded-[20px] hover:bg-red-50 transition-colors text-left group border border-transparent hover:border-red-100"
+                    class="w-full flex items-center gap-4 p-4 bg-base-200 rounded-[20px] hover:bg-red-50 transition-colors text-left group border border-transparent hover:border-red-100"
                     on:click={selectTerminate}
                 >
                     <div
@@ -149,13 +155,14 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-bold text-red-600 mb-0.5">
-                            Close Order
-                        </h3>
-                        <p class="text-xs text-gray-500 leading-snug">
-                            Completely end the order. Remaining funds will be
-                            returned after fee settlement.
-                        </p>
+                        <span class="block font-bold text-red-600 mb-0.5">
+                            {$_("close_order_action")}
+                        </span>
+                        <span
+                            class="block text-xs text-base-content/60 leading-snug"
+                        >
+                            {$_("close_order_desc")}
+                        </span>
                     </div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +170,7 @@
                         viewBox="0 0 24 24"
                         stroke-width="2"
                         stroke="currentColor"
-                        class="w-4 h-4 text-gray-300 group-hover:text-gray-400"
+                        class="w-4 h-4 text-base-content/30 group-hover:text-base-content/40"
                     >
                         <path
                             stroke-linecap="round"

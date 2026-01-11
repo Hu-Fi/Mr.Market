@@ -36,7 +36,7 @@
                 >
                 <span class="text-sm font-bold">{$_("symbol")}</span>
             </div>
-            <span class="font-bold text-base-content">{symbol}</span>
+            <span class="font-bold text-base-content text-sm">{symbol}</span>
         </div>
 
         <!-- Exchange -->
@@ -59,7 +59,7 @@
                 >
                 <span class="text-sm font-bold">{$_("exchange")}</span>
             </div>
-            <span class="font-bold text-base-content">{exchange}</span>
+            <span class="font-bold text-base-content text-sm">{exchange}</span>
         </div>
 
         <!-- Order ID -->
@@ -124,7 +124,7 @@
                 >
                 <span class="text-sm font-bold">{$_("type")}</span>
             </div>
-            <span class="font-bold text-base-content">{type}</span>
+            <span class="font-bold text-base-content text-sm">{type}</span>
         </div>
 
         <!-- Created -->
@@ -147,7 +147,7 @@
                 >
                 <span class="text-sm font-bold">{$_("created")}</span>
             </div>
-            <span class="font-bold text-base-content">{created}</span>
+            <span class="font-bold text-base-content text-sm">{created}</span>
         </div>
 
         <!-- Total Value -->
@@ -170,7 +170,8 @@
                 >
                 <span class="text-sm font-bold">{$_("total_value")}</span>
             </div>
-            <span class="font-bold text-base-content">{totalValue}</span>
+            <span class="font-bold text-base-content text-sm">{totalValue}</span
+            >
         </div>
 
         <!-- Fees -->
@@ -186,7 +187,7 @@
                 </div>
                 <span class="text-sm font-bold">{$_("fees")}</span>
             </div>
-            <span class="font-bold text-base-content">{fees}</span>
+            <span class="font-bold text-base-content text-sm">{fees}</span>
         </div>
     </div>
 </div>

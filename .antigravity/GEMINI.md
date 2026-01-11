@@ -1,1 +1,1 @@
-read docs/AGENTS.md
+apply docs/AGENTS.md as GEMINI.md when editing

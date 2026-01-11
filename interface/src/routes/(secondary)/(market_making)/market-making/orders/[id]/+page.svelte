@@ -111,8 +111,10 @@
 
     <ModifyOrderModal
         isOpen={showModifyModal}
-        currentBtcBalance={order.balances.base?.amount || "0"}
-        currentUsdtBalance={order.balances.quote?.amount || "0"}
+        baseSymbol={order.balances.base?.symbol}
+        quoteSymbol={order.balances.quote?.symbol}
+        currentBaseBalance={order.balances.base?.amount}
+        currentQuoteBalance={order.balances.quote?.amount}
         on:close={() => (showModifyModal = false)}
         on:confirm={(e) => {
             console.log("Modify confirmed:", e.detail);
