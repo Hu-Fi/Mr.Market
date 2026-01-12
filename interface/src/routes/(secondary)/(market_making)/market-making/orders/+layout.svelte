@@ -1,14 +1,25 @@
 <script lang="ts">
     import MixinMenu from "$lib/components/common/MixinMenu.svelte";
     import { goto } from "$app/navigation";
+    import { page } from "$app/stores";
     import { _ } from "svelte-i18n";
 
+    $: isHistoryPage = $page.url.pathname.endsWith("/history");
+
     const handleBack = () => {
-        goto("/market-making", {
-            replaceState: true,
-            keepFocus: true,
-            noScroll: true,
-        });
+        if (isHistoryPage) {
+            goto(`/market-making/orders/${$page.params.id}`, {
+                replaceState: true,
+                keepFocus: true,
+                noScroll: true,
+            });
+        } else {
+            goto("/market-making", {
+                replaceState: true,
+                keepFocus: true,
+                noScroll: true,
+            });
+        }
     };
 </script>
 
@@ -35,7 +46,11 @@
                 /></svg
             >
             <div class="flex items-center justify-start">
-                <span>{$_("order_details")}</span>
+                <span
+                    >{isHistoryPage
+                        ? $_("order_history")
+                        : $_("order_details")}</span
+                >
             </div>
         </button>
 

@@ -53,7 +53,7 @@
 </script>
 
 <button
-  class="btn bg-base-content text-base-100 w-32 no-animation rounded-full!"
+  class="btn btn-xl bg-base-content text-base-100 w-[90%] max-w-md no-animation rounded-full!"
   class:btn-disabled={isDisabled}
   class:opacity-50={isDisabled}
   class:cursor-not-allowed={isDisabled}

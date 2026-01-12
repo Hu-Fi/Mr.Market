@@ -31,13 +31,13 @@
         class="w-10 h-10 rounded-full bg-base-300"
       />
       <div class="flex flex-col">
-        <span class="font-semibold text-lg">{campaign.symbol}</span>
+        <span class="font-semibold text-base">{campaign.symbol}</span>
         <span class="text-sm text-base-content/60">{campaign.exchange}</span>
       </div>
     </div>
     <span
       class={clsx(
-        "badge text-base-content font-medium",
+        "badge text-xs text-base-content font-medium",
         "badge-outline badge-neutral",
       )}>{campaign.type}</span
     >

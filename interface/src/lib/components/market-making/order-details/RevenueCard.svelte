@@ -12,15 +12,15 @@
 </script>
 
 <div
-    class="card bg-white shadow-sm rounded-2xl p-5 mx-4 mt-4 border border-gray-50"
+    class="card bg-base-100 shadow-sm rounded-2xl p-5 mx-4 mt-4 border border-base-200"
 >
     <div class="flex justify-between items-start mb-2">
         <span
-            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            class="text-[10px] font-bold text-base-content/40 uppercase tracking-widest"
             >{$_("total_revenue")}</span
         >
         <span
-            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+            class="text-[10px] font-bold text-base-content/40 uppercase tracking-widest"
             >{$_("pnl")}</span
         >
     </div>
@@ -30,7 +30,7 @@
             {totalRevenue}
         </div>
         <div
-            class={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-bold ${isZero ? "bg-gray-50 text-gray-400" : isPositive ? "bg-green-50 text-green-500" : "bg-red-50 text-red-500"}`}
+            class={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-bold ${isZero ? "bg-base-200 text-base-content/40" : isPositive ? "bg-green-50 text-green-500" : "bg-red-50 text-red-500"}`}
         >
             {#if !isZero}
                 <svg
@@ -51,9 +51,9 @@
     </div>
 
     <div
-        class="flex justify-between items-center text-sm pt-4 border-t border-gray-50"
+        class="flex justify-between items-center text-sm pt-4 border-t border-base-200"
     >
-        <span class="text-gray-500 font-medium"
+        <span class="text-base-content/60 font-medium"
             >{$_("profit_from_spreads")}</span
         >
         <span class="font-bold text-base-content">{profitFromSpreads}</span>

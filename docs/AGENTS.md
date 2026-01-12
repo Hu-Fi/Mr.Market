@@ -3,10 +3,10 @@ When creating docs, use English, keep it simple stupid, don't overcomplicate it,
 
 When the code is updated, update the related docs as well.
 
-Update CHANGELOG.md when the code is updated, keep the CHANGELOG.md simple, Keep each changes in one line.
+Update docs/execution/CHANGELOG.md when the code is updated, keep the CHANGELOG.md simple, Keep each changes in one line.
 
 ## UI
-When writing svelte code, use i18n when adding text to the UI. 
+use svelte-i18n when adding text, use $_ to access the text, en.json is the default language file.
 use daisyui and tailwindcss for styling, use text-base-100 for white text and text-base-content for black text, use bg-base-100 for white background and bg-base-content for black background. 
 use bg-base-content/60 or bg-base-300 for gray. 
 avoid text-gray-900 or other custom color because it's bad for different theme support.

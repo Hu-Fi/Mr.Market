@@ -296,7 +296,7 @@
   $: totalFeeUsdFormatted = formatFiat(totalFeeUsd);
 </script>
 
-<div class="w-full max-w-md space-y-6 rounded-3xl bg-base-100 p-6 pt-0">
+<div class="w-full max-w-md space-y-8 p-6 pt-0">
   <ConfirmHeader
     title={$_("confirm_payment")}
     description={$_("review_selection_intro")}
@@ -304,11 +304,11 @@
 
   <div class="space-y-6">
     <div class="grid grid-rows-2 gap-0">
-      <ConfirmSummaryCard title={$_("exchange")} cardType="exchange-info">
+      <ConfirmSummaryCard title={$_("exchange")}>
         <svelte:fragment slot="icon">
           <ExchangeIcon
             exchangeName={exchangeName ?? "binance"}
-            clazz="w-8 h-8 rounded-full"
+            clazz="w-9 h-9 rounded-full"
           />
         </svelte:fragment>
         <svelte:fragment slot="value">
@@ -316,17 +316,17 @@
         </svelte:fragment>
       </ConfirmSummaryCard>
 
-      <ConfirmSummaryCard title={$_("trading_pair")} cardType="exchange-info">
+      <ConfirmSummaryCard title={$_("trading_pair")}>
         <svelte:fragment slot="icon">
           <PairIcon
-            clazz="w-4 h-4"
-            claxx="w-2 h-2"
+            clazz="w-5 h-5"
+            claxx="w-2.5 h-2.5"
             asset0Icon={baseIcon || emptyToken}
             asset1Icon={quoteIcon || emptyToken}
           />
         </svelte:fragment>
         <svelte:fragment slot="value">
-          <span>{tradingPair ?? ""}</span>
+          <span class="uppercase">{tradingPair ?? ""}</span>
         </svelte:fragment>
       </ConfirmSummaryCard>
     </div>
@@ -337,13 +337,13 @@
           <img
             src={baseIcon || emptyToken}
             alt={baseSymbol ?? ""}
-            class="w-8 h-8 rounded-full object-cover"
+            class="w-9 h-9 rounded-full object-cover"
           />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex flex-col items-start gap-1 leading-tight">
             <div class="flex items-baseline gap-2">
-              <span class="text-sm font-semibold text-base-content">
+              <span class="font-bold text-base-content">
                 {formatAmount(baseAmount)}
               </span>
               {#if baseAmountUsdFormatted}
@@ -361,13 +361,13 @@
           <img
             src={quoteIcon || emptyToken}
             alt={quoteSymbol ?? ""}
-            class="w-8 h-8 rounded-full object-cover"
+            class="w-9 h-9 rounded-full object-cover"
           />
         </svelte:fragment>
         <svelte:fragment slot="value">
           <div class="flex flex-col items-start gap-1 leading-tight">
             <div class="flex items-baseline gap-2">
-              <span class="text-sm font-semibold text-base-content">
+              <span class="font-bold text-base-content">
                 {formatAmount(quoteAmount)}
               </span>
               {#if quoteAmountUsdFormatted}
@@ -379,86 +379,98 @@
           </div>
         </svelte:fragment>
       </ConfirmSummaryCard>
+    </div>
 
-      <div class="">
-        <ConfirmSummaryCard title={$_("fee")}>
-          <svelte:fragment slot="icon">
-            <div
-              class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold"
+    <div class="">
+      <ConfirmSummaryCard title={$_("fee")}>
+        <svelte:fragment slot="icon">
+          <div
+            class="w-9 h-9 rounded-full bg-base-200 flex items-center justify-center text-xs font-semibold"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              class="w-5 h-5 opacity-50"
             >
-              {$_("fee")}
+              <path
+                fill-rule="evenodd"
+                d="M1 4a1 1 0 011-1h16a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm12 4a3 3 0 11-6 0 3 3 0 016 0zM4 9a1 1 0 100-2 1 1 0 000 2zm13-1a1 1 0 11-2 0 1 1 0 012 0zM1.75 14.5a.75.75 0 000 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.512 2.251-1.696v-.784a.75.75 0 00-1.5 0v.784a.272.272 0 01-.35.25A49.043 49.043 0 001.75 14.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+        </svelte:fragment>
+        <svelte:fragment slot="value">
+          {#if isFetchingFee}
+            <div class="flex flex-col gap-1">
+              <div class="skeleton h-3 w-24 bg-base-200"></div>
+              <div class="skeleton h-3 w-24 bg-base-200"></div>
             </div>
-          </svelte:fragment>
-          <svelte:fragment slot="value">
-            {#if isFetchingFee}
-              <div class="flex flex-col gap-1">
-                <div class="skeleton h-3 w-24 bg-base-200"></div>
-                <div class="skeleton h-3 w-24 bg-base-200"></div>
+          {:else}
+            <div class="flex items-center gap-2">
+              <div class="flex flex-col items-start gap-1">
+                {#each Array.from(feesByAsset.entries()) as [symbol, feeData]}
+                  <div class="px-0">
+                    <span class="text-[13px] font-bold text-base-content">
+                      {formatAmount(feeData.total)}
+                      {symbol}
+                    </span>
+                  </div>
+                {/each}
               </div>
-            {:else}
-              <div class="flex items-center gap-2">
-                <div class="flex flex-col items-start gap-1">
-                  {#each Array.from(feesByAsset.entries()) as [symbol, feeData]}
-                    <div class="px-0.5">
-                      <span
-                        class="text-xs font-semibold text-base-content opacity-80"
-                      >
-                        {formatAmount(feeData.total)}
-                        {symbol}
-                      </span>
-                    </div>
-                  {/each}
-                </div>
 
-                <!-- Info icon to show breakdown -->
-                {#if withdrawalFees.length > 0 || marketMakingFees.length > 0}
-                  <button
-                    type="button"
-                    class="btn btn-ghost btn-xs btn-circle"
-                    on:click={() => (showFeeBreakdown = true)}
+              <!-- Info icon to show breakdown -->
+              {#if withdrawalFees.length > 0 || marketMakingFees.length > 0}
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-xs btn-circle -mr-2"
+                  on:click={() => (showFeeBreakdown = true)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-4 h-4 opacity-40 hover:opacity-100 transition-opacity"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      class="w-4 h-4 opacity-60"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
-                      />
-                    </svg>
-                  </button>
-                {/if}
-              </div>
-            {/if}
-          </svelte:fragment>
-        </ConfirmSummaryCard>
-      </div>
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              {/if}
+            </div>
+          {/if}
+        </svelte:fragment>
+      </ConfirmSummaryCard>
     </div>
   </div>
 </div>
 
 <!-- Fee Breakdown Dialog -->
-<dialog class="modal" class:modal-open={showFeeBreakdown}>
-  <div class="modal-box">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-bold">{$_("fee_breakdown")}</h3>
+<dialog class="modal modal-bottom" class:modal-open={showFeeBreakdown}>
+  <div class="modal-box bg-base-100 rounded-t-3xl p-6 w-full relative">
+    <!-- Handle for mobile feel -->
+    <div
+      class="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 bg-base-300 rounded-full"
+    ></div>
+
+    <div class="flex items-center justify-between mb-6 mt-2">
+      <h3 class="text-xl font-bold text-base-content">{$_("fee_breakdown")}</h3>
       <button
         type="button"
-        class="btn btn-ghost btn-sm btn-circle"
+        class="btn btn-ghost btn-sm btn-circle absolute right-4 top-4"
         on:click={() => (showFeeBreakdown = false)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="2"
+          stroke-width="2.5"
           stroke="currentColor"
-          class="w-5 h-5"
+          class="w-5 h-5 opacity-40"
         >
           <path
             stroke-linecap="round"
@@ -472,17 +484,21 @@
     <div class="space-y-6">
       <!-- Withdrawal Fee Section -->
       {#if withdrawalFees.length > 0}
-        <div class="space-y-3 text-left">
-          <div class="text-xs font-bold capitalize tracking-wider opacity-60">
+        <div class="space-y-2 text-left">
+          <div class="text-[13px] font-bold text-base-content/40 pl-1">
             {$_("withdrawal_fees")}
           </div>
-          <div class="bg-base-200/50 rounded-xl overflow-hidden">
+          <div
+            class="border border-base-200 rounded-2xl overflow-hidden bg-base-100"
+          >
             {#each withdrawalFees as fee}
               <div
-                class="flex justify-between items-center px-4 py-3 border-b border-base-300 last:border-0"
+                class="flex justify-between items-center px-5 py-4 border-b border-base-100 last:border-0"
               >
-                <span class="text-sm">{$_("network_fee")}</span>
-                <span class="font-mono text-sm font-semibold">
+                <span class="text-sm font-medium text-base-content/70"
+                  >{$_("network_fee")}</span
+                >
+                <span class="text-sm font-bold text-base-content">
                   {formatAmount(fee.amount)}
                   {fee.symbol}
                 </span>
@@ -494,27 +510,31 @@
 
       <!-- Market Making Fee Section -->
       {#if marketMakingFees.length > 0}
-        <div class="space-y-3 text-left">
-          <div class="text-xs font-bold capitalize tracking-wider opacity-60">
+        <div class="space-y-2 text-left">
+          <div class="text-[13px] font-bold text-base-content/40 pl-1">
             {$_("market_making_fees")}
           </div>
-          <div class="bg-base-200/60 rounded-xl overflow-hidden">
+          <div
+            class="border border-base-200 rounded-2xl overflow-hidden bg-base-100"
+          >
             {#each marketMakingFees as fee}
               <div
-                class="flex flex-col gap-1 px-4 py-3 border-b border-base-300 last:border-0"
+                class="flex flex-col gap-1 px-5 py-4 border-b border-base-100 last:border-0"
               >
-                <div class="flex justify-between items-center">
-                  <span class="text-sm">{$_("strategy_fee")}</span>
-                  <span class="font-mono text-sm font-semibold">
+                <div class="flex justify-between items-start">
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium text-base-content/70"
+                      >{$_("strategy_fee")}</span
+                    >
+                    <span class="text-xs text-base-content/40 font-medium">
+                      {fee.type}
+                    </span>
+                  </div>
+                  <span class="text-sm font-bold text-base-content">
                     {formatAmount(fee.amount)}
                     {fee.symbol}
                   </span>
                 </div>
-                <span
-                  class="text-[10px] opacity-50 capitalize font-bold tracking-tight"
-                >
-                  {fee.type}
-                </span>
               </div>
             {/each}
           </div>
@@ -523,28 +543,31 @@
 
       <!-- Total USD Section -->
       {#if totalFeeUsdFormatted}
-        <div class="space-y-3 text-left pt-2">
-          <div class="border-t border-base-300 pt-4">
-            <div
-              class="flex justify-between items-center px-4 py-3 bg-base-200/60 rounded-xl"
+        <div class="pt-2">
+          <div
+            class="flex justify-between items-center px-5 py-5 bg-base-200/30 rounded-2xl"
+          >
+            <span class="text-sm font-bold text-base-content"
+              >{$_("total_fee_usd")}</span
             >
-              <span class="text-sm font-semibold">{$_("total_fee_usd")}</span>
-              <span class="font-mono text-sm font-semibold text-base-content">
-                {totalFeeUsdFormatted}
-              </span>
-            </div>
+            <span class="text-lg font-bold text-base-content">
+              {totalFeeUsdFormatted}
+            </span>
           </div>
         </div>
       {/if}
     </div>
 
-    <div class="modal-action">
-      <button class="btn btn-block" on:click={() => (showFeeBreakdown = false)}>
+    <div class="mt-8">
+      <button
+        class="btn btn-block bg-base-content text-base-100 hover:bg-base-content/90 rounded-full h-12 min-h-12 border-none text-sm font-bold"
+        on:click={() => (showFeeBreakdown = false)}
+      >
         {$_("close")}
       </button>
     </div>
   </div>
-  <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
+  <form method="dialog" class="modal-backdrop bg-black/20 backdrop-blur-sm">
     <button on:click={() => (showFeeBreakdown = false)}>close</button>
   </form>
 </dialog>

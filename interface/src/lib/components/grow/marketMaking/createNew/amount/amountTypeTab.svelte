@@ -11,37 +11,35 @@
 </script>
 
 <div class="flex flex-col justify-center items-center w-full mt-4">
-  <div class="flex justify-center grow join w-full p-4 pb-0 text-sm w-80">
+  <div class="flex p-1 bg-base-200/50 rounded-2xl w-[90%] max-w-md">
     <button
       class={clsx(
-        "btn btn-md w-[45%] max-w-52 join-item rounded-l-xl bg-base-100",
-        mode === "both_token" && "btn-active bg-base-200",
+        "btn btn-sm border-0 flex-1 h-10 min-h-0 rounded-xl capitalize font-medium text-sm no-animation",
+        mode === "both_token"
+          ? "bg-base-100 shadow-sm text-base-content"
+          : "bg-transparent text-base-content/50 hover:bg-base-200/50",
       )}
       on:click={() => (mode = "both_token")}
     >
-      <span class="opacity-80 font-normal">
-        {$_("both_token")}
-      </span>
+      {$_("both_token")}
     </button>
-    <div
-      class="dropdown dropdown-bottom dropdown-end w-[45%] max-w-52 join-item group"
-    >
+    <div class="dropdown dropdown-bottom dropdown-end flex-1 group">
       <button
         tabindex="0"
         type="button"
         class={clsx(
-          "btn btn-md w-full justify-center rounded-r-xl bg-base-100",
-          mode === "single_token" && "btn-active bg-base-200",
+          "btn btn-sm border-0 w-full h-10 min-h-0 rounded-xl capitalize font-medium text-sm flex justify-center items-center gap-2 no-animation",
+          mode === "single_token"
+            ? "bg-base-100 shadow-sm text-base-content"
+            : "bg-transparent text-base-content/50 hover:bg-base-200/50",
         )}
         on:click={() => (mode = "single_token")}
       >
-        <span class="opacity-80 font-normal">
-          {$_("single_token")}
-        </span>
+        {$_("single_token")}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          class="bi bi-chevron-down opacity-70 transition-transform duration-200 group-focus-within:rotate-180 w-2 h-2"
+          class="bi bi-chevron-down w-3 h-3 transition-transform duration-200 group-focus-within:rotate-180"
           viewBox="0 0 16 16"
         >
           <path
@@ -53,7 +51,7 @@
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
       <ul
         tabindex="0"
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full mt-1"
+        class="dropdown-content z-[2] menu p-2 shadow-lg bg-base-100 rounded-xl w-full mt-2 border border-base-200"
       >
         <li>
           <button
