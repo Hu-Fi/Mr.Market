@@ -8,9 +8,9 @@
   <button
     class="btn"
     on:click={() => {
-      goto("/manage/dashboard");
+      goto("/manage/settings");
     }}
     >
-    {$_("dashboard")}
+    {$_("settings")}
   </button>
 </div>

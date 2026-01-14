@@ -50,10 +50,12 @@
           {getFiatValue(baseAmount, basePrice)}
         </span>
         <button
-          class="text-xs font-bold text-base-content/50 hover:text-base-content transition-colors"
+          class="font-bold text-base-content/50 hover:text-base-content transition-colors"
           on:click={() => {}}
         >
-          {$_("balance_of", { values: { amount: baseBalance || 0 } })}
+          <span class="text-xs">
+            {$_("balance_of", { values: { amount: baseBalance || 0 } })}
+          </span>
         </button>
       </div>
     </div>
@@ -85,10 +87,12 @@
           {getFiatValue(quoteAmount, quotePrice)}
         </span>
         <button
-          class="text-xs font-bold text-base-content/50 hover:text-base-content transition-colors"
+          class="font-bold text-base-content/50 hover:text-base-content transition-colors"
           on:click={() => {}}
         >
-          {$_("balance_of", { values: { amount: quoteBalance || 0 } })}
+          <span class="text-xs">
+            {$_("balance_of", { values: { amount: quoteBalance || 0 } })}
+          </span>
         </button>
       </div>
     </div>

@@ -9,3 +9,7 @@
 ## 2026-01-12
 - Add i18n support to ExchangeSelection and ExchangeCard components
 - Refactor trading pair selection UI components to match exchange selection style and follow GEMINI.md guidelines
+
+## 2026-01-13
+- Apply agents.md rules to confirmPaymentInfo.svelte: replace uppercase with capitalize, replace h3 with span
+

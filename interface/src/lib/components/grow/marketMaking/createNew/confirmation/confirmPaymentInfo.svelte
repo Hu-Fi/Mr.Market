@@ -326,7 +326,7 @@
           />
         </svelte:fragment>
         <svelte:fragment slot="value">
-          <span class="uppercase">{tradingPair ?? ""}</span>
+          <span class="capitalize">{tradingPair ?? ""}</span>
         </svelte:fragment>
       </ConfirmSummaryCard>
     </div>
@@ -458,7 +458,9 @@
     ></div>
 
     <div class="flex items-center justify-between mb-6 mt-2">
-      <h3 class="text-xl font-bold text-base-content">{$_("fee_breakdown")}</h3>
+      <span class="text-xl font-bold text-base-content"
+        >{$_("fee_breakdown")}</span
+      >
       <button
         type="button"
         class="btn btn-ghost btn-sm btn-circle absolute right-4 top-4"
@@ -489,7 +491,7 @@
             {$_("withdrawal_fees")}
           </div>
           <div
-            class="border border-base-200 rounded-2xl overflow-hidden bg-base-100"
+            class="border border-base-300 rounded-2xl overflow-hidden bg-base-100"
           >
             {#each withdrawalFees as fee}
               <div
@@ -515,7 +517,7 @@
             {$_("market_making_fees")}
           </div>
           <div
-            class="border border-base-200 rounded-2xl overflow-hidden bg-base-100"
+            class="border border-base-300 rounded-2xl overflow-hidden bg-base-100"
           >
             {#each marketMakingFees as fee}
               <div
@@ -545,7 +547,7 @@
       {#if totalFeeUsdFormatted}
         <div class="pt-2">
           <div
-            class="flex justify-between items-center px-5 py-5 bg-base-200/30 rounded-2xl"
+            class="flex justify-between items-center px-5 py-5 bg-slate-50 rounded-2xl"
           >
             <span class="text-sm font-bold text-base-content"
               >{$_("total_fee_usd")}</span
