@@ -6,7 +6,7 @@
   export let baseSymbol: string | null = null;
   export let quoteIcon: string;
   export let quoteSymbol: string | null = null;
-  export let basePrice = 1000;
+  export let basePrice = 1;
   export let quotePrice = 1;
   export let baseBalance = "0";
   export let quoteBalance = "0";
@@ -23,16 +23,16 @@
   };
 </script>
 
-<div class="flex flex-col space-y-0">
+<div class="flex flex-col space-y-6">
   {#if showBase}
-    <div class="flex flex-col p-4 pb-2 fieldset">
-      <label
-        class="input input-xl rounded-xl flex items-center w-full justify-between"
+    <div class="flex flex-col w-full">
+      <div
+        class="flex items-center w-full border border-base-300 rounded-[2rem] px-4 py-4 bg-base-100"
       >
         <img
           src={baseIcon}
           alt={baseSymbol}
-          class="w-8 h-8 mr-2 inline-block align-middle"
+          class="w-10 h-10 mr-4 rounded-full"
         />
         <input
           type="text"
@@ -42,27 +42,34 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: baseSymbol ?? "" },
           })}
-          class="focus:outline-none text-sm! min-w-64"
+          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30 placeholder:font-bold"
         />
-      </label>
-      <div class="flex justify-between">
-        <p class="label px-2">{getFiatValue(baseAmount, basePrice)}</p>
-        <button class="label px-2" on:click={() => {}}>
-          {$_("balance_of", { values: { amount: baseBalance || 0 } })}
+      </div>
+      <div class="flex justify-between px-4 mt-2">
+        <span class="text-xs font-bold text-base-content/50">
+          {getFiatValue(baseAmount, basePrice)}
+        </span>
+        <button
+          class="font-bold text-base-content/50 hover:text-base-content transition-colors"
+          on:click={() => {}}
+        >
+          <span class="text-xs">
+            {$_("balance_of", { values: { amount: baseBalance || 0 } })}
+          </span>
         </button>
       </div>
     </div>
   {/if}
 
   {#if showQuote}
-    <div class="flex flex-col p-4 fieldset w-full">
-      <label
-        class="input input-xl rounded-xl flex items-center w-full justify-between"
+    <div class="flex flex-col w-full">
+      <div
+        class="flex items-center w-full border border-base-300 rounded-[2rem] px-4 py-4 bg-base-100"
       >
         <img
           src={quoteIcon}
           alt={quoteSymbol}
-          class="w-8 h-8 mr-2 inline-block align-middle"
+          class="w-10 h-10 mr-4 rounded-full"
         />
         <input
           type="text"
@@ -72,13 +79,20 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: quoteSymbol ?? "" },
           })}
-          class="focus:outline-none text-sm! min-w-64"
+          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30 placeholder:font-bold"
         />
-      </label>
-      <div class="flex justify-between">
-        <p class="label px-2">{getFiatValue(quoteAmount, quotePrice)}</p>
-        <button class="label px-2" on:click={() => {}}>
-          {$_("balance_of", { values: { amount: quoteBalance || 0 } })}
+      </div>
+      <div class="flex justify-between px-4 mt-2">
+        <span class="text-xs font-bold text-base-content/50">
+          {getFiatValue(quoteAmount, quotePrice)}
+        </span>
+        <button
+          class="font-bold text-base-content/50 hover:text-base-content transition-colors"
+          on:click={() => {}}
+        >
+          <span class="text-xs">
+            {$_("balance_of", { values: { amount: quoteBalance || 0 } })}
+          </span>
         </button>
       </div>
     </div>

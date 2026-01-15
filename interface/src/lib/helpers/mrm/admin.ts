@@ -39,7 +39,7 @@ export const checkPassword = async (pass: string): Promise<string> => {
   }
 }
 
-export const autoCheckPassword = async (path: string = '/manage/dashboard'): Promise<boolean> => {
+export const autoCheckPassword = async (path: string = '/manage/settings'): Promise<boolean> => {
   const pass = localStorage.getItem('admin-password')
   if (!pass) {
     return false

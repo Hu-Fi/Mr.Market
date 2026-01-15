@@ -1,13 +1,12 @@
 <script lang="ts">
   import emptyToken from "$lib/images/empty-token.svg";
-  import ChooseExchange from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchange.svelte";
-  import ChooseExchangeSmallBtn from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchangeSmallBtn.svelte";
-  import SearchExchange from "$lib/components/grow/marketMaking/createNew/exchange/searchBtn.svelte";
-  import SearchTradingPair from "$lib/components/grow/marketMaking/createNew/tradingPair/searchTradingPair.svelte";
-  import ChooseTradingPair from "$lib/components/grow/marketMaking/createNew/tradingPair/chooseTradingPair.svelte";
-  import ChooseTradingPairSmallBtn from "$lib/components/grow/marketMaking/createNew/tradingPair/chooseTradingPairSmallBtn.svelte";
-  import SearchExchangeDialog from "./searchExchangeDialog.svelte";
-  import SearchTradingPairDialog from "./searchTradingPairDialog.svelte";
+  import ExchangeSelection from "$lib/components/market-making/create-new/ExchangeSelection.svelte";
+
+  import TradingPairSearchInput from "$lib/components/grow/marketMaking/createNew/tradingPair/searchInput.svelte";
+  import TradingPairList from "$lib/components/grow/marketMaking/createNew/tradingPair/pairList.svelte";
+  import TradingPairFooter from "$lib/components/grow/marketMaking/createNew/tradingPair/footer.svelte";
+  import { _ } from "svelte-i18n";
+
   import AmountText from "$lib/components/grow/marketMaking/createNew/amount/amountText.svelte";
   import AmountNextStepBtn from "$lib/components/grow/marketMaking/createNew/amount/amountNextStepBtn.svelte";
   import AmountInput from "$lib/components/grow/marketMaking/createNew/amount/amountInput.svelte";
@@ -35,6 +34,8 @@
     getMarketMakingFee,
     type MarketMakingFee,
   } from "$lib/helpers/mrm/grow";
+  import ChooseExchange from "$lib/components/grow/marketMaking/createNew/exchange/chooseExchange.svelte";
+  import ChooseTradingPair from "$lib/components/grow/marketMaking/createNew/tradingPair/chooseTradingPair.svelte";
 
   export let data;
 
@@ -260,6 +261,22 @@
     quoteAmountInput = quoteAmount ?? "";
     lastUrlQuoteAmount = quoteAmount;
   }
+
+  let localSelectedExchange: string | null = null;
+  let searchTradingPairQuery = "";
+  let selectedLocalPair: string | null = null;
+
+  const goBack = () => {
+    const newUrl = new URL($dPage.url);
+    newUrl.searchParams.delete("exchange");
+    goto(newUrl.toString(), { replaceState: true });
+  };
+
+  const confirmSelection = () => {
+    if (selectedLocalPair) {
+      selectTradingPair(selectedLocalPair);
+    }
+  };
 </script>
 
 <!-- Step 1: Choose Exchange -->
@@ -273,10 +290,20 @@
   {@const supportedMarketMakingExchanges =
     growInfo?.market_making?.exchanges
       ?.filter((e) => e.enable)
-      .map((e) => e.exchange_id) || []}
-  {@const supportedTradingpairs = allMarketMakingPairs
-    .filter((p) => !exchangeName || p.exchange_id === exchangeName)
-    .map((p) => p.symbol)}
+      .map((e) => {
+        return {
+          exchange_id: e.exchange_id,
+          name: e.name,
+        };
+      }) || []}
+  {@const supportedTradingpairs = allMarketMakingPairs.filter(
+    (p) => !exchangeName || p.exchange_id === exchangeName,
+  )}
+  {@const filteredTradingPairs = searchTradingPairQuery
+    ? supportedTradingpairs.filter((p) =>
+        p.symbol.toLowerCase().includes(searchTradingPairQuery.toLowerCase()),
+      )
+    : supportedTradingpairs}
   {@const selectedPairInfo = allMarketMakingPairs.find(
     (p) => p.exchange_id === exchangeName && p.symbol === tradingPair,
   )}
@@ -294,67 +321,56 @@
     : null}
 
   {#if !exchangeName}
-    <div class="flex flex-col items-center grow h-[calc(100vh-64px)] pt-[5vh]">
+    <div
+      class="flex flex-col items-center space-y-4 grow w-full max-w-4xl mx-auto pt-[3vh]"
+    >
       <div class="text-center">
         <ChooseExchange />
       </div>
-      <div
-        class="mx-6 mt-12 pb-4 gap-6 grid grid-cols-2 bg-white
-          bg-gradient-radial from-sky-100 via-white to-white
-          max-h-[50vh] overflow-y-auto"
-      >
-        {#each supportedMarketMakingExchanges as exchangeName}
-          <ChooseExchangeSmallBtn
-            {exchangeName}
-            onClick={() => selectExchange(exchangeName)}
-          />
-        {/each}
+      <div class="px-6 w-full">
+        <ExchangeSelection
+          exchanges={supportedMarketMakingExchanges}
+          bind:selectedExchange={localSelectedExchange}
+          onSelect={(id) => (localSelectedExchange = id)}
+          onContinue={() =>
+            localSelectedExchange && selectExchange(localSelectedExchange)}
+        />
       </div>
     </div>
-
-    <div class="absolute bottom-24 w-full flex justify-center space-x-2">
-      <SearchExchange onSearch={() => {}} />
-    </div>
-    <SearchExchangeDialog
-      supportedExchanges={supportedMarketMakingExchanges}
-      onSelect={selectExchange}
-    />
 
     <!-- Step 2: Choose Trading Pair -->
   {:else if !tradingPair}
-    <div class="flex flex-col items-center grow h-[100vh-64px] pt-[5vh]">
+    <div
+      class="flex flex-col space-y-4 items-center w-full max-w-lg mx-auto grow pt-[3vh]"
+    >
       <div class="text-center">
         <ChooseTradingPair {exchangeName} />
       </div>
-      <div
-        class="mx-4 mt-12 gap-6 grid grid-cols-2 bg-white
-      max-h-[50vh] overflow-y-auto"
-      >
-        {#each supportedTradingpairs as tradingPair}
-          <ChooseTradingPairSmallBtn
-            {tradingPair}
-            {exchangeName}
-            onClick={() => selectTradingPair(tradingPair)}
-          />
-        {/each}
-      </div>
-    </div>
 
-    <div class="absolute bottom-24 w-full flex justify-center">
-      <SearchTradingPair onSearch={() => {}} />
+      <div class="mt-6 w-full">
+        <TradingPairSearchInput bind:value={searchTradingPairQuery} />
+      </div>
+
+      <TradingPairList
+        pairs={filteredTradingPairs}
+        {exchangeName}
+        selectedPair={selectedLocalPair}
+        onSelect={(symbol) => (selectedLocalPair = symbol)}
+      />
+
+      <TradingPairFooter
+        onBack={goBack}
+        onConfirm={confirmSelection}
+        confirmDisabled={!selectedLocalPair}
+      />
     </div>
-    <SearchTradingPairDialog
-      supportedTradingPairs={supportedTradingpairs}
-      {exchangeName}
-      onSelect={selectTradingPair}
-    />
 
     <!-- Step 3: Enter Amount -->
   {:else if !isValidAmount}
     <div
-      class="flex flex-col items-center grow h-[100vh-64px] pt-[5vh] space-y-4"
+      class="flex flex-col items-center grow h-[calc(100vh-64px)] pt-[3vh] pb-8 space-y-6 w-full"
     >
-      <div class="text-center">
+      <div class="text-center w-full">
         <AmountText {exchangeName} {tradingPair} />
       </div>
       <AmountTypeTab
@@ -366,8 +382,7 @@
         {quoteIcon}
       />
       <div
-        class="px-4 gap-6 grid grid-cols-1 bg-white
-      max-h-[50vh] overflow-y-auto rounded-xl min-w-40"
+        class="px-4 gap-6 grid grid-cols-1 bg-transparent w-full max-w-md overflow-y-auto hide-scrollbar"
       >
         <AmountInput
           {baseIcon}
@@ -382,10 +397,8 @@
           bind:quoteAmount={quoteAmountInput}
         />
       </div>
-    </div>
 
-    <div class="mt-4 w-full flex justify-center">
-      <div class="w-full flex justify-center mt-4">
+      <div class="mt-auto w-full flex justify-center px-4">
         <AmountNextStepBtn
           baseAmount={baseAmountInput}
           quoteAmount={quoteAmountInput}
@@ -394,11 +407,6 @@
         />
       </div>
     </div>
-    <SearchTradingPairDialog
-      supportedTradingPairs={supportedTradingpairs}
-      {exchangeName}
-      onSelect={selectTradingPair}
-    />
 
     <!-- Step 4: Confirm Payment -->
   {:else}

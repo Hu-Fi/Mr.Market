@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,7 +13,7 @@ import {
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from 'src/common/entities/strategy-user.entity';
+} from 'src/common/entities/user-orders.entity';
 import {
   ArbitrageStates,
   MarketMakingStates,
@@ -28,7 +28,6 @@ export class UserOrdersService {
 
   constructor(
     private readonly configService: ConfigService,
-    @Inject(forwardRef(() => StrategyService))
     private readonly strategyService: StrategyService,
     @InjectRepository(ArbitrageOrder)
     private readonly arbitrageRepository: Repository<ArbitrageOrder>,
@@ -48,7 +47,9 @@ export class UserOrdersService {
   async findAllStrategyByUser(userId: string) {
     try {
       const arbitrages = await this.arbitrageRepository.findBy({ userId });
-      const market_makings = await this.marketMakingRepository.findBy({ userId });
+      const market_makings = await this.marketMakingRepository.findBy({
+        userId,
+      });
       const simply_grows = await this.simplyGrowRepository.findBy({ userId });
       return {
         arbitrage: arbitrages,
@@ -62,7 +63,9 @@ export class UserOrdersService {
     }
   }
 
-  async createSimplyGrow(simplyGrowOrder: SimplyGrowOrder): Promise<SimplyGrowOrder> {
+  async createSimplyGrow(
+    simplyGrowOrder: SimplyGrowOrder,
+  ): Promise<SimplyGrowOrder> {
     try {
       return await this.simplyGrowRepository.save(simplyGrowOrder);
     } catch (error) {
@@ -71,7 +74,9 @@ export class UserOrdersService {
     }
   }
 
-  async findSimplyGrowByOrderId(orderId: string): Promise<SimplyGrowOrder | undefined> {
+  async findSimplyGrowByOrderId(
+    orderId: string,
+  ): Promise<SimplyGrowOrder | undefined> {
     return await this.simplyGrowRepository.findOneBy({ orderId });
   }
 
@@ -79,7 +84,10 @@ export class UserOrdersService {
     return await this.simplyGrowRepository.findBy({ userId });
   }
 
-  async updateSimplyGrowState(orderId: string, newState: SimplyGrowStates): Promise<void> {
+  async updateSimplyGrowState(
+    orderId: string,
+    newState: SimplyGrowStates,
+  ): Promise<void> {
     try {
       await this.simplyGrowRepository.update({ orderId }, { state: newState });
     } catch (error) {
@@ -88,7 +96,9 @@ export class UserOrdersService {
     }
   }
 
-  async createArbitrage(arbitrageOrder: ArbitrageOrder): Promise<ArbitrageOrder> {
+  async createArbitrage(
+    arbitrageOrder: ArbitrageOrder,
+  ): Promise<ArbitrageOrder> {
     try {
       return await this.arbitrageRepository.save(arbitrageOrder);
     } catch (error) {
@@ -97,11 +107,16 @@ export class UserOrdersService {
     }
   }
 
-  async findArbitrageByOrderId(orderId: string): Promise<ArbitrageOrder | undefined> {
+  async findArbitrageByOrderId(
+    orderId: string,
+  ): Promise<ArbitrageOrder | undefined> {
     try {
       return await this.arbitrageRepository.findOneBy({ orderId });
     } catch (error) {
-      this.logger.error('Error finding arbitrage order by orderId', error.message);
+      this.logger.error(
+        'Error finding arbitrage order by orderId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -110,22 +125,35 @@ export class UserOrdersService {
     try {
       return await this.arbitrageRepository.findBy({ userId });
     } catch (error) {
-      this.logger.error('Error finding arbitrage orders by userId', error.message);
+      this.logger.error(
+        'Error finding arbitrage orders by userId',
+        error.message,
+      );
       throw error;
     }
   }
 
-  async updateArbitrageOrderState(orderId: string, newState: ArbitrageStates): Promise<void> {
+  async updateArbitrageOrderState(
+    orderId: string,
+    newState: ArbitrageStates,
+  ): Promise<void> {
     try {
       await this.arbitrageRepository.update({ orderId }, { state: newState });
-      this.logger.log(`Arbitrage order ${orderId} updated successfully to state ${newState}`);
+      this.logger.log(
+        `Arbitrage order ${orderId} updated successfully to state ${newState}`,
+      );
     } catch (error) {
-      this.logger.error(`Error updating arbitrage order state for orderId ${orderId}`, error.message);
+      this.logger.error(
+        `Error updating arbitrage order state for orderId ${orderId}`,
+        error.message,
+      );
       throw error;
     }
   }
 
-  async createMarketMaking(marketMakingOrder: MarketMakingOrder): Promise<MarketMakingOrder> {
+  async createMarketMaking(
+    marketMakingOrder: MarketMakingOrder,
+  ): Promise<MarketMakingOrder> {
     try {
       return await this.marketMakingRepository.save(marketMakingOrder);
     } catch (error) {
@@ -134,11 +162,16 @@ export class UserOrdersService {
     }
   }
 
-  async findMarketMakingByOrderId(orderId: string): Promise<MarketMakingOrder | undefined> {
+  async findMarketMakingByOrderId(
+    orderId: string,
+  ): Promise<MarketMakingOrder | undefined> {
     try {
       return await this.marketMakingRepository.findOneBy({ orderId });
     } catch (error) {
-      this.logger.error('Error finding market making order by orderId', error.message);
+      this.logger.error(
+        'Error finding market making order by orderId',
+        error.message,
+      );
       throw error;
     }
   }
@@ -147,17 +180,31 @@ export class UserOrdersService {
     try {
       return await this.marketMakingRepository.findBy({ userId });
     } catch (error) {
-      this.logger.error('Error finding market making orders by userId', error.message);
+      this.logger.error(
+        'Error finding market making orders by userId',
+        error.message,
+      );
       throw error;
     }
   }
 
-  async updateMarketMakingOrderState(orderId: string, newState: MarketMakingStates): Promise<void> {
+  async updateMarketMakingOrderState(
+    orderId: string,
+    newState: MarketMakingStates,
+  ): Promise<void> {
     try {
-      await this.marketMakingRepository.update({ orderId }, { state: newState });
-      this.logger.log(`Market making order ${orderId} updated successfully to state ${newState}`);
+      await this.marketMakingRepository.update(
+        { orderId },
+        { state: newState },
+      );
+      this.logger.log(
+        `Market making order ${orderId} updated successfully to state ${newState}`,
+      );
     } catch (error) {
-      this.logger.error(`Error updating market making order state for orderId ${orderId}`, error.message);
+      this.logger.error(
+        `Error updating market making order state for orderId ${orderId}`,
+        error.message,
+      );
       throw error;
     }
   }
@@ -188,8 +235,14 @@ export class UserOrdersService {
     return await this.paymentStateRepository.findBy({ state });
   }
 
-  async updatePaymentStateById(orderId: string, newPaymentState: Partial<PaymentState>) {
-    const updateResult = await this.paymentStateRepository.update({ orderId }, newPaymentState);
+  async updatePaymentStateById(
+    orderId: string,
+    newPaymentState: Partial<PaymentState>,
+  ) {
+    const updateResult = await this.paymentStateRepository.update(
+      { orderId },
+      newPaymentState,
+    );
     if (updateResult.affected === 0) {
       return null;
     }
@@ -234,8 +287,12 @@ export class UserOrdersService {
     }
 
     // Get orders states that are created
-    const activeArb = await this.arbitrageRepository.findBy({ state: 'created' });
-    const activeMM = await this.marketMakingRepository.findBy({ state: 'created' });
+    const activeArb = await this.arbitrageRepository.findBy({
+      state: 'created',
+    });
+    const activeMM = await this.marketMakingRepository.findBy({
+      state: 'created',
+    });
 
     if (activeArb) {
       activeArb.forEach(async (arb) => {
@@ -268,8 +325,12 @@ export class UserOrdersService {
       });
     }
 
-    const pausedArb = await this.arbitrageRepository.findBy({ state: 'paused' });
-    const pausedMM = await this.marketMakingRepository.findBy({ state: 'paused' });
+    const pausedArb = await this.arbitrageRepository.findBy({
+      state: 'paused',
+    });
+    const pausedMM = await this.marketMakingRepository.findBy({
+      state: 'paused',
+    });
 
     if (pausedArb) {
       pausedArb.forEach(async (arb) => {

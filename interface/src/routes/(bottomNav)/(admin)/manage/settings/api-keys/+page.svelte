@@ -54,40 +54,44 @@
   }
 </script>
 
-<div class="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
-  <div
-    class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-  >
-    <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <button
-          on:click={() => window.history.back()}
-          class="btn btn-ghost btn-circle btn-sm"
+<div class="p-6 md:p-10 space-y-6 max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <!-- Back button centered with title/subtitle -->
+      <button
+        on:click={() => window.history.back()}
+        class="btn btn-ghost btn-circle"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-            />
-          </svg>
-        </button>
-        <span class="text-3xl font-bold text-left">{$_("api_keys")}</span>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+      </button>
+
+      <!-- Title and subtitle -->
+      <div class="flex flex-col text-start items-start justify-center">
+        <h1 class="text-3xl font-bold">{$_("api_keys")}</h1>
+        <p class="text-sm text-base-content/60">
+          {$_("manage_exchange_api_keys")}
+        </p>
       </div>
-      <p class="text-base-content/60">{$_("manage_exchange_api_keys")}</p>
     </div>
 
+    <!-- Action buttons -->
     <div class="flex items-center gap-3">
       <AddApiKey />
-
-      <button class="btn btn-ghost btn-circle" on:click={() => RefreshKeys()}>
+      <button class="btn btn-square btn-outline" on:click={() => RefreshKeys()}>
         <span
           class={clsx(isRefreshing && "loading loading-spinner loading-sm")}
         >
@@ -134,6 +138,44 @@
       <p class="text-lg font-medium">{$_("no_api_keys_found")}</p>
     </div>
   {:else}
+    <!-- Search and Filter Bar -->
+    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <div class="relative flex-1 max-w-md">
+        <div
+          class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5 text-base-content/40"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+        </div>
+        <input
+          type="text"
+          placeholder="Search keys..."
+          class="input input-bordered w-full pl-10"
+        />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-base-content/60">STATUS:</span>
+        <select class="select select-bordered select-sm">
+          <option selected>All</option>
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </div>
+
     <div
       class="card bg-base-100 shadow-sm border border-base-200 overflow-hidden"
     >

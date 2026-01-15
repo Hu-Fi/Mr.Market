@@ -1,4 +1,3 @@
-
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
@@ -9,9 +8,7 @@ import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 export class SnapshotsProcessor {
   private readonly logger = new Logger(SnapshotsProcessor.name);
 
-  constructor(
-    private readonly snapshotsService: SnapshotsService,
-  ) { }
+  constructor(private readonly snapshotsService: SnapshotsService) {}
 
   @Process('process_snapshots')
   async handlePollSnapshots(job: Job) {
@@ -20,22 +17,33 @@ export class SnapshotsProcessor {
       const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
 
       if (snapshots && snapshots.length > 0) {
-        this.logger.log(`Found ${snapshots.length} snapshots, queueing processing...`);
+        this.logger.log(
+          `Found ${snapshots.length} snapshots, queueing processing...`,
+        );
         for (const snapshot of snapshots) {
           await (job.queue as any).add('process_snapshot', snapshot, {
             jobId: snapshot.snapshot_id, // Deduplication by ID
             removeOnComplete: true,
           });
         }
-        await this.snapshotsService.updateSnapshotCursor(snapshots[0].created_at);
+        await this.snapshotsService.updateSnapshotCursor(
+          snapshots[0].created_at,
+        );
       }
     } catch (error) {
-      this.logger.error(`Error polling snapshots: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error polling snapshots: ${error.message}`,
+        error.stack,
+      );
     } finally {
-      await (job.queue as any).add('process_snapshots', {}, {
-        delay: 5000,
-        removeOnComplete: true
-      });
+      await (job.queue as any).add(
+        'process_snapshots',
+        {},
+        {
+          delay: 5000,
+          removeOnComplete: true,
+        },
+      );
     }
   }
 
@@ -45,7 +53,9 @@ export class SnapshotsProcessor {
     try {
       await this.snapshotsService.handleSnapshot(snapshot);
     } catch (error) {
-      this.logger.error(`Failed to process snapshot ${snapshot.snapshot_id}: ${error.message}`);
+      this.logger.error(
+        `Failed to process snapshot ${snapshot.snapshot_id}: ${error.message}`,
+      );
       throw error; // Let Bull handle retries
     }
   }

@@ -1,0 +1,1 @@
+apply docs/AGENTS.md as CLAUDE.md when editing

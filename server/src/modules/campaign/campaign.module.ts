@@ -10,4 +10,4 @@ import { ExchangeInitModule } from '../infrastructure/exchange-init/exchange-ini
   providers: [CampaignService, ConfigService],
   exports: [CampaignService],
 })
-export class CampaignModule { }
+export class CampaignModule {}

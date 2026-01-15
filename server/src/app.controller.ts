@@ -6,13 +6,13 @@ import { getRFC3339Timestamp } from './common/helpers/utils';
 @Controller()
 @ApiTags('General')
 export class AppController {
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
 
   @Get()
   @Redirect('/docs', 302) // Redirect to the '/docs' route with a 302 status code (temporary redirect)
   @ApiOperation({ summary: 'Redirect to docs' })
   @ApiResponse({ status: 200, description: 'Redirect to docs.' })
-  redirectToDocs() { }
+  redirectToDocs() {}
 
   @Get('info')
   @ApiOperation({ summary: 'Get server information' })

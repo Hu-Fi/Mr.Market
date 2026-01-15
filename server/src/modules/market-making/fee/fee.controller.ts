@@ -5,12 +5,12 @@ import { FeeService } from './fee.service';
 @ApiTags('Fees')
 @Controller('fees')
 export class FeeController {
-  constructor(private readonly feeService: FeeService) { }
+  constructor(private readonly feeService: FeeService) {}
   @Get('info')
   @ApiOperation({ summary: 'Get fee info' })
   async getFeeInfo() {
     // return await this.feeService.getFeeInfo();
-    return {}
+    return {};
   }
 
   @Get('spot-trading/fee')
@@ -19,7 +19,10 @@ export class FeeController {
     @Query('exchange') exchange: string,
     @Query('pair') pair: string,
     @Query('direction')
-    direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
+    direction:
+      | 'deposit_to_exchange'
+      | 'withdraw_to_mixin'
+      | 'withdraw_external',
   ) {
     return await this.feeService.calculateMoveFundsFee(
       exchange,
@@ -40,7 +43,10 @@ export class FeeController {
     @Query('exchange') exchange: string,
     @Query('pair') pair: string,
     @Query('direction')
-    direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
+    direction:
+      | 'deposit_to_exchange'
+      | 'withdraw_to_mixin'
+      | 'withdraw_external',
   ) {
     return await this.feeService.calculateMoveFundsFee(
       exchange,

@@ -41,7 +41,7 @@ import {
   MarketMakingOrder,
   PaymentState,
   SimplyGrowOrder,
-} from './common/entities/strategy-user.entity';
+} from './common/entities/user-orders.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExchangeInitModule } from './modules/infrastructure/exchange-init/exchange-init.module';
 import { AdminModule } from './modules/admin/admin.module';
@@ -58,12 +58,6 @@ import {
   GrowdataMarketMakingPair,
   GrowdataSimplyGrowToken,
 } from './common/entities/grow-data.entity';
-import {
-  RebalanceExchange,
-  RebalanceHistory,
-  RebalanceToken,
-  RebalanceTokenExchange,
-} from './common/entities/rebalance-asset.entity';
 import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/data/spot-data/spot-data.module';
@@ -71,7 +65,7 @@ import { MetricsModule } from './modules/market-making/metrics/metrics.module';
 import { Withdrawal } from './common/entities/withdrawal.entity';
 import { Campaign } from './common/entities/campaign.entity';
 import { CampaignParticipation } from './common/entities/campaign-participation.entity';
-import { MmCampaignModule } from './modules/market-making/campaign/mm-campaign.module';
+import { LocalCampaignModule } from './modules/market-making/local-campaign/local-campaign.module';
 
 dotenv.config();
 
@@ -111,19 +105,9 @@ dotenv.config();
         MixinReleaseHistory,
         MixinMessage,
         MixinUser,
-        RebalanceToken,
-        RebalanceExchange,
-        RebalanceTokenExchange,
-        RebalanceHistory,
         ArbitrageOrder,
         MarketMakingOrder,
         PaymentState,
-        RebalanceToken,
-        RebalanceExchange,
-        RebalanceHistory,
-        RebalanceTokenExchange,
-        MarketMakingOrder,
-        ArbitrageOrder,
         SimplyGrowOrder,
         SpotdataTradingPair,
         GrowdataExchange,
@@ -155,7 +139,7 @@ dotenv.config();
     Web3Module,
     MetricsModule,
     UserOrdersModule,
-    MmCampaignModule,
+    LocalCampaignModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

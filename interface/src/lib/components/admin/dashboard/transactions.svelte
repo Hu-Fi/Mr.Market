@@ -1,21 +1,19 @@
 <script lang="ts">
   const txs = [
     {
-      snapshot: '61164483-18e0-480f-a2c4-a153ca244b9d',
-      timestamp: '2024-02-29',
+      snapshot: "61164483-18e0-480f-a2c4-a153ca244b9d",
+      timestamp: "2024-02-29",
       amount: 23351,
-      type: 'spot_buy',
-    }
-  ]
+      type: "spot_buy",
+    },
+  ];
 </script>
 
 <div class="w-full grid grid-cols-1 gap-4">
   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8">
     <div class="mb-4 flex items-center justify-between">
       <div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">
-          Latest Orders
-        </h3>
+        <h3 class="text-xl font-bold text-base-content mb-2">Latest Orders</h3>
         <span class="text-base font-normal text-gray-500"
           >This is a list of latest transactions</span
         >
@@ -61,7 +59,7 @@
                 {#each txs as tx}
                   <tr>
                     <td
-                      class="p-4 whitespace-nowrap text-sm font-normal text-gray-900"
+                      class="p-4 whitespace-nowrap text-sm font-normal text-base-content"
                     >
                       {tx.snapshot}
                     </td>
@@ -71,7 +69,7 @@
                       {tx.timestamp}
                     </td>
                     <td
-                      class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900"
+                      class="p-4 whitespace-nowrap text-sm font-semibold text-base-content"
                     >
                       {tx.amount}
                     </td>

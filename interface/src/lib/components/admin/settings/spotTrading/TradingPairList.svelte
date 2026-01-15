@@ -15,6 +15,17 @@
   let isUpdating = "";
   let isDeleting = "";
 
+  // Pagination
+  let currentPage = 1;
+  const itemsPerPage = 10;
+  $: totalPages = Math.ceil(tradingPairs.length / itemsPerPage);
+  $: paginatedPairs = tradingPairs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+  $: startIndex = (currentPage - 1) * itemsPerPage + 1;
+  $: endIndex = Math.min(currentPage * itemsPerPage, tradingPairs.length);
+
   async function UpdateSpotTradingPair(id: string, enable: boolean) {
     if (!id) return;
     isUpdating = id;
@@ -55,18 +66,25 @@
     <table class="table table-lg">
       <thead class="bg-base-200/50 text-base-content/70">
         <tr>
-          <th>{$_("symbol")}</th>
-          <th>{$_("exchange_id")}</th>
-          <th>{$_("ccxt_id")}</th>
-          <th>{$_("base_asset_id")}</th>
-          <th>{$_("quote_asset_id")}</th>
-          <th>{$_("custom_fee_rate")}</th>
-          <th class="text-center">{$_("status")}</th>
-          <th class="text-right">{$_("actions")}</th>
+          <th class="uppercase text-xs font-semibold">{$_("symbol")}</th>
+          <th class="uppercase text-xs font-semibold">{$_("exchange_id")}</th>
+          <th class="uppercase text-xs font-semibold">{$_("ccxt_id")}</th>
+          <th class="uppercase text-xs font-semibold">{$_("base_asset_id")}</th>
+          <th class="uppercase text-xs font-semibold">{$_("quote_asset_id")}</th
+          >
+          <th class="uppercase text-xs font-semibold"
+            >{$_("custom_fee_rate")}</th
+          >
+          <th class="text-center uppercase text-xs font-semibold"
+            >{$_("status")}</th
+          >
+          <th class="text-right uppercase text-xs font-semibold"
+            >{$_("actions")}</th
+          >
         </tr>
       </thead>
       <tbody>
-        {#if tradingPairs.length === 0}
+        {#if paginatedPairs.length === 0}
           <tr>
             <td colspan="8" class="text-center py-12 text-base-content/40">
               {$_("no_pairs_found")}
@@ -74,7 +92,7 @@
           </tr>
         {/if}
 
-        {#each tradingPairs as pair}
+        {#each paginatedPairs as pair}
           <tr class="hover:bg-base-200/30 transition-colors">
             <td class="font-medium"
               ><span class="badge badge-ghost font-mono">{pair.symbol}</span
@@ -82,13 +100,15 @@
             >
             <td>{pair.exchange_id}</td>
             <td class="text-xs font-mono opacity-70">{pair.ccxt_id}</td>
-            <td class="max-w-[120px]">
+            <td class="max-w-[150px]">
               <div class="flex items-center gap-1 group/id">
                 <span
                   class="truncate text-xs opacity-50 font-mono"
                   title={pair.base_asset_id}
                 >
-                  {pair.base_asset_id}
+                  {pair.base_asset_id.slice(0, 8)}...{pair.base_asset_id.slice(
+                    -4,
+                  )}
                 </span>
                 <button
                   class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
@@ -111,13 +131,16 @@
                 </button>
               </div>
             </td>
-            <td class="max-w-[120px]">
+            <td class="max-w-[150px]">
               <div class="flex items-center gap-1 group/id">
                 <span
                   class="truncate text-xs opacity-50 font-mono"
                   title={pair.quote_asset_id}
                 >
-                  {pair.quote_asset_id}
+                  {pair.quote_asset_id.slice(
+                    0,
+                    8,
+                  )}...{pair.quote_asset_id.slice(-4)}
                 </span>
                 <button
                   class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
@@ -152,7 +175,7 @@
             <td class="text-center">
               <button
                 class={clsx(
-                  "btn btn-sm btn-circle transition-all",
+                  "btn btn-xs btn-circle transition-all",
                   pair.enable
                     ? "btn-success text-white"
                     : "btn-ghost text-base-content/40",
@@ -227,5 +250,60 @@
         {/each}
       </tbody>
     </table>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div
+    class="flex items-center justify-between px-6 py-4 border-t border-base-200 bg-base-100"
+  >
+    <div class="text-sm text-base-content/60">
+      {$_("showing")}
+      {startIndex}-{endIndex}
+      {$_("of")}
+      {tradingPairs.length}
+      {$_("entries")}
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        class="btn btn-ghost btn-sm btn-square"
+        disabled={currentPage === 1}
+        on:click={() => (currentPage = Math.max(1, currentPage - 1))}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 19.5 8.25 12l7.5-7.5"
+          />
+        </svg>
+      </button>
+      <button
+        class="btn btn-ghost btn-sm btn-square"
+        disabled={currentPage === totalPages || tradingPairs.length === 0}
+        on:click={() => (currentPage = Math.min(totalPages, currentPage + 1))}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m8.25 4.5 7.5 7.5-7.5 7.5"
+          />
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

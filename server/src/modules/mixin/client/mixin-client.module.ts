@@ -7,4 +7,4 @@ import { MixinClientService } from './mixin-client.service';
   providers: [MixinClientService],
   exports: [MixinClientService],
 })
-export class MixinClientModule { }
+export class MixinClientModule {}

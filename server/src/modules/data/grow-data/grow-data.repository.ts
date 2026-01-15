@@ -19,7 +19,7 @@ export class GrowdataRepository {
     private readonly arbitragePairRepository: Repository<GrowdataArbitragePair>,
     @InjectRepository(GrowdataMarketMakingPair)
     private readonly marketMakingPairRepository: Repository<GrowdataMarketMakingPair>,
-  ) { }
+  ) {}
 
   // Exchange Methods
   async addExchange(exchange: GrowdataExchange) {

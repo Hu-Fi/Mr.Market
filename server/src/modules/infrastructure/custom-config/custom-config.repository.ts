@@ -8,7 +8,7 @@ export class CustomConfigRepository {
   constructor(
     @InjectRepository(CustomConfigEntity)
     private readonly customRepository: Repository<CustomConfigEntity>,
-  ) { }
+  ) {}
 
   private async getConfigById(configId?: number): Promise<CustomConfigEntity> {
     let config: CustomConfigEntity | null;
@@ -47,10 +47,7 @@ export class CustomConfigRepository {
     await this.customRepository.save(config);
   }
 
-  async modifyMaxBalanceInMixinBot(
-    newMaxBalance: string,
-    configId?: number,
-  ) {
+  async modifyMaxBalanceInMixinBot(newMaxBalance: string, configId?: number) {
     const config = await this.getConfigById(configId);
     config.max_balance_mixin_bot = newMaxBalance;
     await this.customRepository.save(config);

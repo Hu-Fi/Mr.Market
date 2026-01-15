@@ -63,4 +63,4 @@ import { AdminExchangesModule } from './exchanges/exchanges.module';
     AdminFeeService,
   ],
 })
-export class AdminModule { }
+export class AdminModule {}

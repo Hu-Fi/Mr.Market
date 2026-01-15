@@ -10,6 +10,9 @@ import { MixinClientModule } from '../client/mixin-client.module';
     BullModule.registerQueue({
       name: 'snapshots',
     }),
+    BullModule.registerQueue({
+      name: 'market-making',
+    }),
     MixinClientModule,
   ],
   providers: [ConfigService, SnapshotsService, SnapshotsProcessor],

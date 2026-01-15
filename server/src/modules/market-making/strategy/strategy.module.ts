@@ -8,9 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   ArbitrageOrder,
   MarketMakingOrder,
-  PaymentState,
   SimplyGrowOrder,
-} from 'src/common/entities/strategy-user.entity';
+} from 'src/common/entities/user-orders.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
@@ -34,19 +33,13 @@ import { FeeModule } from '../fee/fee.module';
       SimplyGrowOrder,
       MarketMakingOrder,
       StrategyInstance,
-      PaymentState,
       ArbitrageHistory,
       MarketMakingHistory,
     ]),
     FeeModule,
   ],
   controllers: [StrategyController],
-  providers: [
-    StrategyService,
-    ExchangeInitService,
-    AlpacaStratService,
-
-  ],
+  providers: [StrategyService, ExchangeInitService, AlpacaStratService],
   exports: [StrategyService],
 })
 export class StrategyModule { }

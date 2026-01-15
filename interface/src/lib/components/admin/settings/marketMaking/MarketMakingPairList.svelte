@@ -19,6 +19,15 @@
   let isUpdating = "";
   let isDeleting = "";
 
+  // Pagination
+  let currentPage = 1;
+  const itemsPerPage = 4;
+  $: totalPages = Math.ceil(marketMakingPairs.length / itemsPerPage);
+  $: paginatedPairs = marketMakingPairs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   async function UpdateMarketMakingPair(id: string, enable: boolean) {
     if (!id) return;
     isUpdating = id;
@@ -83,28 +92,34 @@
       <table class="table table-lg">
         <thead class="bg-base-200/50 text-base-content/70">
           <tr>
-            <th>{$_("icon")}</th>
-            <th>{$_("exchange")}</th>
-            <th>{$_("symbol")}</th>
-            <th>{$_("base_symbol")}</th>
-            <th>{$_("quote_symbol")}</th>
-            <th>{$_("base_asset_id")}</th>
-            <th>{$_("quote_asset_id")}</th>
-            <th>{$_("custom_fee_rate")}</th>
-            <th class="text-center">{$_("status")}</th>
-            <th class="text-right">{$_("actions")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("icon")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("exchange")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("symbol")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("base")}</th>
+            <th class="uppercase text-xs font-semibold">{$_("quote")}</th>
+            <th class="uppercase text-xs font-semibold"
+              >{$_("asset_ids")}
+              <span class="normal-case">({$_("base")}/{$_("quote")})</span>
+            </th>
+            <th class="uppercase text-xs font-semibold">{$_("fee_rate")}</th>
+            <th class="text-center uppercase text-xs font-semibold"
+              >{$_("status")}</th
+            >
+            <th class="text-right uppercase text-xs font-semibold"
+              >{$_("action")}</th
+            >
           </tr>
         </thead>
         <tbody>
-          {#if marketMakingPairs.length === 0}
+          {#if paginatedPairs.length === 0}
             <tr>
-              <td colspan="10" class="text-center py-12 text-base-content/40">
+              <td colspan="9" class="text-center py-12 text-base-content/40">
                 {$_("no_pairs_found")}
               </td>
             </tr>
           {/if}
 
-          {#each marketMakingPairs as pair}
+          {#each paginatedPairs as pair}
             <tr class="hover:bg-base-200/30 transition-colors">
               <td>
                 <div class="flex -space-x-3">
@@ -131,62 +146,71 @@
               >
               <td>{pair.base_symbol}</td>
               <td>{pair.quote_symbol}</td>
-              <td class="max-w-[120px]">
-                <div class="flex items-center gap-1 group/id">
-                  <span
-                    class="truncate text-xs opacity-50 font-mono"
-                    title={pair.base_asset_id}
-                  >
-                    {pair.base_asset_id}
-                  </span>
-                  <button
-                    class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
-                    on:click={() => copyToClipboard(pair.base_asset_id)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-3 h-3"
+              <!-- Combined Asset IDs column -->
+              <td class="max-w-[180px]">
+                <div class="flex flex-col gap-1">
+                  <!-- Base Asset ID -->
+                  <div class="flex items-center gap-1 group/id">
+                    <span
+                      class="truncate text-xs opacity-50 font-mono"
+                      title={pair.base_asset_id}
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-              <td class="max-w-[120px]">
-                <div class="flex items-center gap-1 group/id">
-                  <span
-                    class="truncate text-xs opacity-50 font-mono"
-                    title={pair.quote_asset_id}
-                  >
-                    {pair.quote_asset_id}
-                  </span>
-                  <button
-                    class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
-                    on:click={() => copyToClipboard(pair.quote_asset_id)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-3 h-3"
+                      {pair.base_asset_id.slice(
+                        0,
+                        8,
+                      )}...{pair.base_asset_id.slice(-4)}
+                    </span>
+                    <button
+                      class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                      on:click={() => copyToClipboard(pair.base_asset_id)}
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
-                      />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-3 h-3"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- Quote Asset ID -->
+                  <div class="flex items-center gap-1 group/id">
+                    <span
+                      class="truncate text-xs opacity-50 font-mono"
+                      title={pair.quote_asset_id}
+                    >
+                      {pair.quote_asset_id.slice(
+                        0,
+                        8,
+                      )}...{pair.quote_asset_id.slice(-4)}
+                    </span>
+                    <button
+                      class="btn btn-ghost btn-xs btn-square opacity-0 group-hover/id:opacity-100 transition-opacity"
+                      on:click={() => copyToClipboard(pair.quote_asset_id)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-3 h-3"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </td>
               <td>
@@ -201,7 +225,7 @@
               <td class="text-center">
                 <button
                   class={clsx(
-                    "btn btn-sm btn-circle transition-all",
+                    "btn btn-xs btn-circle transition-all",
                     pair.enable
                       ? "btn-success text-white"
                       : "btn-ghost text-base-content/40",
@@ -276,6 +300,33 @@
           {/each}
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div
+      class="flex items-center justify-between px-6 py-4 border-t border-base-200 bg-base-100"
+    >
+      <div class="text-sm text-base-content/60">
+        {$_("showing")} <span class="font-medium">{paginatedPairs.length}</span>
+        {$_("pairs")}
+      </div>
+      <div class="join">
+        <button
+          class="join-item btn btn-sm"
+          disabled={currentPage === 1}
+          on:click={() => (currentPage = Math.max(1, currentPage - 1))}
+        >
+          {$_("previous")}
+        </button>
+        <button
+          class="join-item btn btn-sm"
+          disabled={currentPage === totalPages ||
+            marketMakingPairs.length === 0}
+          on:click={() => (currentPage = Math.min(totalPages, currentPage + 1))}
+        >
+          {$_("next")}
+        </button>
+      </div>
     </div>
   </div>
 {/if}

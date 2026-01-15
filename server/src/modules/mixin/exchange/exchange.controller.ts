@@ -12,7 +12,7 @@ import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 export class ExchangeController {
   private readonly logger = new CustomLogger(ExchangeController.name);
 
-  constructor(private readonly exchangeService: ExchangeService) { }
+  constructor(private readonly exchangeService: ExchangeService) {}
 
   @Post('/withdrawal/create')
   @ApiOperation({ summary: 'Create withdrawal with api key' })

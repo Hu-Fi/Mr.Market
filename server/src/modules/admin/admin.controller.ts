@@ -45,7 +45,7 @@ export class AdminController {
     private readonly adminStrategyService: AdminStrategyService,
     private readonly adminGrowService: AdminGrowService,
     private readonly adminSpotService: AdminSpotService,
-  ) { }
+  ) {}
 
   // Admin strategy endpoints
   @Post('strategy/start')

@@ -89,11 +89,10 @@ export default () => ({
   },
   hufi: {
     campaign_launcher: {
-      api_url: process.env.HUFI_CAMPAIGN_LAUNCHER_API_URL,
+      api_url: process.env.HUFI_CAMPAIGN_LAUNCHER_API_URL || 'https://cl.hu.finance',
     },
     recording_oracle: {
-      api_url: process.env.HUFI_RECORDING_ORACLE_API_URL,
-      api_key: process.env.HUFI_RECORDING_ORACLE_API_KEY,
+      api_url: process.env.HUFI_RECORDING_ORACLE_API_URL || 'https://ro.hu.finance',
     },
   },
 });

@@ -15,7 +15,7 @@ export class AdminFeeService {
     private readonly spotPairRepository: Repository<SpotdataTradingPair>,
     @InjectRepository(GrowdataMarketMakingPair)
     private readonly mmPairRepository: Repository<GrowdataMarketMakingPair>,
-  ) { }
+  ) {}
 
   async getGlobalFees() {
     const config = await this.customConfigRepository.findOne({
@@ -28,8 +28,8 @@ export class AdminFeeService {
         spot_fee: '0',
         market_making_fee: '0',
         enable_spot_fee: true,
-        enable_market_making_fee: true
-      }
+        enable_market_making_fee: true,
+      };
     }
 
     return {
@@ -46,7 +46,10 @@ export class AdminFeeService {
     });
 
     if (!config) {
-      config = this.customConfigRepository.create({ config_id: 1, ...updateDto });
+      config = this.customConfigRepository.create({
+        config_id: 1,
+        ...updateDto,
+      });
     } else {
       Object.assign(config, updateDto);
     }
@@ -59,7 +62,12 @@ export class AdminFeeService {
     const mmPairs = await this.mmPairRepository.find();
 
     const spotOverrides = spotPairs
-      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined && p.custom_fee_rate !== '')
+      .filter(
+        (p) =>
+          p.custom_fee_rate !== null &&
+          p.custom_fee_rate !== undefined &&
+          p.custom_fee_rate !== '',
+      )
       .map((p) => ({
         type: 'spot',
         id: p.id,
@@ -68,7 +76,12 @@ export class AdminFeeService {
       }));
 
     const mmOverrides = mmPairs
-      .filter((p) => p.custom_fee_rate !== null && p.custom_fee_rate !== undefined && p.custom_fee_rate !== '')
+      .filter(
+        (p) =>
+          p.custom_fee_rate !== null &&
+          p.custom_fee_rate !== undefined &&
+          p.custom_fee_rate !== '',
+      )
       .map((p) => ({
         type: 'market_making',
         id: p.id,

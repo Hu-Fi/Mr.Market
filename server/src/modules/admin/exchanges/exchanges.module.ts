@@ -6,4 +6,4 @@ import { AdminExchangesController } from './exchanges.controller';
   imports: [ExchangeModule],
   controllers: [AdminExchangesController],
 })
-export class AdminExchangesModule { }
+export class AdminExchangesModule {}

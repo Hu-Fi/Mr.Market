@@ -14,4 +14,4 @@ import { MixinClientModule } from '../client/mixin-client.module';
   exports: [UserService, UserRepository],
   controllers: [UserController],
 })
-export class UserModule { }
+export class UserModule {}

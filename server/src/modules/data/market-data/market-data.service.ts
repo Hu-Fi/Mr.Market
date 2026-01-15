@@ -22,7 +22,7 @@ export class MarketdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private ExchangeInitService: ExchangeInitService,
-  ) { }
+  ) {}
 
   async getSupportedExchanges(): Promise<string[]> {
     return this.ExchangeInitService.getSupportedExchanges();
@@ -108,7 +108,10 @@ export class MarketdataService {
 
     for (const config of enabledConfigs) {
       try {
-        const ticker = await this.getTickerPrice(config.exchange, config.symbol);
+        const ticker = await this.getTickerPrice(
+          config.exchange,
+          config.symbol,
+        );
         results.push({
           symbol: config.symbol,
           base_symbol: config.baseSymbol,

@@ -4,7 +4,7 @@
 
 {#if name === "dashboard"}
   <svg
-    class="w-6 h-6 text-gray-500 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 group-hover:text-base-content transition duration-75"
     fill="currentColor"
     viewBox="0 0 20 20"
     xmlns="http://www.w3.org/2000/svg"
@@ -14,7 +14,7 @@
   >
 {:else if name === "users"}
   <svg
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
     fill="currentColor"
     viewBox="0 0 20 20"
     xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +30,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -43,7 +43,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -61,7 +61,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -74,7 +74,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -90,7 +90,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -103,7 +103,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -116,7 +116,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"
@@ -134,7 +134,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+    class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-base-content transition duration-75"
   >
     <path
       fill-rule="evenodd"

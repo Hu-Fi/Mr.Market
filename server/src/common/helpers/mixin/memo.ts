@@ -66,7 +66,8 @@ export const encodeSimplyGrowCreateMemo = (details: {
   tradingType: string;
   action: string;
   orderId: string;
-}): string => { // Remove rewardAddress argument
+}): string => {
+  // Remove rewardAddress argument
   // Get numeric keys for tradingType and action
   const tradingTypeKeyStr = Object.keys(TARDING_TYPE_MAP).find(
     (key) => TARDING_TYPE_MAP[key] === details.tradingType,

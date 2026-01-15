@@ -38,5 +38,26 @@ export type SpotOrderStatus = keyof typeof STATE_CODE_MAP;
 // deleted: soft delete
 // refunded: soft deleted and refunded
 export type ArbitrageStates = 'created' | 'paused' | 'deleted' | 'refunded';
-export type MarketMakingStates = 'created' | 'paused' | 'deleted' | 'refunded' | 'running' | 'stopped';
+export type MarketMakingStates =
+  // Payment States
+  | 'payment_pending'       // Waiting for first payment
+  | 'payment_incomplete'    // Partial payment received (waiting for base or quote)
+  | 'payment_complete'      // Both base and quote assets received
+  // Withdrawal States
+  | 'withdrawing'           // Withdrawal to exchange initiated
+  | 'withdrawal_confirmed'  // Withdrawal confirmed on Mixin
+  | 'deposit_confirming'    // Waiting for exchange deposit confirmation
+  | 'deposit_confirmed'     // Exchange deposit confirmed
+  // Campaign States
+  | 'joining_campaign'      // Joining HUFI campaign
+  | 'campaign_joined'       // Successfully joined campaign
+  // Execution States
+  | 'created'               // Ready to start market making
+  | 'running'               // Market making is running
+  | 'paused'                // Paused by user
+  | 'stopped'               // Stopped by user
+  // Error/Terminal States
+  | 'failed'                // Failed at some step
+  | 'refunded'              // Refunded to user
+  | 'deleted';              // Soft deleted
 export type SimplyGrowStates = 'created' | 'paused' | 'deleted' | 'refunded';

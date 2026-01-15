@@ -22,7 +22,7 @@ import { CustomLogger } from '../../infrastructure/logger/logger.service';
 export class TradeController {
   private readonly logger = new CustomLogger(TradeController.name);
 
-  constructor(private readonly tradeService: TradeService) { }
+  constructor(private readonly tradeService: TradeService) {}
 
   @Post('/market')
   @ApiOperation({ summary: 'Execute a market trade' })

@@ -1,16 +1,15 @@
 import BigNumber from 'bignumber.js';
 import { Injectable } from '@nestjs/common';
-import { KeystoreClientReturnType, SafeWithdrawalFee } from '@mixin.dev/mixin-node-sdk';
+import {
+  KeystoreClientReturnType,
+  SafeWithdrawalFee,
+} from '@mixin.dev/mixin-node-sdk';
 import { ExchangeInitService } from '../../infrastructure/exchange-init/exchange-init.service';
 import { CustomLogger } from '../../infrastructure/logger/logger.service';
 import { MixinClientService } from '../../mixin/client/mixin-client.service';
 import { MIXIN_DEPOSIT_FEES } from 'src/common/constants/constants';
 import { CustomConfigService } from '../../infrastructure/custom-config/custom-config.service';
 import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
-
-interface WithdrawalFeeWithPriority extends SafeWithdrawalFee {
-  priority: number;
-}
 
 @Injectable()
 export class FeeService {
@@ -35,21 +34,29 @@ export class FeeService {
   async calculateMoveFundsFee(
     exchangeName: string,
     pair: string,
-    direction: 'deposit_to_exchange' | 'withdraw_to_mixin' | 'withdraw_external',
+    direction:
+      | 'deposit_to_exchange'
+      | 'withdraw_to_mixin'
+      | 'withdraw_external',
   ) {
     const [base_symbol, quote_symbol] = pair.split('/');
     let base_fee, quote_fee, direction_info;
     let mixin_deposit_fee = '0';
 
     // Fetch the trading pair configuration from database to get the correct asset IDs
-    const tradingPairConfig = await this.growDataRepository.findMarketMakingPairByExchangeAndSymbol(
-      exchangeName,
-      pair,
-    );
+    const tradingPairConfig =
+      await this.growDataRepository.findMarketMakingPairByExchangeAndSymbol(
+        exchangeName,
+        pair,
+      );
 
     if (!tradingPairConfig) {
-      this.logger.error(`Trading pair configuration not found for ${exchangeName} ${pair}`);
-      throw new Error(`Trading pair configuration not found for ${exchangeName} ${pair}`);
+      this.logger.error(
+        `Trading pair configuration not found for ${exchangeName} ${pair}`,
+      );
+      throw new Error(
+        `Trading pair configuration not found for ${exchangeName} ${pair}`,
+      );
     }
 
     // Use the configured asset IDs from the database
@@ -60,11 +67,11 @@ export class FeeService {
     const quote_asset = await this.client.safe.fetchAsset(quote);
 
     if (direction === 'deposit_to_exchange') {
-      direction_info = 'mixin->exchange'
+      direction_info = 'mixin->exchange';
     } else if (direction === 'withdraw_to_mixin') {
-      direction_info = 'exchange->mixin'
+      direction_info = 'exchange->mixin';
     } else if (direction === 'withdraw_external') {
-      direction_info = 'exchange->external'
+      direction_info = 'exchange->external';
     } else {
       return;
     }
@@ -73,11 +80,16 @@ export class FeeService {
       if (direction === 'deposit_to_exchange') {
         base_fee = await this.getMixinWithdrawalFee(base);
         quote_fee = await this.getMixinWithdrawalFee(quote);
-        const base_fee_asset = await this.client.safe.fetchAsset(base_fee?.asset_id);
-        const quote_fee_asset = await this.client.safe.fetchAsset(quote_fee?.asset_id);
+        const base_fee_asset = await this.client.safe.fetchAsset(
+          base_fee?.asset_id,
+        );
+        const quote_fee_asset = await this.client.safe.fetchAsset(
+          quote_fee?.asset_id,
+        );
 
         // Get market making fee percentage from custom config
-        const market_making_fee_percentage = await this.customConfigService.readMarketMakingFee();
+        const market_making_fee_percentage =
+          await this.customConfigService.readMarketMakingFee();
 
         return {
           base_asset_id: base_asset.asset_id,
@@ -98,7 +110,11 @@ export class FeeService {
       } else if (direction === 'withdraw_to_mixin') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
         if (exchange) {
-          const exchangeFees = await this.getExchangeWithdrawalFee(exchange, base, quote);
+          const exchangeFees = await this.getExchangeWithdrawalFee(
+            exchange,
+            base,
+            quote,
+          );
           base_fee = exchangeFees.baseFee;
           quote_fee = exchangeFees.quoteFee;
         }
@@ -106,7 +122,9 @@ export class FeeService {
         // Deposit fee in USD
         const base_mixin_fee = this.getMixinDepositFee(base_asset.chain_id);
         const quote_mixin_fee = this.getMixinDepositFee(quote_asset.chain_id);
-        mixin_deposit_fee = BigNumber(base_mixin_fee).plus(quote_mixin_fee).toString();
+        mixin_deposit_fee = BigNumber(base_mixin_fee)
+          .plus(quote_mixin_fee)
+          .toString();
 
         return {
           symbol: pair,
@@ -120,7 +138,11 @@ export class FeeService {
       } else if (direction === 'withdraw_external') {
         const exchange = this.exchangeInitService.getExchange(exchangeName);
         if (exchange) {
-          const exchangeFees = await this.getExchangeWithdrawalFee(exchange, base, quote);
+          const exchangeFees = await this.getExchangeWithdrawalFee(
+            exchange,
+            base,
+            quote,
+          );
           base_fee = exchangeFees.baseFee;
           quote_fee = exchangeFees.quoteFee;
         }
@@ -131,7 +153,7 @@ export class FeeService {
           base_asset_fee: base_fee?.amount,
           quote_asset_fee: quote_fee?.amount,
           direction: direction_info,
-        }
+        };
       }
     } catch (error) {
       this.logger.error(`Error fetching fees: ${error.message}`);
@@ -145,12 +167,14 @@ export class FeeService {
     };
   }
 
-  private async getMixinWithdrawalFee(asset_id: string): Promise<WithdrawalFeeWithPriority> {
+  private async getMixinWithdrawalFee(
+    asset_id: string,
+  ): Promise<SafeWithdrawalFee> {
     try {
       const asset_detail = await this.client.safe.fetchAsset(asset_id);
       if (asset_detail) {
-        // @ts-expect-error fetchFee is not in type definition but exists in SDK as per user
-        const fees: WithdrawalFeeWithPriority[] = await this.client.safe.fetchFee(asset_detail.asset_id);
+        const fees: SafeWithdrawalFee[] =
+          await this.client.safe.fetchFee(asset_detail.asset_id, '');
 
         // Find the fee with maximum priority
         if (fees && fees.length > 0) {
@@ -161,11 +185,17 @@ export class FeeService {
         }
       }
     } catch (e) {
-      this.logger.error(`Failed to get Mixin withdrawal fee for ${asset_id}: ${e.message}`);
+      this.logger.error(
+        `Failed to get Mixin withdrawal fee for ${asset_id}: ${e.message}`,
+      );
     }
   }
 
-  private async getExchangeWithdrawalFee(exchange: any, base: string, quote: string) {
+  private async getExchangeWithdrawalFee(
+    exchange: any,
+    base: string,
+    quote: string,
+  ) {
     let baseFee = 0;
     let quoteFee = 0;
 
@@ -184,8 +214,10 @@ export class FeeService {
 
     // Fallback if fetchTransactionFees didn't work or returned nothing, try currencies
     if (baseFee === 0 && quoteFee === 0 && exchange.currencies) {
-      if (exchange.currencies[base]) baseFee = exchange.currencies[base].fee || 0;
-      if (exchange.currencies[quote]) quoteFee = exchange.currencies[quote].fee || 0;
+      if (exchange.currencies[base])
+        baseFee = exchange.currencies[base].fee || 0;
+      if (exchange.currencies[quote])
+        quoteFee = exchange.currencies[quote].fee || 0;
     }
 
     return { baseFee, quoteFee };

@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Trading Engine')
 @Controller('performance')
 export class PerformanceController {
-  constructor(private readonly performanceService: PerformanceService) { }
+  constructor(private readonly performanceService: PerformanceService) {}
 
   @Get('/:userId')
   getPerformanceByUser(

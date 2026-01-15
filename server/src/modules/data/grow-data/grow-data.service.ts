@@ -13,7 +13,7 @@ export class GrowdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly growdataRepository: GrowdataRepository,
-  ) { }
+  ) {}
 
   private cachingTTL = 600; // 10 minutes
 

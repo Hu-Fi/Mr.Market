@@ -29,7 +29,7 @@
     "migration:seed": "ts-node src/database/seeder/seed.ts"
   },
   "dependencies": {
-    "@mixin.dev/mixin-node-sdk": "^7.4.7",
+    "@mixin.dev/mixin-node-sdk": "^7.4.9",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bull": "^11.0.4",
     "@nestjs/cache-manager": "^2.1.1",
@@ -96,6 +96,8 @@
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "jest": "^29.5.0",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",

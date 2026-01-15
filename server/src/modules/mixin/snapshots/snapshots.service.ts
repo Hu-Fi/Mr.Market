@@ -43,6 +43,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
     @InjectQueue('snapshots') private snapshotsQueue: Queue,
+    @InjectQueue('market-making') private marketMakingQueue: Queue,
     private mixinClientService: MixinClientService,
   ) {
     this.keystore = this.mixinClientService.keystore;
@@ -305,7 +306,12 @@ export class SnapshotsService implements OnApplicationBootstrap {
       randomUUID(),
       this.spendKey,
     );
-    const tx = buildSafeTransaction(utxos, recipients, ghosts, Buffer.from('Refund'));
+    const tx = buildSafeTransaction(
+      utxos,
+      recipients,
+      ghosts,
+      Buffer.from('Refund'),
+    );
     const raw = encodeSafeTransaction(tx);
 
     const request_id = randomUUID();
@@ -485,12 +491,33 @@ export class SnapshotsService implements OnApplicationBootstrap {
           // Spot trading
           break;
         case 1:
-          // Market making
+          // Market making - Queue for processing instead of emitting event
           const mmDetails = decodeMarketMakingCreateMemo(payload);
           if (!mmDetails) {
+            this.logger.warn('Failed to decode market making memo, refunding');
+            await this.refund(snapshot);
             break;
           }
-          this.events.emit('market_making.create', mmDetails, snapshot);
+          // Queue the snapshot for market making processing
+          await this.marketMakingQueue.add(
+            'process_mm_snapshot',
+            {
+              snapshotId: snapshot.snapshot_id,
+              orderId: mmDetails.orderId,
+              marketMakingPairId: mmDetails.marketMakingPairId,
+              memoDetails: mmDetails,
+              snapshot,
+            },
+            {
+              jobId: `mm_snapshot_${snapshot.snapshot_id}`,
+              attempts: 3,
+              backoff: { type: 'exponential', delay: 5000 },
+              removeOnComplete: false, // Keep for debugging
+            },
+          );
+          this.logger.log(
+            `Queued market making snapshot ${snapshot.snapshot_id} for order ${mmDetails.orderId}`,
+          );
           break;
         case 2:
           // Simply grow
@@ -499,8 +526,6 @@ export class SnapshotsService implements OnApplicationBootstrap {
             break;
           }
           this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
-          break;
-        case 3:
           break;
         default:
           // Refund
@@ -518,9 +543,13 @@ export class SnapshotsService implements OnApplicationBootstrap {
   async startSnapshotLoop() {
     if (this.enableCron) {
       this.logger.log('Starting snapshot polling loop via Bull...');
-      await this.snapshotsQueue.add('process_snapshots', {}, {
-        removeOnComplete: true,
-      });
+      await this.snapshotsQueue.add(
+        'process_snapshots',
+        {},
+        {
+          removeOnComplete: true,
+        },
+      );
     }
   }
 }

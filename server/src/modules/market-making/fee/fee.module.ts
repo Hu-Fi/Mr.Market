@@ -10,9 +10,15 @@ import { CustomConfigModule } from '../../infrastructure/custom-config/custom-co
 import { GrowdataModule } from 'src/modules/data/grow-data/grow-data.module';
 
 @Module({
-  imports: [ConfigModule, ExchangeInitModule, MixinClientModule, CustomConfigModule, GrowdataModule],
+  imports: [
+    ConfigModule,
+    ExchangeInitModule,
+    MixinClientModule,
+    CustomConfigModule,
+    GrowdataModule,
+  ],
   controllers: [FeeController],
   providers: [FeeService],
   exports: [FeeService],
 })
-export class FeeModule { }
+export class FeeModule {}
