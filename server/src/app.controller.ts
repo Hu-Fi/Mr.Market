@@ -17,7 +17,9 @@ export class AppController {
     }
   }
 
-  @Get()
+  @Get('')
+  @ApiOperation({ summary: 'Get server information' })
+  @ApiResponse({ status: 200, description: 'Return server information.' })
   getAppInfo() {
     return {
       mixin_app_id: this.configService.get<string>('mixin.app_id'),
@@ -28,7 +30,7 @@ export class AppController {
       campaign_launcher_url: this.configService.get<string>(
         'hufi.campaign_launcher.api_url',
       ),
-      timestamp: new Date().toISOString(),
+      timestamp: getRFC3339Timestamp(),
     };
   }
 
@@ -36,16 +38,5 @@ export class AppController {
   @Redirect('/docs', 302)
   @ApiOperation({ summary: 'Redirect to docs' })
   @ApiResponse({ status: 200, description: 'Redirect to docs.' })
-  redirectToDocs() {}
-
-  @Get('info')
-  @ApiOperation({ summary: 'Get server information' })
-  @ApiResponse({ status: 200, description: 'Return server information.' })
-  getInfo() {
-    return {
-      mixin_app_id: this.configService.get<string>('mixin.app_id'),
-      version: '1',
-      timestamp: getRFC3339Timestamp(),
-    };
-  }
+  redirectToDocs() { }
 }
