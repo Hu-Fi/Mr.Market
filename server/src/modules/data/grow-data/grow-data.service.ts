@@ -1,10 +1,10 @@
 import { Cache } from 'cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { MixinClientService } from 'src/modules/mixin/client/mixin-client.service';
+import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
 import { GrowdataMarketMakingPair } from 'src/common/entities/grow-data.entity';
-import { MIXIN_API_BASE_URL } from 'src/common/constants/constants';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
 @Injectable()
 export class GrowdataService {
@@ -13,9 +13,10 @@ export class GrowdataService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly growdataRepository: GrowdataRepository,
-  ) {}
+    private readonly mixinClientService: MixinClientService,
+  ) { }
 
-  private cachingTTL = 600; // 10 minutes
+  private cachingTTL = 60; // 1 minute
 
   async getGrowData() {
     try {
@@ -73,15 +74,15 @@ export class GrowdataService {
   async getAllArbitragePairs() {
     const pairs = await this.growdataRepository.findAllArbitragePairs();
 
+    const assetIds = pairs.flatMap((pair) => [
+      pair.base_asset_id,
+      pair.quote_asset_id,
+    ]);
+    const priceMap = await this.fetchExternalPriceData(assetIds);
+
     for (const pair of pairs) {
-      const baseAssetPrice = await this.fetchExternalPriceData(
-        pair.base_asset_id,
-      );
-      pair.base_price = baseAssetPrice;
-      const targetAssetPrice = await this.fetchExternalPriceData(
-        pair.quote_asset_id,
-      );
-      pair.target_price = targetAssetPrice;
+      pair.base_price = priceMap.get(pair.base_asset_id) || '0';
+      pair.target_price = priceMap.get(pair.quote_asset_id) || '0';
     }
     return pairs;
   }
@@ -93,15 +94,17 @@ export class GrowdataService {
   // MarketMakingPair Methods
   async getAllMarketMakingPairs() {
     const pairs = await this.growdataRepository.findAllMarketMakingPairs();
+    this.logger.debug(`MarketMakingPairs: ${JSON.stringify(pairs)}`);
+
+    const assetIds = pairs.flatMap((pair) => [
+      pair.base_asset_id,
+      pair.quote_asset_id,
+    ]);
+    const priceMap = await this.fetchExternalPriceData(assetIds);
+
     for (const pair of pairs) {
-      const baseAssetPrice = await this.fetchExternalPriceData(
-        pair.base_asset_id,
-      );
-      pair.base_price = baseAssetPrice;
-      const targetAssetPrice = await this.fetchExternalPriceData(
-        pair.quote_asset_id,
-      );
-      pair.target_price = targetAssetPrice;
+      pair.base_price = priceMap.get(pair.base_asset_id) || '0';
+      pair.target_price = priceMap.get(pair.quote_asset_id) || '0';
     }
     return pairs;
   }
@@ -128,21 +131,47 @@ export class GrowdataService {
     }
   }
 
-  private async fetchExternalPriceData(asset_id: string) {
-    const cacheKey = `growdata-${asset_id}-price`;
-    const cachedData = await this.cacheService.get(cacheKey);
-    if (cachedData) {
-      return cachedData;
+  private async fetchExternalPriceData(asset_ids: string[]) {
+    const uniqueAssetIds = [...new Set(asset_ids.filter((id) => !!id))];
+    if (uniqueAssetIds.length === 0) return new Map<string, string>();
+
+    const priceMap = new Map<string, string>();
+    const missingAssetIds: string[] = [];
+
+    for (const assetId of uniqueAssetIds) {
+      const cacheKey = `asset_price_${assetId}`;
+      const cachedPrice = await this.cacheService.get<string>(cacheKey);
+      if (cachedPrice) {
+        priceMap.set(assetId, cachedPrice);
+      } else {
+        missingAssetIds.push(assetId);
+      }
     }
 
-    const response = await fetch(
-      `${MIXIN_API_BASE_URL}/network/assets/${asset_id}`,
-    );
-    const data = await response.json();
-    const price_usd = data.data.price_usd;
-    if (price_usd) {
-      await this.cacheService.set(cacheKey, price_usd, this.cachingTTL);
+    if (missingAssetIds.length === 0) {
+      return priceMap;
     }
-    return price_usd || '0';
+
+    try {
+      const assets = await this.mixinClientService.client.safe.fetchAssets(
+        missingAssetIds,
+      );
+      for (const asset of assets) {
+        const price = asset.price_usd || '0';
+        priceMap.set(asset.asset_id, price);
+        await this.cacheService.set(
+          `asset_price_${asset.asset_id}`,
+          price,
+          this.cachingTTL,
+        );
+      }
+      return priceMap;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch prices for assets: ${missingAssetIds.join(', ')}`,
+        error.stack,
+      );
+      return priceMap;
+    }
   }
 }

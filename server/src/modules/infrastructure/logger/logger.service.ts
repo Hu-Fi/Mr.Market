@@ -21,8 +21,7 @@ export class CustomLogger extends Logger {
         winston.format.timestamp(),
         winston.format.printf(
           (info) =>
-            `[${info.timestamp}] [${info.level.toUpperCase()}] [${
-              context || this.context
+            `[${info.timestamp}] [${info.level.toUpperCase()}] [${context || this.context
             }] ${info.message}`,
         ),
       ),
@@ -98,7 +97,7 @@ export class CustomLogger extends Logger {
   }
 
   onModuleInit() {
-    this.log('Logger module initialized', 'Logger');
+    // this.log('Logger module initialized', 'Logger');
   }
 
   onModuleDestroy() {

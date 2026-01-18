@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GrowdataService } from './grow-data.service';
 import { GrowdataController } from './grow-data.controller';
 import { CacheModule } from '@nestjs/cache-manager';
+import { MixinClientModule } from 'src/modules/mixin/client/mixin-client.module';
 import { GrowdataRepository } from './grow-data.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
@@ -14,6 +15,7 @@ import {
 @Module({
   imports: [
     CacheModule.register(),
+    MixinClientModule,
     TypeOrmModule.forFeature([
       GrowdataExchange,
       GrowdataSimplyGrowToken,
@@ -25,4 +27,4 @@ import {
   providers: [GrowdataService, GrowdataRepository],
   exports: [GrowdataService, CacheModule, GrowdataRepository],
 })
-export class GrowdataModule {}
+export class GrowdataModule { }

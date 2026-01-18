@@ -28,7 +28,7 @@
         tabindex="0"
         type="button"
         class={clsx(
-          "btn btn-sm border-0 w-full h-10 min-h-0 rounded-xl capitalize font-medium text-sm flex justify-center items-center gap-2 no-animation",
+          "btn btn-sm btn-disabled border-0 w-full h-10 min-h-0 rounded-xl capitalize font-medium text-sm flex justify-center items-center gap-2 no-animation",
           mode === "single_token"
             ? "bg-base-100 shadow-sm text-base-content"
             : "bg-transparent text-base-content/50 hover:bg-base-200/50",

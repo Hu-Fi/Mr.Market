@@ -4,7 +4,6 @@ import { AdminController } from './admin.controller';
 import { StrategyService } from '../market-making/strategy/strategy.service';
 import { PerformanceService } from '../market-making/performance/performance.service';
 import { TradeService } from '../market-making/trade/trade.service';
-import { ExchangeInitService } from '../infrastructure/exchange-init/exchange-init.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MarketMakingHistory } from 'src/common/entities/market-making-order.entity';
 import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
@@ -15,7 +14,6 @@ import { Web3Module } from '../web3/web3.module';
 import { MixinUser } from 'src/common/entities/mixin-user.entity';
 import { AdminGrowService } from './growdata/adminGrow.service';
 import { GrowdataModule } from '../data/grow-data/grow-data.module';
-import { ExchangeInitModule } from '../infrastructure/exchange-init/exchange-init.module';
 import { AdminSpotService } from './admin-spot-management/admin-spot-management.service';
 import { SpotdataModule } from '../data/spot-data/spot-data.module';
 import { AdminFeeController } from './fee/admin-fee.controller';
@@ -28,7 +26,6 @@ import { AdminExchangesModule } from './exchanges/exchanges.module';
 @Module({
   imports: [
     AdminExchangesModule,
-    ExchangeInitModule,
     GrowdataModule,
     SpotdataModule,
     TypeOrmModule.forFeature([
@@ -51,7 +48,6 @@ import { AdminExchangesModule } from './exchanges/exchanges.module';
     StrategyService,
     PerformanceService,
     TradeService,
-    ExchangeInitService,
     AdminGrowService,
     AdminSpotService,
     AdminFeeService,
@@ -63,4 +59,4 @@ import { AdminExchangesModule } from './exchanges/exchanges.module';
     AdminFeeService,
   ],
 })
-export class AdminModule {}
+export class AdminModule { }

@@ -1,6 +1,4 @@
-// This is the fallback value of minimum balance for rebalancing when it's not found in db
 export const MIXIN_OAUTH_URL = 'https://api.mixin.one/oauth/token';
-export const MIXIN_API_BASE_URL = 'https://api.mixin.one';
 export const MIXIN_DEPOSIT_FEES = {
   // USD 3
   '43d61dcd-e413-450d-80b8-101d5e903357': 3, // Ethereum

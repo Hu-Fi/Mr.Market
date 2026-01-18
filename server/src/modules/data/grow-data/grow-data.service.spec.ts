@@ -9,11 +9,22 @@ describe('GrowdataService', () => {
   let service: GrowdataService;
   let repository: GrowdataRepository;
   let cacheService: Cache;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         GrowdataService,
+        {
+          provide: 'MixinClientService',
+          useValue: {
+            client: {
+              safe: {
+                fetchAssets: jest.fn(),
+              },
+            },
+          },
+        },
         {
           provide: GrowdataRepository,
           useValue: {
@@ -47,6 +58,7 @@ describe('GrowdataService', () => {
           useValue: {
             log: jest.fn(),
             error: jest.fn(),
+            debug: jest.fn(),
           },
         },
       ],
@@ -101,32 +113,36 @@ describe('GrowdataService', () => {
   });
 
   describe('fetchExternalPriceData', () => {
-    it('should fetch and cache external price data when cache is empty', async () => {
-      const assetId = 'test-asset-id';
-      const price_usd = '100';
-      jest.spyOn(global, 'fetch').mockResolvedValue({
-        json: jest.fn().mockResolvedValue({ data: { price_usd } }),
-      } as any);
-      jest.spyOn(cacheService, 'get').mockResolvedValue(null);
-      jest.spyOn(cacheService, 'set').mockResolvedValue(null);
+    it('should fetch external price data in batch', async () => {
+      const assetIds = ['asset-1', 'asset-2'];
+      const assets = [
+        { asset_id: 'asset-1', price_usd: '100' },
+        { asset_id: 'asset-2', price_usd: '200' },
+      ];
+      const mixinClientService = module.get('MixinClientService') as any;
+      mixinClientService.client.safe.fetchAssets.mockResolvedValue(assets);
 
-      const result = await service['fetchExternalPriceData'](assetId);
-      expect(result).toEqual(price_usd);
-      expect(cacheService.set).toHaveBeenCalledWith(
-        `growdata-${assetId}-price`,
-        price_usd,
-        service['cachingTTL'],
-      );
+      const result = await (service as any).fetchExternalPriceData(assetIds);
+      expect(result).toBeInstanceOf(Map);
+      expect(result.get('asset-1')).toEqual('100');
+      expect(result.get('asset-2')).toEqual('200');
     });
 
-    it('should return cached price data when cache has value', async () => {
-      const assetId = 'test-asset-id';
-      const cachedPriceData = '100';
-      jest.spyOn(cacheService, 'get').mockResolvedValue(cachedPriceData);
+    it('should return empty map if no asset IDs provided', async () => {
+      const result = await (service as any).fetchExternalPriceData([]);
+      expect(result).toBeInstanceOf(Map);
+      expect(result.size).toBe(0);
+    });
 
-      const result = await service['fetchExternalPriceData'](assetId);
-      expect(result).toEqual(cachedPriceData);
-      expect(cacheService.set).not.toHaveBeenCalled();
+    it('should return empty map and log error on failure', async () => {
+      const mixinClientService = module.get('MixinClientService') as any;
+      mixinClientService.client.safe.fetchAssets.mockRejectedValue(
+        new Error('Network error'),
+      );
+
+      const result = await (service as any).fetchExternalPriceData(['asset-1']);
+      expect(result).toBeInstanceOf(Map);
+      expect(result.size).toBe(0);
     });
   });
 });

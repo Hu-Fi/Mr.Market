@@ -53,7 +53,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
 
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
-    this.logger.debug(this.enableCron);
+    this.logger.debug(`Snapshots service enable cron: ${this.enableCron}`);
   }
 
   async onApplicationBootstrap() {

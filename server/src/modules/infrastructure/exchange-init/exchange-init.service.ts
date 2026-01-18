@@ -16,7 +16,7 @@ export class ExchangeInitService {
   constructor() {
     this.initializeExchanges()
       .then(() => {
-        this.logger.log('Exchanges initialized successfully.');
+        this.logger.log('Exchanges initialized successfully');
         this.startKeepAlive();
       })
       .catch((error) =>
@@ -311,9 +311,9 @@ export class ExchangeInitService {
           config.accounts.map(async (account) => {
             try {
               if (!account.apiKey || !account.secret) {
-                this.logger.warn(
-                  `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
-                );
+                // this.logger.warn(
+                //   `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
+                // );
                 return;
               }
 
@@ -341,9 +341,6 @@ export class ExchangeInitService {
 
               // Save the initialized exchange
               exchangeMap.set(account.label, exchange);
-              this.logger.log(
-                `${config.name} ${account.label} initialized successfully.`,
-              );
 
               // Save the default account reference
               if (account.label === 'default') {
@@ -357,7 +354,9 @@ export class ExchangeInitService {
           }),
         );
 
-        this.exchanges.set(config.name, exchangeMap);
+        if (exchangeMap.size > 0) {
+          this.exchanges.set(config.name, exchangeMap);
+        }
       }),
     );
   }
