@@ -47,8 +47,40 @@
   $: feesByAsset = (() => {
     const fees = new Map<
       string,
-      { total: string; breakdown: Array<{ type: string; amount: string }> }
+      {
+        total: string;
+        totalUsd: BigNumber;
+        totalUsdFormatted: string | null;
+        breakdown: Array<{ type: string; amount: string }>;
+      }
     >();
+
+    const addFee = (
+      symbol: string,
+      amount: string,
+      usdPrice: string | number | null,
+      type: string,
+    ) => {
+      const usdValue =
+        usdPrice && !isNaN(parseFloat(String(usdPrice)))
+          ? BigNumber(amount).times(usdPrice)
+          : BigNumber(0);
+
+      const existing = fees.get(symbol);
+      if (existing) {
+        existing.total = BigNumber(existing.total).plus(amount).toString();
+        existing.totalUsd = existing.totalUsd.plus(usdValue);
+        existing.totalUsdFormatted = formatFiat(existing.totalUsd.toNumber());
+        existing.breakdown.push({ type, amount });
+      } else {
+        fees.set(symbol, {
+          total: amount,
+          totalUsd: usdValue,
+          totalUsdFormatted: formatFiat(usdValue.toNumber()),
+          breakdown: [{ type, amount }],
+        });
+      }
+    };
 
     // Add base withdrawal fee
     if (
@@ -56,23 +88,12 @@
       parseFloat(String(baseFeeAmount)) > 0 &&
       baseFeeSymbol
     ) {
-      const existing = fees.get(baseFeeSymbol);
-      if (existing) {
-        existing.total = BigNumber(existing.total)
-          .plus(String(baseFeeAmount))
-          .toString();
-        existing.breakdown.push({
-          type: $_("withdrawal_fee"),
-          amount: String(baseFeeAmount),
-        });
-      } else {
-        fees.set(baseFeeSymbol, {
-          total: String(baseFeeAmount),
-          breakdown: [
-            { type: $_("withdrawal_fee"), amount: String(baseFeeAmount) },
-          ],
-        });
-      }
+      addFee(
+        baseFeeSymbol,
+        String(baseFeeAmount),
+        baseFeeUsdPrice,
+        $_("withdrawal_fee"),
+      );
     }
 
     // Add quote withdrawal fee
@@ -81,23 +102,12 @@
       parseFloat(String(quoteFeeAmount)) > 0 &&
       quoteFeeSymbol
     ) {
-      const existing = fees.get(quoteFeeSymbol);
-      if (existing) {
-        existing.total = BigNumber(existing.total)
-          .plus(String(quoteFeeAmount))
-          .toString();
-        existing.breakdown.push({
-          type: $_("withdrawal_fee"),
-          amount: String(quoteFeeAmount),
-        });
-      } else {
-        fees.set(quoteFeeSymbol, {
-          total: String(quoteFeeAmount),
-          breakdown: [
-            { type: $_("withdrawal_fee"), amount: String(quoteFeeAmount) },
-          ],
-        });
-      }
+      addFee(
+        quoteFeeSymbol,
+        String(quoteFeeAmount),
+        quoteFeeUsdPrice,
+        $_("withdrawal_fee"),
+      );
     }
 
     // Add base market making fee
@@ -106,38 +116,15 @@
       parseFloat(baseMarketMakingFee) > 0 &&
       baseSymbol
     ) {
-      const existing = fees.get(baseSymbol);
-      if (existing) {
-        existing.total = BigNumber(existing.total)
-          .plus(baseMarketMakingFee)
-          .toString();
-        existing.breakdown.push({
-          type: $_("market_making_fee_with_pct", {
-            values: {
-              percent: (
-                parseFloat(marketMakingFeePercentage || "0") * 100
-              ).toFixed(2),
-            },
-          }),
-          amount: baseMarketMakingFee,
-        });
-      } else {
-        fees.set(baseSymbol, {
-          total: baseMarketMakingFee,
-          breakdown: [
-            {
-              type: $_("market_making_fee_with_pct", {
-                values: {
-                  percent: (
-                    parseFloat(marketMakingFeePercentage || "0") * 100
-                  ).toFixed(2),
-                },
-              }),
-              amount: baseMarketMakingFee,
-            },
-          ],
-        });
-      }
+      const mmFeePct = (
+        parseFloat(marketMakingFeePercentage || "0") * 100
+      ).toFixed(2);
+      addFee(
+        baseSymbol,
+        baseMarketMakingFee,
+        baseAssetUsdPrice,
+        $_("market_making_fee_with_pct", { values: { percent: mmFeePct } }),
+      );
     }
 
     // Add quote market making fee
@@ -146,38 +133,15 @@
       parseFloat(quoteMarketMakingFee) > 0 &&
       quoteSymbol
     ) {
-      const existing = fees.get(quoteSymbol);
-      if (existing) {
-        existing.total = BigNumber(existing.total)
-          .plus(quoteMarketMakingFee)
-          .toString();
-        existing.breakdown.push({
-          type: $_("market_making_fee_with_pct", {
-            values: {
-              percent: (
-                parseFloat(marketMakingFeePercentage || "0") * 100
-              ).toFixed(2),
-            },
-          }),
-          amount: quoteMarketMakingFee,
-        });
-      } else {
-        fees.set(quoteSymbol, {
-          total: quoteMarketMakingFee,
-          breakdown: [
-            {
-              type: $_("market_making_fee_with_pct", {
-                values: {
-                  percent: (
-                    parseFloat(marketMakingFeePercentage || "0") * 100
-                  ).toFixed(2),
-                },
-              }),
-              amount: quoteMarketMakingFee,
-            },
-          ],
-        });
-      }
+      const mmFeePct = (
+        parseFloat(marketMakingFeePercentage || "0") * 100
+      ).toFixed(2);
+      addFee(
+        quoteSymbol,
+        quoteMarketMakingFee,
+        quoteAssetUsdPrice,
+        $_("market_making_fee_with_pct", { values: { percent: mmFeePct } }),
+      );
     }
 
     return fees;
@@ -189,13 +153,26 @@
       amount: baseFeeAmount,
       symbol: baseFeeSymbol,
       type: $_("withdrawal_fee"),
+      usdPrice: baseFeeUsdPrice,
     },
     {
       amount: quoteFeeAmount,
       symbol: quoteFeeSymbol,
       type: $_("withdrawal_fee"),
+      usdPrice: quoteFeeUsdPrice,
     },
-  ].filter((f) => f.amount && parseFloat(String(f.amount)) > 0);
+  ]
+    .filter((f) => f.amount && parseFloat(String(f.amount)) > 0)
+    .map((f) => {
+      let usdAmount: string | null = null;
+      if (f.amount && f.usdPrice) {
+        const val = BigNumber(f.amount).times(f.usdPrice);
+        if (!val.isNaN()) {
+          usdAmount = val.toString();
+        }
+      }
+      return { ...f, usdAmount };
+    });
 
   $: marketMakingFees = [
     {
@@ -208,6 +185,7 @@
           ),
         },
       }),
+      usdPrice: baseAssetUsdPrice,
     },
     {
       amount: quoteMarketMakingFee,
@@ -219,8 +197,20 @@
           ),
         },
       }),
+      usdPrice: quoteAssetUsdPrice,
     },
-  ].filter((f) => f.amount && parseFloat(String(f.amount)) > 0);
+  ]
+    .filter((f) => f.amount && parseFloat(String(f.amount)) > 0)
+    .map((f) => {
+      let usdAmount: string | null = null;
+      if (f.amount && f.usdPrice) {
+        const val = BigNumber(f.amount).times(f.usdPrice);
+        if (!val.isNaN()) {
+          usdAmount = val.toString();
+        }
+      }
+      return { ...f, usdAmount };
+    });
 
   let showFeeBreakdown = false;
 
@@ -246,50 +236,9 @@
   // Calculate total fee in USD
   $: totalFeeUsd = (() => {
     let total = new BigNumber(0);
-
-    console.log(
-      `baseFeeAmount, baseFeeUsdPrice, quoteFeeAmount, quoteFeeUsdPrice:`,
-      baseFeeAmount,
-      baseFeeUsdPrice,
-      quoteFeeAmount,
-      quoteFeeUsdPrice,
-    );
-    // Add withdrawal fee USD values
-    if (
-      baseFeeAmount &&
-      baseFeeUsdPrice &&
-      parseFloat(String(baseFeeAmount)) > 0
-    ) {
-      total = total.plus(BigNumber(baseFeeAmount).times(baseFeeUsdPrice));
+    for (const data of feesByAsset.values()) {
+      total = total.plus(data.totalUsd);
     }
-    if (
-      quoteFeeAmount &&
-      quoteFeeUsdPrice &&
-      parseFloat(String(quoteFeeAmount)) > 0
-    ) {
-      total = total.plus(BigNumber(quoteFeeAmount).times(quoteFeeUsdPrice));
-    }
-
-    // Add market making fee USD values
-    if (
-      baseMarketMakingFee &&
-      baseAssetUsdPrice &&
-      parseFloat(baseMarketMakingFee) > 0
-    ) {
-      total = total.plus(
-        BigNumber(baseMarketMakingFee).times(baseAssetUsdPrice),
-      );
-    }
-    if (
-      quoteMarketMakingFee &&
-      quoteAssetUsdPrice &&
-      parseFloat(quoteMarketMakingFee) > 0
-    ) {
-      total = total.plus(
-        BigNumber(quoteMarketMakingFee).times(quoteAssetUsdPrice),
-      );
-    }
-
     return total.isGreaterThan(0) ? total.toNumber() : null;
   })();
 
@@ -412,10 +361,17 @@
               <div class="flex flex-col items-start gap-1">
                 {#each Array.from(feesByAsset.entries()) as [symbol, feeData]}
                   <div class="px-0">
-                    <span class="text-[13px] font-bold text-base-content">
-                      {formatAmount(feeData.total)}
-                      {symbol}
-                    </span>
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-[13px] font-bold text-base-content">
+                        {formatAmount(feeData.total)}
+                        {symbol}
+                      </span>
+                      {#if feeData.totalUsdFormatted}
+                        <span class="text-xs font-medium opacity-60">
+                          ({feeData.totalUsdFormatted})
+                        </span>
+                      {/if}
+                    </div>
                   </div>
                 {/each}
               </div>
@@ -500,10 +456,17 @@
                 <span class="text-sm font-medium text-base-content/70"
                   >{$_("network_fee")}</span
                 >
-                <span class="text-sm font-bold text-base-content">
-                  {formatAmount(fee.amount)}
-                  {fee.symbol}
-                </span>
+                <div class="flex flex-col items-end">
+                  <span class="text-sm font-bold text-base-content">
+                    {formatAmount(fee.amount)}
+                    {fee.symbol}
+                  </span>
+                  {#if formatFiat(fee.usdAmount)}
+                    <span class="text-xs font-medium text-base-content/60">
+                      ≈ {formatFiat(fee.usdAmount)}
+                    </span>
+                  {/if}
+                </div>
               </div>
             {/each}
           </div>
@@ -532,10 +495,17 @@
                       {fee.type}
                     </span>
                   </div>
-                  <span class="text-sm font-bold text-base-content">
-                    {formatAmount(fee.amount)}
-                    {fee.symbol}
-                  </span>
+                  <div class="flex flex-col items-end">
+                    <span class="text-sm font-bold text-base-content">
+                      {formatAmount(fee.amount)}
+                      {fee.symbol}
+                    </span>
+                    {#if formatFiat(fee.usdAmount)}
+                      <span class="text-xs font-medium text-base-content/60">
+                        ≈ {formatFiat(fee.usdAmount)}
+                      </span>
+                    {/if}
+                  </div>
                 </div>
               </div>
             {/each}
