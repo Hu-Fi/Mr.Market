@@ -83,6 +83,64 @@ export class MarketMakingOrderProcessor {
     }
   }
 
+  private async refundPaymentState(
+    orderId: string,
+    paymentState: PaymentState,
+    reason: string,
+  ) {
+    const order = await this.marketMakingRepository.findOne({
+      where: { orderId },
+    });
+
+    if (!order?.userId) {
+      this.logger.error(`Refund failed: order ${orderId} not found`);
+      return;
+    }
+
+    const refundMap = new Map<string, BigNumber>();
+    const addRefund = (assetId?: string | null, amount?: string | null) => {
+      if (!assetId || !amount) return;
+      const amountValue = new BigNumber(amount);
+      if (amountValue.isLessThanOrEqualTo(0)) return;
+      const existing = refundMap.get(assetId) || new BigNumber(0);
+      refundMap.set(assetId, existing.plus(amountValue));
+    };
+
+    addRefund(paymentState.baseAssetId, paymentState.baseAssetAmount);
+    addRefund(paymentState.quoteAssetId, paymentState.quoteAssetAmount);
+    addRefund(paymentState.baseFeeAssetId, paymentState.baseFeeAssetAmount);
+    addRefund(paymentState.quoteFeeAssetId, paymentState.quoteFeeAssetAmount);
+
+    if (refundMap.size === 0) {
+      this.logger.warn(`No refundable amounts for order ${orderId}`);
+      return;
+    }
+
+    this.logger.warn(`Refunding order ${orderId}: ${reason}`);
+
+    for (const [assetId, amount] of refundMap.entries()) {
+      try {
+        this.logger.log(
+          `Refunding ${amount.toString()} of asset ${assetId} to user ${order.userId}`,
+        );
+        const requests = await this.snapshotsService.sendMixinTx(
+          order.userId,
+          assetId,
+          amount.toString(),
+        );
+        if (!requests || requests.length === 0) {
+          this.logger.error(
+            `Refund transaction failed for order ${orderId}, asset ${assetId}`,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Refund failed for order ${orderId}, asset ${assetId}: ${error.message}`,
+        );
+      }
+    }
+  }
+
   /**
    * Step 1: Process incoming market making snapshot
    * - Validate memo and trading pair
@@ -351,7 +409,11 @@ export class MarketMakingOrderProcessor {
             orderId,
             'failed',
           );
-          // TODO: Refund all received assets
+          await this.refundPaymentState(
+            orderId,
+            paymentState,
+            'payment timeout',
+          );
           return;
         }
 
@@ -361,7 +423,11 @@ export class MarketMakingOrderProcessor {
             orderId,
             'failed',
           );
-          // TODO: Refund all received assets
+          await this.refundPaymentState(
+            orderId,
+            paymentState,
+            'max payment retries exceeded',
+          );
           return;
         }
 
@@ -398,7 +464,7 @@ export class MarketMakingOrderProcessor {
           orderId,
           'failed',
         );
-        // TODO: Refund with error message about insufficient fees
+        await this.refundPaymentState(orderId, paymentState, 'insufficient fees');
         return;
       }
 
@@ -527,47 +593,67 @@ export class MarketMakingOrderProcessor {
         `Got deposit addresses - Base: ${baseDepositResult.address}, Quote: ${quoteDepositResult.address}`,
       );
 
-      // Execute withdrawals for base and quote
-      const baseWithdrawalResult = await this.withdrawalService.executeWithdrawal(
-        paymentState.baseAssetId,
-        baseDepositResult.address,
-        baseDepositResult.memo || `MM:${orderId}:base`,
-        paymentState.baseAssetAmount,
-      );
-
-      const quoteWithdrawalResult = await this.withdrawalService.executeWithdrawal(
-        paymentState.quoteAssetId,
-        quoteDepositResult.address,
-        quoteDepositResult.memo || `MM:${orderId}:quote`,
-        paymentState.quoteAssetAmount,
-      );
-
+      // Withdrawal dry-run for validation
       this.logger.log(
-        `Withdrawals executed for order ${orderId}: base=${baseWithdrawalResult[0]?.request_id}, quote=${quoteWithdrawalResult[0]?.request_id}`,
+        `Withdrawal dry-run for order ${orderId}: base=${paymentState.baseAssetAmount} ${pairConfig.base_symbol}, quote=${paymentState.quoteAssetAmount} ${pairConfig.quote_symbol}`,
+      );
+
+      // Execute withdrawals for base and quote
+      // const baseWithdrawalResult = await this.withdrawalService.executeWithdrawal(
+      //   paymentState.baseAssetId,
+      //   baseDepositResult.address,
+      //   baseDepositResult.memo || `MM:${orderId}:base`,
+      //   paymentState.baseAssetAmount,
+      // );
+
+      // const quoteWithdrawalResult = await this.withdrawalService.executeWithdrawal(
+      //   paymentState.quoteAssetId,
+      //   quoteDepositResult.address,
+      //   quoteDepositResult.memo || `MM:${orderId}:quote`,
+      //   paymentState.quoteAssetAmount,
+      // );
+
+      // this.logger.log(
+      //   `Withdrawals executed for order ${orderId}: base=${baseWithdrawalResult[0]?.request_id}, quote=${quoteWithdrawalResult[0]?.request_id}`,
+      // );
+
+      // await this.userOrdersService.updateMarketMakingOrderState(
+      //   orderId,
+      //   'withdrawal_confirmed',
+      // );
+
+      // // Queue confirmation monitoring
+      // await this.withdrawalConfirmationQueue.add(
+      //   'monitor_mm_withdrawal',
+      //   {
+      //     orderId,
+      //     marketMakingPairId,
+      //     baseWithdrawalTxId: baseWithdrawalResult[0]?.request_id,
+      //     quoteWithdrawalTxId: quoteWithdrawalResult[0]?.request_id,
+      //   },
+      //   {
+      //     jobId: `monitor_withdrawal_${orderId}`,
+      //     attempts: 3,
+      //     removeOnComplete: false,
+      //   },
+      // );
+
+      // this.logger.log(`Queued withdrawal monitoring for order ${orderId}`);
+
+      this.logger.warn(
+        `Withdrawal disabled for validation. Refunding order ${orderId} instead of sending to exchange.`,
+      );
+
+      await this.refundPaymentState(
+        orderId,
+        paymentState,
+        'validation mode: withdrawal disabled',
       );
 
       await this.userOrdersService.updateMarketMakingOrderState(
         orderId,
-        'withdrawal_confirmed',
+        'failed',
       );
-
-      // Queue confirmation monitoring
-      await this.withdrawalConfirmationQueue.add(
-        'monitor_mm_withdrawal',
-        {
-          orderId,
-          marketMakingPairId,
-          baseWithdrawalTxId: baseWithdrawalResult[0]?.request_id,
-          quoteWithdrawalTxId: quoteWithdrawalResult[0]?.request_id,
-        },
-        {
-          jobId: `monitor_withdrawal_${orderId}`,
-          attempts: 3,
-          removeOnComplete: false,
-        },
-      );
-
-      this.logger.log(`Queued withdrawal monitoring for order ${orderId}`);
     } catch (error) {
       this.logger.error(
         `Error withdrawing for order ${orderId}: ${error.message}`,

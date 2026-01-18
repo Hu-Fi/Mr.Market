@@ -12,4 +12,5 @@
 
 ## 2026-01-13
 - Apply agents.md rules to confirmPaymentInfo.svelte: replace uppercase with capitalize, replace h3 with span
+- Disable market-making exchange withdrawals during validation; refund instead
 
