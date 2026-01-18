@@ -40,7 +40,7 @@ export const createMixinInvoice = (recipientUuid: string, items: InvoiceItem[]):
     }
 
     // 3. Attach entries
-    items.forEach((item) => {
+    for (const item of items) {
       const entry: InvoiceEntry = {
         trace_id: item.traceId || uuidv4(),
         asset_id: item.assetId,
@@ -50,7 +50,7 @@ export const createMixinInvoice = (recipientUuid: string, items: InvoiceItem[]):
         hash_references: [],
       };
       attachInvoiceEntry(invoice, entry);
-    });
+    }
 
     // 4. Generate string
     return getInvoiceString(invoice);

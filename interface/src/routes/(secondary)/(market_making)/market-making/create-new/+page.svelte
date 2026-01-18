@@ -123,63 +123,52 @@
 
       console.log(`memo: ${memo}`);
 
-      const items: InvoiceItem[] = [];
+      const itemsMap = new Map<string, BigNumber>();
+      const itemMemo = new Map<string, string>();
+
+      const addItem = (assetId: string | null, amount: string) => {
+        if (!assetId || !amount || parseFloat(amount) <= 0) return;
+        const existingAmount = itemsMap.get(assetId) || new BigNumber(0);
+        itemsMap.set(assetId, existingAmount.plus(amount));
+        if (!itemMemo.has(assetId)) {
+          itemMemo.set(assetId, memo);
+        }
+      };
 
       // Base asset payment
-      items.push({
-        assetId: baseAssetId,
-        amount: baseAmount,
-        extra: memo,
-        traceId: getUuid(),
-      });
+      addItem(baseAssetId, baseAmount);
 
       // Quote asset payment
-      items.push({
-        assetId: quoteAssetId,
-        amount: quoteAmount,
-        extra: memo,
-        traceId: getUuid(),
-      });
+      addItem(quoteAssetId, quoteAmount);
 
       // Add base asset withdrawal fee if it exists
       if (baseFeeAmount && parseFloat(baseFeeAmount) > 0) {
-        items.push({
-          assetId: baseFeeId,
-          amount: baseFeeAmount,
-          extra: memo,
-          traceId: getUuid(),
-        });
+        addItem(baseFeeId, baseFeeAmount);
       }
 
       // Add quote asset withdrawal fee if it exists
       if (quoteFeeAmount && parseFloat(quoteFeeAmount) > 0) {
-        items.push({
-          assetId: quoteFeeId,
-          amount: quoteFeeAmount,
-          extra: memo,
-          traceId: getUuid(),
-        });
+        addItem(quoteFeeId, quoteFeeAmount);
       }
 
       // Add base market making fee if it exists
       if (baseMarketMakingFee && parseFloat(baseMarketMakingFee) > 0) {
-        items.push({
-          assetId: baseAssetId,
-          amount: baseMarketMakingFee,
-          extra: memo,
-          traceId: getUuid(),
-        });
+        addItem(baseAssetId, baseMarketMakingFee);
       }
 
       // Add quote market making fee if it exists
       if (quoteMarketMakingFee && parseFloat(quoteMarketMakingFee) > 0) {
-        items.push({
-          assetId: quoteAssetId,
-          amount: quoteMarketMakingFee,
-          extra: memo,
-          traceId: getUuid(),
-        });
+        addItem(quoteAssetId, quoteMarketMakingFee);
       }
+
+      const items: InvoiceItem[] = Array.from(itemsMap.entries()).map(
+        ([assetId, amount]) => ({
+          assetId,
+          amount: amount.toString(),
+          extra: itemMemo.get(assetId) || memo,
+          traceId: getUuid(),
+        }),
+      );
 
       const invoiceMin = createMixinInvoice($botId, items);
       if (invoiceMin) {
