@@ -45,7 +45,7 @@ export const isMixin = () => {
   return !!(ios
     ? window?.webkit?.messageHandlers?.MixinContext
     : window?.MixinContext &&
-      typeof window?.MixinContext?.getContext === "function");
+    typeof window?.MixinContext?.getContext === "function");
 };
 
 export const getMixinContext = () => {
@@ -162,9 +162,9 @@ export const mixinSafeAllOutputs = async (members: string[], token: string) => {
 
   const result = await axios.get(
     MIXIN_API_BASE_URL +
-      `/safe/outputs?members=${hashMembers(
-        members
-      )}&threshold=1&offset=0&limit=1000&&order=ASC`,
+    `/safe/outputs?members=${hashMembers(
+      members
+    )}&threshold=1&offset=0&limit=1000&&order=ASC`,
     config
   );
   return result.data ? result.data.data : {};
@@ -183,11 +183,10 @@ export const mixinSafeOutputs = async (
 
   const result = await axios.get(
     MIXIN_API_BASE_URL +
-      `/safe/outputs?members=${hashMembers(
-        members
-      )}&threshold=1&offset=0&limit=1000&state=${
-        spent ? "spent" : "unspent"
-      }&order=ASC`,
+    `/safe/outputs?members=${hashMembers(
+      members
+    )}&threshold=1&offset=0&limit=1000&state=${spent ? "spent" : "unspent"
+    }&order=ASC`,
     config
   );
   return result.data ? result.data.data : {};
@@ -352,8 +351,10 @@ export const mixinAuthWrapper = async (pkce: boolean = false) => {
         return;
       },
       onSuccess: async (token: string) => {
+        console.log("onSuccess() =>", token);
         if (!pkce) {
           const result = await getOauth(token);
+          console.log("getOauth() =>", result);
           if (result.token) {
             token = result.token;
           } else {

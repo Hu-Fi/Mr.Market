@@ -42,7 +42,7 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: baseSymbol ?? "" },
           })}
-          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30 placeholder:font-bold"
+          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30"
         />
       </div>
       <div class="flex justify-between px-4 mt-2">
@@ -79,7 +79,7 @@
           placeholder={$_("enter_symbol_amount", {
             values: { symbol: quoteSymbol ?? "" },
           })}
-          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30 placeholder:font-bold"
+          class="input input-ghost w-full focus:outline-none focus:bg-transparent text-lg p-0 h-auto font-medium placeholder:text-base-content/30"
         />
       </div>
       <div class="flex justify-between px-4 mt-2">

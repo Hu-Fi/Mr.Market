@@ -8,12 +8,14 @@ import {
   UnauthorizedException,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { getUserMe } from 'src/common/helpers/mixin/user';
 import { UserService } from '../mixin/user/user.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private secret: string;
   private adminPassword: string;
 
@@ -33,6 +35,13 @@ export class AuthService {
     if (!this.adminPassword) {
       throw new Error(
         'AuthService initialization failed: Admin password not found in environment variables',
+      );
+    }
+
+    const mixinOauthSecret = this.configService.get<string>('mixin.oauth_secret');
+    if (!mixinOauthSecret) {
+      this.logger.warn(
+        'MIXIN_OAUTH_SECRET is not defined in .env. Mixin login will fail.',
       );
     }
   }
