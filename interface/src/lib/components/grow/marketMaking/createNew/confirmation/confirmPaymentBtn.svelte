@@ -12,7 +12,7 @@
 </script>
 
 <button
-  class="btn bg-base-content text-base-100 w-full rounded-full no-animation max-w-md"
+  class="btn btn-xl bg-base-content text-base-100 w-[90%] max-w-md no-animation rounded-full!"
   class:btn-disabled={disabled || loading}
   class:opacity-50={disabled || loading}
   class:cursor-not-allowed={disabled || loading}
