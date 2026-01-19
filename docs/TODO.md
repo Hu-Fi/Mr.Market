@@ -10,7 +10,6 @@
 ### Admin add trading pairs
 1. Add a special add trading pair dialog that only require users to enter symbol, and it will fetch all available related trading pairs from ccxt, allowing user to add trading pair with one-click
 
-
 ## Hufi Campaigns
 1. Mr.Market users can join hufi campaigns under /market-making/hufi
 2. Mr.Market users can create campaigns under /market-making/hufi
