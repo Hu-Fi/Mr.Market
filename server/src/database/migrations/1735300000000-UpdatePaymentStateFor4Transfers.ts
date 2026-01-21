@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class UpdatePaymentStateFor4Transfers1735742400000
+export class UpdatePaymentStateFor4Transfers1735300000000
     implements MigrationInterface {
-    name = 'UpdatePaymentStateFor4Transfers1735742400000';
+    name = 'UpdatePaymentStateFor4Transfers1735300000000';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         // Rename old columns to new structure

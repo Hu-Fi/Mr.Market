@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddWithdrawalFields1735226400000 implements MigrationInterface {
-  name = 'AddWithdrawalFields1735226400000';
+export class AddWithdrawalFields1735200000000 implements MigrationInterface {
+  name = 'AddWithdrawalFields1735200000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add new columns to withdrawal table
