@@ -48,7 +48,7 @@ export class CampaignService {
       this.logger.log('Finished getting HuFi campaigns');
       return data;
     } catch (error) {
-      this.logger.error('Error getting HuFi campaigns', error.message);
+      this.logger.warn(`Error getting HuFi campaigns: ${error.message}`);
       return [];
     }
   }
@@ -80,7 +80,7 @@ export class CampaignService {
         error.response?.data?.message ||
         error.message ||
         'Unknown error occurred';
-      this.logger.error(
+      this.logger.warn(
         `Error getting authentication nonce: ${errorMessage}`,
         error.stack,
       );
@@ -133,7 +133,7 @@ export class CampaignService {
         error.response?.data?.message ||
         error.message ||
         'Unknown error occurred';
-      this.logger.error(
+      this.logger.warn(
         `Error authenticating Web3 user: ${errorMessage}`,
         error.stack,
       );
@@ -186,10 +186,10 @@ export class CampaignService {
 
       // Provide more specific error messages based on status codes
       if (error.response?.status === 403) {
-        this.logger.error('Invalid or expired access token');
+        this.logger.warn('Invalid or expired access token');
         throw new Error('Invalid or expired access token');
       } else if (error.response?.status === 400) {
-        this.logger.error(
+        this.logger.warn(
           `Invalid campaign details or already joined: ${errorMessage}`,
         );
         throw new Error(
@@ -197,7 +197,7 @@ export class CampaignService {
         );
       }
 
-      this.logger.error(
+      this.logger.warn(
         `Error joining campaign: ${errorMessage}`,
         error.stack,
       );
@@ -253,7 +253,7 @@ export class CampaignService {
 
       return result;
     } catch (error) {
-      this.logger.error(
+      this.logger.warn(
         `Failed to complete campaign join flow: ${error.message}`,
         error.stack,
       );
@@ -328,7 +328,7 @@ export class CampaignService {
           `Joined Hu-Fi campaign:\n\tChainId: ${campaign.chainId}\n\tAddress: ${campaign.address}\n\tExchange: ${campaign.exchangeName}`,
         );
       } catch (e) {
-        this.logger.error('Error joining campaign: ', e.message);
+        this.logger.warn('Error joining campaign: ', e.message);
       }
     }
   }

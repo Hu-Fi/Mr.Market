@@ -453,91 +453,95 @@ export class SnapshotsService implements OnApplicationBootstrap {
   }
 
   async handleSnapshot(snapshot: SafeSnapshot) {
-    if (!snapshot.memo) {
-      this.logger.warn('snapshot no memo, return');
-      return;
-    }
-    if (snapshot.memo.length === 0) {
-      this.logger.warn('snapshot.memo.length === 0, return');
-      return;
-    }
-    try {
-      this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
-      // Hex and Base58 decode memo, verify checksum, refund if invalid
-      const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
-        'utf-8',
-      );
-      const { payload, version, tradingTypeKey } =
-        memoPreDecode(hexDecodedMemo);
-      if (!payload) {
-        this.logger.log(
-          `Snapshot memo is invalid, refund: ${snapshot.snapshot_id}`,
-        );
-        await this.refund(snapshot);
-        return;
-      }
+    this.logger.log(`handleSnapshot()=> snapshot: ${JSON.stringify(snapshot)}`);
+    this.refund(snapshot);
+    return;
 
-      // Only memo version 1 is supported
-      if (version !== 1) {
-        this.logger.log(
-          `Snapshot memo version is not 1, refund: ${snapshot.snapshot_id}`,
-        );
-        await this.refund(snapshot);
-        return;
-      }
+    // if (!snapshot.memo) {
+    //   this.logger.warn('snapshot no memo, return');
+    //   return;
+    // }
+    // if (snapshot.memo.length === 0) {
+    //   this.logger.warn('snapshot.memo.length === 0, return');
+    //   return;
+    // }
+    // try {
+    //   this.logger.log(`handleSnapshot()=> snapshot.memo: ${snapshot.memo}`);
+    //   // Hex and Base58 decode memo, verify checksum, refund if invalid
+    //   const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
+    //     'utf-8',
+    //   );
+    //   const { payload, version, tradingTypeKey } =
+    //     memoPreDecode(hexDecodedMemo);
+    //   if (!payload) {
+    //     this.logger.log(
+    //       `Snapshot memo is invalid, refund: ${snapshot.snapshot_id}`,
+    //     );
+    //     await this.refund(snapshot);
+    //     return;
+    //   }
 
-      switch (tradingTypeKey) {
-        case 0:
-          // Spot trading
-          break;
-        case 1:
-          // Market making - Queue for processing instead of emitting event
-          const mmDetails = decodeMarketMakingCreateMemo(payload);
-          if (!mmDetails) {
-            this.logger.warn('Failed to decode market making memo, refunding');
-            await this.refund(snapshot);
-            break;
-          }
-          // Queue the snapshot for market making processing
-          await this.marketMakingQueue.add(
-            'process_mm_snapshot',
-            {
-              snapshotId: snapshot.snapshot_id,
-              orderId: mmDetails.orderId,
-              marketMakingPairId: mmDetails.marketMakingPairId,
-              memoDetails: mmDetails,
-              snapshot,
-            },
-            {
-              jobId: `mm_snapshot_${snapshot.snapshot_id}`,
-              attempts: 3,
-              backoff: { type: 'exponential', delay: 5000 },
-              removeOnComplete: false, // Keep for debugging
-            },
-          );
-          this.logger.log(
-            `Queued market making snapshot ${snapshot.snapshot_id} for order ${mmDetails.orderId}`,
-          );
-          break;
-        case 2:
-          // Simply grow
-          const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
-          if (!simplyGrowDetails) {
-            break;
-          }
-          this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
-          break;
-        default:
-          // Refund
-          this.logger.log(
-            `Snapshot memo trading type is not supported, refund: ${snapshot.snapshot_id}`,
-          );
-          await this.refund(snapshot);
-          break;
-      }
-    } catch (error) {
-      this.logger.error(`handleSnapshot()=> ${error}`);
-    }
+    //   // Only memo version 1 is supported
+    //   if (version !== 1) {
+    //     this.logger.log(
+    //       `Snapshot memo version is not 1, refund: ${snapshot.snapshot_id}`,
+    //     );
+    //     await this.refund(snapshot);
+    //     return;
+    //   }
+
+    //   switch (tradingTypeKey) {
+    //     case 0:
+    //       // Spot trading
+    //       break;
+    //     case 1:
+    //       // Market making - Queue for processing instead of emitting event
+    //       const mmDetails = decodeMarketMakingCreateMemo(payload);
+    //       if (!mmDetails) {
+    //         this.logger.warn('Failed to decode market making memo, refunding');
+    //         await this.refund(snapshot);
+    //         break;
+    //       }
+    //       // Queue the snapshot for market making processing
+    //       await this.marketMakingQueue.add(
+    //         'process_mm_snapshot',
+    //         {
+    //           snapshotId: snapshot.snapshot_id,
+    //           orderId: mmDetails.orderId,
+    //           marketMakingPairId: mmDetails.marketMakingPairId,
+    //           memoDetails: mmDetails,
+    //           snapshot,
+    //         },
+    //         {
+    //           jobId: `mm_snapshot_${snapshot.snapshot_id}`,
+    //           attempts: 3,
+    //           backoff: { type: 'exponential', delay: 5000 },
+    //           removeOnComplete: false, // Keep for debugging
+    //         },
+    //       );
+    //       this.logger.log(
+    //         `Queued market making snapshot ${snapshot.snapshot_id} for order ${mmDetails.orderId}`,
+    //       );
+    //       break;
+    //     case 2:
+    //       // Simply grow
+    //       const simplyGrowDetails = decodeSimplyGrowCreateMemo(payload);
+    //       if (!simplyGrowDetails) {
+    //         break;
+    //       }
+    //       this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
+    //       break;
+    //     default:
+    //       // Refund
+    //       this.logger.log(
+    //         `Snapshot memo trading type is not supported, refund: ${snapshot.snapshot_id}`,
+    //       );
+    //       await this.refund(snapshot);
+    //       break;
+    //   }
+    // } catch (error) {
+    //   this.logger.error(`handleSnapshot()=> ${error}`);
+    // }
   }
 
   async startSnapshotLoop() {
