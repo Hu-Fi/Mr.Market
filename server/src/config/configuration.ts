@@ -50,11 +50,6 @@ export default () => ({
   coingecko: {
     api_key: process.env.COINGECKO_API_KEY,
   },
-  rebalance: {
-    run: process.env.RUN_REBALANCE || 'false',
-    bigone_api_key: process.env.WITHDRAWAL_BIGONE_API_KEY,
-    bigone_api_secret: process.env.WITHDRAWAL_BIGONE_API_SECRET,
-  },
   strategy: {
     run: process.env.RUN_STARTEGY_FOR_MIXIN_ORDERS || 'false',
     mixin_snapshots_run: process.env.RUN_MIXIN_SNAPSHOTS || 'false',

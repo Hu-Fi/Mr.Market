@@ -8,16 +8,16 @@ import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 export class SnapshotsProcessor {
   private readonly logger = new Logger(SnapshotsProcessor.name);
 
-  constructor(private readonly snapshotsService: SnapshotsService) {}
+  constructor(private readonly snapshotsService: SnapshotsService) { }
 
   @Process('process_snapshots')
   async handlePollSnapshots(job: Job) {
-    this.logger.log('Processing snapshots...');
+    // this.logger.debug('Processing snapshots...');
     try {
       const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
 
       if (snapshots && snapshots.length > 0) {
-        this.logger.log(
+        this.logger.debug(
           `Found ${snapshots.length} snapshots, queueing processing...`,
         );
         for (const snapshot of snapshots) {
