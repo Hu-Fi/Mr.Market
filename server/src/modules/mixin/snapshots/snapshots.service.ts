@@ -551,7 +551,8 @@ export class SnapshotsService implements OnApplicationBootstrap {
         'process_snapshots',
         {},
         {
-          removeOnComplete: true,
+          jobId: `snapshot-poll-${Date.now()}`,
+          // Don't remove completed jobs so we can track polling history
         },
       );
     }

@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @ApiTags('System')
 @Controller('health')
 export class HealthController {
-  constructor(private healthService: HealthService) {}
+  constructor(private healthService: HealthService) { }
 
   @Get('/')
   @ApiOperation({ summary: 'Get server health status' })
@@ -34,12 +34,67 @@ export class HealthController {
     return this.healthService.getExchangeHealth(name);
   }
 
-  @Get('dbhealth')
-  @ApiOperation({ summary: 'Get DB health status' })
-  @ApiResponse({ status: 200, description: 'Health of Database , OK | ERROR' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @UseGuards(JwtAuthGuard)
-  async getDbHealth() {
-    return await this.healthService.checkDbHealth();
+  @Get('/snapshots')
+  @ApiOperation({ summary: 'Get snapshot polling queue health status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Snapshot polling queue health with metrics and status',
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: ['healthy', 'warning', 'critical'],
+          description: 'Overall health status',
+        },
+        healthy: { type: 'boolean', description: 'Whether system is healthy' },
+        timestamp: { type: 'string', format: 'date-time' },
+        queue: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            isPaused: { type: 'boolean' },
+            isPollingActive: {
+              type: 'boolean',
+              description: 'Whether the polling loop is running',
+            },
+            nextPollJob: {
+              type: 'object',
+              nullable: true,
+              properties: {
+                id: { type: 'string' },
+                delay: { type: 'number' },
+                timestamp: { type: 'number' },
+              },
+            },
+          },
+        },
+        metrics: {
+          type: 'object',
+          properties: {
+            waiting: { type: 'number' },
+            active: { type: 'number' },
+            completed: { type: 'number' },
+            failed: { type: 'number' },
+            delayed: { type: 'number' },
+          },
+        },
+        issues: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'List of detected issues',
+        },
+        recentFailures: {
+          type: 'array',
+          items: { type: 'object' },
+          description: 'Recent failed jobs',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  async getSnapshotPollingHealth() {
+    return await this.healthService.checkSnapshotPollingHealth();
   }
 }
+
