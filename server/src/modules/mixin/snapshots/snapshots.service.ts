@@ -325,7 +325,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
     const signedRaw = signSafeTransaction(
       tx,
       verifiedTx[0].views,
-      this.keystore.session_private_key,
+      this.spendKey,
     );
 
     const sendedTx = await this.client.utxo.sendTransactions([
