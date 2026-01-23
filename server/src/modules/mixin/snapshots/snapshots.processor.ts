@@ -73,22 +73,47 @@ export class SnapshotsProcessor implements OnModuleInit {
 
   @Process('process_snapshots')
   async handlePollSnapshots(job: Job) {
-    // this.logger.debug('Processing snapshots...');
+    this.logger.debug('Polling for snapshots...');
     try {
       const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
+      this.logger.debug(`Fetched ${snapshots?.length || 0} snapshots from Mixin`);
 
       if (snapshots && snapshots.length > 0) {
-        this.logger.debug(
-          `Found ${snapshots.length} snapshots, queueing processing...`,
+        // Get current cursor to filter out already-processed snapshots
+        const currentCursor = await this.snapshotsService.getSnapshotCursor();
+
+        // Filter to only process snapshots NEWER than cursor
+        const newSnapshots = currentCursor
+          ? snapshots.filter(s => s.created_at > currentCursor)
+          : snapshots;
+
+        if (newSnapshots.length === 0) {
+          this.logger.debug('No new snapshots to process (all filtered by cursor)');
+          return;
+        }
+
+        this.logger.log(
+          `Found ${newSnapshots.length} new snapshots (${snapshots.length - newSnapshots.length} filtered by cursor)`,
         );
-        for (const snapshot of snapshots) {
+
+        for (const snapshot of newSnapshots) {
+          this.logger.debug(`Queueing snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`);
           await (job.queue as any).add('process_snapshot', snapshot, {
             jobId: snapshot.snapshot_id, // Deduplication by ID
             removeOnComplete: true,
           });
         }
-        await this.snapshotsService.updateSnapshotCursor(
-          snapshots[0].created_at,
+
+        // Update cursor to the NEWEST (maximum) timestamp from this batch
+        // Don't assume ordering - find the actual max timestamp
+        const newestTimestamp = newSnapshots.reduce((max, s) =>
+          s.created_at > max ? s.created_at : max,
+          newSnapshots[0].created_at,
+        );
+        await this.snapshotsService.updateSnapshotCursor(newestTimestamp);
+
+        this.logger.log(
+          `Successfully queued ${newSnapshots.length} snapshots, cursor updated to ${newestTimestamp}`,
         );
       }
     } catch (error) {
@@ -165,11 +190,20 @@ export class SnapshotsProcessor implements OnModuleInit {
   @Process('process_snapshot')
   async handleProcessSnapshot(job: Job<SafeSnapshot>) {
     const snapshot = job.data;
+    this.logger.log(
+      `[Processor] Starting to process snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`,
+    );
     try {
+      // Process the snapshot
       await this.snapshotsService.handleSnapshot(snapshot);
+
+      this.logger.log(
+        `[Processor] Successfully processed snapshot: ${snapshot.snapshot_id}`,
+      );
     } catch (error) {
       this.logger.error(
         `Failed to process snapshot ${snapshot.snapshot_id}: ${error.message}`,
+        error.stack,
       );
       throw error; // Let Bull handle retries
     }

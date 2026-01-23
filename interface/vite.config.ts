@@ -20,6 +20,7 @@ browserOnlyPolyfills.apply = (config) => {
 export default defineConfig({
   plugins: [sveltekit(), browserOnlyPolyfills],
   server: {
-    allowedHosts: ['.ngrok-free.app'],
+    allowedHosts: [''],
+    host: "0.0.0.0"
   },
 });

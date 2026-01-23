@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { MessageRepository } from './message.repository';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 import { UserService } from 'src/modules/mixin/user/user.service';

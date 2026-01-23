@@ -338,14 +338,18 @@ export class SnapshotsService implements OnApplicationBootstrap {
   }
 
   async refund(snapshot: SafeSnapshot) {
+    this.logger.log(`[Service] Attempting refund for snapshot ${snapshot.snapshot_id}: ${snapshot.amount} of asset ${snapshot.asset_id} to ${snapshot.opponent_id}`);
     try {
-      await this.sendMixinTx(
+      const result = await this.sendMixinTx(
         snapshot.opponent_id,
         snapshot.asset_id,
         snapshot.amount,
       );
+      this.logger.log(`[Service] Refund successful for snapshot ${snapshot.snapshot_id}: ${JSON.stringify(result)}`);
+      return result;
     } catch (error) {
-      this.logger.error(`Failed to refund snapshot: ${error.message}`);
+      this.logger.error(`Failed to refund snapshot ${snapshot.snapshot_id}: ${error.message}`, error.stack);
+      throw error;
     }
   }
 
@@ -411,7 +415,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
     try {
       const redis = (this.snapshotsQueue as any).client;
       const cursor = await redis.get('snapshots:cursor');
-      const offset = cursor || new Date().toISOString();
+      const offset = cursor || '';
 
       const snapshots = await this.client.safe.fetchSafeSnapshots({
         offset,
@@ -430,6 +434,17 @@ export class SnapshotsService implements OnApplicationBootstrap {
     }
   }
 
+  async getSnapshotCursor(): Promise<string> {
+    try {
+      const redis = (this.snapshotsQueue as any).client;
+      const cursor = await redis.get('snapshots:cursor');
+      return cursor || '';
+    } catch (error) {
+      this.logger.error(`Failed to get snapshot cursor: ${error}`);
+      return '';
+    }
+  }
+
   async updateSnapshotCursor(timestamp: string) {
     try {
       const redis = (this.snapshotsQueue as any).client;
@@ -439,22 +454,12 @@ export class SnapshotsService implements OnApplicationBootstrap {
     }
   }
 
-  // Legacy method, kept if needed but now logic is distributed
-  async fetchAndProcessSnapshots() {
-    try {
-      const snapshots = await this.fetchSnapshotsOnly();
-      snapshots.forEach(async (snapshot: SafeSnapshot) => {
-        await this.handleSnapshot(snapshot);
-      });
-      return snapshots;
-    } catch (error) {
-      this.logger.error(`Failed to fetch and process snapshots: ${error}`);
-    }
-  }
-
   async handleSnapshot(snapshot: SafeSnapshot) {
-    this.logger.log(`handleSnapshot()=> snapshot: ${JSON.stringify(snapshot)}`);
-    this.refund(snapshot);
+    this.logger.log(`[Service] handleSnapshot() called for snapshot: ${snapshot.snapshot_id}`);
+    this.logger.debug(`[Service] Snapshot details: ${JSON.stringify(snapshot)}`);
+    this.logger.log(`[Service] Executing refund for snapshot ${snapshot.snapshot_id}...`);
+    await this.refund(snapshot);
+    this.logger.log(`[Service] Refund completed for snapshot ${snapshot.snapshot_id}`);
     return;
 
     // if (!snapshot.memo) {
@@ -544,17 +549,27 @@ export class SnapshotsService implements OnApplicationBootstrap {
     // }
   }
 
+  // startSnapshotLoop() -> handlePollSnapshots() -> fetchSnapshotsOnly() -> handleSnapshot()
   async startSnapshotLoop() {
+    this.logger.log(`startSnapshotLoop() called. enableCron=${this.enableCron}`);
     if (this.enableCron) {
-      this.logger.log('Starting snapshot polling loop via Bull...');
-      await this.snapshotsQueue.add(
-        'process_snapshots',
-        {},
-        {
-          jobId: `snapshot-poll-${Date.now()}`,
-          // Don't remove completed jobs so we can track polling history
-        },
-      );
+      this.logger.log('Snapshot polling is ENABLED. Starting snapshot polling loop via Bull...');
+      try {
+        const jobId = `snapshot-poll-${Date.now()}`;
+        await this.snapshotsQueue.add(
+          'process_snapshots',
+          {},
+          {
+            jobId,
+            // Don't remove completed jobs so we can track polling history
+          },
+        );
+        this.logger.log(`Successfully queued initial snapshot polling job: ${jobId}`);
+      } catch (error) {
+        this.logger.error(`Failed to start snapshot polling loop: ${error.message}`, error.stack);
+      }
+    } else {
+      this.logger.warn('Snapshot polling is DISABLED (RUN_MIXIN_SNAPSHOTS is not set to true)');
     }
   }
 }
