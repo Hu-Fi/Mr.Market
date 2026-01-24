@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Process, Processor } from '@nestjs/bull';
 import { WithdrawalService } from './withdrawal.service';
-import { SnapshotsService } from '../snapshots/snapshots.service';
+import { WalletService } from '../wallet/wallet.service';
 import { Withdrawal } from 'src/common/entities/withdrawal.entity';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -16,7 +16,7 @@ export class WithdrawalProcessor {
 
   constructor(
     private readonly withdrawalService: WithdrawalService,
-    private readonly snapshotsService: SnapshotsService,
+    private readonly walletService: WalletService,
     @InjectRepository(Withdrawal)
     private withdrawalRepository: Repository<Withdrawal>,
   ) { }
@@ -86,7 +86,7 @@ export class WithdrawalProcessor {
 
       // Check balance before withdrawal
       const hasEnoughBalance =
-        await this.snapshotsService.checkMixinBalanceEnough(
+        await this.walletService.checkMixinBalanceEnough(
           withdrawal.assetId,
           withdrawal.amount.toString(),
         );

@@ -4,6 +4,7 @@ import { SnapshotsService } from './snapshots.service';
 import { BullModule } from '@nestjs/bull';
 import { SnapshotsProcessor } from './snapshots.processor';
 import { MixinClientModule } from '../client/mixin-client.module';
+import { TransactionModule } from '../transaction/transaction.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MixinClientModule } from '../client/mixin-client.module';
       name: 'market-making',
     }),
     MixinClientModule,
+    TransactionModule,
   ],
   providers: [ConfigService, SnapshotsService, SnapshotsProcessor],
   exports: [SnapshotsService, BullModule],

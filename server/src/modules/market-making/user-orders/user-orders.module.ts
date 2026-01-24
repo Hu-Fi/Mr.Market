@@ -17,6 +17,7 @@ import { ArbitrageHistory } from 'src/common/entities/arbitrage-order.entity';
 import { FeeModule } from '../fee/fee.module';
 import { GrowdataModule } from 'src/modules/data/grow-data/grow-data.module';
 import { SnapshotsModule } from 'src/modules/mixin/snapshots/snapshots.module';
+import { TransactionModule } from 'src/modules/mixin/transaction/transaction.module';
 import { WithdrawalModule } from 'src/modules/mixin/withdrawal/withdrawal.module';
 import { LocalCampaignModule } from '../local-campaign/local-campaign.module';
 import { ExchangeModule } from 'src/modules/mixin/exchange/exchange.module';
@@ -45,6 +46,7 @@ import { CampaignModule } from 'src/modules/campaign/campaign.module';
     FeeModule,
     GrowdataModule,
     SnapshotsModule,
+    TransactionModule,
     WithdrawalModule,
     LocalCampaignModule,
     ExchangeModule,

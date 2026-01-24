@@ -5,7 +5,7 @@ import { STATE_TEXT_MAP } from 'src/common/types/orders/states';
 import { getRFC3339Timestamp, subtractFee } from 'src/common/helpers/utils';
 import { MixinReleaseTokenEvent } from 'src/modules/mixin/events/spot.event';
 import { ExchangeService } from 'src/modules/mixin/exchange/exchange.service';
-import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
+import { TransactionService } from 'src/modules/mixin/transaction/transaction.service';
 import { CustomConfigService } from 'src/modules/infrastructure/custom-config/custom-config.service';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -14,10 +14,10 @@ export class MixinProcessor {
   private readonly logger = new CustomLogger(MixinProcessor.name);
 
   constructor(
-    private service: SnapshotsService,
+    private transactionService: TransactionService,
     private exchangeService: ExchangeService,
     private configService: CustomConfigService,
-  ) {}
+  ) { }
 
   @Process('release_token')
   async handleReleaseToken(job: Job<MixinReleaseTokenEvent>) {
@@ -42,10 +42,11 @@ export class MixinProcessor {
     const { amount: amountReduced, fee } = subtractFee(e.amount, feePercentage);
 
     // Attempt to send the transaction
-    const requests = await this.service.sendMixinTx(
+    const requests = await this.transactionService.transfer(
       e.userId,
       e.assetId,
       amountReduced,
+      `Release:${e.orderId}`,
     );
 
     // Check if the transaction was unsuccessful

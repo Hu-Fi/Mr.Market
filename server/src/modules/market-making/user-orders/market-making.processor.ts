@@ -13,7 +13,7 @@ import { MarketMakingOrder, PaymentState } from 'src/common/entities/user-orders
 import { FeeService } from '../fee/fee.service';
 import { GrowdataRepository } from 'src/modules/data/grow-data/grow-data.repository';
 import { PriceSourceType } from 'src/common/enum/pricesourcetype';
-import { SnapshotsService } from 'src/modules/mixin/snapshots/snapshots.service';
+import { TransactionService } from 'src/modules/mixin/transaction/transaction.service';
 import { WithdrawalService } from 'src/modules/mixin/withdrawal/withdrawal.service';
 import { LocalCampaignService } from '../local-campaign/local-campaign.service';
 import { CampaignService } from 'src/modules/campaign/campaign.service';
@@ -53,7 +53,7 @@ export class MarketMakingOrderProcessor {
     private readonly strategyService: StrategyService,
     private readonly feeService: FeeService,
     private readonly growDataRepository: GrowdataRepository,
-    private readonly snapshotsService: SnapshotsService,
+    private readonly transactionService: TransactionService,
     private readonly withdrawalService: WithdrawalService,
     private readonly localCampaignService: LocalCampaignService,
     private readonly hufiCampaignService: CampaignService,
@@ -77,7 +77,7 @@ export class MarketMakingOrderProcessor {
   private async refundUser(snapshot: SafeSnapshot, reason: string) {
     this.logger.warn(`Refunding snapshot ${snapshot.snapshot_id}: ${reason}`);
     try {
-      await this.snapshotsService.refund(snapshot);
+      await this.transactionService.refund(snapshot);
     } catch (error) {
       this.logger.error(`Failed to refund: ${error.message}`);
     }
@@ -123,10 +123,11 @@ export class MarketMakingOrderProcessor {
         this.logger.log(
           `Refunding ${amount.toString()} of asset ${assetId} to user ${order.userId}`,
         );
-        const requests = await this.snapshotsService.sendMixinTx(
+        const requests = await this.transactionService.transfer(
           order.userId,
           assetId,
           amount.toString(),
+          `Refund:${orderId}:${assetId}`,
         );
         if (!requests || requests.length === 0) {
           this.logger.error(

@@ -8,7 +8,7 @@ import { WithdrawalService } from './withdrawal.service';
 import { WithdrawalProcessor } from './withdrawal.processor';
 import { WithdrawalConfirmationWorker } from './withdrawal-confirmation.worker';
 import { MixinClientModule } from '../client/mixin-client.module';
-import { SnapshotsModule } from '../snapshots/snapshots.module';
+import { WalletModule } from '../wallet/wallet.module';
 import { Queue } from 'bull';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -24,7 +24,7 @@ import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
             },
         ),
         MixinClientModule,
-        SnapshotsModule,
+        WalletModule,
     ],
     providers: [
         ConfigService,
