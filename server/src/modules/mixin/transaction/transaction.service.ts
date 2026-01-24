@@ -29,6 +29,11 @@ export class TransactionService {
     amount: string,
     memo: string,
   ): Promise<SequencerTransactionRequest[]> {
+    const spendKey = this.mixinClientService.spendKey;
+    if (!spendKey) {
+      throw new Error('Missing spend_private_key in configuration');
+    }
+
     const recipients = [
       buildSafeTransactionRecipient([opponent_id], 1, amount),
     ];
@@ -61,7 +66,7 @@ export class TransactionService {
     const ghosts = await this.mixinClientService.client.utxo.ghostKey(
       recipients,
       requestId,
-      this.mixinClientService.spendKey,
+      spendKey,
     );
     const tx = buildSafeTransaction(
       utxos,
@@ -82,7 +87,7 @@ export class TransactionService {
     const signedRaw = signSafeTransaction(
       tx,
       verifiedTx[0].views,
-      this.mixinClientService.spendKey,
+      spendKey,
     );
 
     const sendedTx =
