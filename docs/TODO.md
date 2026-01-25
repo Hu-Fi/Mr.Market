@@ -1,7 +1,10 @@
 ## Mr.Market
+### Refactor of Postgres and Redis
+1. Replace both postgres and redis with sqlite, replace Bull, to cut service count to only 1
+
 ### Validation of create market making process
-1. ✅ user can open invoice payment page in confirm payment step
-2. ✅ invoice payment can be handled correctly by backend
+1. user can open invoice payment page in confirm payment step
+2. invoice payment can be handled correctly by backend
 3. backend can withdraw to exchange (should link exchange api key only from db)
 4. after withdrawal to exchange, the deposit status can be tracked by backend, update in real time
 5. after arrival of deposit to exchange, then join campaign should be triggered automatically
