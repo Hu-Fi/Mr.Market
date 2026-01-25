@@ -263,6 +263,8 @@ export class AlpacaStratService {
       await this.saveArbitrageOrder(
         userId,
         clientId,
+        buyExchange.name,
+        sellExchange.name,
         symbol,
         buyPrice,
         sellPrice,
@@ -277,8 +279,10 @@ export class AlpacaStratService {
 
   // Save the arbitrage order in the history
   private async saveArbitrageOrder(
-    _userId: string,
-    _clientId: string,
+    userId: string,
+    clientId: string,
+    exchangeAName: string,
+    exchangeBName: string,
     pair: string,
     buyPrice: number,
     sellPrice: number,
@@ -289,12 +293,16 @@ export class AlpacaStratService {
     const profitLoss = sellPrice * amount - buyPrice * amount;
 
     const arbitrageOrder = this.arbitrageHistoryRepository.create({
+      userId,
+      clientId,
       pair,
-      buyPrice,
-      sellPrice,
+      exchangeAName,
+      exchangeBName,
+      amount: amount.toString(),
+      buyPrice: buyPrice.toString(),
+      sellPrice: sellPrice.toString(),
       profit: profitLoss,
       executedAt: new Date(),
-      amount,
     });
 
     await this.arbitrageHistoryRepository.save(arbitrageOrder);

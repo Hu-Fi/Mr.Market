@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class Performance {
@@ -20,6 +20,6 @@ export class Performance {
   @Column('simple-json', { nullable: true })
   additionalMetrics: { [key: string]: any }; // Store additional, strategy-specific metrics
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   executedAt: Date;
 }

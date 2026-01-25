@@ -20,7 +20,13 @@ export class TradeRepository {
   }
 
   async createTrade(transactionData: Partial<Trade>): Promise<Trade> {
-    const transaction = this.repository.create(transactionData);
+    // Convert numeric amount and price to strings for SQLite storage
+    const dataToSave = {
+      ...transactionData,
+      amount: transactionData.amount?.toString() ?? '0',
+      price: transactionData.price?.toString() ?? '0',
+    };
+    const transaction = this.repository.create(dataToSave);
     return this.repository.save(transaction);
   }
 

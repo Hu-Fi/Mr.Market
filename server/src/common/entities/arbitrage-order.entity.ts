@@ -21,14 +21,14 @@ export class ArbitrageHistory {
   @Column({ nullable: true })
   exchangeBName: string;
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  amount: number;
+  @Column({ type: 'text', nullable: true })
+  amount: string; // Stored as string for SQLite, use BigNumber.js for calculations
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  buyPrice: number;
+  @Column({ type: 'text', nullable: true })
+  buyPrice: string; // Stored as string for SQLite, use BigNumber.js for calculations
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  sellPrice: number;
+  @Column({ type: 'text', nullable: true })
+  sellPrice: string; // Stored as string for SQLite, use BigNumber.js for calculations
 
   @Column({ nullable: true })
   profit: number;

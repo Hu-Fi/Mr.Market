@@ -20,11 +20,11 @@ export class MarketMakingHistory {
   @Column()
   side: string; // 'buy' or 'sell'
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  amount: number;
+  @Column({ type: 'text', nullable: true })
+  amount: string; // Stored as string for SQLite, use BigNumber.js for calculations
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  price: number;
+  @Column({ type: 'text', nullable: true })
+  price: string; // Stored as string for SQLite, use BigNumber.js for calculations
 
   @Column()
   orderId: string; // The order ID from the exchange

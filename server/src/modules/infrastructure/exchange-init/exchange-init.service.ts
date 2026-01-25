@@ -219,27 +219,6 @@ export class ExchangeInitService {
         class: ccxt.bigone,
       },
       {
-        name: 'coinlist',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.COINLIST_API_KEY,
-            secret: process.env.COINLIST_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.COINLIST_API_KEY_2,
-            secret: process.env.COINLIST_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.COINLIST_API_KEY_READ_ONLY,
-            secret: process.env.COINLIST_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.coinlist,
-      },
-      {
         name: 'p2b',
         accounts: [
           {

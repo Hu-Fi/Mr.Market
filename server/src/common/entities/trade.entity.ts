@@ -26,11 +26,11 @@ export class Trade {
   @Column()
   type: string; // 'market' or 'limit'
 
-  @Column('decimal', { precision: 18, scale: 10 })
-  amount: number; // Quantity of the asset
+  @Column({ type: 'text' })
+  amount: string; // Quantity of the asset (stored as string for SQLite, use BigNumber.js for calculations)
 
-  @Column('decimal', { precision: 18, scale: 10 })
-  price: number; // Price at which the trade was executed
+  @Column({ type: 'text' })
+  price: string; // Price at which the trade was executed (stored as string for SQLite, use BigNumber.js for calculations)
 
   @Column({ default: 'pending' })
   status: string; // Status of the transaction ('pending', 'completed', 'cancelled', etc.)

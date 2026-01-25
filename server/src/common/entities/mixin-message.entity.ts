@@ -39,9 +39,9 @@ export class MixinMessage {
   @Column()
   source: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'text' })
   created_at: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'text' })
   updated_at: string;
 }

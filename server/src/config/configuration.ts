@@ -3,12 +3,7 @@ export default () => ({
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || '3000',
   database: {
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
-    ssl: process.env.POSTGRES_SSL === 'true',
-    user: process.env.POSTGRES_USER,
-    pass: process.env.POSTGRES_PASSWORD,
-    db: process.env.POSTGRES_DATABASE,
+    path: process.env.DATABASE_PATH || 'data/mr_market.db',
   },
   redis: {
     host: process.env.REDIS_HOST || 'localhost',

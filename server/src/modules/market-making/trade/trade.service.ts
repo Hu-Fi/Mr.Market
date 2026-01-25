@@ -53,9 +53,9 @@ export class TradeService {
         symbol,
         type: 'market',
         side: side,
-        amount,
+        amount: amount.toString(),
         status: order.status,
-        price: order.price, // Assuming the order object has a price field
+        price: (order.price || 0).toString(), // Assuming the order object has a price field
         orderId: order.id, // Assuming the order object has an id field
       });
 
@@ -96,8 +96,8 @@ export class TradeService {
         symbol,
         side: side,
         type: 'limit',
-        amount,
-        price,
+        amount: amount.toString(),
+        price: price.toString(),
         status: order.status,
         orderId: order.id, // Assuming the order object has an id field
       });

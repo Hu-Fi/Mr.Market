@@ -14,6 +14,6 @@ export class UserBalance {
   @Column()
   currency: string;
 
-  @Column('decimal', { precision: 15, scale: 8, default: 0 })
-  balance: number;
+  @Column({ type: 'text', default: '0' })
+  balance: string; // Stored as string for SQLite, use BigNumber.js for calculations
 }
