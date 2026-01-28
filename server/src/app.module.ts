@@ -24,7 +24,6 @@ import { EventListenersModule } from './modules/mixin/listeners/events.module';
 
 import { Trade } from './common/entities/trade.entity';
 import { Transaction } from './common/entities/transaction.entity';
-import { UserBalance } from './common/entities/user-balance.entity';
 import { Performance } from './common/entities/performance.entity';
 
 import { SpotOrder } from './common/entities/spot-order.entity';
@@ -92,7 +91,6 @@ dotenv.config();
         StrategyInstance,
         Performance,
         Transaction,
-        UserBalance,
         SpotOrder,
         APIKeysConfig,
         CustomConfigEntity,
