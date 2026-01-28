@@ -2,6 +2,8 @@
 // Make sure to run this file after the database and the table is created (after migration:run)
 
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DataSource, Repository } from 'typeorm';
 import { CustomConfigEntity } from '../../common/entities/custom-config.entity';
 import {
@@ -21,13 +23,14 @@ import { SpotdataTradingPair } from '../../common/entities/spot-data.entity';
 
 async function connectToDatabase() {
   dotenv.config();
+  const dbPath = process.env.DATABASE_PATH || 'data/mr_market.db';
+  const dbDir = path.dirname(dbPath);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
   const dataSource = new DataSource({
-    type: 'postgres',
-    host: process.env.POSTGRES_HOST,
-    port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
-    database: process.env.POSTGRES_DATABASE,
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
+    type: 'sqlite',
+    database: dbPath,
     entities: [
       GrowdataExchange,
       GrowdataMarketMakingPair,
@@ -37,7 +40,6 @@ async function connectToDatabase() {
       CustomConfigEntity,
     ],
     synchronize: false,
-    ssl: process.env.POSTGRES_SSL === 'true',
   });
 
   try {
