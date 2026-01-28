@@ -16,3 +16,4 @@
 
 ## 2026-01-28
 - Remove Postgres leftovers and align configs/docs with SQLite
+- Restore snapshot memo handling and defer market making order creation until payment completion

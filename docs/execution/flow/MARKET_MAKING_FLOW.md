@@ -105,34 +105,25 @@ async handleProcessMMSnapshot(job: Job) {
     'deposit_to_exchange'
   );
   
-  // Step 3: Find or create PaymentState
-  let paymentState = await this.paymentStateRepository.findOne({
-    where: { orderId }
-  });
-  
-  if (!paymentState) {
-    paymentState = this.paymentStateRepository.create({
-      orderId,
-      type: 'market_making',
-      symbol: pairConfig.symbol,
+   // Step 3: Find or create PaymentState
+   let paymentState = await this.paymentStateRepository.findOne({
+     where: { orderId }
+   });
+   
+   if (!paymentState) {
+     paymentState = this.paymentStateRepository.create({
+       orderId,
+       userId: snapshot.opponent_id,
+       type: 'market_making',
+       symbol: pairConfig.symbol,
       baseAssetId: pairConfig.base_asset_id,
       baseAssetAmount: '0',
       quoteAssetId: pairConfig.quote_asset_id,
       quoteAssetAmount: '0',
       // ... fee fields
-      state: 'payment_pending',
-    });
-    
-    // Also create MarketMakingOrder
-    const mmOrder = this.marketMakingRepository.create({
-      orderId,
-      userId: snapshot.opponent_id,
-      pair: pairConfig.symbol,
-      exchangeName: pairConfig.exchange_id,
-      state: 'payment_pending',
-    });
-    await this.marketMakingRepository.save(mmOrder);
-  }
+       state: 'payment_pending',
+     });
+   }
   
   // Step 4: Update amount based on received asset type
   if (receivedAssetId === pairConfig.base_asset_id) {
@@ -196,6 +187,21 @@ async handleCheckPaymentComplete(job: Job) {
   // All payments complete
   paymentState.state = 'payment_complete';
   await this.paymentStateRepository.save(paymentState);
+
+  // Create MarketMakingOrder after payment completion
+  const existingOrder = await this.marketMakingRepository.findOne({
+    where: { orderId }
+  });
+  if (!existingOrder) {
+    const mmOrder = this.marketMakingRepository.create({
+      orderId,
+      userId: paymentState.userId,
+      pair: pairConfig.symbol,
+      exchangeName: pairConfig.exchange_id,
+      state: 'payment_complete',
+    });
+    await this.marketMakingRepository.save(mmOrder);
+  }
   
   // Queue withdrawal
   await job.queue.add('withdraw_to_exchange', {
@@ -437,6 +443,7 @@ Tracks the 4 required transfers:
 ```typescript
 {
   orderId: string,
+  userId: string,
   
   // Base Asset
   baseAssetId: string,
