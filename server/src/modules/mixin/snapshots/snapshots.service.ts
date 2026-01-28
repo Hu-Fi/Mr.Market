@@ -83,13 +83,21 @@ export class SnapshotsService implements OnApplicationBootstrap {
   }
 
   async handleSnapshot(snapshot: SafeSnapshot) {
-    this.logger.log(`[Service] handleSnapshot() called for snapshot: ${snapshot.snapshot_id}`);
-    this.logger.debug(`[Service] Snapshot details: ${JSON.stringify(snapshot)}`);
-    this.logger.log(`[Service] Executing refund for snapshot ${snapshot.snapshot_id}...`);
+    this.logger.log(
+      `[Service] handleSnapshot() called for snapshot: ${snapshot.snapshot_id}`,
+    );
+    this.logger.debug(
+      `[Service] Snapshot details: ${JSON.stringify(snapshot)}`,
+    );
+    this.logger.log(
+      `[Service] Executing refund for snapshot ${snapshot.snapshot_id}...`,
+    );
     if (BigNumber(snapshot.amount).gt(0)) {
       await this.transactionService.refund(snapshot);
     }
-    this.logger.log(`[Service] Refund completed for snapshot ${snapshot.snapshot_id}`);
+    this.logger.log(
+      `[Service] Refund completed for snapshot ${snapshot.snapshot_id}`,
+    );
     return;
 
     // if (!snapshot.memo) {
@@ -181,9 +189,13 @@ export class SnapshotsService implements OnApplicationBootstrap {
 
   // startSnapshotLoop() -> handlePollSnapshots() -> fetchSnapshotsOnly() -> handleSnapshot()
   async startSnapshotLoop() {
-    this.logger.log(`startSnapshotLoop() called. enableCron=${this.enableCron}`);
+    this.logger.log(
+      `startSnapshotLoop() called. enableCron=${this.enableCron}`,
+    );
     if (this.enableCron) {
-      this.logger.log('Snapshot polling is ENABLED. Starting snapshot polling loop via Bull...');
+      this.logger.log(
+        'Snapshot polling is ENABLED. Starting snapshot polling loop via Bull...',
+      );
       try {
         const jobId = `snapshot-poll-${Date.now()}`;
         await this.snapshotsQueue.add(
@@ -194,12 +206,19 @@ export class SnapshotsService implements OnApplicationBootstrap {
             // Don't remove completed jobs so we can track polling history
           },
         );
-        this.logger.log(`Successfully queued initial snapshot polling job: ${jobId}`);
+        this.logger.log(
+          `Successfully queued initial snapshot polling job: ${jobId}`,
+        );
       } catch (error) {
-        this.logger.error(`Failed to start snapshot polling loop: ${error.message}`, error.stack);
+        this.logger.error(
+          `Failed to start snapshot polling loop: ${error.message}`,
+          error.stack,
+        );
       }
     } else {
-      this.logger.warn('Snapshot polling is DISABLED (RUN_MIXIN_SNAPSHOTS is not set to true)');
+      this.logger.warn(
+        'Snapshot polling is DISABLED (RUN_MIXIN_SNAPSHOTS is not set to true)',
+      );
     }
   }
 }

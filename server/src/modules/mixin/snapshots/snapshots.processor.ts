@@ -17,7 +17,7 @@ export class SnapshotsProcessor implements OnModuleInit {
   constructor(
     private readonly snapshotsService: SnapshotsService,
     @InjectQueue('snapshots') private readonly snapshotsQueue: Queue,
-  ) { }
+  ) {}
 
   async onModuleInit() {
     // Clean up any stale delayed/waiting jobs from previous runs
@@ -60,7 +60,10 @@ export class SnapshotsProcessor implements OnModuleInit {
     setInterval(async () => {
       try {
         // Clean up completed polling jobs older than retention period
-        await this.snapshotsQueue.clean(this.COMPLETED_JOB_RETENTION, 'completed');
+        await this.snapshotsQueue.clean(
+          this.COMPLETED_JOB_RETENTION,
+          'completed',
+        );
         this.logger.log('Cleaned up old completed polling jobs');
       } catch (error) {
         this.logger.error(
@@ -76,7 +79,9 @@ export class SnapshotsProcessor implements OnModuleInit {
     this.logger.debug('Polling for snapshots...');
     try {
       const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
-      this.logger.debug(`Fetched ${snapshots?.length || 0} snapshots from Mixin`);
+      this.logger.debug(
+        `Fetched ${snapshots?.length || 0} snapshots from Mixin`,
+      );
 
       if (snapshots && snapshots.length > 0) {
         // Get current cursor to filter out already-processed snapshots
@@ -84,20 +89,26 @@ export class SnapshotsProcessor implements OnModuleInit {
 
         // Filter to only process snapshots NEWER than cursor
         const newSnapshots = currentCursor
-          ? snapshots.filter(s => s.created_at > currentCursor)
+          ? snapshots.filter((s) => s.created_at > currentCursor)
           : snapshots;
 
         if (newSnapshots.length === 0) {
-          this.logger.debug('No new snapshots to process (all filtered by cursor)');
+          this.logger.debug(
+            'No new snapshots to process (all filtered by cursor)',
+          );
           return;
         }
 
         this.logger.log(
-          `Found ${newSnapshots.length} new snapshots (${snapshots.length - newSnapshots.length} filtered by cursor)`,
+          `Found ${newSnapshots.length} new snapshots (${
+            snapshots.length - newSnapshots.length
+          } filtered by cursor)`,
         );
 
         for (const snapshot of newSnapshots) {
-          this.logger.debug(`Queueing snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`);
+          this.logger.debug(
+            `Queueing snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`,
+          );
           await (job.queue as any).add('process_snapshot', snapshot, {
             jobId: snapshot.snapshot_id, // Deduplication by ID
             removeOnComplete: true,
@@ -106,8 +117,8 @@ export class SnapshotsProcessor implements OnModuleInit {
 
         // Update cursor to the NEWEST (maximum) timestamp from this batch
         // Don't assume ordering - find the actual max timestamp
-        const newestTimestamp = newSnapshots.reduce((max, s) =>
-          s.created_at > max ? s.created_at : max,
+        const newestTimestamp = newSnapshots.reduce(
+          (max, s) => (s.created_at > max ? s.created_at : max),
           newSnapshots[0].created_at,
         );
         await this.snapshotsService.updateSnapshotCursor(newestTimestamp);
@@ -245,19 +256,14 @@ export class SnapshotsProcessor implements OnModuleInit {
 
   @OnQueueEvent('error')
   onError(error: Error) {
-    this.logger.error(
-      `Queue error occurred: ${error.message}`,
-      error.stack,
-    );
+    this.logger.error(`Queue error occurred: ${error.message}`, error.stack);
   }
 
   @OnQueueEvent('active')
   onActive(job: Job) {
     // Only log when processing individual snapshots, not polling cycles
     if (job.name === 'process_snapshot') {
-      this.logger.debug(
-        `Processing snapshot: ${job.data.snapshot_id}`,
-      );
+      this.logger.debug(`Processing snapshot: ${job.data.snapshot_id}`);
     }
   }
 
@@ -275,5 +281,4 @@ export class SnapshotsProcessor implements OnModuleInit {
   onCleaned(jobs: Job[], type: string) {
     this.logger.log(`Cleaned ${jobs.length} jobs of type: ${type}`);
   }
-
 }
