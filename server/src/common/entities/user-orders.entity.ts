@@ -135,6 +135,9 @@ export class PaymentState {
   orderId: string; // the uuid of order
 
   @Column()
+  userId: string; // snapshot opponent id
+
+  @Column()
   type: string; // arbitrage or market_making
 
   @Column()
