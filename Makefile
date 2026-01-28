@@ -20,11 +20,6 @@ start-client:
 	@cd interface && yarn dev
 .PHONY: start-client
 
-start-server-db:
-	@echo "Starting server database..."
-	@cd server && yarn run start:db
-.PHONY: start-server-db
-
 run-migrations:
 	@echo "Running migrations..."
 	@cd server && yarn build && yarn run migration:run
@@ -34,11 +29,6 @@ run-seeder:
 	@echo "Running seender..."
 	@cd server && yarn run migration:seed
 .PHONY: run-seeder
-
-stop-server-db:
-	@echo "Stopping server database..."
-	@cd server && yarn run stop:db
-.PHONY: stop-server-db
 
 start-server:
 	@echo "Starting server..."
