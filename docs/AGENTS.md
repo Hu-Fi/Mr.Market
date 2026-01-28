@@ -12,3 +12,7 @@ use bg-base-content/60 or bg-base-300 for gray.
 avoid text-gray-900 or other custom color because it's bad for different theme support.
 avoid using h1 h2 h3 and p for text, use span and tailwindcss classes for text size instead.
 avoid using uppercase class for text, always use capitalize class instead.
+
+## ENV
+
+never read .env file, never read .env file, never read .env file

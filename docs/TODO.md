@@ -1,6 +1,6 @@
 ## Mr.Market
-### Refactor of Postgres and Redis
-1. Replace both postgres and redis with sqlite, replace Bull, to cut service count to only 1
+### Refactor of Postgres
+1.✅ Replace postgres with sqlite
 
 ### Validation of create market making process
 1. user can open invoice payment page in confirm payment step
