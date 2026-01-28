@@ -92,8 +92,9 @@ export class MarketMakingOrderProcessor {
       where: { orderId },
     });
 
-    if (!order?.userId) {
-      this.logger.error(`Refund failed: order ${orderId} not found`);
+    const refundUserId = order?.userId || paymentState.userId;
+    if (!refundUserId) {
+      this.logger.error(`Refund failed: userId missing for order ${orderId}`);
       return;
     }
 
@@ -121,10 +122,10 @@ export class MarketMakingOrderProcessor {
     for (const [assetId, amount] of refundMap.entries()) {
       try {
         this.logger.log(
-          `Refunding ${amount.toString()} of asset ${assetId} to user ${order.userId}`,
+          `Refunding ${amount.toString()} of asset ${assetId} to user ${refundUserId}`,
         );
         const requests = await this.transactionService.transfer(
-          order.userId,
+          refundUserId,
           assetId,
           amount.toString(),
           `Refund:${orderId}:${assetId}`,
@@ -222,6 +223,7 @@ export class MarketMakingOrderProcessor {
 
         paymentState = this.paymentStateRepository.create({
           orderId,
+          userId,
           type: 'market_making',
           symbol: pairConfig.symbol,
           baseAssetId: pairConfig.base_asset_id,
@@ -243,26 +245,6 @@ export class MarketMakingOrderProcessor {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
-
-        // Create MarketMakingOrder
-        const mmOrder = this.marketMakingRepository.create({
-          orderId,
-          userId,
-          pair: pairConfig.symbol,
-          exchangeName: pairConfig.exchange_id,
-          state: 'payment_pending',
-          createdAt: new Date().toISOString(),
-          // Defaults - should be updated from frontend/memo
-          bidSpread: '0.001',
-          askSpread: '0.001',
-          orderAmount: '0',
-          orderRefreshTime: '10000',
-          numberOfLayers: '1',
-          priceSourceType: PriceSourceType.MID_PRICE,
-          amountChangePerLayer: '0',
-          amountChangeType: 'fixed',
-        });
-        await this.marketMakingRepository.save(mmOrder);
       }
 
       // Step 1.5: Update payment state based on received asset
@@ -477,6 +459,31 @@ export class MarketMakingOrderProcessor {
       paymentState.state = 'payment_complete';
       paymentState.updatedAt = new Date().toISOString();
       await this.paymentStateRepository.save(paymentState);
+
+      const existingOrder = await this.marketMakingRepository.findOne({
+        where: { orderId },
+      });
+
+      if (!existingOrder) {
+        const mmOrder = this.marketMakingRepository.create({
+          orderId,
+          userId: paymentState.userId,
+          pair: pairConfig.symbol,
+          exchangeName: pairConfig.exchange_id,
+          state: 'payment_complete',
+          createdAt: new Date().toISOString(),
+          // Defaults - should be updated from frontend/memo
+          bidSpread: '0.001',
+          askSpread: '0.001',
+          orderAmount: '0',
+          orderRefreshTime: '10000',
+          numberOfLayers: '1',
+          priceSourceType: PriceSourceType.MID_PRICE,
+          amountChangePerLayer: '0',
+          amountChangeType: 'fixed',
+        });
+        await this.marketMakingRepository.save(mmOrder);
+      }
 
       await this.userOrdersService.updateMarketMakingOrderState(
         orderId,
