@@ -83,12 +83,8 @@ dotenv.config();
       load: [configuration],
     }),
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DATABASE,
+      type: 'sqlite',
+      database: process.env.DATABASE_PATH || 'data/mr_market.db',
       entities: [
         Trade,
         ArbitrageHistory,
@@ -119,7 +115,10 @@ dotenv.config();
         CampaignParticipation,
       ],
       synchronize: false,
-      ssl: process.env.POSTGRES_SSL === 'true',
+      migrationsRun: true,
+      extra: {
+        flags: ['-WAL'],
+      },
     }),
     ScheduleModule.forRoot(),
     TradeModule,
