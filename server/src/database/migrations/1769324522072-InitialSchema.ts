@@ -42,15 +42,6 @@ export class InitialSchema1769324522072 implements MigrationInterface {
             CREATE INDEX "IDX_4028ed4e39f5c919fc3317882b" ON "withdrawal" ("status")
         `);
         await queryRunner.query(`
-            CREATE TABLE "user_balance" (
-                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-                "userId" varchar NOT NULL,
-                "exchange" varchar NOT NULL,
-                "currency" varchar NOT NULL,
-                "balance" text NOT NULL DEFAULT ('0')
-            )
-        `);
-        await queryRunner.query(`
             CREATE TABLE "transaction" (
                 "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
                 "userId" varchar NOT NULL,
@@ -620,9 +611,6 @@ export class InitialSchema1769324522072 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "transaction"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "user_balance"
         `);
         await queryRunner.query(`
             DROP INDEX "IDX_4028ed4e39f5c919fc3317882b"
