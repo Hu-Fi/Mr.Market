@@ -138,7 +138,7 @@ export class PaymentState {
   userId: string; // snapshot opponent id
 
   @Column()
-  type: string; // arbitrage or market_making
+  type: string; // market_making
 
   @Column()
   symbol: string; // the symbol of trading pair

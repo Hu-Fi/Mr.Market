@@ -110,7 +110,6 @@ export class HealthService {
         failedCount,
         delayedCount,
         isPaused,
-        delayedJobs,
         activeJobs,
         failedJobs,
         completedJobs,
@@ -121,36 +120,14 @@ export class HealthService {
         this.snapshotsQueue.getFailedCount(),
         this.snapshotsQueue.getDelayedCount(),
         this.snapshotsQueue.isPaused(),
-        this.snapshotsQueue.getDelayed(),
         this.snapshotsQueue.getActive(),
         this.snapshotsQueue.getFailed(0, 10), // Get last 10 failed jobs
         this.snapshotsQueue.getCompleted(0, 5), // Get last 5 completed jobs
       ]);
 
-      // Check if polling loop is running by looking for:
-      // 1. Delayed polling job (scheduled for next run)
-      // 2. Active polling job (currently running)
-      // 3. Recently completed polling job (within last 10 seconds)
-      const now = Date.now();
-      const delayedPollingJob = delayedJobs.find(
-        (job) => job.name === 'process_snapshots',
-      );
-      const activePollingJob = activeJobs.find(
-        (job) => job.name === 'process_snapshots',
-      );
-      const recentlyCompletedPollingJob = completedJobs.find(
-        (job) =>
-          job.name === 'process_snapshots' &&
-          job.finishedOn &&
-          now - job.finishedOn < 10000, // Within last 10 seconds
-      );
-
+      const lastPollTimestamp = await this.getLastPollTimestamp();
       const isPollingActive =
-        !!delayedPollingJob ||
-        !!activePollingJob ||
-        !!recentlyCompletedPollingJob;
-
-      const nextPollJob = delayedPollingJob || recentlyCompletedPollingJob;
+        lastPollTimestamp !== null && Date.now() - lastPollTimestamp < 30000;
 
       // Detect issues
       const issues: string[] = [];
@@ -162,7 +139,7 @@ export class HealthService {
       }
 
       if (!isPollingActive && activeCount === 0) {
-        issues.push('Polling loop appears to have stopped');
+        issues.push('Snapshot polling appears stale');
         status = 'critical';
       }
 
@@ -194,9 +171,9 @@ export class HealthService {
             : undefined,
       }));
 
-      // Map recently completed polling jobs for visibility
-      const recentlyCompletedPollingJobs = completedJobs
-        .filter((job) => job.name === 'process_snapshots')
+      // Map recently completed snapshot jobs for visibility
+      const recentlyCompletedSnapshotJobs = completedJobs
+        .filter((job) => job.name === 'process_snapshot')
         .map((job) => ({
           id: job.id,
           name: job.name,
@@ -213,14 +190,7 @@ export class HealthService {
           name: 'snapshots',
           isPaused,
           isPollingActive,
-          nextPollJob: nextPollJob
-            ? {
-              id: nextPollJob.id,
-              delay: nextPollJob.opts?.delay,
-              timestamp: nextPollJob.timestamp,
-              finishedOn: nextPollJob.finishedOn,
-            }
-            : null,
+          lastPollTimestamp,
         },
         metrics: {
           waiting: waitingCount,
@@ -235,9 +205,10 @@ export class HealthService {
           timestamp: job.timestamp,
           processedOn: job.processedOn,
         })),
-        recentlyCompletedJobs: recentlyCompletedPollingJobs.length > 0
-          ? recentlyCompletedPollingJobs
-          : undefined,
+        recentlyCompletedJobs:
+          recentlyCompletedSnapshotJobs.length > 0
+            ? recentlyCompletedSnapshotJobs
+            : undefined,
         issues,
         recentFailures: recentFailures.length > 0 ? recentFailures : undefined,
       };
@@ -255,5 +226,23 @@ export class HealthService {
       };
     }
   }
-}
 
+  private async getLastPollTimestamp(): Promise<number | null> {
+    try {
+      const redis = (this.snapshotsQueue as any).client;
+      const lastPoll = await redis.get('snapshots:last_poll');
+      if (!lastPoll) {
+        return null;
+      }
+
+      const parsed = Number(lastPoll);
+      return Number.isFinite(parsed) ? parsed : null;
+    } catch (error) {
+      this.logger.error(
+        `Failed to get last poll timestamp: ${error.message}`,
+        error.stack,
+      );
+      return null;
+    }
+  }
+}

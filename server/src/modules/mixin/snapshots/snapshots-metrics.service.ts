@@ -13,7 +13,7 @@ export class SnapshotsMetricsService {
 
   constructor(
     @InjectQueue('snapshots') private readonly snapshotsQueue: Queue,
-  ) { }
+  ) {}
 
   /**
    * Periodic health check that runs every minute
@@ -39,7 +39,7 @@ export class SnapshotsMetricsService {
       // Log metrics (in production, you'd send these to a monitoring service)
       this.logger.debug(
         `Queue Health - Waiting: ${waitingCount}, Active: ${activeCount}, ` +
-        `Completed: ${completedCount}, Failed: ${failedCount}, Delayed: ${delayedCount}`,
+          `Completed: ${completedCount}, Failed: ${failedCount}, Delayed: ${delayedCount}`,
       );
 
       // Alert on concerning patterns
@@ -61,16 +61,13 @@ export class SnapshotsMetricsService {
         );
       }
 
-      // Check if the polling loop is still running
-      const delayedJobs = await this.snapshotsQueue.getDelayed();
-      const hasPollingJob = delayedJobs.some(job => job.name === 'process_snapshots');
-
-      if (!hasPollingJob && activeCount === 0) {
+      const lastPoll = await this.getLastPollTimestamp();
+      if (!lastPoll) {
+        this.logger.warn('Snapshot polling has not reported a last poll time.');
+      } else if (Date.now() - lastPoll > 30000) {
         this.logger.error(
-          'Polling loop appears to have stopped! No process_snapshots job found.',
+          'Snapshot polling appears stale (last poll > 30s ago).',
         );
-        // Auto-restart the loop
-        await this.restartPollingLoop();
       }
     } catch (error) {
       this.logger.error(
@@ -85,21 +82,15 @@ export class SnapshotsMetricsService {
    */
   async getQueueMetrics() {
     try {
-      const [
-        waiting,
-        active,
-        completed,
-        failed,
-        delayed,
-        paused,
-      ] = await Promise.all([
-        this.snapshotsQueue.getWaiting(),
-        this.snapshotsQueue.getActive(),
-        this.snapshotsQueue.getCompleted(),
-        this.snapshotsQueue.getFailed(),
-        this.snapshotsQueue.getDelayed(),
-        this.snapshotsQueue.isPaused(),
-      ]);
+      const [waiting, active, completed, failed, delayed, paused] =
+        await Promise.all([
+          this.snapshotsQueue.getWaiting(),
+          this.snapshotsQueue.getActive(),
+          this.snapshotsQueue.getCompleted(),
+          this.snapshotsQueue.getFailed(),
+          this.snapshotsQueue.getDelayed(),
+          this.snapshotsQueue.isPaused(),
+        ]);
 
       return {
         counts: {
@@ -111,9 +102,17 @@ export class SnapshotsMetricsService {
         },
         isPaused: paused,
         jobs: {
-          waiting: waiting.map(j => ({ id: j.id, name: j.name, timestamp: j.timestamp })),
-          active: active.map(j => ({ id: j.id, name: j.name, timestamp: j.timestamp })),
-          failed: failed.map(j => ({
+          waiting: waiting.map((j) => ({
+            id: j.id,
+            name: j.name,
+            timestamp: j.timestamp,
+          })),
+          active: active.map((j) => ({
+            id: j.id,
+            name: j.name,
+            timestamp: j.timestamp,
+          })),
+          failed: failed.map((j) => ({
             id: j.id,
             name: j.name,
             failedReason: j.failedReason,
@@ -133,11 +132,11 @@ export class SnapshotsMetricsService {
   /**
    * Clean up old completed and failed jobs
    */
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async cleanupOldJobs() {
     try {
-      // Keep jobs for 24 hours
-      const gracePeriod = 24 * 60 * 60 * 1000;
+      // Keep jobs for 7 days
+      const gracePeriod = 7 * 24 * 60 * 60 * 1000;
 
       await this.snapshotsQueue.clean(gracePeriod, 'completed');
       await this.snapshotsQueue.clean(gracePeriod, 'failed');
@@ -151,25 +150,22 @@ export class SnapshotsMetricsService {
     }
   }
 
-  /**
-   * Emergency restart of the polling loop
-   */
-  private async restartPollingLoop() {
+  private async getLastPollTimestamp(): Promise<number | null> {
     try {
-      this.logger.warn('Attempting to restart polling loop...');
-      await this.snapshotsQueue.add(
-        'process_snapshots',
-        {},
-        {
-          removeOnComplete: true,
-        },
-      );
-      this.logger.log('Successfully restarted polling loop');
+      const redis = (this.snapshotsQueue as any).client;
+      const lastPoll = await redis.get('snapshots:last_poll');
+      if (!lastPoll) {
+        return null;
+      }
+
+      const parsed = Number(lastPoll);
+      return Number.isFinite(parsed) ? parsed : null;
     } catch (error) {
       this.logger.error(
-        `Failed to restart polling loop: ${error.message}`,
+        `Failed to get last poll timestamp: ${error.message}`,
         error.stack,
       );
+      return null;
     }
   }
 

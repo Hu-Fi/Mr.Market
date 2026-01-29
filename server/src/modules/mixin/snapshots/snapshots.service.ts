@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -14,7 +14,7 @@ import { MixinClientService } from '../client/mixin-client.service';
 import { TransactionService } from '../transaction/transaction.service';
 
 @Injectable()
-export class SnapshotsService implements OnApplicationBootstrap {
+export class SnapshotsService {
   private readonly logger = new CustomLogger(SnapshotsService.name);
   private readonly enableCron: boolean;
 
@@ -30,16 +30,13 @@ export class SnapshotsService implements OnApplicationBootstrap {
     this.logger.debug(`Snapshots service enable cron: ${this.enableCron}`);
   }
 
-  async onApplicationBootstrap() {
-    await this.startSnapshotLoop();
-  }
-
   async fetchSnapshots(): Promise<{
     snapshots: SafeSnapshot[];
     newSnapshots: SafeSnapshot[];
     newestTimestamp: string;
   }> {
     try {
+      await this.updateLastPoll();
       const currentCursor = await this.getSnapshotCursor();
       const snapshots =
         await this.mixinClientService.client.safe.fetchSafeSnapshots({} as any);
@@ -88,6 +85,15 @@ export class SnapshotsService implements OnApplicationBootstrap {
       await redis.set('snapshots:cursor', timestamp);
     } catch (error) {
       this.logger.error(`Failed to update snapshot cursor: ${error}`);
+    }
+  }
+
+  async updateLastPoll() {
+    try {
+      const redis = (this.snapshotsQueue as any).client;
+      await redis.set('snapshots:last_poll', Date.now().toString());
+    } catch (error) {
+      this.logger.error(`Failed to update last poll timestamp: ${error}`);
     }
   }
 
@@ -188,38 +194,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
     }
   }
 
-  // startSnapshotLoop() -> handlePollSnapshots() -> fetchSnapshots() -> handleSnapshot()
-  async startSnapshotLoop() {
-    this.logger.log(
-      `startSnapshotLoop() called. enableCron=${this.enableCron}`,
-    );
-    if (this.enableCron) {
-      this.logger.log(
-        'Snapshot polling is ENABLED. Starting snapshot polling loop via Bull...',
-      );
-      try {
-        const jobId = `snapshot-poll-${Date.now()}`;
-        await this.snapshotsQueue.add(
-          'process_snapshots',
-          {},
-          {
-            jobId,
-            // Don't remove completed jobs so we can track polling history
-          },
-        );
-        this.logger.log(
-          `Successfully queued initial snapshot polling job: ${jobId}`,
-        );
-      } catch (error) {
-        this.logger.error(
-          `Failed to start snapshot polling loop: ${error.message}`,
-          error.stack,
-        );
-      }
-    } else {
-      this.logger.warn(
-        'Snapshot polling is DISABLED (RUN_MIXIN_SNAPSHOTS is not set to true)',
-      );
-    }
+  isPollingEnabled() {
+    return this.enableCron;
   }
 }

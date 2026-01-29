@@ -7,43 +7,40 @@ Complete guide to how market making orders work from user payment to strategy ex
 The system processes market making orders through 9 stages using a queue-driven architecture:
 
 ```
-User Transfer → Snapshot Detection → Memo Parsing → Payment Tracking → 
-Payment Verification → Withdraw to Exchange → Withdrawal Confirmation → 
+User Transfer → Snapshot Detection → Memo Parsing → Payment Tracking →
+Payment Verification → Withdraw to Exchange → Withdrawal Confirmation →
 Join Campaign → Start Strategy → Execute Market Making Loop
 ```
 
 ## The 9 Stages
 
 ### Stage 1: Snapshot Polling
+
 **File**: `src/modules/mixin/snapshots/snapshots.processor.ts`
 
 ```typescript
-@Process('process_snapshots')
-async handlePollSnapshots(job: Job) {
+@Cron('*/3 * * * * *')
+async pollSnapshotsCron() {
   // 1. Fetch new snapshots from Mixin API
-  const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
-  
+  const { snapshots, newSnapshots } = await this.snapshotsService.fetchSnapshots();
+
   // 2. Create processing task for each snapshot
-  for (const snapshot of snapshots) {
-    await job.queue.add('process_snapshot', snapshot, {
+  for (const snapshot of newSnapshots) {
+    await this.snapshotsQueue.add('process_snapshot', snapshot, {
       jobId: snapshot.snapshot_id, // Deduplication
     });
   }
-  
-  // 3. Update cursor
-  await this.snapshotsService.updateSnapshotCursor(snapshots[0].created_at);
-  
-  // 4. Poll again after 5 seconds
-  await job.queue.add('process_snapshots', {}, { delay: 5000 });
 }
 ```
 
 **Key Points**:
-- Polls every 5 seconds
+
+- Polls every 3 seconds via cron
 - Uses snapshot_id for deduplication
-- Updates cursor to avoid reprocessing
+- Updates cursor and `snapshots:last_poll` to avoid reprocessing
 
 ### Stage 2: Memo Parsing & Routing
+
 **File**: `src/modules/mixin/snapshots/snapshots.service.ts`
 
 ```typescript
@@ -52,14 +49,14 @@ async handleSnapshot(snapshot: SafeSnapshot) {
   if (BigNumber(snapshot.amount).isLessThanOrEqualTo(0)) {
     return; // Ignore outgoing
   }
-  
+
   // 2. Parse memo
   const { version, tradingTypeKey, payload } = decodeMemo(memo);
-  
+
   // 3. Route based on trading type
   if (tradingTypeKey === 1) { // Market making
     const mmDetails = decodeMarketMakingCreateMemo(payload);
-    
+
     // Push to market-making queue
     await this.marketMakingQueue.add('process_mm_snapshot', {
       snapshotId: snapshot.snapshot_id,
@@ -72,17 +69,20 @@ async handleSnapshot(snapshot: SafeSnapshot) {
 ```
 
 **Memo Structure**:
+
 ```typescript
 interface MarketMakingCreateMemoDetails {
-  orderId: string;              // UUID
-  marketMakingPairId: string;   // UUID
+  orderId: string; // UUID
+  marketMakingPairId: string; // UUID
 }
 ```
 
 ### Stage 3: Payment Tracking
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 Tracks 4 types of assets:
+
 1. **Base Asset** (e.g., BTC)
 2. **Quote Asset** (e.g., USDT)
 3. **Base Fee** (withdrawal fee for base)
@@ -92,24 +92,24 @@ Tracks 4 types of assets:
 @Process('process_mm_snapshot')
 async handleProcessMMSnapshot(job: Job) {
   const { snapshotId, orderId, marketMakingPairId, snapshot } = job.data;
-  
+
   // Step 1: Validate trading pair
   const pairConfig = await this.growDataRepository.findMarketMakingPairById(
     marketMakingPairId
   );
-  
+
   // Step 2: Calculate required fees
   const feeInfo = await this.feeService.calculateMoveFundsFee(
     pairConfig.exchange_id,
     pairConfig.symbol,
     'deposit_to_exchange'
   );
-  
+
    // Step 3: Find or create PaymentState
    let paymentState = await this.paymentStateRepository.findOne({
      where: { orderId }
    });
-   
+
    if (!paymentState) {
      paymentState = this.paymentStateRepository.create({
        orderId,
@@ -124,7 +124,7 @@ async handleProcessMMSnapshot(job: Job) {
        state: 'payment_pending',
      });
    }
-  
+
   // Step 4: Update amount based on received asset type
   if (receivedAssetId === pairConfig.base_asset_id) {
     paymentState.baseAssetAmount = BigNumber(paymentState.baseAssetAmount)
@@ -136,9 +136,9 @@ async handleProcessMMSnapshot(job: Job) {
       .toString();
   }
   // ... handle fee assets
-  
+
   await this.paymentStateRepository.save(paymentState);
-  
+
   // Step 5: Queue payment completion check
   await job.queue.add('check_payment_complete', {
     orderId,
@@ -148,17 +148,18 @@ async handleProcessMMSnapshot(job: Job) {
 ```
 
 ### Stage 4: Payment Completion Check
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 ```typescript
 @Process('check_payment_complete')
 async handleCheckPaymentComplete(job: Job) {
   const { orderId, retryCount = 0 } = job.data;
-  
+
   const paymentState = await this.paymentStateRepository.findOne({
     where: { orderId }
   });
-  
+
   // Check if all assets received
   const hasBase = BigNumber(paymentState.baseAssetAmount).isGreaterThan(0);
   const hasQuote = BigNumber(paymentState.quoteAssetAmount).isGreaterThan(0);
@@ -166,16 +167,16 @@ async handleCheckPaymentComplete(job: Job) {
     .isGreaterThanOrEqualTo(paymentState.requiredBaseWithdrawalFee);
   const hasQuoteFee = BigNumber(paymentState.quoteFeeAssetAmount)
     .isGreaterThanOrEqualTo(paymentState.requiredQuoteWithdrawalFee);
-  
+
   // If incomplete, retry or timeout
   if (!hasBase || !hasQuote || !hasBaseFee || !hasQuoteFee) {
     const elapsed = Date.now() - new Date(paymentState.createdAt).getTime();
-    
+
     if (elapsed > 10 * 60 * 1000) { // 10 minutes timeout
       await this.userOrdersService.updateMarketMakingOrderState(orderId, 'failed');
       return;
     }
-    
+
     // Retry after 10 seconds
     await job.queue.add('check_payment_complete', {
       orderId,
@@ -183,7 +184,7 @@ async handleCheckPaymentComplete(job: Job) {
     }, { delay: 10000 });
     return;
   }
-  
+
   // All payments complete
   paymentState.state = 'payment_complete';
   await this.paymentStateRepository.save(paymentState);
@@ -202,7 +203,7 @@ async handleCheckPaymentComplete(job: Job) {
     });
     await this.marketMakingRepository.save(mmOrder);
   }
-  
+
   // Queue withdrawal
   await job.queue.add('withdraw_to_exchange', {
     orderId,
@@ -212,26 +213,28 @@ async handleCheckPaymentComplete(job: Job) {
 ```
 
 **Key Points**:
+
 - Polls every 10 seconds
 - 10-minute timeout protection
 - Verifies sufficient fees
 - Auto-retry mechanism
 
 ### Stage 5: Withdraw to Exchange
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 ```typescript
 @Process('withdraw_to_exchange')
 async handleWithdrawToExchange(job: Job) {
   const { orderId, marketMakingPairId } = job.data;
-  
+
   await this.userOrdersService.updateMarketMakingOrderState(orderId, 'withdrawing');
-  
+
   // Step 1: Get exchange API key
   const apiKey = await this.exchangeService.findFirstAPIKeyByExchange(
     pairConfig.exchange_id
   );
-  
+
   // Step 2: Get accurate network identifiers
   const [baseNetwork, quoteNetwork] = await Promise.all([
     this.networkMappingService.getNetworkForAsset(
@@ -243,7 +246,7 @@ async handleWithdrawToExchange(job: Job) {
       pairConfig.quote_symbol
     ),
   ]);
-  
+
   // Step 3: Get exchange deposit addresses
   const baseDepositResult = await this.exchangeService.getDepositAddress({
     exchange: pairConfig.exchange_id,
@@ -251,7 +254,7 @@ async handleWithdrawToExchange(job: Job) {
     symbol: pairConfig.base_symbol,
     network: baseNetwork,
   });
-  
+
   // Step 4: Execute Mixin withdrawals
   const baseWithdrawalResult = await this.withdrawalService.executeWithdrawal(
     paymentState.baseAssetId,
@@ -259,12 +262,12 @@ async handleWithdrawToExchange(job: Job) {
     baseDepositResult.memo || `MM:${orderId}:base`,
     paymentState.baseAssetAmount
   );
-  
+
   await this.userOrdersService.updateMarketMakingOrderState(
     orderId,
     'withdrawal_confirmed'
   );
-  
+
   // Step 5: Queue withdrawal confirmation monitoring
   await this.withdrawalConfirmationQueue.add('monitor_mm_withdrawal', {
     orderId,
@@ -277,6 +280,7 @@ async handleWithdrawToExchange(job: Job) {
 **NetworkMappingService** automatically determines the correct network (BTC, ERC20, TRC20, etc.) based on Mixin's chain_id.
 
 ### Stage 6: Withdrawal Confirmation Monitoring
+
 **File**: `src/modules/mixin/withdrawal/withdrawal-confirmation.worker.ts`
 
 ```typescript
@@ -305,13 +309,16 @@ async handleMonitorMMWithdrawal(job: Job) {
 ```
 
 **Key Points**:
+
 - Retries every 30 seconds for up to 60 attempts (30 minutes max)
 - Confirmation requires both snapshot.confirmations >= 1 AND transaction_hash present
 
 ### Stage 7: Join Campaign
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 This stage joins **both** campaign systems:
+
 1. **HuFi Campaign** (external Web3 integration) - for blockchain rewards
 2. **Local Campaign** (internal tracking) - for analytics and reward distribution
 
@@ -323,19 +330,19 @@ async handleJoinCampaign(job: Job<{
   hufiCampaign?: { chainId: number; campaignAddress: string };
 }>) {
   const { orderId, campaignId, hufiCampaign } = job.data;
-  
+
   await this.userOrdersService.updateMarketMakingOrderState(
     orderId,
     'joining_campaign'
   );
-  
+
   const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
-  
+
   // Step 1: Try to join HuFi campaign (external Web3)
   if (hufiCampaign?.chainId && hufiCampaign?.campaignAddress) {
     try {
       const campaigns = await this.hufiCampaignService.getCampaigns();
-      const matching = campaigns.find(c => 
+      const matching = campaigns.find(c =>
         c.chainId === hufiCampaign.chainId &&
         c.address.toLowerCase() === hufiCampaign.campaignAddress.toLowerCase()
       );
@@ -348,7 +355,7 @@ async handleJoinCampaign(job: Job<{
       this.logger.error(`HuFi join failed: ${err.message}`);
     }
   }
-  
+
   // Step 2: Store local campaign record for tracking
   const localCampaignId = campaignId || `mm_${order.exchangeName}_${order.pair}`;
   await this.localCampaignService.joinCampaign(
@@ -356,12 +363,12 @@ async handleJoinCampaign(job: Job<{
     localCampaignId,
     orderId
   );
-  
+
   await this.userOrdersService.updateMarketMakingOrderState(
     orderId,
     'campaign_joined'
   );
-  
+
   // Queue market making start
   await job.queue.add('start_mm', {
     userId: order.userId,
@@ -371,22 +378,24 @@ async handleJoinCampaign(job: Job<{
 ```
 
 **Key Points**:
+
 - HuFi join is **non-blocking** - failure doesn't stop MM order
 - Local record is **always** created for tracking
 - Campaign ID defaults to `mm_{exchange}_{pair}` format
 
 ### Stage 8: Start Market Making
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 ```typescript
 @Process('start_mm')
 async handleStartMM(job: Job) {
   const { userId, orderId } = job.data;
-  
+
   const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
-  
+
   await this.userOrdersService.updateMarketMakingOrderState(orderId, 'running');
-  
+
   // Add first execution cycle
   await job.queue.add('execute_mm_cycle', {
     userId,
@@ -405,22 +414,23 @@ async handleStartMM(job: Job) {
 ```
 
 ### Stage 9: Execute Market Making Loop
+
 **File**: `src/modules/market-making/user-orders/market-making.processor.ts`
 
 ```typescript
 @Process('execute_mm_cycle')
 async handleExecuteMMCycle(job: Job) {
   const { userId, orderId, strategyParams } = job.data;
-  
+
   // 1. Check order status
   const order = await this.userOrdersService.findMarketMakingByOrderId(orderId);
   if (order.state !== 'running') {
     return; // Stop loop
   }
-  
+
   // 2. Execute one market making cycle
   await this.strategyService.executeMMCycle(strategyParams);
-  
+
   // 3. Re-queue next cycle
   await job.queue.add('execute_mm_cycle', job.data, {
     delay: strategyParams.orderRefreshTime || 10000,
@@ -429,6 +439,7 @@ async handleExecuteMMCycle(job: Job) {
 ```
 
 **StrategyService.executeMMCycle()** performs:
+
 1. Get current market price
 2. Calculate bid/ask prices (based on spreads)
 3. Cancel old orders
@@ -438,43 +449,45 @@ async handleExecuteMMCycle(job: Job) {
 ## Key Data Structures
 
 ### PaymentState
+
 Tracks the 4 required transfers:
 
 ```typescript
 {
   orderId: string,
   userId: string,
-  
+
   // Base Asset
   baseAssetId: string,
   baseAssetAmount: string,
   baseAssetSnapshotId: string,
-  
+
   // Quote Asset
   quoteAssetId: string,
   quoteAssetAmount: string,
   quoteAssetSnapshotId: string,
-  
+
   // Base Fee
   baseFeeAssetId: string,
   baseFeeAssetAmount: string,
   baseFeeAssetSnapshotId: string,
-  
+
   // Quote Fee
   quoteFeeAssetId: string,
   quoteFeeAssetAmount: string,
   quoteFeeAssetSnapshotId: string,
-  
+
   // Required Fees
   requiredBaseWithdrawalFee: string,
   requiredQuoteWithdrawalFee: string,
   requiredMarketMakingFee: string,
-  
+
   state: 'payment_pending' | 'payment_complete' | ...
 }
 ```
 
 ### MarketMakingOrder
+
 Stores user strategy configuration:
 
 ```typescript
@@ -493,11 +506,11 @@ Stores user strategy configuration:
 
 ## Queue Usage
 
-| Queue Name | Job Types | Processor |
-|-----------|-----------|-----------|
-| `snapshots` | `process_snapshots`<br>`process_snapshot` | SnapshotsProcessor |
-| `market-making` | `process_mm_snapshot`<br>`check_payment_complete`<br>`withdraw_to_exchange`<br>`join_campaign`<br>`start_mm`<br>`execute_mm_cycle` | MarketMakingOrderProcessor |
-| `withdrawal-confirmations` | `monitor_mm_withdrawal` | WithdrawalConfirmationWorker |
+| Queue Name                 | Job Types                                                                                                                          | Processor                    |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `snapshots`                | `process_snapshot`                                                                                                                 | SnapshotsProcessor           |
+| `market-making`            | `process_mm_snapshot`<br>`check_payment_complete`<br>`withdraw_to_exchange`<br>`join_campaign`<br>`start_mm`<br>`execute_mm_cycle` | MarketMakingOrderProcessor   |
+| `withdrawal-confirmations` | `monitor_mm_withdrawal`                                                                                                            | WithdrawalConfirmationWorker |
 
 ## State Transitions
 
@@ -515,15 +528,15 @@ payment_pending           (initial state when first snapshot received)
 
 ## Error Handling
 
-| Error Scenario | Action |
-|---------------|--------|
-| Trading pair not found/disabled | Immediate refund |
-| Unknown asset | Immediate refund |
-| Payment timeout (10 minutes) | Mark failed + refund |
-| Insufficient fees | Mark failed + refund |
-| Withdrawal timeout (30 minutes) | Mark failed |
-| Withdrawal failure | Mark failed |
-| API key not found | Throw error |
+| Error Scenario                  | Action               |
+| ------------------------------- | -------------------- |
+| Trading pair not found/disabled | Immediate refund     |
+| Unknown asset                   | Immediate refund     |
+| Payment timeout (10 minutes)    | Mark failed + refund |
+| Insufficient fees               | Mark failed + refund |
+| Withdrawal timeout (30 minutes) | Mark failed          |
+| Withdrawal failure              | Mark failed          |
+| API key not found               | Throw error          |
 
 ## Example Timeline
 
@@ -595,21 +608,21 @@ T=5m10s+  execute_mm_cycle runs continuously
 
 ## Key Files
 
-| File | Responsibility |
-|------|---------------|
-| `snapshots.processor.ts` | Poll snapshots, distribute processing |
-| `snapshots.service.ts` | Parse memo, route to queues |
-| `market-making.processor.ts` | Complete market making order lifecycle |
-| `network-mapping.service.ts` | Mixin Asset → CCXT Network mapping |
-| `exchange.service.ts` | Get exchange deposit addresses |
-| `withdrawal.service.ts` | Execute Mixin withdrawals |
-| `withdrawal-confirmation.worker.ts` | Monitor withdrawal confirmations |
-| `local-campaign.service.ts` | Local campaign management |
-| `strategy.service.ts` | Market making strategy execution |
+| File                                | Responsibility                         |
+| ----------------------------------- | -------------------------------------- |
+| `snapshots.processor.ts`            | Poll snapshots, distribute processing  |
+| `snapshots.service.ts`              | Parse memo, route to queues            |
+| `market-making.processor.ts`        | Complete market making order lifecycle |
+| `network-mapping.service.ts`        | Mixin Asset → CCXT Network mapping     |
+| `exchange.service.ts`               | Get exchange deposit addresses         |
+| `withdrawal.service.ts`             | Execute Mixin withdrawals              |
+| `withdrawal-confirmation.worker.ts` | Monitor withdrawal confirmations       |
+| `local-campaign.service.ts`         | Local campaign management              |
+| `strategy.service.ts`               | Market making strategy execution       |
 
 ---
 
 **Created**: 2026-01-02
-**Updated**: 2026-01-09
-**Version**: 2.1.0
+**Updated**: 2026-01-29
+**Version**: 2.2.0
 **Status**: In Progress
