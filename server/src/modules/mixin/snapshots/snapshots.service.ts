@@ -1,6 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SafeSnapshot } from '@mixin.dev/mixin-node-sdk';
 import { CustomLogger } from 'src/modules/infrastructure/logger/logger.service';
 
@@ -16,20 +15,16 @@ import { TransactionService } from '../transaction/transaction.service';
 
 @Injectable()
 export class SnapshotsService implements OnApplicationBootstrap {
-  private events: EventEmitter2;
   private readonly logger = new CustomLogger(SnapshotsService.name);
   private readonly enableCron: boolean;
 
   constructor(
     private configService: ConfigService,
-    private eventEmitter: EventEmitter2,
     @InjectQueue('snapshots') private snapshotsQueue: Queue,
     @InjectQueue('market-making') private marketMakingQueue: Queue,
     private mixinClientService: MixinClientService,
     private transactionService: TransactionService,
   ) {
-    this.events = this.eventEmitter;
-
     this.enableCron =
       this.configService.get<string>('strategy.mixin_snapshots_run') === 'true';
     this.logger.debug(`Snapshots service enable cron: ${this.enableCron}`);
@@ -39,25 +34,40 @@ export class SnapshotsService implements OnApplicationBootstrap {
     await this.startSnapshotLoop();
   }
 
-  async fetchSnapshotsOnly(): Promise<SafeSnapshot[]> {
+  async fetchSnapshots(): Promise<{
+    snapshots: SafeSnapshot[];
+    newSnapshots: SafeSnapshot[];
+    newestTimestamp: string;
+  }> {
     try {
-      const redis = (this.snapshotsQueue as any).client;
-      const cursor = await redis.get('snapshots:cursor');
-      const offset = cursor || '';
-
+      const currentCursor = await this.getSnapshotCursor();
       const snapshots =
-        await this.mixinClientService.client.safe.fetchSafeSnapshots({
-          offset,
-        } as any);
+        await this.mixinClientService.client.safe.fetchSafeSnapshots({} as any);
 
       if (!snapshots || snapshots.length === 0) {
-        return [];
+        return { snapshots: [], newSnapshots: [], newestTimestamp: '' };
       }
 
-      return snapshots;
+      const newSnapshots = currentCursor
+        ? snapshots.filter((snapshot) => snapshot.created_at > currentCursor)
+        : snapshots;
+
+      if (newSnapshots.length === 0) {
+        return { snapshots, newSnapshots: [], newestTimestamp: '' };
+      }
+
+      const newestTimestamp = newSnapshots.reduce(
+        (max, snapshot) =>
+          snapshot.created_at > max ? snapshot.created_at : max,
+        newSnapshots[0].created_at,
+      );
+
+      await this.updateSnapshotCursor(newestTimestamp);
+
+      return { snapshots, newSnapshots, newestTimestamp };
     } catch (error) {
       this.logger.error(`Failed to fetch snapshots: ${error}`);
-      return [];
+      return { snapshots: [], newSnapshots: [], newestTimestamp: '' };
     }
   }
 
@@ -106,7 +116,8 @@ export class SnapshotsService implements OnApplicationBootstrap {
       const hexDecodedMemo = Buffer.from(snapshot.memo, 'hex').toString(
         'utf-8',
       );
-      const { payload, version, tradingTypeKey } = memoPreDecode(hexDecodedMemo);
+      const { payload, version, tradingTypeKey } =
+        memoPreDecode(hexDecodedMemo);
       if (!payload) {
         this.logger.log(
           `Snapshot memo is invalid, refund: ${snapshot.snapshot_id}`,
@@ -129,7 +140,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
           // Spot trading
           break;
         case 1:
-          // Market making - Queue for processing instead of emitting event
+          // Market making - Queue for processing
           const mmDetails = decodeMarketMakingCreateMemo(payload);
           if (!mmDetails) {
             this.logger.warn('Failed to decode market making memo, refunding');
@@ -163,7 +174,6 @@ export class SnapshotsService implements OnApplicationBootstrap {
           if (!simplyGrowDetails) {
             break;
           }
-          this.events.emit('simply_grow.create', simplyGrowDetails, snapshot);
           break;
         default:
           // Refund
@@ -178,7 +188,7 @@ export class SnapshotsService implements OnApplicationBootstrap {
     }
   }
 
-  // startSnapshotLoop() -> handlePollSnapshots() -> fetchSnapshotsOnly() -> handleSnapshot()
+  // startSnapshotLoop() -> handlePollSnapshots() -> fetchSnapshots() -> handleSnapshot()
   async startSnapshotLoop() {
     this.logger.log(
       `startSnapshotLoop() called. enableCron=${this.enableCron}`,

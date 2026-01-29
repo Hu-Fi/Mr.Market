@@ -68,7 +68,7 @@ yarn test:e2e
 Unit testing
 
 ```
-yarn test
+bun test
 ```
 
 ## Deployment Guide
@@ -79,20 +79,20 @@ First, ensure you have the following environment variables ready. These are cruc
 
 #### Server Environment Variables (`/server/.env`)
 
-| Variable                    | Description                       | Source                    |
-| --------------------------- | --------------------------------- | ------------------------- |
-| `ADMIN_PASSWORD`            | Admin page password               | User-defined              |
-| `JWT_SECRET`                | JWT secret key (32 bit)           | User-defined              |
-| `COINGECKO_API_KEY`         | Coingecko API key                 | Coingecko                 |
-| `DATABASE_PATH`             | SQLite database file path         | User-defined              |
-| `MIXIN_APP_ID`              | Mixin App ID                      | Mixin Developer Dashboard |
-| `MIXIN_SESSION_ID`          | Mixin Session ID                  | Mixin Developer Dashboard |
-| `MIXIN_SERVER_PUBLIC_KEY`   | Mixin Server Public key           | Mixin Developer Dashboard |
-| `MIXIN_SESSION_PRIVATE_KEY` | Mixin Session Private key         | Mixin Developer Dashboard |
-| `MIXIN_SPEND_PRIVATE_KEY`   | Mixin Spend Private key           | Mixin Developer Dashboard |
-| `MIXIN_OAUTH_SECRET`        | Mixin Oauth Secret                | Mixin Developer Dashboard |
-| `BINANCE_API_KEY`           | Binance Account API Key           | Binance Account Settings  |
-| `BINANCE_SECRET`            | Binance Account API Secret        | Binance Account Settings  |
+| Variable                    | Description                | Source                    |
+| --------------------------- | -------------------------- | ------------------------- |
+| `ADMIN_PASSWORD`            | Admin page password        | User-defined              |
+| `JWT_SECRET`                | JWT secret key (32 bit)    | User-defined              |
+| `COINGECKO_API_KEY`         | Coingecko API key          | Coingecko                 |
+| `DATABASE_PATH`             | SQLite database file path  | User-defined              |
+| `MIXIN_APP_ID`              | Mixin App ID               | Mixin Developer Dashboard |
+| `MIXIN_SESSION_ID`          | Mixin Session ID           | Mixin Developer Dashboard |
+| `MIXIN_SERVER_PUBLIC_KEY`   | Mixin Server Public key    | Mixin Developer Dashboard |
+| `MIXIN_SESSION_PRIVATE_KEY` | Mixin Session Private key  | Mixin Developer Dashboard |
+| `MIXIN_SPEND_PRIVATE_KEY`   | Mixin Spend Private key    | Mixin Developer Dashboard |
+| `MIXIN_OAUTH_SECRET`        | Mixin Oauth Secret         | Mixin Developer Dashboard |
+| `BINANCE_API_KEY`           | Binance Account API Key    | Binance Account Settings  |
+| `BINANCE_SECRET`            | Binance Account API Secret | Binance Account Settings  |
 
 Refer to [`./server/.env.example`](./server/.env.example) to enable more exchanges for strategies.
 
@@ -117,9 +117,9 @@ By the end of these steps, you will have a fully functional server and interface
 
    - Use
      - `./server` for Root Directory
-     - `yarn install; yarn build;` for Build Command
-     - `yarn migration:run` for Pre-Deploy Command (Available in advanced settings)
-     - `yarn start:prod` for Start Command
+   - `bun install --frozen-lockfile; bun run build` for Build Command
+   - `bun run migration:run` for Pre-Deploy Command (Available in advanced settings)
+   - `bun run start:prod` for Start Command
 
 2. **Deploy Interface on Render**
 

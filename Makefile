@@ -6,7 +6,7 @@ install-client:
 
 install-server:
 	@echo "Installing server dependencies..."
-	@cd server && yarn install || exit 1
+	@cd server && bun install || exit 1
 	@echo "Server dependencies installed successfully!"
 .PHONY: install-server
 
@@ -22,17 +22,17 @@ start-client:
 
 run-migrations:
 	@echo "Running migrations..."
-	@cd server && yarn build && yarn run migration:run
+	@cd server && bun run build && bun run migration:run
 .PHONY: run-migrations
 
 run-seeder:
 	@echo "Running seender..."
-	@cd server && yarn run migration:seed
+	@cd server && bun run migration:seed
 .PHONY: run-seeder
 
 start-server:
 	@echo "Starting server..."
-	@cd server && yarn start:dev
+	@cd server && bun run start:dev
 .PHONY: start-server
 
 start-dev:

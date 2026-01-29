@@ -1,15 +1,15 @@
-# Use node image as base image
-FROM node:18-alpine
+# Use bun image as base image
+FROM oven/bun:1.1.0-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-COPY yarn.lock ./
-RUN yarn install
+COPY bun.lock ./
+RUN bun install --frozen-lockfile
 
 COPY . .
-RUN yarn build
+RUN bun run build
 
 EXPOSE 3000
 
-CMD yarn migration:run && yarn start:prod
+CMD bun run migration:run && bun run start:prod

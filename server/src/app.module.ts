@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BullModule } from '@nestjs/bull';
 
 import { AppController } from './app.controller';
@@ -71,7 +70,6 @@ dotenv.config();
 @Module({
   imports: [
     LoggerModule,
-    EventEmitterModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -151,4 +149,4 @@ dotenv.config();
   controllers: [AppController, AdminController],
   providers: [CustomLogger],
 })
-export class AppModule { }
+export class AppModule {}

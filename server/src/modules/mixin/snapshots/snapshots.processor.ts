@@ -75,58 +75,41 @@ export class SnapshotsProcessor implements OnModuleInit {
   }
 
   @Process('process_snapshots')
-  async handlePollSnapshots(job: Job) {
+  async handleProcessSnapshots(job: Job) {
     this.logger.debug('Polling for snapshots...');
     try {
-      const snapshots = await this.snapshotsService.fetchSnapshotsOnly();
+      const { snapshots, newSnapshots, newestTimestamp } =
+        await this.snapshotsService.fetchSnapshots();
       this.logger.debug(
         `Fetched ${snapshots?.length || 0} snapshots from Mixin`,
       );
 
-      if (snapshots && snapshots.length > 0) {
-        // Get current cursor to filter out already-processed snapshots
-        const currentCursor = await this.snapshotsService.getSnapshotCursor();
-
-        // Filter to only process snapshots NEWER than cursor
-        const newSnapshots = currentCursor
-          ? snapshots.filter((s) => s.created_at > currentCursor)
-          : snapshots;
-
-        if (newSnapshots.length === 0) {
-          this.logger.debug(
-            'No new snapshots to process (all filtered by cursor)',
-          );
-          return;
-        }
-
-        this.logger.log(
-          `Found ${newSnapshots.length} new snapshots (${
-            snapshots.length - newSnapshots.length
-          } filtered by cursor)`,
+      if (!newSnapshots.length) {
+        this.logger.debug(
+          'No new snapshots to process (all filtered by cursor)',
         );
-
-        for (const snapshot of newSnapshots) {
-          this.logger.debug(
-            `Queueing snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`,
-          );
-          await (job.queue as any).add('process_snapshot', snapshot, {
-            jobId: snapshot.snapshot_id, // Deduplication by ID
-            removeOnComplete: true,
-          });
-        }
-
-        // Update cursor to the NEWEST (maximum) timestamp from this batch
-        // Don't assume ordering - find the actual max timestamp
-        const newestTimestamp = newSnapshots.reduce(
-          (max, s) => (s.created_at > max ? s.created_at : max),
-          newSnapshots[0].created_at,
-        );
-        await this.snapshotsService.updateSnapshotCursor(newestTimestamp);
-
-        this.logger.log(
-          `Successfully queued ${newSnapshots.length} snapshots, cursor updated to ${newestTimestamp}`,
-        );
+        return;
       }
+
+      this.logger.log(
+        `Found ${newSnapshots.length} new snapshots (${
+          snapshots.length - newSnapshots.length
+        } filtered by cursor)`,
+      );
+
+      for (const snapshot of newSnapshots) {
+        this.logger.debug(
+          `Queueing snapshot: ${snapshot.snapshot_id} at ${snapshot.created_at}`,
+        );
+        await (job.queue as any).add('process_snapshot', snapshot, {
+          jobId: snapshot.snapshot_id, // Deduplication by ID
+          removeOnComplete: true,
+        });
+      }
+
+      this.logger.log(
+        `Successfully queued ${newSnapshots.length} snapshots, cursor updated to ${newestTimestamp}`,
+      );
     } catch (error) {
       this.logger.error(
         `Error polling snapshots: ${error.message}`,

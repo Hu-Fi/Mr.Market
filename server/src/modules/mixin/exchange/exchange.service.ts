@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { getRFC3339Timestamp } from 'src/common/helpers/utils';
 import {
   STATE_TEXT_MAP,
@@ -40,7 +39,6 @@ export class ExchangeService {
 
   constructor(
     private exchangeRepository: ExchangeRepository,
-    private eventEmitter: EventEmitter2,
     private configService: ConfigService,
   ) {
     this.loadAPIKeys();
@@ -705,17 +703,6 @@ export class ExchangeService {
             STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
           );
         }
-
-        // TODO: add a final amount field to order and store in db. Use this value when release token
-
-        // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
-        const releaseOrder = await this.readMixinReleaseToken(o.orderId);
-        this.eventEmitter.emit('mixin.release', {
-          orderId: releaseOrder.orderId,
-          userId: releaseOrder.userId,
-          assetId: releaseOrder.assetId,
-          amount: releaseOrder.amount,
-        });
       }),
     );
   }

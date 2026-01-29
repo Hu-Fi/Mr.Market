@@ -1,7 +1,4 @@
 ## Mr.Market
-### Refactor of Postgres
-1.✅ Replace postgres with sqlite
-
 ### Validation of create market making process
 1. user can open invoice payment page in confirm payment step
 2. invoice payment can be handled correctly by backend

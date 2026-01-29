@@ -1,4 +1,4 @@
-## Mixin Bot 
+## Mixin Bot
 
 The backend server for Mr.market on Mixin.
 
@@ -6,16 +6,16 @@ The backend server for Mr.market on Mixin.
 
 ### Prerequisites
 
-Install dependencies with yarn
+Install dependencies with bun
 
 ```
-yarn
+bun install
 ```
 
 ### Run development server
 
 ```
-yarn start
+bun start
 ```
 
 ## Tests
@@ -24,7 +24,7 @@ TBD
 
 ## Built With
 
-* [Nest.js](https://nestjs.com/) - Backend API framework
+- [Nest.js](https://nestjs.com/) - Backend API framework
 
 ## Contributing
 
