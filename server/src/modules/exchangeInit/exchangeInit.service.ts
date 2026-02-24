@@ -53,13 +53,21 @@ export class ExchangeInitService {
       apiKey,
       secret,
       password,
+      walletAddress,
       defaultType = 'spot',
-    }: { apiKey?: string; secret?: string; password?: string; defaultType?: 'spot' | 'swap' | 'future' },
+    }: {
+      apiKey?: string;
+      secret?: string;
+      password?: string;
+      walletAddress?: string;
+      defaultType?: 'spot' | 'swap' | 'future';
+    },
   ) {
     const ex = new Ctor({
       apiKey,
       secret,
       password,
+      ...(walletAddress ? { walletAddress } : {}), // Hyperliquid often needs this :contentReference[oaicite:3]{index=3}
       enableRateLimit: true,
       // some exchanges look at options.defaultType for spot/swap routing
       options: {
@@ -74,7 +82,9 @@ export class ExchangeInitService {
     // For Binance this is options.adjustForTimeDifference, for others we log skew below.
     try {
       (ex.options as any).adjustForTimeDifference = true;
-    } catch {/* ignore if not supported */}
+    } catch {
+      /* ignore if not supported */
+    }
     return ex;
   }
 
@@ -92,7 +102,9 @@ export class ExchangeInitService {
         const absSkew = Math.abs(skewMs);
         const skewMsg = `[${exName}:${label}] time skew ${skewMs}ms`;
         if (absSkew > 5000) {
-          this.logger.warn(`${skewMsg} → consider NTP sync to avoid signature errors.`);
+          this.logger.warn(
+            `${skewMsg} → consider NTP sync to avoid signature errors.`,
+          );
         } else {
           this.logger.log(skewMsg);
         }
@@ -114,7 +126,7 @@ export class ExchangeInitService {
       if (/INVALID_SIGNATURE|Signature mismatch|auth|signature/i.test(msg)) {
         this.logger.error(
           `[${exName}:${label}] auth/signature failed → ` +
-          `check key/secret trimming, permissions, IP whitelist, and testnet vs mainnet. Raw: ${msg}`,
+            `check key/secret trimming, permissions, IP whitelist, and testnet vs mainnet. Raw: ${msg}`,
         );
       } else if (/timestamp|request expired|time/i.test(msg)) {
         this.logger.error(
@@ -144,6 +156,10 @@ export class ExchangeInitService {
       { name: 'p2b', class: (ccxt as any).pro.p2b, defaultType: 'spot' },
       { name: 'probit', class: (ccxt as any).pro.probit, defaultType: 'spot' },
       { name: 'digifinex', class: (ccxt as any).digifinex, defaultType: 'spot' },
+
+      // ✅ Hyperliquid + testnet (sandbox mode)
+      // Prefer CCXT Pro if present, fallback to REST class if not.
+      { name: 'hyperliquid', class: ((ccxt as any).pro?.hyperliquid ?? (ccxt as any).hyperliquid), defaultType: 'swap' },
     ];
 
     await Promise.all(
@@ -167,6 +183,9 @@ export class ExchangeInitService {
               password: this.envTrim(
                 `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD`,
               ), // OKX etc.
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS`,
+              ), // Hyperliquid :contentReference[oaicite:4]{index=4}
             },
             {
               label: 'account2',
@@ -179,6 +198,9 @@ export class ExchangeInitService {
               password: this.envTrim(
                 `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_2`,
               ),
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS_2`,
+              ), // Hyperliquid
             },
             {
               label: 'read-only',
@@ -191,6 +213,9 @@ export class ExchangeInitService {
               password: this.envTrim(
                 `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_READ_ONLY`,
               ),
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS_READ_ONLY`,
+              ), // Hyperliquid
             },
           ];
 
@@ -198,9 +223,6 @@ export class ExchangeInitService {
             accounts.map(async (acct) => {
               try {
                 if (!acct.apiKey || !acct.secret) {
-                  // this.logger.log(
-                  //   `[${exName}:${acct.label}] skipped (missing API key/secret).`,
-                  // );
                   return;
                 }
 
@@ -208,13 +230,17 @@ export class ExchangeInitService {
                   apiKey: acct.apiKey,
                   secret: acct.secret,
                   password: acct.password,
+                  walletAddress: acct.walletAddress,
                   defaultType: cfg.defaultType ?? 'spot',
                 });
 
                 // Testnet routing where supported
-                if (isTestnet && typeof (exchange as any).setSandboxMode === 'function') {
+                if (
+                  isTestnet &&
+                  typeof (exchange as any).setSandboxMode === 'function'
+                ) {
                   (exchange as any).setSandboxMode(true);
-                  this.logger.log(`[${exName}:${acct.label}] sandbox mode ON.`);
+                  this.logger.log(`[${exName}:${acct.label}] sandbox mode ON.`); // :contentReference[oaicite:5]{index=5}
                 }
 
                 // Preload markets to configure symbol routing/types

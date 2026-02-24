@@ -79,7 +79,7 @@ export class TradeService {
         side,
         amount,
       );
-      this.logger.log(`Market trade executed`, order.toString());
+      this.logger.log(`Market trade executed ${order.amount} @ ${order.average}`);
       await this.tradeRepository.createTrade({
         userId,
         clientId,
@@ -121,7 +121,7 @@ export class TradeService {
         amount,
         price,
       );
-      this.logger.log(`Limit trade executed: ${JSON.stringify(order)}`);
+      this.logger.log(`Limit trade executed: ${JSON.stringify(order.amount)} @ ${JSON.stringify(order.price)}`);
 
       await this.tradeRepository.createTrade({
         userId,

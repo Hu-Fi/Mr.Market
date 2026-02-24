@@ -25,6 +25,11 @@ import { StrategyInstance } from 'src/common/entities/strategy-instances.entity'
 import { AdminModule } from '../admin/admin.module';
 import { TimeIndicatorStrategyService } from './time-indicator.service';
 import { IndicatorStrategyHistory } from 'src/common/entities/indicator-strategy-history.entity';
+import { DexVolumeStrategyService } from './dex-volume.strategy.service';
+import { DexVolumeController } from './dex-volume.controller';
+import { DexAdapterRegistry } from 'src/defi/adapter-registry';
+import { UniswapV3Adapter } from 'src/defi/adapters/uniswapV3.adapter';
+import { PancakeV3Adapter } from 'src/defi/adapters/pancakeV3.adapter';
 
 @Module({
   imports: [
@@ -45,7 +50,7 @@ import { IndicatorStrategyHistory } from 'src/common/entities/indicator-strategy
       IndicatorStrategyHistory,
     ]),
   ],
-  controllers: [StrategyController],
+  controllers: [StrategyController,DexVolumeController],
   providers: [
     StrategyService,
     StrategyUserService,
@@ -53,12 +58,17 @@ import { IndicatorStrategyHistory } from 'src/common/entities/indicator-strategy
     ExchangeInitService,
     AlpacaStratService,
     TimeIndicatorStrategyService,
+    DexVolumeStrategyService, 
+    DexAdapterRegistry, 
+    UniswapV3Adapter, 
+    PancakeV3Adapter
   ],
   exports: [
     StrategyService,
     StrategyUserService,
     StrategyUserRepository,
     TimeIndicatorStrategyService,
+    DexVolumeStrategyService
   ],
 })
 export class StrategyModule {}
