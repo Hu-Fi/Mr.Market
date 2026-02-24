@@ -66,6 +66,8 @@ import { AdminController } from './modules/admin/admin.controller';
 import { SpotdataTradingPair } from './common/entities/spot-data.entity';
 import { SpotdataModule } from './modules/spotdata/spotdata.module';
 import { MetricsModule } from './modules/metrics/metrics/metrics.module';
+import { IndicatorStrategyHistory } from './common/entities/indicator-strategy-history.entity';
+import { SolanaVolumeStrategyModule } from './modules/strategy/solana-volume/solana-volume-strategy.module';
 
 dotenv.config();
 
@@ -125,6 +127,7 @@ dotenv.config();
         GrowdataSimplyGrowToken,
         GrowdataArbitragePair,
         GrowdataMarketMakingPair,
+        IndicatorStrategyHistory,
       ],
       synchronize: false,
       ssl: process.env.POSTGRES_SSL === 'true',
@@ -133,6 +136,7 @@ dotenv.config();
     TradeModule,
     StrategyModule,
     PerformanceModule,
+    SolanaVolumeStrategyModule,
     MarketdataModule,
     SpotdataModule,
     GrowdataModule,

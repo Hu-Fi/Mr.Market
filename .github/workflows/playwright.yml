@@ -18,7 +18,6 @@ jobs:
           POSTGRES_USER: postgres
         ports:
           - 5432:5432
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -32,10 +31,30 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.15.0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare Yarn 4.9.1
+        run: corepack prepare yarn@4.9.1 --activate
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/unplugged
+            .yarn/build-state.yml
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: make install
+        env:
+          YARN_ENABLE_HARDENED_MODE: 0
 
       - name: Run DB Migration
         run: make run-migrations
@@ -83,12 +102,16 @@ jobs:
           JWT_SECRET: 6b23439e8fee67c5da38b61b8779e9f41a5e3e36efe723c6299dd2111896def6
           ADMIN_PASSWORD: 123123
 
+      - name: Sync SvelteKit config
+        run: yarn svelte-kit sync
+        working-directory: ./interface
+
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: yarn dlx playwright install --with-deps
         working-directory: ./interface
 
       - name: Run Playwright tests
-        run: npx playwright test --project='chromium'
+        run: yarn dlx playwright test --project=chromium
         working-directory: ./interface
         env:
           PUBLIC_HUFI_BACKEND_URL: "http://localhost:3000"
@@ -102,7 +125,7 @@ jobs:
 
       - name: Upload Playwright test artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: ./interface/playwright-report/

@@ -1,9 +1,5 @@
 import { test } from '@playwright/test';
-
-test.use({
-  viewport: { width: 390, height: 844 },  // iPhone 14 Pro
-});
-
+test.describe('grow', () => {
 test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/grow');
 })
@@ -24,4 +20,5 @@ test('create just grow order', async ({ page }) => {
   // const newPage1 = await pagePromise;
   // await newPage1.waitForLoadState();
   // expect(newPage1.url()).toContain('https://mixin.one/pay');
-})
+});
+});

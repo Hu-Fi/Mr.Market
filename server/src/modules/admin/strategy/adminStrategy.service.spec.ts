@@ -152,7 +152,8 @@ describe('AdminStrategyService', () => {
           numTrades: 5,
           userId: 'user123',
           clientId: 'client123',
-          pricePushRate:0
+          pricePushRate: 0,
+          postOnlySide: 'buy',
         },
       };
 
@@ -167,7 +168,8 @@ describe('AdminStrategyService', () => {
         startStrategyDto.volumeParams.numTrades,
         startStrategyDto.volumeParams.userId,
         startStrategyDto.volumeParams.clientId,
-        startStrategyDto.volumeParams.pricePushRate
+        startStrategyDto.volumeParams.pricePushRate,
+        startStrategyDto.volumeParams.postOnlySide,
       );
     });
 

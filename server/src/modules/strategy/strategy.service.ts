@@ -120,9 +120,9 @@ export class StrategyService {
     @InjectRepository(StrategyInstance)
     private strategyInstanceRepository: Repository<StrategyInstance>,
   ) {
-    process.on('SIGINT', () => this.handleShutdown());
-    process.on('SIGTERM', () => this.handleShutdown());
-    process.on('uncaughtException', () => this.handleShutdown());
+    // process.on('SIGINT', () => this.handleShutdown());
+    // process.on('SIGTERM', () => this.handleShutdown());
+    // process.on('uncaughtException', () => this.handleShutdown());
   }
 
   async getSupportedExchanges(): Promise<string[]> {
@@ -185,7 +185,8 @@ export class StrategyService {
           parameters.numTrades,
           parameters.userId,
           parameters.clientId,
-          parameters.pricePushRate
+          parameters.pricePushRate,
+          parameters.postOnlySide,
         );
         break;
       default:
@@ -361,182 +362,1222 @@ export class StrategyService {
   async executeVolumeStrategy(
     exchangeName: string,
     symbol: string,
-    baseIncrementPercentage: number,  // Used to offset from midPrice initially
+    baseIncrementPercentage: number,
     baseIntervalTime: number,
     baseTradeAmount: number,
     numTrades: number,
     userId: string,
     clientId: string,
-    pricePushRate: number, 
+    pricePushRate: number,
+    postOnlySide: 'buy' | 'sell',
   ) {
     const strategyKey = createStrategyKey({
       type: 'volume',
       user_id: userId,
       client_id: clientId,
     });
-  
+
     try {
-      const exchangeAccount1 = this.exchangeInitService.getExchange(exchangeName, 'default');
-      const exchangeAccount2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
-  
-      let useAccount1AsMaker = true;
+      let strategyInstance = await this.strategyInstanceRepository.findOne({
+        where: { strategyKey },
+      });
+
+      const ex1 = this.exchangeInitService.getExchange(exchangeName, 'default');
+      const ex2 = this.exchangeInitService.getExchange(
+        exchangeName,
+        'account2',
+      );
+
+      await Promise.all([ex1.loadMarkets(), ex2.loadMarkets()]);
+
+      const market = ex1.market(symbol);
+      if (!market)
+        throw new Error(`Market not found for ${symbol} on ${ex1.id}`);
+
+      const priceToPrec = (p: number) =>
+        Number(ex1.priceToPrecision(symbol, p));
+      const amtToPrec = (a: number) => Number(ex1.amountToPrecision(symbol, a));
+
+      const minAmt = market.limits?.amount?.min ?? 0;
+      const minPrice = market.limits?.price?.min ?? 0;
+
+      const startTicker = await ex1.fetchTicker(symbol);
+      const startPrice = Number(startTicker.last);
+
+      const parameters = {
+        exchangeName,
+        symbol,
+        baseIncrementPercentage,
+        baseIntervalTime,
+        baseTradeAmount,
+        numTrades,
+        userId,
+        clientId,
+        pricePushRate,
+        postOnlySide,
+      };
+
+      if (!strategyInstance) {
+        strategyInstance = this.strategyInstanceRepository.create({
+          strategyKey,
+          userId,
+          clientId,
+          strategyType: 'volume',
+          parameters,
+          status: 'running',
+          startPrice,
+        });
+        // await this.strategyInstanceRepository.save(strategyInstance);
+      } else {
+        await this.strategyInstanceRepository.update(
+          { strategyKey },
+          { status: 'running', updatedAt: new Date() },
+        );
+      }
+
       let tradesExecuted = 0;
-  
-      // Track our "target maker price" across trades.
-      // We'll set it after the *first* trade is established (based on midPrice).
-      let currentMakerPrice: number | null = null;
-  
-      const executeTrade = async () => {
+      let totalPnL = 0; // Track cumulative PnL
+
+      const loop = async () => {
         if (tradesExecuted >= numTrades) {
-          this.logger.log(`Volume strategy ${strategyKey} completed.`);
+          this.logger.log(
+            `Volume strategy [${strategyKey}] completed after ${numTrades} trades. ` +
+              `Total PnL: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(8)}`,
+          );
+          const inst = this.strategyInstances.get(strategyKey);
+          if (inst?.intervalId) clearInterval(inst.intervalId);
           this.strategyInstances.delete(strategyKey);
+          await this.strategyInstanceRepository.update(
+            { strategyKey },
+            { status: 'stopped', updatedAt: new Date() },
+          );
           return;
         }
-  
+
+        const tradeNumber = tradesExecuted + 1;
+
         try {
-          // 1. Fetch the current order book for reference
-          const orderBook = await exchangeAccount1.fetchOrderBook(symbol);
-          if (!orderBook.bids.length || !orderBook.asks.length) {
-             throw new Error(`Order book data is incomplete for ${symbol}`);
-            }
-            const bestBid = orderBook.bids[0][0];
-            const bestAsk = orderBook.asks[0][0];
-  
-          this.logger.log(`Best bid: ${bestBid}, best ask: ${bestAsk} for ${symbol}`);
-  
-          // 2. Decide maker / taker accounts
-          const makerExchange = useAccount1AsMaker ? exchangeAccount1 : exchangeAccount2;
-          const takerExchange = useAccount1AsMaker ? exchangeAccount2 : exchangeAccount1;
-  
-          // 3. Randomize the trade amount ±5% around baseTradeAmount
-          //    Range: [0.95 * baseTradeAmount, 1.05 * baseTradeAmount]
-          const randomFactor = 1 + (Math.random() * 0.1 - 0.05); 
-          const amount = baseTradeAmount * randomFactor;
-  
-          // 4. Determine the maker price
-          //    - If first trade, base it on the midPrice with a small increment factor.
-          //    - After each success, push the price up by 'pricePushRate' (e.g. +1%).
-          if (currentMakerPrice == null) {
-            // For the first trade, pick a price in the spread
-            const midPrice = (bestBid + bestAsk) / 2;
-            const baseFactor = 1 + baseIncrementPercentage / 100;
-            currentMakerPrice = midPrice * baseFactor;
-          } else {
-            // For subsequent trades, push the price up slowly
-            // Example: If pricePushRate = 1, it goes up by 1% each successful trade
-            currentMakerPrice *= (1 + pricePushRate / 100);
-          }
-  
-          // Ensure we do NOT exceed the bestAsk - small offset
-          const makerPrice = Math.min(currentMakerPrice, bestAsk - 0.000001);
-  
-          this.logger.log(
-            `Maker placing limit BUY: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${makerExchange.id}`,
+          await Promise.all([
+            this.cancelAllOrders(ex1, symbol, strategyKey),
+            this.cancelAllOrders(ex2, symbol, strategyKey),
+          ]);
+
+          const [bal1, bal2] = await Promise.all([
+            ex1.fetchBalance(),
+            ex2.fetchBalance(),
+          ]);
+
+          const [base, quote] = symbol.split('/');
+
+          const ex1Base = Number(bal1.free[base] ?? 0);
+          const ex1Quote = Number(bal1.free[quote] ?? 0);
+          const ex2Base = Number(bal2.free[base] ?? 0);
+          const ex2Quote = Number(bal2.free[quote] ?? 0);
+
+          // Use ex1 orderbook as global reference
+          const book1 = await ex1.fetchOrderBook(symbol);
+          const bid1 = book1.bids[0]?.[0];
+          const ask1 = book1.asks[0]?.[0];
+          if (!bid1 || !ask1) throw new Error('Empty orderbook on ex1');
+
+          const globalMid = (bid1 + ask1) / 2;
+          const priceForCapacity =
+            globalMid > 0 ? globalMid : minPrice || 1e-12;
+
+          const makerSide: 'buy' | 'sell' = postOnlySide;
+          const takerSide: 'buy' | 'sell' =
+            makerSide === 'buy' ? 'sell' : 'buy';
+
+          // Capacity if ex1 = maker, ex2 = taker
+          const capacity1 = Math.min(
+            makerSide === 'buy' ? ex1Quote / priceForCapacity : ex1Base,
+            makerSide === 'buy' ? ex2Base : ex2Quote / priceForCapacity,
           );
-  
-          // 5. Place the maker (BUY) order with postOnly to remain on the order book
-          let makerOrder;
+
+          // Capacity if ex2 = maker, ex1 = taker
+          const capacity2 = Math.min(
+            makerSide === 'buy' ? ex2Quote / priceForCapacity : ex2Base,
+            makerSide === 'buy' ? ex1Base : ex1Quote / priceForCapacity,
+          );
+
+          let makerEx = capacity1 >= capacity2 ? ex1 : ex2;
+          let takerEx = capacity1 >= capacity2 ? ex2 : ex1;
+          const maxCapacity = capacity1 >= capacity2 ? capacity1 : capacity2;
+
+          if (!maxCapacity || maxCapacity <= 0 || maxCapacity < minAmt) {
+            this.logger.warn(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: insufficient combined balance. ` +
+                `ex1Base=${ex1Base.toFixed(8)} ex1Quote=${ex1Quote.toFixed(
+                  8,
+                )} ex2Base=${ex2Base.toFixed(8)} ex2Quote=${ex2Quote.toFixed(
+                  8,
+                )}`,
+            );
+            return;
+          }
+
+          // Maker orderbook (reuse ex1 book if makerEx is ex1)
+          const makerBook =
+            makerEx === ex1 ? book1 : await makerEx.fetchOrderBook(symbol);
+          const makerBid = makerBook.bids[0]?.[0];
+          const makerAsk = makerBook.asks[0]?.[0];
+          if (!makerBid || !makerAsk)
+            throw new Error(`Empty orderbook on maker exchange ${makerEx.id}`);
+
+          const mid = (makerBid + makerAsk) / 2;
+          const makerRawPrice = Math.max(mid, minPrice || 1e-12);
+          const makerPrice = priceToPrec(makerRawPrice);
+
+          const rawAmt = Math.min(baseTradeAmount, maxCapacity) * 0.99;
+          let amount = amtToPrec(rawAmt);
+
+          if (!amount || amount <= 0 || amount < minAmt) {
+            this.logger.warn(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: computed amount too small. ` +
+                `amount=${amount} minAmt=${minAmt} maxCapacity=${maxCapacity}`,
+            );
+            return;
+          }
+
+          // Helper to recompute capacity after switching maker/taker
+          const computeCapacity = (me: ccxt.Exchange, te: ccxt.Exchange) => {
+            const bMaker = me === ex1 ? bal1 : bal2;
+            const bTaker = te === ex1 ? bal1 : bal2;
+
+            const mBase = Number(bMaker.free[base] ?? 0);
+            const mQuote = Number(bMaker.free[quote] ?? 0);
+            const tBase = Number(bTaker.free[base] ?? 0);
+            const tQuote = Number(bTaker.free[quote] ?? 0);
+
+            const mMax =
+              makerSide === 'buy' ? mQuote / priceForCapacity : mBase;
+            const tMax =
+              makerSide === 'buy' ? tBase : tQuote / priceForCapacity;
+
+            return Math.min(mMax, tMax);
+          };
+
+          let makerOrder: any;
+          let takerOrder: any;
+          let lastTakerPrice: number | undefined;
+
+          // -----------------------
+          // MAKER ORDER (with fallback)
+          // -----------------------
           try {
-            makerOrder = await makerExchange.createOrder(
+            makerOrder = await makerEx.createOrder(
               symbol,
               'limit',
-              'buy',
+              makerSide,
               amount,
               makerPrice,
               { postOnly: true },
             );
-          } catch (error) {
-            this.logger.error(`Failed to create maker order: ${error.message}`);
-            throw error;
+
+            this.logger.log(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+                `Maker order placed: ${makerOrder.id}`,
+            );
+          } catch (e: any) {
+            this.logger.warn(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: maker failed on ${makerEx.id}: ${e.message}. ` +
+                `Switching maker/taker and recomputing amount.`,
+            );
+
+            // Swap roles
+            const newMaker = makerEx === ex1 ? ex2 : ex1;
+            const newTaker = makerEx === ex1 ? ex1 : ex2;
+            makerEx = newMaker;
+            takerEx = newTaker;
+
+            const cap = computeCapacity(makerEx, takerEx);
+            if (!cap || cap <= 0 || cap < minAmt) {
+              throw new Error(
+                `Alternate maker/taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`,
+              );
+            }
+
+            const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+            if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+              throw new Error(
+                `Alternate maker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`,
+              );
+            }
+
+            amount = newAmt;
+
+            makerOrder = await makerEx.createOrder(
+              symbol,
+              'limit',
+              makerSide,
+              amount,
+              makerPrice,
+              { postOnly: true },
+            );
+
+            this.logger.log(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+                `Alternate maker order placed: ${makerOrder.id}`,
+            );
           }
-          // 6. Wait briefly to ensure maker order is posted in the order book
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-  
-          // 7. Taker places a LIMIT SELL at exactly makerPrice to cross that order
+
+          // -----------------------
+          // 30ms SAFETY DELAY
+          // -----------------------
+          await new Promise((resolve) => setTimeout(resolve, 30));
+
+          // -----------------------
+          // TAKER ORDER (LIMIT + IOC, with fallback)
+          // -----------------------
+          try {
+            const takerLimitPrice = makerPrice;
+            lastTakerPrice = takerLimitPrice + takerLimitPrice * 0.0000001;
+
+            takerOrder = await takerEx.createOrder(
+              symbol,
+              'limit',
+              takerSide,
+              amount,
+              takerLimitPrice,
+              { timeInForce: 'IOC' },
+            );
+
+            this.logger.log(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+                `Taker order placed: ${takerOrder.id}`,
+            );
+          } catch (e: any) {
+            this.logger.warn(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: taker failed on ${takerEx.id}: ${e.message}. ` +
+                `Switching taker and recomputing amount.`,
+            );
+
+            const newTaker = takerEx === ex1 ? ex2 : ex1;
+            takerEx = newTaker;
+
+            const cap = computeCapacity(makerEx, takerEx);
+            if (!cap || cap <= 0 || cap < minAmt) {
+              try {
+                if (makerOrder?.id)
+                  await makerEx.cancelOrder(makerOrder.id, symbol);
+              } catch (_) {}
+              throw new Error(
+                `Alternate taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`,
+              );
+            }
+
+            const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+            if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+              try {
+                if (makerOrder?.id)
+                  await makerEx.cancelOrder(makerOrder.id, symbol);
+              } catch (_) {}
+              throw new Error(
+                `Alternate taker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`,
+              );
+            }
+
+            amount = newAmt;
+
+            const takerLimitPrice = makerPrice;
+            lastTakerPrice = takerLimitPrice;
+
+            takerOrder = await takerEx.createOrder(
+              symbol,
+              'limit',
+              takerSide,
+              amount,
+              takerLimitPrice,
+              { timeInForce: 'IOC' },
+            );
+
+            this.logger.log(
+              `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+                `Alternate taker order placed: ${takerOrder.id}`,
+            );
+          }
+
+          // -----------------------
+          // LOG + FILL STATUS + PNL TRACKING
+          // -----------------------
+          await new Promise((resolve) => setTimeout(resolve, 200)); // Brief delay for order status update
+
+          const [makerRes, takerRes] = await Promise.all([
+            makerEx.fetchOrder(makerOrder.id, symbol),
+            takerEx.fetchOrder(takerOrder.id, symbol),
+          ]);
+
+          const makerFilled = makerRes.filled ?? 0;
+          const takerFilled = takerRes.filled ?? 0;
+          const makerAvgPrice = makerRes.average ?? makerPrice;
+          const takerAvgPrice =
+            takerRes.average ?? lastTakerPrice ?? makerPrice;
+
+          // Calculate PnL
+          let tradePnL = 0;
+          if (makerFilled > 0 && takerFilled > 0) {
+            const filledAmount = Math.min(makerFilled, takerFilled);
+
+            if (makerSide === 'buy') {
+              // We bought at makerAvgPrice and sold at takerAvgPrice
+              tradePnL = (takerAvgPrice - makerAvgPrice) * filledAmount;
+            } else {
+              // We sold at makerAvgPrice and bought at takerAvgPrice
+              tradePnL = (makerAvgPrice - takerAvgPrice) * filledAmount;
+            }
+
+            totalPnL += tradePnL;
+          }
+
           this.logger.log(
-            `Taker placing limit SELL: ${amount.toFixed(6)} ${symbol} ` +
-            `@ ${makerPrice.toFixed(6)} on ${takerExchange.id}`,
+            `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+              `Maker ${makerSide.toUpperCase()} ${amount} @ ${makerPrice} on ${
+                makerEx.id
+              } ` +
+              `status=${makerRes.status} filled=${makerFilled}/${amount} avgPrice=${makerAvgPrice}`,
           );
-          const takerOrder = await takerExchange.createOrder(
-            symbol,
-            'limit',
-            'sell',
-            amount,
-            makerPrice,
+
+          this.logger.log(
+            `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+              `Taker ${takerSide.toUpperCase()} ${amount} @ ${
+                lastTakerPrice ?? 'N/A'
+              } on ${takerEx.id} ` +
+              `status=${takerRes.status} filled=${takerFilled}/${amount} avgPrice=${takerAvgPrice}`,
           );
-  
-          // 8. Check final statuses (optional but recommended)
-          const makerResult = await makerExchange.fetchOrder(makerOrder.id, symbol);
-          const takerResult = await takerExchange.fetchOrder(takerOrder.id, symbol);
-  
-          if (makerResult.status === 'closed' || makerResult.status === 'filled') {
-            this.logger.log(
-              `Maker order on ${makerExchange.id} filled successfully at ${makerPrice}`,
-            );
-          } else {
-            this.logger.warn(
-              `Maker order on ${makerExchange.id} is still ${makerResult.status}.`,
-            );
-          }
-  
-          if (takerResult.status === 'closed' || takerResult.status === 'filled') {
-            this.logger.log(
-              `Taker order on ${takerExchange.id} filled successfully at ${makerPrice}`,
-            );
-          } else {
-            this.logger.warn(
-              `Taker order on ${takerExchange.id} is still ${takerResult.status}.`,
-            );
-          }
-  
-          // 9. One trade completed
+
+          this.logger.log(
+            `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+              `PnL: ${tradePnL >= 0 ? '+' : ''}${tradePnL.toFixed(
+                8,
+              )} ${quote} | ` +
+              `Cumulative: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(
+                8,
+              )} ${quote}`,
+          );
+
           tradesExecuted++;
-          // Flip the roles for next trade
-          useAccount1AsMaker = !useAccount1AsMaker;
-  
-          // 10. Determine the next trade delay randomly in [baseIntervalTime, 1.5 * baseIntervalTime]
-          const minInterval = baseIntervalTime;
-          const maxInterval = baseIntervalTime * 1.5;
-          const randomInterval = minInterval + Math.random() * (maxInterval - minInterval);
-  
-          // Optionally, round the delay to a whole number of seconds:
-          const delaySeconds = Math.floor(randomInterval); 
-          this.logger.log(
-            `Scheduling next trade in ${delaySeconds} seconds (range: ${minInterval} - ${maxInterval}).`,
+        } catch (err: any) {
+          this.logger.error(
+            `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: Error in trade cycle: ${err.message}`,
           );
-  
-          setTimeout(executeTrade, delaySeconds * 1000);
-  
-        } catch (error) {
-          this.logger.error(`Error executing trade: ${error.stack || error}`);
-          
-          // Retry also in that [baseIntervalTime, 1.5 * baseIntervalTime] range
-          const minInterval = baseIntervalTime;
-          const maxInterval = baseIntervalTime * 1.5;
-          const retryInterval = minInterval + Math.random() * (maxInterval - minInterval);
-          const delaySeconds = Math.floor(retryInterval);
-  
-          this.logger.log(`Retrying in ${delaySeconds} seconds.`);
-          setTimeout(executeTrade, delaySeconds * 1000);
         }
       };
-  
-      // Start the process
-      this.strategyInstances.set(strategyKey, {
-        isRunning: true,
-        intervalId: null,
-      });
-      this.logger.log(`Volume strategy ${strategyKey} started.`);
-      executeTrade();
-    } catch (error) {
-      this.logger.error(`Failed to execute volume strategy: ${error.message}`);
+
+      const intervalId = setInterval(
+        loop,
+        Math.max(baseIntervalTime, 1) * 1000,
+      );
+      this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+
+      this.logger.log(
+        `Volume strategy [${strategyKey}] started on ${exchangeName} for ${symbol}. ` +
+          `postOnlySide=${postOnlySide} numTrades=${numTrades}`,
+      );
+    } catch (e: any) {
+      this.logger.error(
+        `Failed to execute volume strategy [${strategyKey}]: ${e.message}`,
+      );
     }
   }
-  
-  
-  
-  
+  // async executeVolumeStrategy(
+  //   exchangeName: string,
+  //   symbol: string,
+  //   baseIncrementPercentage: number,
+  //   baseIntervalTime: number,
+  //   baseTradeAmount: number,
+  //   numTrades: number,
+  //   userId: string,
+  //   clientId: string,
+  //   pricePushRate: number,
+  //   postOnlySide: 'buy' | 'sell',
+  // ) {
+  //   const strategyKey = createStrategyKey({
+  //     type: 'volume',
+  //     user_id: userId,
+  //     client_id: clientId,
+  //   });
+
+  //   try {
+  //     let strategyInstance = await this.strategyInstanceRepository.findOne({ where: { strategyKey } });
+
+  //     const ex1 = this.exchangeInitService.getExchange(exchangeName, 'default');
+  //     const ex2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
+
+  //     await Promise.all([ex1.loadMarkets(), ex2.loadMarkets()]);
+
+  //     const market = ex1.market(symbol);
+  //     if (!market) throw new Error(`Market not found for ${symbol} on ${ex1.id}`);
+
+  //     const priceToPrec = (p: number) => Number(ex1.priceToPrecision(symbol, p));
+  //     const amtToPrec = (a: number) => Number(ex1.amountToPrecision(symbol, a));
+
+  //     const minAmt = market.limits?.amount?.min ?? 0;
+  //     const minPrice = market.limits?.price?.min ?? 0;
+
+  //     const startTicker = await ex1.fetchTicker(symbol);
+  //     const startPrice = Number(startTicker.last);
+
+  //     const parameters = {
+  //       exchangeName,
+  //       symbol,
+  //       baseIncrementPercentage,
+  //       baseIntervalTime,
+  //       baseTradeAmount,
+  //       numTrades,
+  //       userId,
+  //       clientId,
+  //       pricePushRate,
+  //       postOnlySide,
+  //     };
+
+  //     if (!strategyInstance) {
+  //       strategyInstance = this.strategyInstanceRepository.create({
+  //         strategyKey,
+  //         userId,
+  //         clientId,
+  //         strategyType: 'volume',
+  //         parameters,
+  //         status: 'running',
+  //         startPrice,
+  //       });
+  //       // await this.strategyInstanceRepository.save(strategyInstance);
+  //     } else {
+  //       await this.strategyInstanceRepository.update(
+  //         { strategyKey },
+  //         { status: 'running', updatedAt: new Date() },
+  //       );
+  //     }
+
+  //     let tradesExecuted = 0;
+  //     let totalPnL = 0; // Track cumulative PnL
+
+  //     const oppositeSide = (s: 'buy' | 'sell'): 'buy' | 'sell' => (s === 'buy' ? 'sell' : 'buy');
+
+  //     const loop = async () => {
+  //       if (tradesExecuted >= numTrades) {
+  //         this.logger.log(
+  //           `Volume strategy [${strategyKey}] completed after ${numTrades} trades. ` +
+  //             `Total PnL: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(8)}`,
+  //         );
+  //         const inst = this.strategyInstances.get(strategyKey);
+  //         if (inst?.intervalId) clearInterval(inst.intervalId);
+  //         this.strategyInstances.delete(strategyKey);
+  //         await this.strategyInstanceRepository.update(
+  //           { strategyKey },
+  //           { status: 'stopped', updatedAt: new Date() },
+  //         );
+  //         return;
+  //       }
+
+  //       const tradeNumber = tradesExecuted + 1;
+
+  //       try {
+  //         await Promise.all([
+  //           this.cancelAllOrders(ex1, symbol, strategyKey),
+  //           this.cancelAllOrders(ex2, symbol, strategyKey),
+  //         ]);
+
+  //         const [bal1, bal2] = await Promise.all([ex1.fetchBalance(), ex2.fetchBalance()]);
+
+  //         const [base, quote] = symbol.split('/');
+
+  //         const ex1Base = Number(bal1.free[base] ?? 0);
+  //         const ex1Quote = Number(bal1.free[quote] ?? 0);
+  //         const ex2Base = Number(bal2.free[base] ?? 0);
+  //         const ex2Quote = Number(bal2.free[quote] ?? 0);
+
+  //         // Use ex1 orderbook as global reference
+  //         const book1 = await ex1.fetchOrderBook(symbol);
+  //         const bid1 = book1.bids[0]?.[0];
+  //         const ask1 = book1.asks[0]?.[0];
+  //         if (!bid1 || !ask1) throw new Error('Empty orderbook on ex1');
+
+  //         const globalMid = (bid1 + ask1) / 2;
+  //         const priceForCapacity = globalMid > 0 ? globalMid : minPrice || 1e-12;
+
+  //         // -----------------------
+  //         // ALTERNATE MAKER SIDE (BUY/SELL) EACH TRADE
+  //         // Trade 1 => postOnlySide
+  //         // Trade 2 => opposite
+  //         // Trade 3 => postOnlySide
+  //         // ...
+  //         // -----------------------
+  //         const makerSide: 'buy' | 'sell' =
+  //           tradeNumber % 2 === 1 ? postOnlySide : oppositeSide(postOnlySide);
+  //         const takerSide: 'buy' | 'sell' = oppositeSide(makerSide);
+
+  //         // Capacity if ex1 = maker, ex2 = taker
+  //         const capacity1 = Math.min(
+  //           makerSide === 'buy' ? ex1Quote / priceForCapacity : ex1Base,
+  //           makerSide === 'buy' ? ex2Base : ex2Quote / priceForCapacity,
+  //         );
+
+  //         // Capacity if ex2 = maker, ex1 = taker
+  //         const capacity2 = Math.min(
+  //           makerSide === 'buy' ? ex2Quote / priceForCapacity : ex2Base,
+  //           makerSide === 'buy' ? ex1Base : ex1Quote / priceForCapacity,
+  //         );
+
+  //         let makerEx = capacity1 >= capacity2 ? ex1 : ex2;
+  //         let takerEx = capacity1 >= capacity2 ? ex2 : ex1;
+  //         let maxCapacity = capacity1 >= capacity2 ? capacity1 : capacity2;
+
+  //         if (!maxCapacity || maxCapacity <= 0 || maxCapacity < minAmt) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: insufficient combined balance. ` +
+  //               `ex1Base=${ex1Base.toFixed(8)} ex1Quote=${ex1Quote.toFixed(8)} ex2Base=${ex2Base.toFixed(
+  //                 8,
+  //               )} ex2Quote=${ex2Quote.toFixed(8)}`,
+  //           );
+  //           return;
+  //         }
+
+  //         // Maker orderbook (reuse ex1 book if makerEx is ex1)
+  //         const makerBook = makerEx === ex1 ? book1 : await makerEx.fetchOrderBook(symbol);
+  //         const makerBid = makerBook.bids[0]?.[0];
+  //         const makerAsk = makerBook.asks[0]?.[0];
+  //         if (!makerBid || !makerAsk) throw new Error(`Empty orderbook on maker exchange ${makerEx.id}`);
+
+  //         const mid = (makerBid + makerAsk) / 2;
+  //         const makerRawPrice = Math.max(mid, minPrice || 1e-12);
+  //         const makerPrice = priceToPrec(
+  //           makerRawPrice * (1 + Math.random() * 0.0007 * (Math.random() < 0.5 ? -1 : 1)),
+  //         );
+
+  //         let rawAmt = Math.min(baseTradeAmount, maxCapacity) * 0.99;
+  //         let amount = amtToPrec(rawAmt);
+
+  //         if (!amount || amount <= 0 || amount < minAmt) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: computed amount too small. ` +
+  //               `amount=${amount} minAmt=${minAmt} maxCapacity=${maxCapacity}`,
+  //           );
+  //           return;
+  //         }
+
+  //         // Helper to recompute capacity after switching maker/taker
+  //         const computeCapacity = (me: ccxt.Exchange, te: ccxt.Exchange) => {
+  //           const bMaker = me === ex1 ? bal1 : bal2;
+  //           const bTaker = te === ex1 ? bal1 : bal2;
+
+  //           const mBase = Number(bMaker.free[base] ?? 0);
+  //           const mQuote = Number(bMaker.free[quote] ?? 0);
+  //           const tBase = Number(bTaker.free[base] ?? 0);
+  //           const tQuote = Number(bTaker.free[quote] ?? 0);
+
+  //           const mMax = makerSide === 'buy' ? mQuote / priceForCapacity : mBase;
+  //           const tMax = makerSide === 'buy' ? tBase : tQuote / priceForCapacity;
+
+  //           return Math.min(mMax, tMax);
+  //         };
+
+  //         let makerOrder: any;
+  //         let takerOrder: any;
+  //         let lastTakerPrice: number | undefined;
+
+  //         // -----------------------
+  //         // MAKER ORDER (with fallback)
+  //         // -----------------------
+  //         try {
+  //           makerOrder = await makerEx.createOrder(symbol, 'limit', makerSide, amount, makerPrice, {
+  //             postOnly: true,
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Maker order placed: ${makerOrder.id}`,
+  //           );
+  //         } catch (e: any) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: maker failed on ${makerEx.id}: ${e.message}. ` +
+  //               `Switching maker/taker and recomputing amount.`,
+  //           );
+
+  //           // Swap roles
+  //           const newMaker = makerEx === ex1 ? ex2 : ex1;
+  //           const newTaker = makerEx === ex1 ? ex1 : ex2;
+  //           makerEx = newMaker;
+  //           takerEx = newTaker;
+
+  //           const cap = computeCapacity(makerEx, takerEx);
+  //           if (!cap || cap <= 0 || cap < minAmt) {
+  //             throw new Error(`Alternate maker/taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+  //           if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+  //             throw new Error(`Alternate maker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           amount = newAmt;
+
+  //           makerOrder = await makerEx.createOrder(symbol, 'limit', makerSide, amount, makerPrice, {
+  //             postOnly: true,
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Alternate maker order placed: ${makerOrder.id}`,
+  //           );
+  //         }
+
+  //         // -----------------------
+  //         // 30ms SAFETY DELAY
+  //         // -----------------------
+  //         await new Promise((resolve) => setTimeout(resolve, 30));
+
+  //         // -----------------------
+  //         // TAKER ORDER (LIMIT + IOC, with fallback)
+  //         // -----------------------
+  //         try {
+  //           const takerLimitPrice = makerPrice;
+  //           lastTakerPrice = takerLimitPrice + takerLimitPrice * 0.0001;
+
+  //           takerOrder = await takerEx.createOrder(symbol, 'limit', takerSide, amount, takerLimitPrice, {
+  //             timeInForce: 'IOC',
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Taker order placed: ${takerOrder.id}`,
+  //           );
+  //         } catch (e: any) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: taker failed on ${takerEx.id}: ${e.message}. ` +
+  //               `Switching taker and recomputing amount.`,
+  //           );
+
+  //           const newTaker = takerEx === ex1 ? ex2 : ex1;
+  //           takerEx = newTaker;
+
+  //           const cap = computeCapacity(makerEx, takerEx);
+  //           if (!cap || cap <= 0 || cap < minAmt) {
+  //             try {
+  //               if (makerOrder?.id) await makerEx.cancelOrder(makerOrder.id, symbol);
+  //             } catch (_) {}
+  //             throw new Error(`Alternate taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+  //           if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+  //             try {
+  //               if (makerOrder?.id) await makerEx.cancelOrder(makerOrder.id, symbol);
+  //             } catch (_) {}
+  //             throw new Error(`Alternate taker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           amount = newAmt;
+
+  //           const takerLimitPrice = makerPrice;
+  //           lastTakerPrice = takerLimitPrice;
+
+  //           takerOrder = await takerEx.createOrder(symbol, 'limit', takerSide, amount, takerLimitPrice, {
+  //             timeInForce: 'IOC',
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Alternate taker order placed: ${takerOrder.id}`,
+  //           );
+  //         }
+
+  //         // -----------------------
+  //         // LOG + FILL STATUS + PNL TRACKING
+  //         // -----------------------
+  //         await new Promise((resolve) => setTimeout(resolve, 200)); // Brief delay for order status update
+
+  //         const [makerRes, takerRes] = await Promise.all([
+  //           makerEx.fetchOrder(makerOrder.id, symbol),
+  //           takerEx.fetchOrder(takerOrder.id, symbol),
+  //         ]);
+
+  //         const makerFilled = makerRes.filled ?? 0;
+  //         const takerFilled = takerRes.filled ?? 0;
+  //         const makerAvgPrice = makerRes.average ?? makerPrice;
+  //         const takerAvgPrice = takerRes.average ?? (lastTakerPrice ?? makerPrice);
+
+  //         // Calculate PnL
+  //         let tradePnL = 0;
+  //         if (makerFilled > 0 && takerFilled > 0) {
+  //           const filledAmount = Math.min(makerFilled, takerFilled);
+
+  //           if (makerSide === 'buy') {
+  //             // We bought at makerAvgPrice and sold at takerAvgPrice
+  //             tradePnL = (takerAvgPrice - makerAvgPrice) * filledAmount;
+  //           } else {
+  //             // We sold at makerAvgPrice and bought at takerAvgPrice
+  //             tradePnL = (makerAvgPrice - takerAvgPrice) * filledAmount;
+  //           }
+
+  //           totalPnL += tradePnL;
+  //         }
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `Maker ${makerSide.toUpperCase()} ${amount} @ ${makerPrice} on ${makerEx.id} ` +
+  //             `status=${makerRes.status} filled=${makerFilled}/${amount} avgPrice=${makerAvgPrice}`,
+  //         );
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `Taker ${takerSide.toUpperCase()} ${amount} @ ${lastTakerPrice ?? 'N/A'} on ${takerEx.id} ` +
+  //             `status=${takerRes.status} filled=${takerFilled}/${amount} avgPrice=${takerAvgPrice}`,
+  //         );
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `PnL: ${tradePnL >= 0 ? '+' : ''}${tradePnL.toFixed(8)} ${quote} | ` +
+  //             `Cumulative: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(8)} ${quote}`,
+  //         );
+
+  //         tradesExecuted++;
+  //       } catch (err: any) {
+  //         this.logger.error(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: Error in trade cycle: ${err.message}`,
+  //         );
+  //       }
+  //     };
+
+  //     const intervalId = setInterval(loop, Math.max(baseIntervalTime, 1) * 1000);
+  //     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+
+  //     this.logger.log(
+  //       `Volume strategy [${strategyKey}] started on ${exchangeName} for ${symbol}. ` +
+  //         `postOnlySide=${postOnlySide} numTrades=${numTrades}`,
+  //     );
+  //   } catch (e: any) {
+  //     this.logger.error(`Failed to execute volume strategy [${strategyKey}]: ${e.message}`);
+  //   }
+  // }
+  // async executeVolumeStrategy(
+  //   exchangeName: string,
+  //   symbol: string,
+  //   baseIncrementPercentage: number,
+  //   baseIntervalTime: number,
+  //   baseTradeAmount: number,
+  //   numTrades: number,
+  //   userId: string,
+  //   clientId: string,
+  //   pricePushRate: number,
+  //   postOnlySide: 'buy' | 'sell',
+  // ) {
+  //   const strategyKey = createStrategyKey({
+  //     type: 'volume',
+  //     user_id: userId,
+  //     client_id: clientId,
+  //   });
+
+  //   try {
+  //     let strategyInstance = await this.strategyInstanceRepository.findOne({ where: { strategyKey } });
+
+  //     const ex1 = this.exchangeInitService.getExchange(exchangeName, 'default');
+  //     const ex2 = this.exchangeInitService.getExchange(exchangeName, 'account2');
+
+  //     await Promise.all([ex1.loadMarkets(), ex2.loadMarkets()]);
+
+  //     const market = ex1.market(symbol);
+  //     if (!market) throw new Error(`Market not found for ${symbol} on ${ex1.id}`);
+
+  //     const priceToPrec = (p: number) => Number(ex1.priceToPrecision(symbol, p));
+  //     const amtToPrec = (a: number) => Number(ex1.amountToPrecision(symbol, a));
+
+  //     const minAmt = market.limits?.amount?.min ?? 0;
+  //     const minPrice = market.limits?.price?.min ?? 0;
+
+  //     const startTicker = await ex1.fetchTicker(symbol);
+  //     const startPrice = Number(startTicker.last);
+
+  //     const parameters = {
+  //       exchangeName,
+  //       symbol,
+  //       baseIncrementPercentage,
+  //       baseIntervalTime,
+  //       baseTradeAmount,
+  //       numTrades,
+  //       userId,
+  //       clientId,
+  //       pricePushRate,
+  //       postOnlySide,
+  //     };
+
+  //     if (!strategyInstance) {
+  //       strategyInstance = this.strategyInstanceRepository.create({
+  //         strategyKey,
+  //         userId,
+  //         clientId,
+  //         strategyType: 'volume',
+  //         parameters,
+  //         status: 'running',
+  //         startPrice,
+  //       });
+  //       // await this.strategyInstanceRepository.save(strategyInstance);
+  //     } else {
+  //       await this.strategyInstanceRepository.update(
+  //         { strategyKey },
+  //         { status: 'running', updatedAt: new Date() },
+  //       );
+  //     }
+
+  //     let tradesExecuted = 0;
+  //     let totalPnL = 0; // Track cumulative PnL
+
+  //     const oppositeSide = (s: 'buy' | 'sell'): 'buy' | 'sell' => (s === 'buy' ? 'sell' : 'buy');
+
+  //     const loop = async () => {
+  //       if (tradesExecuted >= numTrades) {
+  //         this.logger.log(
+  //           `Volume strategy [${strategyKey}] completed after ${numTrades} trades. ` +
+  //             `Total PnL: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(8)}`,
+  //         );
+  //         const inst = this.strategyInstances.get(strategyKey);
+  //         if (inst?.intervalId) clearInterval(inst.intervalId);
+  //         this.strategyInstances.delete(strategyKey);
+  //         await this.strategyInstanceRepository.update(
+  //           { strategyKey },
+  //           { status: 'stopped', updatedAt: new Date() },
+  //         );
+  //         return;
+  //       }
+
+  //       const tradeNumber = tradesExecuted + 1;
+
+  //       try {
+  //         await Promise.all([
+  //           this.cancelAllOrders(ex1, symbol, strategyKey),
+  //           this.cancelAllOrders(ex2, symbol, strategyKey),
+  //         ]);
+
+  //         const [bal1, bal2] = await Promise.all([ex1.fetchBalance(), ex2.fetchBalance()]);
+
+  //         const [base, quote] = symbol.split('/');
+
+  //         const ex1Base = Number(bal1.free[base] ?? 0);
+  //         const ex1Quote = Number(bal1.free[quote] ?? 0);
+  //         const ex2Base = Number(bal2.free[base] ?? 0);
+  //         const ex2Quote = Number(bal2.free[quote] ?? 0);
+
+  //         // Use ex1 orderbook as global reference
+  //         const book1 = await ex1.fetchOrderBook(symbol);
+  //         const bid1 = book1.bids[0]?.[0];
+  //         const ask1 = book1.asks[0]?.[0];
+  //         if (!bid1 || !ask1) throw new Error('Empty orderbook on ex1');
+
+  //         const globalMid = (bid1 + ask1) / 2;
+  //         const priceForCapacity = globalMid > 0 ? globalMid : minPrice || 1e-12;
+
+  //         // -----------------------
+  //         // ALTERNATE MAKER SIDE (BUY/SELL) EACH TRADE
+  //         // Trade 1 => postOnlySide
+  //         // Trade 2 => opposite
+  //         // Trade 3 => postOnlySide
+  //         // ...
+  //         // -----------------------
+  //         const makerSide: 'buy' | 'sell' =
+  //           tradeNumber % 2 === 1 ? postOnlySide : oppositeSide(postOnlySide);
+  //         const takerSide: 'buy' | 'sell' = oppositeSide(makerSide);
+
+  //         // Capacity if ex1 = maker, ex2 = taker
+  //         const capacity1 = Math.min(
+  //           makerSide === 'buy' ? ex1Quote / priceForCapacity : ex1Base,
+  //           makerSide === 'buy' ? ex2Base : ex2Quote / priceForCapacity,
+  //         );
+
+  //         // Capacity if ex2 = maker, ex1 = taker
+  //         const capacity2 = Math.min(
+  //           makerSide === 'buy' ? ex2Quote / priceForCapacity : ex2Base,
+  //           makerSide === 'buy' ? ex1Base : ex1Quote / priceForCapacity,
+  //         );
+
+  //         let makerEx = capacity1 >= capacity2 ? ex1 : ex2;
+  //         let takerEx = capacity1 >= capacity2 ? ex2 : ex1;
+  //         let maxCapacity = capacity1 >= capacity2 ? capacity1 : capacity2;
+
+  //         if (!maxCapacity || maxCapacity <= 0 || maxCapacity < minAmt) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: insufficient combined balance. ` +
+  //               `ex1Base=${ex1Base.toFixed(8)} ex1Quote=${ex1Quote.toFixed(8)} ex2Base=${ex2Base.toFixed(
+  //                 8,
+  //               )} ex2Quote=${ex2Quote.toFixed(8)}`,
+  //           );
+  //           return;
+  //         }
+
+  //         // Maker orderbook (reuse ex1 book if makerEx is ex1)
+  //         const makerBook = makerEx === ex1 ? book1 : await makerEx.fetchOrderBook(symbol);
+  //         const makerBid = makerBook.bids[0]?.[0];
+  //         const makerAsk = makerBook.asks[0]?.[0];
+  //         if (!makerBid || !makerAsk) throw new Error(`Empty orderbook on maker exchange ${makerEx.id}`);
+
+  //         // -----------------------
+  //         // MAKER PRICE: within 7% of spread, excluding 2%
+  //         // - BUY: top 15% of spread, excluding top 5% (near ask)
+  //         // - SELL: bottom 15% of spread, excluding bottom 5% (near bid)
+  //         // -----------------------
+  //         const spread = makerAsk - makerBid;
+  //         const segPct = 0.15;
+  //         const exclPct = 0.5;
+
+  //         const safeMinP = minPrice || 1e-12;
+
+  //         let makerRawPrice: number;
+  //         if (!spread || spread <= 0) {
+  //           const mid = (makerBid + makerAsk) / 2;
+  //           makerRawPrice = Math.max(mid, safeMinP);
+  //         } else {
+  //           if (makerSide === 'buy') {
+  //             const low = makerAsk - spread * segPct;  // ask - 7%
+  //             const high = makerAsk - spread * exclPct; // ask - 2%
+  //             makerRawPrice = low + Math.random() * (high - low);
+  //           } else {
+  //             const low = makerBid + spread * exclPct; // bid + 2%
+  //             const high = makerBid + spread * segPct; // bid + 7%
+  //             makerRawPrice = low + Math.random() * (high - low);
+  //           }
+  //           makerRawPrice = Math.max(makerRawPrice, safeMinP);
+  //         }
+
+  //         const makerPrice = priceToPrec(makerRawPrice);
+
+  //         let rawAmt = Math.min(baseTradeAmount, maxCapacity) * 0.99;
+  //         let amount = amtToPrec(rawAmt);
+
+  //         if (!amount || amount <= 0 || amount < minAmt) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: computed amount too small. ` +
+  //               `amount=${amount} minAmt=${minAmt} maxCapacity=${maxCapacity}`,
+  //           );
+  //           return;
+  //         }
+
+  //         // Helper to recompute capacity after switching maker/taker
+  //         const computeCapacity = (me: ccxt.Exchange, te: ccxt.Exchange) => {
+  //           const bMaker = me === ex1 ? bal1 : bal2;
+  //           const bTaker = te === ex1 ? bal1 : bal2;
+
+  //           const mBase = Number(bMaker.free[base] ?? 0);
+  //           const mQuote = Number(bMaker.free[quote] ?? 0);
+  //           const tBase = Number(bTaker.free[base] ?? 0);
+  //           const tQuote = Number(bTaker.free[quote] ?? 0);
+
+  //           const mMax = makerSide === 'buy' ? mQuote / priceForCapacity : mBase;
+  //           const tMax = makerSide === 'buy' ? tBase : tQuote / priceForCapacity;
+
+  //           return Math.min(mMax, tMax);
+  //         };
+
+  //         let makerOrder: any;
+  //         let takerOrder: any;
+  //         let lastTakerPrice: number | undefined;
+
+  //         // -----------------------
+  //         // MAKER ORDER (with fallback)
+  //         // -----------------------
+  //         try {
+  //           makerOrder = await makerEx.createOrder(symbol, 'limit', makerSide, amount, makerPrice, {
+  //             postOnly: true,
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Maker order placed: ${makerOrder.id}`,
+  //           );
+  //         } catch (e: any) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: maker failed on ${makerEx.id}: ${e.message}. ` +
+  //               `Switching maker/taker and recomputing amount.`,
+  //           );
+
+  //           // Swap roles
+  //           const newMaker = makerEx === ex1 ? ex2 : ex1;
+  //           const newTaker = makerEx === ex1 ? ex1 : ex2;
+  //           makerEx = newMaker;
+  //           takerEx = newTaker;
+
+  //           const cap = computeCapacity(makerEx, takerEx);
+  //           if (!cap || cap <= 0 || cap < minAmt) {
+  //             throw new Error(`Alternate maker/taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+  //           if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+  //             throw new Error(`Alternate maker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           amount = newAmt;
+
+  //           makerOrder = await makerEx.createOrder(symbol, 'limit', makerSide, amount, makerPrice, {
+  //             postOnly: true,
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Alternate maker order placed: ${makerOrder.id}`,
+  //           );
+  //         }
+
+  //         // -----------------------
+  //         // 30ms SAFETY DELAY
+  //         // -----------------------
+  //         await new Promise((resolve) => setTimeout(resolve, 30));
+
+  //         // -----------------------
+  //         // TAKER ORDER (LIMIT + IOC, with fallback)
+  //         // -----------------------
+  //         try {
+  //           const takerLimitPrice = makerPrice;
+  //           lastTakerPrice = takerLimitPrice + takerLimitPrice * 0.0001;
+
+  //           takerOrder = await takerEx.createOrder(symbol, 'limit', takerSide, amount, takerLimitPrice, {
+  //             timeInForce: 'IOC',
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Taker order placed: ${takerOrder.id}`,
+  //           );
+  //         } catch (e: any) {
+  //           this.logger.warn(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: taker failed on ${takerEx.id}: ${e.message}. ` +
+  //               `Switching taker and recomputing amount.`,
+  //           );
+
+  //           const newTaker = takerEx === ex1 ? ex2 : ex1;
+  //           takerEx = newTaker;
+
+  //           const cap = computeCapacity(makerEx, takerEx);
+  //           if (!cap || cap <= 0 || cap < minAmt) {
+  //             try {
+  //               if (makerOrder?.id) await makerEx.cancelOrder(makerOrder.id, symbol);
+  //             } catch (_) {}
+  //             throw new Error(`Alternate taker insufficient balance for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           const newAmt = amtToPrec(Math.min(baseTradeAmount, cap));
+  //           if (!newAmt || newAmt <= 0 || newAmt < minAmt) {
+  //             try {
+  //               if (makerOrder?.id) await makerEx.cancelOrder(makerOrder.id, symbol);
+  //             } catch (_) {}
+  //             throw new Error(`Alternate taker amount below minAmt for Trade ${tradeNumber} / ${numTrades}`);
+  //           }
+
+  //           amount = newAmt;
+
+  //           const takerLimitPrice = makerPrice;
+  //           lastTakerPrice = takerLimitPrice;
+
+  //           takerOrder = await takerEx.createOrder(symbol, 'limit', takerSide, amount, takerLimitPrice, {
+  //             timeInForce: 'IOC',
+  //           });
+
+  //           this.logger.log(
+  //             `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` + `Alternate taker order placed: ${takerOrder.id}`,
+  //           );
+  //         }
+
+  //         // -----------------------
+  //         // LOG + FILL STATUS + PNL TRACKING
+  //         // -----------------------
+  //         await new Promise((resolve) => setTimeout(resolve, 200)); // Brief delay for order status update
+
+  //         const [makerRes, takerRes] = await Promise.all([
+  //           makerEx.fetchOrder(makerOrder.id, symbol),
+  //           takerEx.fetchOrder(takerOrder.id, symbol),
+  //         ]);
+
+  //         const makerFilled = makerRes.filled ?? 0;
+  //         const takerFilled = takerRes.filled ?? 0;
+  //         const makerAvgPrice = makerRes.average ?? makerPrice;
+  //         const takerAvgPrice = takerRes.average ?? (lastTakerPrice ?? makerPrice);
+
+  //         // Calculate PnL
+  //         let tradePnL = 0;
+  //         if (makerFilled > 0 && takerFilled > 0) {
+  //           const filledAmount = Math.min(makerFilled, takerFilled);
+
+  //           if (makerSide === 'buy') {
+  //             // We bought at makerAvgPrice and sold at takerAvgPrice
+  //             tradePnL = (takerAvgPrice - makerAvgPrice) * filledAmount;
+  //           } else {
+  //             // We sold at makerAvgPrice and bought at takerAvgPrice
+  //             tradePnL = (makerAvgPrice - takerAvgPrice) * filledAmount;
+  //           }
+
+  //           totalPnL += tradePnL;
+  //         }
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `Maker ${makerSide.toUpperCase()} ${amount} @ ${makerPrice} on ${makerEx.id} ` +
+  //             `status=${makerRes.status} filled=${makerFilled}/${amount} avgPrice=${makerAvgPrice}`,
+  //         );
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `Taker ${takerSide.toUpperCase()} ${amount} @ ${lastTakerPrice ?? 'N/A'} on ${takerEx.id} ` +
+  //             `status=${takerRes.status} filled=${takerFilled}/${amount} avgPrice=${takerAvgPrice}`,
+  //         );
+
+  //         this.logger.log(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: ` +
+  //             `PnL: ${tradePnL >= 0 ? '+' : ''}${tradePnL.toFixed(8)} ${quote} | ` +
+  //             `Cumulative: ${totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(8)} ${quote}`,
+  //         );
+
+  //         tradesExecuted++;
+  //       } catch (err: any) {
+  //         this.logger.error(
+  //           `[${strategyKey}] Trade ${tradeNumber} / ${numTrades}: Error in trade cycle: ${err.message}`,
+  //         );
+  //       }
+  //     };
+
+  //     const intervalId = setInterval(loop, Math.max(baseIntervalTime, 1) * 1000);
+  //     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
+
+  //     this.logger.log(
+  //       `Volume strategy [${strategyKey}] started on ${exchangeName} for ${symbol}. ` +
+  //         `postOnlySide=${postOnlySide} numTrades=${numTrades}`,
+  //     );
+  //   } catch (e: any) {
+  //     this.logger.error(`Failed to execute volume strategy [${strategyKey}]: ${e.message}`);
+  //   }
+  // }
+
+  /**
+   * Cancel leftover orders for a given exchange, symbol, and strategyKey.
+   */
+  private async cancelAllOrders(
+    exchange: ccxt.Exchange,
+    pair: string,
+    strategyKey: string,
+  ) {
+    this.logger.log(
+      `Canceling leftover orders for [${strategyKey}] on ${exchange.id}`,
+    );
+
+    try {
+      const orders = await exchange.fetchOpenOrders(pair);
+      for (const order of orders) {
+        try {
+          await exchange.cancelOrder(order.id, pair);
+          // Optionally update DB if you're tracking orders by strategy
+          await this.orderRepository.update(
+            {
+              orderId: order.id,
+              exchange: exchange.id,
+              pair,
+              strategy: strategyKey, // or "volume" if you store by strategy name
+            },
+            {
+              status: 'canceled',
+            },
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to cancel order ${order.id} on ${exchange.id}: ${error.message}`,
+          );
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
+      );
+    }
+  }
+
   private async waitForOrderFill(
     exchange: ccxt.Exchange,
     orderId: string,
@@ -554,16 +1595,28 @@ export class StrategyService {
       user_id: userId,
       client_id: clientId,
     });
-    const strategyInstance = this.strategyInstances.get(strategyKey);
+    const inst = this.strategyInstances.get(strategyKey);
 
-    if (strategyInstance) {
-      clearInterval(strategyInstance.intervalId);
-      this.cancelAllStrategyOrders(strategyKey);
-      this.strategyInstances.delete(strategyKey);
-      this.logger.log(`Volume strategy ${strategyKey} stopped.`);
-    } else {
-      this.logger.warn(`No active strategy found for ${strategyKey}.`);
+    if (inst?.intervalId) {
+      clearInterval(inst.intervalId);
     }
+
+    this.strategyInstances.delete(strategyKey);
+
+    this.strategyInstanceRepository
+      .update({ strategyKey }, { status: 'stopped', updatedAt: new Date() })
+      .then(() => this.logger.log(`Volume strategy ${strategyKey} stopped.`))
+      .catch((e) =>
+        this.logger.error(
+          `Failed to mark ${strategyKey} stopped: ${e.message}`,
+        ),
+      );
+
+    this.cancelAllStrategyOrders(strategyKey).catch((e) =>
+      this.logger.error(
+        `Failed canceling orders for ${strategyKey}: ${e.message}`,
+      ),
+    );
   }
 
   private async watchSymbols(
@@ -628,29 +1681,29 @@ export class StrategyService {
       ceilingPrice,
       floorPrice,
     } = strategyParamsDto;
-  
+
     const strategyKey = createStrategyKey({
       type: 'pureMarketMaking',
       user_id: userId,
       client_id: clientId,
     });
-  
+
     // Ensure the strategy is not already running
     if (this.strategyInstances.has(strategyKey)) {
       this.logger.error(`Strategy ${strategyKey} is already running.`);
       return;
     }
-  
+
     // Find or create the strategy instance
     let strategyInstance = await this.strategyInstanceRepository.findOne({
       where: { strategyKey, status: 'running' },
     });
-  
+
     if (!strategyInstance) {
       strategyInstance = await this.strategyInstanceRepository.findOne({
         where: { strategyKey },
       });
-  
+
       if (strategyInstance) {
         await this.strategyInstanceRepository.update(
           { strategyKey },
@@ -658,8 +1711,9 @@ export class StrategyService {
         );
       } else {
         // The exchange we place orders on
-        const executionExchange = this.exchangeInitService.getExchange(exchangeName);
-  
+        const executionExchange =
+          this.exchangeInitService.getExchange(exchangeName);
+
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -676,10 +1730,10 @@ export class StrategyService {
             return ticker.last;
           })(),
         });
-        await this.strategyInstanceRepository.save(strategyInstance);
+        // await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
-  
+
     // Start the strategy
     this.logger.log(`Starting pure market making strategy for ${strategyKey}.`);
     const intervalId = setInterval(async () => {
@@ -687,7 +1741,7 @@ export class StrategyService {
         await this.manageMarketMakingOrdersWithLayers(
           userId,
           clientId,
-          exchangeName,     // We'll still execute trades on 'exchangeName'
+          exchangeName, // We'll still execute trades on 'exchangeName'
           pair,
           bidSpread,
           askSpread,
@@ -698,7 +1752,7 @@ export class StrategyService {
           amountChangeType,
           ceilingPrice,
           floorPrice,
-          oracleExchangeName // Pass along to retrieve price from a different exchange if provided
+          oracleExchangeName, // Pass along to retrieve price from a different exchange if provided
         );
       } catch (error) {
         this.logger.error(
@@ -707,11 +1761,10 @@ export class StrategyService {
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }, orderRefreshTime);
-  
+
     // Track the strategy instance
     this.strategyInstances.set(strategyKey, { isRunning: true, intervalId });
   }
-  
 
   private async manageMarketMakingOrdersWithLayers(
     userId: string,
@@ -733,17 +1786,19 @@ export class StrategyService {
     const priceExchange = oracleExchangeName
       ? this.exchangeInitService.getExchange(oracleExchangeName)
       : this.exchangeInitService.getExchange(executionExchangeName);
-  
+
     // 2. Execution exchange is always the main exchangeName
-    const executionExchange = this.exchangeInitService.getExchange(executionExchangeName);
-  
+    const executionExchange = this.exchangeInitService.getExchange(
+      executionExchangeName,
+    );
+
     // 3. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
       priceExchange.id, // use priceExchange for data
       pair,
       priceSourceType,
     );
-  
+
     // 4. Cancel all existing orders on the execution exchange, but still use the same strategyKey
     await this.cancelAllOrders(
       executionExchange,
@@ -754,7 +1809,7 @@ export class StrategyService {
         client_id: clientId,
       }),
     );
-  
+
     // Mark all open orders not canceled as closed in DB
     await this.orderRepository.update(
       {
@@ -769,24 +1824,25 @@ export class StrategyService {
         status: 'closed',
       },
     );
-  
+
     let currentOrderAmount = baseOrderAmount;
-  
+
     for (let layer = 1; layer <= numberOfLayers; layer++) {
       if (layer > 1) {
         if (amountChangeType === 'fixed') {
           currentOrderAmount += amountChangePerLayer;
         } else if (amountChangeType === 'percentage') {
-          currentOrderAmount += currentOrderAmount * (amountChangePerLayer / 100);
+          currentOrderAmount +=
+            currentOrderAmount * (amountChangePerLayer / 100);
         }
       }
-  
+
       const layerBidSpreadPercentage = bidSpread * layer;
       const layerAskSpreadPercentage = askSpread * layer;
-  
+
       const buyPrice = priceSource * (1 - layerBidSpreadPercentage);
       const sellPrice = priceSource * (1 + layerAskSpreadPercentage);
-  
+
       // 5. Place buy orders on the execution exchange, if below the ceiling
       if (ceilingPrice === undefined || priceSource <= ceilingPrice) {
         const {
@@ -799,9 +1855,11 @@ export class StrategyService {
           buyPrice,
         );
         if (!adjustedBuyAmount || !adjustedBuyPrice) {
-            throw new Error(`Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`);
-          }
-  
+          throw new Error(
+            `Invalid order parameters: amount=${adjustedBuyAmount}, price=${adjustedBuyPrice}`,
+          );
+        }
+
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -811,7 +1869,7 @@ export class StrategyService {
           amount: parseFloat(adjustedBuyAmount),
           price: parseFloat(adjustedBuyPrice),
         });
-  
+
         // Persist
         const orderEntity = this.orderRepository.create({
           userId,
@@ -832,7 +1890,7 @@ export class StrategyService {
           `Skipping buy order for ${pair} as price source ${priceSource} exceeds ceiling ${ceilingPrice}.`,
         );
       }
-  
+
       // 6. Place sell orders on the execution exchange, if above the floor
       if (floorPrice === undefined || priceSource >= floorPrice) {
         const {
@@ -844,7 +1902,7 @@ export class StrategyService {
           currentOrderAmount,
           sellPrice,
         );
-  
+
         const order = await this.tradeService.executeLimitTrade({
           userId,
           clientId,
@@ -854,7 +1912,7 @@ export class StrategyService {
           amount: parseFloat(adjustedSellAmount),
           price: parseFloat(adjustedSellPrice),
         });
-  
+
         const orderEntity = this.orderRepository.create({
           userId,
           clientId,
@@ -876,7 +1934,6 @@ export class StrategyService {
       }
     }
   }
-  
 
   private async adjustOrderParameters(
     exchange: ccxt.Exchange,
@@ -894,45 +1951,6 @@ export class StrategyService {
     const adjustedPrice = await exchange.priceToPrecision(symbol, price);
     this.logger.log(`Adjusted Order: ${adjustedAmount} @ ${adjustedPrice}`);
     return { adjustedAmount, adjustedPrice };
-  }
-
-  private async cancelAllOrders(
-    exchange: ccxt.Exchange,
-    pair: string,
-    strategyKey: string,
-  ) {
-    this.logger.log('Cancelling Orders for', strategyKey);
-    try {
-      const orders = await exchange.fetchOpenOrders(pair);
-      for (const order of orders) {
-        try {
-          await exchange.cancelOrder(order.id, pair);
-
-          // Mark canceled on the database
-          await this.orderRepository.update(
-            {
-              orderId: order.id,
-              exchange: exchange.id,
-              pair,
-              strategy: 'pureMarketMaking',
-            },
-            {
-              status: 'canceled',
-            },
-          );
-        } catch (error) {
-          this.logger.error(
-            `Failed to cancel order ${order.id} for ${pair} on ${exchange.id}: ${error.message}`,
-          );
-          // Decide whether to retry or continue with the next order
-        }
-      }
-    } catch (error) {
-      this.logger.error(
-        `Error fetching open orders for ${pair} on ${exchange.id}: ${error.message}`,
-      );
-      // Handle the error, e.g., by logging and possibly retrying later
-    }
   }
 
   private async getCurrentMarketPrice(

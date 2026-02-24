@@ -50,6 +50,8 @@ describe('SpotdataService', () => {
   const mockTickers: Tickers = {
     'BTC/USDT': {
       symbol: 'BTC/USDT',
+      indexPrice: 0,
+      markPrice: 0,
       info: {},
       timestamp: Date.now(),
       datetime: new Date().toISOString(),
@@ -81,6 +83,8 @@ describe('SpotdataService', () => {
       ask: 0,
       last: 0,
       change: 0,
+      indexPrice: 0,
+      markPrice: 0,
       percentage: 2.0,
       baseVolume: 0,
       quoteVolume: 0,

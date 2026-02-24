@@ -88,7 +88,7 @@
 
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
-import { Cron } from '@nestjs/schedule';
+// import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
@@ -123,7 +123,7 @@ export class ExchangeService {
     private exchangeRepository: ExchangeRepository,
     private eventEmitter: EventEmitter2,
   ) {
-    this.loadAPIKeys();
+    // this.loadAPIKeys();
   }
 
   private async loadAPIKeys() {
@@ -653,67 +653,67 @@ export class ExchangeService {
     await this.updateSpotOrderApiKeyId(orderId, apiKeyId);
   }
 
-  @Cron('*/3 * * * * *') // Every 3 seconds
-  async placedOrderUpdater() {
-    const orders = await this.readOrdersByState(
-      STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
-    );
+  // @Cron('*/3 * * * * *') // Every 3 seconds
+  // async placedOrderUpdater() {
+  //   const orders = await this.readOrdersByState(
+  //     STATE_TEXT_MAP['EXCHANGE_ORDER_PLACED'],
+  //   );
 
-    if (orders.length === 0) {
-      return;
-    }
+  //   if (orders.length === 0) {
+  //     return;
+  //   }
 
-    await Promise.all(
-      orders.map(async (o) => {
-        const instance = this.exchangeInstances[o.exchangeName];
-        if (!instance.has['fetchOrder']) {
-          return await this.updateSpotOrderState(
-            o.orderId,
-            STATE_TEXT_MAP['EXCHANGE_DOESNT_SUPPORT_FETCH_ORDER'],
-          );
-        }
+  //   await Promise.all(
+  //     orders.map(async (o) => {
+  //       const instance = this.exchangeInstances[o.exchangeName];
+  //       if (!instance.has['fetchOrder']) {
+  //         return await this.updateSpotOrderState(
+  //           o.orderId,
+  //           STATE_TEXT_MAP['EXCHANGE_DOESNT_SUPPORT_FETCH_ORDER'],
+  //         );
+  //       }
 
-        const order = await instance.fetchOrder(o.orderId);
+  //       const order = await instance.fetchOrder(o.orderId);
 
-        // TODO: All these states needs to be tested
-        // Determine order state and update
-        if (order.status === 'open') {
-          if (order.filled === 0) {
-            return;
-          }
-          if (order.filled != order.amount) {
-            await this.updateSpotOrderState(
-              o.orderId,
-              STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
-            );
-            return;
-          }
-        }
-        if (order.status === 'canceled') {
-          await this.updateSpotOrderState(
-            o.orderId,
-            STATE_TEXT_MAP['EXCHANGE_ORDER_CANCELED'],
-          );
-          return;
-        }
-        if (order.status === 'closed') {
-          await this.updateSpotOrderState(
-            o.orderId,
-            STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
-          );
-        }
+  //       // TODO: All these states needs to be tested
+  //       // Determine order state and update
+  //       if (order.status === 'open') {
+  //         if (order.filled === 0) {
+  //           return;
+  //         }
+  //         if (order.filled != order.amount) {
+  //           await this.updateSpotOrderState(
+  //             o.orderId,
+  //             STATE_TEXT_MAP['EXCHANGE_ORDER_PARTIAL_FILLED'],
+  //           );
+  //           return;
+  //         }
+  //       }
+  //       if (order.status === 'canceled') {
+  //         await this.updateSpotOrderState(
+  //           o.orderId,
+  //           STATE_TEXT_MAP['EXCHANGE_ORDER_CANCELED'],
+  //         );
+  //         return;
+  //       }
+  //       if (order.status === 'closed') {
+  //         await this.updateSpotOrderState(
+  //           o.orderId,
+  //           STATE_TEXT_MAP['EXCHANGE_ORDER_FILLED'],
+  //         );
+  //       }
 
-        // TODO: add a final amount field to order and store in db. Use this value when release token
+  //       // TODO: add a final amount field to order and store in db. Use this value when release token
 
-        // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
-        const releaseOrder = await this.readMixinReleaseToken(o.orderId);
-        this.eventEmitter.emit('mixin.release', {
-          orderId: releaseOrder.orderId,
-          userId: releaseOrder.userId,
-          assetId: releaseOrder.assetId,
-          amount: releaseOrder.amount,
-        });
-      }),
-    );
-  }
+  //       // If order state is finished, jump to step 4, withdraw token in mixin (mixin.listener.ts)
+  //       const releaseOrder = await this.readMixinReleaseToken(o.orderId);
+  //       this.eventEmitter.emit('mixin.release', {
+  //         orderId: releaseOrder.orderId,
+  //         userId: releaseOrder.userId,
+  //         assetId: releaseOrder.assetId,
+  //         amount: releaseOrder.amount,
+  //       });
+  //     }),
+  //   );
+  // }
 }

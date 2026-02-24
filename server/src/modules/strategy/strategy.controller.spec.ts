@@ -3,11 +3,13 @@ import { StrategyController } from './strategy.controller';
 import { StrategyService } from './strategy.service';
 import { StrategyUserService } from './strategy-user.service';
 import { AdminStrategyService } from '../admin/strategy/adminStrategy.service';
+import { TimeIndicatorStrategyService } from './time-indicator.service';
 
 const mockStrategyService = {
   // mock methods of StrategyService that are used by StrategyController
 };
 const mockStrategyUserService = {};
+const mockTimeIndicatorStrategyService = {};
 
 describe('StrategyController', () => {
   let controller: StrategyController;
@@ -30,6 +32,10 @@ describe('StrategyController', () => {
         {
           provide: StrategyUserService,
           useValue: mockStrategyUserService, // Use the mock StrategyService here
+        },
+        {
+          provide: TimeIndicatorStrategyService,
+          useValue: mockTimeIndicatorStrategyService,
         },
       ],
     }).compile();

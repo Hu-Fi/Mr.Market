@@ -6,6 +6,14 @@ import {
 } from '@nestjs/common';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 
+type ExchangeCtor = new (params?: any) => ccxt.Exchange;
+
+interface ExchangeConfig {
+  name: string;
+  class: ExchangeCtor;
+  defaultType?: 'spot' | 'swap' | 'future';
+}
+
 @Injectable({ scope: Scope.DEFAULT })
 export class ExchangeInitService {
   private readonly logger = new CustomLogger(ExchangeInitService.name);
@@ -21,389 +29,345 @@ export class ExchangeInitService {
       .catch((error) =>
         this.logger.error(
           'Error during exchanges initialization',
-          error.message,
+          error?.message ?? String(error),
         ),
       );
   }
 
+  /** ---------- utils ---------- */
+
+  /** read env and hard-trim (kills stray spaces/newlines that break signatures) */
+  private envTrim(name: string): string | undefined {
+    const v = process.env[name];
+    return typeof v === 'string' ? v.trim() : v;
+  }
+
+  private makeExchangeId(name: string, isTestnet: boolean) {
+    return isTestnet ? `${name}-testnet` : name;
+  }
+
+  /** build a ccxt instance with safe defaults */
+  private buildExchangeInstance(
+    Ctor: ExchangeCtor,
+    {
+      apiKey,
+      secret,
+      password,
+      walletAddress,
+      defaultType = 'spot',
+    }: {
+      apiKey?: string;
+      secret?: string;
+      password?: string;
+      walletAddress?: string;
+      defaultType?: 'spot' | 'swap' | 'future';
+    },
+  ) {
+    const ex = new Ctor({
+      apiKey,
+      secret,
+      password,
+      ...(walletAddress ? { walletAddress } : {}), // Hyperliquid often needs this :contentReference[oaicite:3]{index=3}
+      enableRateLimit: true,
+      // some exchanges look at options.defaultType for spot/swap routing
+      options: {
+        ...(defaultType ? { defaultType } : {}),
+      },
+      // strict SSL can save you from weird proxies
+      timeout: 20000,
+      verbose: false,
+    } as ccxt.Exchange);
+
+    // Prefer to keep clocks aligned automatically whenever the exchange supports it
+    // For Binance this is options.adjustForTimeDifference, for others we log skew below.
+    try {
+      (ex.options as any).adjustForTimeDifference = true;
+    } catch {
+      /* ignore if not supported */
+    }
+    return ex;
+  }
+
+  /** quick targeted diagnostics to catch auth/time issues early */
+  private async postInitDiagnostics(
+    exName: string,
+    label: string,
+    exchange: ccxt.Exchange,
+  ) {
+    // 1) time skew
+    try {
+      const serverTime = await exchange.fetchTime();
+      if (serverTime && Number.isFinite(serverTime)) {
+        const skewMs = serverTime - Date.now();
+        const absSkew = Math.abs(skewMs);
+        const skewMsg = `[${exName}:${label}] time skew ${skewMs}ms`;
+        if (absSkew > 5000) {
+          this.logger.warn(
+            `${skewMsg} → consider NTP sync to avoid signature errors.`,
+          );
+        } else {
+          this.logger.log(skewMsg);
+        }
+      }
+    } catch {
+      // not all exchanges expose fetchTime
+    }
+
+    // 2) private call smoke-test (fetchBalance) to surface INVALID_SIGNATURE now
+    try {
+      // Only if credentials exist (ccxt will throw otherwise)
+      if (exchange.apiKey && exchange.secret) {
+        await exchange.fetchBalance();
+        this.logger.log(`[${exName}:${label}] fetchBalance OK (creds valid).`);
+      }
+    } catch (e: any) {
+      const msg = e?.message ?? String(e);
+      // Surface common root causes explicitly
+      if (/INVALID_SIGNATURE|Signature mismatch|auth|signature/i.test(msg)) {
+        this.logger.error(
+          `[${exName}:${label}] auth/signature failed → ` +
+            `check key/secret trimming, permissions, IP whitelist, and testnet vs mainnet. Raw: ${msg}`,
+        );
+      } else if (/timestamp|request expired|time/i.test(msg)) {
+        this.logger.error(
+          `[${exName}:${label}] request time issue → clock skew. Raw: ${msg}`,
+        );
+      } else {
+        this.logger.error(
+          `[${exName}:${label}] private-call check failed: ${msg}`,
+        );
+      }
+    }
+  }
+
+  /** ---------- init ---------- */
+
   private async initializeExchanges() {
-    const exchangeConfigs = [
-      {
-        name: 'okx',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.OKX_API_KEY,
-            secret: process.env.OKX_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.OKX_API_KEY_2,
-            secret: process.env.OKX_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.OKX_API_KEY_READ_ONLY,
-            secret: process.env.OKX_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.okx,
-      },
-      {
-        name: 'alpaca',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.ALPACA_KEY,
-            secret: process.env.ALPACA_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.ALPACA_KEY_2,
-            secret: process.env.ALPACA_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.ALPACA_KEY_READ_ONLY,
-            secret: process.env.ALPACA_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.alpaca,
-      },
-      {
-        name: 'bitfinex',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.BITFINEX_API_KEY,
-            secret: process.env.BITFINEX_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.BITFINEX_API_KEY_2,
-            secret: process.env.BITFINEX_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.BITFINEX_API_KEY_READ_ONLY,
-            secret: process.env.BITFINEX_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.bitfinex,
-      },
-      {
-        name: 'gate',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.GATE_API_KEY,
-            secret: process.env.GATE_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.GATE_API_KEY_2,
-            secret: process.env.GATE_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.GATE_API_KEY_READ_ONLY,
-            secret: process.env.GATE_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.gate,
-      },
-      {
-        name: 'mexc',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.MEXC_API_KEY,
-            secret: process.env.MEXC_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.MEXC_API_KEY_2,
-            secret: process.env.MEXC_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.MEXC_API_KEY_READ_ONLY,
-            secret: process.env.MEXC_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.mexc,
-      },
+    const exchangeConfigs: ExchangeConfig[] = [
+      { name: 'okx', class: (ccxt as any).pro.okx },
+      { name: 'alpaca', class: (ccxt as any).pro.alpaca },
+      { name: 'bitfinex', class: (ccxt as any).pro.bitfinex },
+      { name: 'gate', class: (ccxt as any).pro.gate, defaultType: 'spot' },
+      { name: 'mexc', class: (ccxt as any).pro.mexc, defaultType: 'spot' },
+      { name: 'xt', class: (ccxt as any).pro.xt, defaultType: 'spot' },
       {
         name: 'binance',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.BINANCE_API_KEY,
-            secret: process.env.BINANCE_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.BINANCE_API_KEY_2,
-            secret: process.env.BINANCE_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.BINANCE_API_KEY_READ_ONLY,
-            secret: process.env.BINANCE_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.binance,
+        class: (ccxt as any).pro.binance,
+        defaultType: 'spot',
       },
-      {
-        name: 'lbank',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.LBANK_API_KEY,
-            secret: process.env.LBANK_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.LBANK_API_KEY_2,
-            secret: process.env.LBANK_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.LBANK_API_KEY_READ_ONLY,
-            secret: process.env.LBANK_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.lbank,
-      },
+      { name: 'bybit', class: (ccxt as any).pro.bybit, defaultType: 'spot' },
+      { name: 'lbank', class: (ccxt as any).pro.lbank, defaultType: 'spot' },
       {
         name: 'bitmart',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.BITMART_API_KEY,
-            secret: process.env.BITMART_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.BITMART_API_KEY_2,
-            secret: process.env.BITMART_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.BITMART_API_KEY_READ_ONLY,
-            secret: process.env.BITMART_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.bitmart,
+        class: (ccxt as any).pro.bitmart,
+        defaultType: 'spot',
       },
-      {
-        name: 'bigone',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.BIGONE_API_KEY,
-            secret: process.env.BIGONE_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.BIGONE_API_KEY_2,
-            secret: process.env.BIGONE_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.BIGONE_API_KEY_READ_ONLY,
-            secret: process.env.BIGONE_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.bigone,
-      },
-      {
-        name: 'coinlist',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.COINLIST_API_KEY,
-            secret: process.env.COINLIST_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.COINLIST_API_KEY_2,
-            secret: process.env.COINLIST_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.COINLIST_API_KEY_READ_ONLY,
-            secret: process.env.COINLIST_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.coinlist,
-      },
-      {
-        name: 'p2b',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.P2B_API_KEY,
-            secret: process.env.P2B_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.P2B_API_KEY_2,
-            secret: process.env.P2B_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.P2B_API_KEY_READ_ONLY,
-            secret: process.env.P2B_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.p2b,
-      },
-      {
-        name: 'probit',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.PROBIT_API_KEY,
-            secret: process.env.PROBIT_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.PROBIT_API_KEY_2,
-            secret: process.env.PROBIT_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.PROBIT_API_KEY_READ_ONLY,
-            secret: process.env.PROBIT_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.pro.probit,
-      },
+      { name: 'bigone', class: (ccxt as any).bigone, defaultType: 'spot' },
+      { name: 'p2b', class: (ccxt as any).pro.p2b, defaultType: 'spot' },
+      { name: 'probit', class: (ccxt as any).pro.probit, defaultType: 'spot' },
       {
         name: 'digifinex',
-        accounts: [
-          {
-            label: 'default',
-            apiKey: process.env.DIGIFINEX_API_KEY,
-            secret: process.env.DIGIFINEX_SECRET,
-          },
-          {
-            label: 'account2',
-            apiKey: process.env.DIGIFINEX_API_KEY_2,
-            secret: process.env.DIGIFINEX_SECRET_2,
-          },
-          {
-            label: 'read-only',
-            apiKey: process.env.DIGIFINEX_API_KEY_READ_ONLY,
-            secret: process.env.DIGIFINEX_SECRET_READ_ONLY,
-          },
-        ],
-        class: ccxt.digifinex,
+        class: (ccxt as any).digifinex,
+        defaultType: 'spot',
+      },
+
+      // ✅ Hyperliquid + testnet (sandbox mode)
+      // Prefer CCXT Pro if present, fallback to REST class if not.
+      {
+        name: 'hyperliquid',
+        class: (ccxt as any).pro?.hyperliquid ?? (ccxt as any).hyperliquid,
+        defaultType: 'swap',
       },
     ];
 
     await Promise.all(
-      exchangeConfigs.map(async (config) => {
-        const exchangeMap = new Map<string, ccxt.Exchange>();
-        await Promise.all(
-          config.accounts.map(async (account) => {
-            try {
-              if (!account.apiKey || !account.secret) {
-                this.logger.warn(
-                  `API key or secret for ${config.name} ${account.label} is missing. Skipping initialization.`,
-                );
-                return;
-              }
+      exchangeConfigs.map(async (cfg) => {
+        const names = [cfg.name, `${cfg.name}-testnet`];
 
-              const exchange = new config.class({
-                apiKey: account.apiKey,
-                secret: account.secret,
-              });
+        for (const rawName of names) {
+          const exchangeMap = new Map<string, ccxt.Exchange>();
+          const isTestnet = rawName.endsWith('-testnet');
+          const exName = this.makeExchangeId(cfg.name, isTestnet);
 
-              // Load markets
-              await exchange.loadMarkets();
+          const accounts = [
+            {
+              label: 'default',
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD`,
+              ), // OKX etc.
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS`,
+              ), // Hyperliquid :contentReference[oaicite:4]{index=4}
+            },
+            {
+              label: 'account2',
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY_2`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET_2`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD_2`,
+              ),
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS_2`,
+              ), // Hyperliquid
+            },
+            {
+              label: 'read-only',
+              apiKey: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY_READ_ONLY`,
+              ),
+              secret: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET_READ_ONLY`,
+              ),
+              password: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD_READ_ONLY`,
+              ),
+              walletAddress: this.envTrim(
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS_READ_ONLY`,
+              ), // Hyperliquid
+            },
+          ];
 
-              // Call signIn only for ProBit accounts
-              if (config.name === 'probit' && exchange.has['signIn']) {
-                try {
-                  await exchange.signIn();
-                  this.logger.log(
-                    `${config.name} ${account.label} signed in successfully.`,
-                  );
-                } catch (error) {
-                  this.logger.error(
-                    `ProBit ${account.label} sign-in failed: ${error.message}`,
-                  );
+          await Promise.all(
+            accounts.map(async (acct) => {
+              try {
+                if (!acct.apiKey || !acct.secret) {
+                  return;
                 }
+
+                const exchange = this.buildExchangeInstance(cfg.class, {
+                  apiKey: acct.apiKey,
+                  secret: acct.secret,
+                  password: acct.password,
+                  walletAddress: acct.walletAddress,
+                  defaultType: cfg.defaultType ?? 'spot',
+                });
+
+                // Testnet routing where supported
+                if (
+                  isTestnet &&
+                  typeof (exchange as any).setSandboxMode === 'function'
+                ) {
+                  (exchange as any).setSandboxMode(true);
+                  this.logger.log(`[${exName}:${acct.label}] sandbox mode ON.`); // :contentReference[oaicite:5]{index=5}
+                }
+
+                // Preload markets to configure symbol routing/types
+                await exchange.loadMarkets();
+
+                // ProBit requires signIn for private endpoints
+                if (cfg.name === 'probit' && exchange.has?.signIn) {
+                  try {
+                    await (exchange as any).signIn();
+                    this.logger.log(`[${exName}:${acct.label}] signIn OK.`);
+                  } catch (error: any) {
+                    this.logger.error(
+                      `[${exName}:${acct.label}] signIn failed: ${
+                        error?.message ?? error
+                      }`,
+                    );
+                  }
+                }
+
+                // Diagnostics (time skew + auth smoke test)
+                await this.postInitDiagnostics(exName, acct.label, exchange);
+
+                exchangeMap.set(acct.label, exchange);
+                if (acct.label === 'default') {
+                  this.defaultAccounts.set(exName, exchange);
+                }
+
+                this.logger.log(`[${exName}:${acct.label}] initialized.`);
+              } catch (error: any) {
+                this.logger.error(
+                  `Failed to initialize [${exName}:${acct.label}]: ${
+                    error?.message ?? error
+                  }`,
+                );
               }
+            }),
+          );
 
-              // Save the initialized exchange
-              exchangeMap.set(account.label, exchange);
-              this.logger.log(
-                `${config.name} ${account.label} initialized successfully.`,
-              );
-
-              // Save the default account reference
-              if (account.label === 'default') {
-                this.defaultAccounts.set(config.name, exchange);
-              }
-            } catch (error) {
-              this.logger.error(
-                `Failed to initialize ${config.name} ${account.label}: ${error.message}`,
-              );
-            }
-          }),
-        );
-
-        this.exchanges.set(config.name, exchangeMap);
+          this.exchanges.set(exName, exchangeMap);
+        }
       }),
     );
   }
 
+  /** ---------- keep-alive ---------- */
+
   private startKeepAlive() {
     const intervalMs = 5 * 60 * 1000; // 5 minutes
-  
+
     setInterval(async () => {
       this.logger.log('Running keep-alive checks for all exchanges...');
       for (const [exchangeName, accounts] of this.exchanges) {
-        // Only do special logic for ProBit
-        if (exchangeName === 'probit') {
+        // ProBit token expires; keep it fresh but avoid resetting open orders
+        if (exchangeName.startsWith('probit')) {
           for (const [label, exchange] of accounts) {
             try {
-              // If the exchange does not have signIn, skip
-              if (!exchange.has['signIn']) {
-                this.logger.log(
-                  `ProBit ${label} does not support signIn. Skipping...`,
-                );
+              if (!exchange.has?.signIn) {
+                this.logger.log(`ProBit ${label} has no signIn. Skipping...`);
                 continue;
               }
-  
-              // Check for open orders
+
               const openOrders = await exchange.fetchOpenOrders();
               if (openOrders.length > 0) {
                 this.logger.log(
-                  `ProBit ${label} has open orders. Skipping signIn to avoid resetting them.`,
+                  `ProBit ${label} has open orders → skipping signIn to avoid resets.`,
                 );
-                continue; // Do not signIn
+                continue;
               }
-  
-              // Otherwise, signIn if no open orders
-              await exchange.signIn();
+
+              await (exchange as any).signIn();
               this.logger.log(`ProBit ${label} re-signed in successfully.`);
-            } catch (error) {
+            } catch (error: any) {
               this.logger.error(
-                `ProBit ${label} keep-alive signIn failed: ${error.message}`,
+                `ProBit ${label} keep-alive signIn failed: ${
+                  error?.message ?? error
+                }`,
               );
             }
           }
         }
-        // other exchange keep-alive logic if needed...
       }
     }, intervalMs);
   }
 
-  
+  /** ---------- getters ---------- */
 
   getExchange(exchangeName: string, label: string = 'default'): ccxt.Exchange {
     const exchangeMap = this.exchanges.get(exchangeName);
@@ -444,13 +408,9 @@ export class ExchangeInitService {
     }
     return exchange;
   }
-  /**
-   * Function to get the deposit address for a specific token on a specific network
-   * @param exchangeName - The name of the exchange
-   * @param tokenSymbol - The symbol of the token (e.g., 'USDT')
-   * @param network - The network (e.g., 'ERC20', 'BSC')
-   * @param label - Optional account label
-   */
+
+  /** ---------- helpers ---------- */
+
   async getDepositAddress(
     exchangeName: string,
     tokenSymbol: string,
@@ -459,7 +419,7 @@ export class ExchangeInitService {
   ): Promise<string> {
     try {
       const exchange = this.getExchange(exchangeName, label);
-      if (!exchange.has['fetchDepositAddress']) {
+      if (!exchange.has?.fetchDepositAddress) {
         throw new InternalServerErrorException(
           `Exchange ${exchangeName} does not support fetching deposit addresses.`,
         );
@@ -478,9 +438,11 @@ export class ExchangeInitService {
       }
 
       return addressInfo.address;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
-        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error.message}`,
+        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${
+          error?.message ?? error
+        }`,
       );
       throw new InternalServerErrorException('Failed to get deposit address.');
     }
