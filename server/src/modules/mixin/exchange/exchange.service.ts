@@ -88,7 +88,7 @@
 
 import * as ccxt from 'ccxt';
 import BigNumber from 'bignumber.js';
-import { Cron } from '@nestjs/schedule';
+// import { Cron } from '@nestjs/schedule';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {

@@ -1,12 +1,12 @@
-import { Connection } from '@solana/web3.js';
+// import { Connection } from '@solana/web3.js';
 import { QuoteResponse } from '@jup-ag/api';
 
 export interface VolumeStrategyConfig {
   userId: string;
   clientId: string;
   rpcUrl: string;
-  inputMint: string;   // SPL mint address
-  outputMint: string;  // SPL mint address
+  inputMint: string; // SPL mint address
+  outputMint: string; // SPL mint address
   baseTradeAmount: number; // atomic units of input mint
   numTrades: number;
   baseIntervalTime: number; // seconds
@@ -34,7 +34,7 @@ export interface TradeData {
   buyQuote: QuoteResponse;
   sellQuote: QuoteResponse;
   fees: number;
-  buyerWallet: string;   // base58
-  sellerWallet: string;  // base58
+  buyerWallet: string; // base58
+  sellerWallet: string; // base58
   pnl?: number;
 }

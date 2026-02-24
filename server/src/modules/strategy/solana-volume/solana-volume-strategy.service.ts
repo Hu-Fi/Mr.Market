@@ -1,13 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Connection, PublicKey, VersionedTransaction, Keypair } from '@solana/web3.js';
+import {
+  Connection,
+  PublicKey,
+  VersionedTransaction,
+  Keypair,
+} from '@solana/web3.js';
 import { Wallet } from '@coral-xyz/anchor';
 import { createJupiterApiClient, QuoteResponse } from '@jup-ag/api';
 import * as fs from 'fs';
 import { getMint } from '@solana/spl-token';
 import bs58 from 'bs58'; // npm i bs58
 
-import { VolumeStrategyConfig, StrategyInstance, TradeData } from './solana-volume.types';
+import {
+  VolumeStrategyConfig,
+  StrategyInstance,
+  TradeData,
+} from './solana-volume.types';
 import { parsePrivateKeyToUint8Array } from 'src/common/helpers/key-utils';
 
 type JupiterClient = ReturnType<typeof createJupiterApiClient>;
@@ -30,17 +39,23 @@ export class SolanaVolumeStrategyService {
   }
 
   /** Start a volume generation strategy */
-  async startVolumeStrategy(config: VolumeStrategyConfig): Promise<{ strategyKey: string }> {
+  async startVolumeStrategy(
+    config: VolumeStrategyConfig,
+  ): Promise<{ strategyKey: string }> {
     const strategyKey = this.createStrategyKey(config.userId, config.clientId);
     this.logger.log(`startVolumeStrategy() called -> ${strategyKey}`);
 
     if (this.strategyInstances.has(strategyKey)) {
-      this.logger.warn(`Strategy ${strategyKey} already exists; returning existing key`);
+      this.logger.warn(
+        `Strategy ${strategyKey} already exists; returning existing key`,
+      );
       return { strategyKey };
     }
 
     try {
-      this.logger.debug(`Creating Connection to ${config.rpcUrl} with commitment 'confirmed'`);
+      this.logger.debug(
+        `Creating Connection to ${config.rpcUrl} with commitment 'confirmed'`,
+      );
       const connection = new Connection(config.rpcUrl, 'confirmed');
 
       this.logger.debug(`Creating Jupiter API client`);
@@ -80,7 +95,9 @@ export class SolanaVolumeStrategyService {
       return { strategyKey };
     } catch (error: any) {
       this.logger.error(
-        `startVolumeStrategy failed for ${strategyKey}: ${error?.message ?? error}`,
+        `startVolumeStrategy failed for ${strategyKey}: ${
+          error?.message ?? error
+        }`,
         error?.stack,
       );
       this.cleanupStrategy(strategyKey);
@@ -95,7 +112,9 @@ export class SolanaVolumeStrategyService {
 
     const instance = this.strategyInstances.get(strategyKey);
     if (!instance) {
-      this.logger.warn(`stopVolumeStrategy: instance not found for ${strategyKey}`);
+      this.logger.warn(
+        `stopVolumeStrategy: instance not found for ${strategyKey}`,
+      );
       return;
     }
 
@@ -113,11 +132,15 @@ export class SolanaVolumeStrategyService {
     this.logger.debug(`executeTradingCycle() ENTER ${strategyKey}`);
     const instance = this.strategyInstances.get(strategyKey);
     if (!instance) {
-      this.logger.warn(`executeTradingCycle: instance not found for ${strategyKey}`);
+      this.logger.warn(
+        `executeTradingCycle: instance not found for ${strategyKey}`,
+      );
       return;
     }
     if (!instance.isRunning) {
-      this.logger.warn(`executeTradingCycle: ${strategyKey} is not running (exit)`);
+      this.logger.warn(
+        `executeTradingCycle: ${strategyKey} is not running (exit)`,
+      );
       return;
     }
 
@@ -125,15 +148,18 @@ export class SolanaVolumeStrategyService {
       this.logger.log(
         `Trade count reached (${instance.tradesExecuted}/${instance.config.numTrades}) for ${strategyKey}, stopping...`,
       );
-      await this.stopVolumeStrategy(instance.config.userId, instance.config.clientId);
+      await this.stopVolumeStrategy(
+        instance.config.userId,
+        instance.config.clientId,
+      );
       return;
     }
 
     try {
       this.logger.debug(
-        `Executing trade #${instance.tradesExecuted + 1} for ${strategyKey}; buyer=${
-          instance.useWalletAAsBuyer ? 'A' : 'B'
-        }`,
+        `Executing trade #${
+          instance.tradesExecuted + 1
+        } for ${strategyKey}; buyer=${instance.useWalletAAsBuyer ? 'A' : 'B'}`,
       );
       await this.executeTrade(strategyKey);
 
@@ -142,7 +168,9 @@ export class SolanaVolumeStrategyService {
       instance.consecutiveErrors = 0;
 
       this.logger.log(
-        `Trade #${instance.tradesExecuted} complete for ${strategyKey}; next buyer will be ${
+        `Trade #${
+          instance.tradesExecuted
+        } complete for ${strategyKey}; next buyer will be ${
           instance.useWalletAAsBuyer ? 'A' : 'B'
         }`,
       );
@@ -153,20 +181,29 @@ export class SolanaVolumeStrategyService {
           `Loss threshold check for ${strategyKey}: shouldStop=${shouldStop}`,
         );
         if (shouldStop) {
-          this.logger.warn(`Max loss threshold hit for ${strategyKey}, stopping strategy`);
-          await this.stopVolumeStrategy(instance.config.userId, instance.config.clientId);
+          this.logger.warn(
+            `Max loss threshold hit for ${strategyKey}, stopping strategy`,
+          );
+          await this.stopVolumeStrategy(
+            instance.config.userId,
+            instance.config.clientId,
+          );
           return;
         }
       }
 
-      const nextDelay = this.calculateNextTradeDelay(instance.config.baseIntervalTime);
+      const nextDelay = this.calculateNextTradeDelay(
+        instance.config.baseIntervalTime,
+      );
       this.logger.log(
         `Scheduling next trade for ${strategyKey} in ${nextDelay} ms (base=${instance.config.baseIntervalTime}s)`,
       );
       instance.timeoutId = setTimeout(() => {
         this.executeTradingCycle(strategyKey).catch((err) =>
           this.logger.error(
-            `executeTradingCycle error (scheduled) for ${strategyKey}: ${err?.message ?? err}`,
+            `executeTradingCycle error (scheduled) for ${strategyKey}: ${
+              err?.message ?? err
+            }`,
             err?.stack,
           ),
         );
@@ -178,14 +215,18 @@ export class SolanaVolumeStrategyService {
       const retryDelay = Math.floor(base * factor);
 
       this.logger.error(
-        `executeTradingCycle error for ${strategyKey} (consecutiveErrors=${instance.consecutiveErrors}) -> retry in ${retryDelay} ms: ${error?.message ?? error}`,
+        `executeTradingCycle error for ${strategyKey} (consecutiveErrors=${
+          instance.consecutiveErrors
+        }) -> retry in ${retryDelay} ms: ${error?.message ?? error}`,
         error?.stack,
       );
 
       instance.timeoutId = setTimeout(() => {
         this.executeTradingCycle(strategyKey).catch((err) =>
           this.logger.error(
-            `executeTradingCycle error (retry) for ${strategyKey}: ${err?.message ?? err}`,
+            `executeTradingCycle error (retry) for ${strategyKey}: ${
+              err?.message ?? err
+            }`,
             err?.stack,
           ),
         );
@@ -201,7 +242,8 @@ export class SolanaVolumeStrategyService {
     const { config, useWalletAAsBuyer } = instance;
     const jupiter = this.jupiterInstances.get(strategyKey);
     const wallets = this.walletPairs.get(strategyKey);
-    if (!jupiter || !wallets) throw new Error(`Jupiter or wallets not ready for ${strategyKey}`);
+    if (!jupiter || !wallets)
+      throw new Error(`Jupiter or wallets not ready for ${strategyKey}`);
 
     const buyerWallet = useWalletAAsBuyer ? wallets.walletA : wallets.walletB;
     const sellerWallet = useWalletAAsBuyer ? wallets.walletB : wallets.walletA;
@@ -220,7 +262,9 @@ export class SolanaVolumeStrategyService {
     if (!buyQuote) throw new Error('No buy quote available');
 
     this.logger.debug(
-      `Executing BUY swap for ${strategyKey} as ${buyerWallet.publicKey.toBase58()} | outAmount=${buyQuote.outAmount}`,
+      `Executing BUY swap for ${strategyKey} as ${buyerWallet.publicKey.toBase58()} | outAmount=${
+        buyQuote.outAmount
+      }`,
     );
     const buySig = await this.executeSwap(strategyKey, buyerWallet, buyQuote);
     this.logger.log(`BUY tx sent for ${strategyKey}: sig=${buySig}`);
@@ -241,9 +285,15 @@ export class SolanaVolumeStrategyService {
     if (!sellQuote) throw new Error('No sell quote available');
 
     this.logger.debug(
-      `Executing SELL swap for ${strategyKey} as ${sellerWallet.publicKey.toBase58()} | outAmount=${sellQuote.outAmount}`,
+      `Executing SELL swap for ${strategyKey} as ${sellerWallet.publicKey.toBase58()} | outAmount=${
+        sellQuote.outAmount
+      }`,
     );
-    const sellSig = await this.executeSwap(strategyKey, sellerWallet, sellQuote);
+    const sellSig = await this.executeSwap(
+      strategyKey,
+      sellerWallet,
+      sellQuote,
+    );
     this.logger.log(`SELL tx sent for ${strategyKey}: sig=${sellSig}`);
 
     await this.recordTrade(
@@ -264,10 +314,13 @@ export class SolanaVolumeStrategyService {
   ): Promise<string> {
     const connection = this.connections.get(strategyKey);
     const jupiter = this.jupiterInstances.get(strategyKey);
-    if (!connection || !jupiter) throw new Error(`Missing connection or jupiter for ${strategyKey}`);
+    if (!connection || !jupiter)
+      throw new Error(`Missing connection or jupiter for ${strategyKey}`);
 
     this.logger.debug(
-      `swapPost -> user=${wallet.publicKey.toBase58()} in=${(quote as any)?.inAmount} out=${(quote as any)?.outAmount}`,
+      `swapPost -> user=${wallet.publicKey.toBase58()} in=${
+        (quote as any)?.inAmount
+      } out=${(quote as any)?.outAmount}`,
     );
 
     const swapResult = await jupiter.swapPost({
@@ -278,8 +331,11 @@ export class SolanaVolumeStrategyService {
       },
     });
 
-    const swapTransaction = (swapResult as any)?.swapTransaction as string | undefined;
-    if (!swapTransaction) throw new Error('swapPost returned no swapTransaction');
+    const swapTransaction = (swapResult as any)?.swapTransaction as
+      | string
+      | undefined;
+    if (!swapTransaction)
+      throw new Error('swapPost returned no swapTransaction');
 
     this.logger.debug(`Deserializing and signing tx for ${strategyKey}`);
     const txBytes = new Uint8Array(Buffer.from(swapTransaction, 'base64'));
@@ -290,10 +346,13 @@ export class SolanaVolumeStrategyService {
     this.logger.debug(
       `Sending raw tx for ${strategyKey}; lastValidBlockHeight=${latestBlockhash.lastValidBlockHeight}`,
     );
-    const signature = await connection.sendRawTransaction(transaction.serialize(), {
-      skipPreflight: true,
-      maxRetries: 2,
-    });
+    const signature = await connection.sendRawTransaction(
+      transaction.serialize(),
+      {
+        skipPreflight: true,
+        maxRetries: 2,
+      },
+    );
 
     this.logger.debug(`Confirming tx ${signature} for ${strategyKey}`);
     const confirmation = await connection.confirmTransaction({
@@ -304,9 +363,13 @@ export class SolanaVolumeStrategyService {
 
     if (confirmation.value.err) {
       this.logger.error(
-        `Transaction failed for ${strategyKey}: ${JSON.stringify(confirmation.value.err)}`,
+        `Transaction failed for ${strategyKey}: ${JSON.stringify(
+          confirmation.value.err,
+        )}`,
       );
-      throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
+      throw new Error(
+        `Transaction failed: ${JSON.stringify(confirmation.value.err)}`,
+      );
     }
 
     this.logger.debug(`Transaction confirmed for ${strategyKey}: ${signature}`);
@@ -319,7 +382,9 @@ export class SolanaVolumeStrategyService {
     const connection = this.connections.get(strategyKey);
     const wallets = this.walletPairs.get(strategyKey);
     if (!instance || !connection || !wallets) {
-      this.logger.warn(`checkBalances aborted: missing instance/connection/wallets for ${strategyKey}`);
+      this.logger.warn(
+        `checkBalances aborted: missing instance/connection/wallets for ${strategyKey}`,
+      );
       return;
     }
 
@@ -340,16 +405,26 @@ export class SolanaVolumeStrategyService {
     const instance = this.strategyInstances.get(strategyKey);
     const connection = this.connections.get(strategyKey);
     const wallets = this.walletPairs.get(strategyKey);
-    if (!instance || !connection || !wallets || !instance.config.maxLossThreshold) {
+    if (
+      !instance ||
+      !connection ||
+      !wallets ||
+      !instance.config.maxLossThreshold
+    ) {
       return false;
     }
 
-    const currentBalanceA = await connection.getBalance(wallets.walletA.publicKey);
-    const currentBalanceB = await connection.getBalance(wallets.walletB.publicKey);
+    const currentBalanceA = await connection.getBalance(
+      wallets.walletA.publicKey,
+    );
+    const currentBalanceB = await connection.getBalance(
+      wallets.walletB.publicKey,
+    );
 
     const totalCurrent = currentBalanceA + currentBalanceB;
     const totalInitial =
-      (instance.initialBalances?.walletA ?? 0) + (instance.initialBalances?.walletB ?? 0);
+      (instance.initialBalances?.walletA ?? 0) +
+      (instance.initialBalances?.walletB ?? 0);
     const currentLoss = (totalInitial - totalCurrent) / 1e9; // SOL
 
     this.logger.debug(
@@ -411,7 +486,11 @@ export class SolanaVolumeStrategyService {
         existing = JSON.parse(fs.readFileSync(filename, 'utf8'));
       }
     } catch (e: any) {
-      this.logger.error(`Failed reading existing trade data file "${filename}": ${e?.message ?? e}`);
+      this.logger.error(
+        `Failed reading existing trade data file "${filename}": ${
+          e?.message ?? e
+        }`,
+      );
       existing = [];
     }
     existing.push(tradeData);
@@ -419,7 +498,9 @@ export class SolanaVolumeStrategyService {
       fs.writeFileSync(filename, JSON.stringify(existing, null, 2));
       this.logger.debug(`Trade data appended to ${filename}`);
     } catch (e: any) {
-      this.logger.error(`Failed writing trade data file "${filename}": ${e?.message ?? e}`);
+      this.logger.error(
+        `Failed writing trade data file "${filename}": ${e?.message ?? e}`,
+      );
     }
   }
 
@@ -454,15 +535,23 @@ export class SolanaVolumeStrategyService {
     return running;
   }
 
-  getStrategyStatus(userId: string, clientId: string): Omit<StrategyInstance, 'config'> | undefined {
+  getStrategyStatus(
+    userId: string,
+    clientId: string,
+  ): Omit<StrategyInstance, 'config'> | undefined {
     const strategyKey = this.createStrategyKey(userId, clientId);
     const inst = this.strategyInstances.get(strategyKey);
     if (!inst) {
       this.logger.warn(`getStrategyStatus: not found ${strategyKey}`);
       return undefined;
     }
-    const { isRunning, tradesExecuted, useWalletAAsBuyer, initialBalances, consecutiveErrors } =
-      inst;
+    const {
+      isRunning,
+      tradesExecuted,
+      useWalletAAsBuyer,
+      initialBalances,
+      consecutiveErrors,
+    } = inst;
     this.logger.debug(
       `getStrategyStatus(${strategyKey}) -> running=${isRunning} trades=${tradesExecuted} nextBuyer=${
         useWalletAAsBuyer ? 'A' : 'B'
@@ -490,8 +579,14 @@ export class SolanaVolumeStrategyService {
       throw new Error(msg);
     }
 
-    const inMint = await getMint(connection, new PublicKey(instance.config.inputMint));
-    const outMint = await getMint(connection, new PublicKey(instance.config.outputMint));
+    const inMint = await getMint(
+      connection,
+      new PublicKey(instance.config.inputMint),
+    );
+    const outMint = await getMint(
+      connection,
+      new PublicKey(instance.config.outputMint),
+    );
 
     const inDecimals = inMint.decimals;
     const outDecimals = outMint.decimals;
@@ -514,7 +609,9 @@ export class SolanaVolumeStrategyService {
 
     const outAtomic = parseInt(String(quote.outAmount), 10);
     const price = outAtomic / Math.pow(10, outDecimals);
-    this.logger.debug(`getCurrentPrice: outAtomic=${outAtomic} -> price=${price}`);
+    this.logger.debug(
+      `getCurrentPrice: outAtomic=${outAtomic} -> price=${price}`,
+    );
     return price;
   }
 
@@ -533,20 +630,28 @@ export class SolanaVolumeStrategyService {
 
   /** Load wallets from env vars SOLANA_PRIVATE_KEY_1 / SOLANA_PRIVATE_KEY_2 */
   private loadWalletsFromEnv(): { walletA: Wallet; walletB: Wallet } {
-    const k1 =
-      (this.config.get<string>('SOLANA_PRIVATE_KEY_1') ?? process.env.SOLANA_PRIVATE_KEY_1)?.trim();
-    const k2 =
-      (this.config.get<string>('SOLANA_PRIVATE_KEY_2') ?? process.env.SOLANA_PRIVATE_KEY_2)?.trim();
+    const k1 = (
+      this.config.get<string>('SOLANA_PRIVATE_KEY_1') ??
+      process.env.SOLANA_PRIVATE_KEY_1
+    )?.trim();
+    const k2 = (
+      this.config.get<string>('SOLANA_PRIVATE_KEY_2') ??
+      process.env.SOLANA_PRIVATE_KEY_2
+    )?.trim();
 
     if (!k1 || !k2) {
-      throw new Error('Missing SOLANA_PRIVATE_KEY_1 and/or SOLANA_PRIVATE_KEY_2 in environment');
+      throw new Error(
+        'Missing SOLANA_PRIVATE_KEY_1 and/or SOLANA_PRIVATE_KEY_2 in environment',
+      );
     }
 
     const kp1 = this.keypairFromAny(k1, 'SOLANA_PRIVATE_KEY_1');
     const kp2 = this.keypairFromAny(k2, 'SOLANA_PRIVATE_KEY_2');
 
     this.logger.debug(
-      `Parsed keypairs: kp1.len=${kp1.secretKey?.length ?? 'n/a'} kp2.len=${kp2.secretKey?.length ?? 'n/a'}`,
+      `Parsed keypairs: kp1.len=${kp1.secretKey?.length ?? 'n/a'} kp2.len=${
+        kp2.secretKey?.length ?? 'n/a'
+      }`,
     );
 
     return { walletA: new Wallet(kp1), walletB: new Wallet(kp2) };
@@ -568,7 +673,9 @@ export class SolanaVolumeStrategyService {
           bytes = Uint8Array.from(arr);
           parsedVia = 'json-array';
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     // 2) base64
@@ -579,11 +686,17 @@ export class SolanaVolumeStrategyService {
           bytes = new Uint8Array(b);
           parsedVia = 'base64';
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     // 3) hex (64 hex chars = 32 bytes, 128 hex chars = 64 bytes)
-    if (!bytes && /^[0-9a-fA-F]+$/.test(s) && (s.length === 64 || s.length === 128)) {
+    if (
+      !bytes &&
+      /^[0-9a-fA-F]+$/.test(s) &&
+      (s.length === 64 || s.length === 128)
+    ) {
       const b = Buffer.from(s, 'hex');
       bytes = new Uint8Array(b);
       parsedVia = 'hex';
@@ -597,7 +710,9 @@ export class SolanaVolumeStrategyService {
           bytes = b;
           parsedVia = 'base58';
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     // 5) fallback to your helper, if present
@@ -608,7 +723,9 @@ export class SolanaVolumeStrategyService {
           bytes = b;
           parsedVia = 'helper';
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     if (!bytes) {
@@ -620,12 +737,18 @@ export class SolanaVolumeStrategyService {
       );
     }
 
-    this.logger.debug(`${label}: parsed via=${parsedVia} length=${bytes.length} bytes`);
+    this.logger.debug(
+      `${label}: parsed via=${parsedVia} length=${bytes.length} bytes`,
+    );
 
     if (bytes.length === 64) return Keypair.fromSecretKey(bytes);
     if (bytes.length === 32) return Keypair.fromSeed(bytes);
 
-    this.logger.error(`${label}: invalid key length ${bytes.length}. Expected 32 or 64 bytes.`);
-    throw new Error(`${label}: invalid key length ${bytes.length}. Expected 32 or 64 bytes.`);
+    this.logger.error(
+      `${label}: invalid key length ${bytes.length}. Expected 32 or 64 bytes.`,
+    );
+    throw new Error(
+      `${label}: invalid key length ${bytes.length}. Expected 32 or 64 bytes.`,
+    );
   }
 }

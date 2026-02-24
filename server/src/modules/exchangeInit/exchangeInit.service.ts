@@ -133,7 +133,9 @@ export class ExchangeInitService {
           `[${exName}:${label}] request time issue → clock skew. Raw: ${msg}`,
         );
       } else {
-        this.logger.error(`[${exName}:${label}] private-call check failed: ${msg}`);
+        this.logger.error(
+          `[${exName}:${label}] private-call check failed: ${msg}`,
+        );
       }
     }
   }
@@ -148,18 +150,34 @@ export class ExchangeInitService {
       { name: 'gate', class: (ccxt as any).pro.gate, defaultType: 'spot' },
       { name: 'mexc', class: (ccxt as any).pro.mexc, defaultType: 'spot' },
       { name: 'xt', class: (ccxt as any).pro.xt, defaultType: 'spot' },
-      { name: 'binance', class: (ccxt as any).pro.binance, defaultType: 'spot' },
+      {
+        name: 'binance',
+        class: (ccxt as any).pro.binance,
+        defaultType: 'spot',
+      },
       { name: 'bybit', class: (ccxt as any).pro.bybit, defaultType: 'spot' },
       { name: 'lbank', class: (ccxt as any).pro.lbank, defaultType: 'spot' },
-      { name: 'bitmart', class: (ccxt as any).pro.bitmart, defaultType: 'spot' },
+      {
+        name: 'bitmart',
+        class: (ccxt as any).pro.bitmart,
+        defaultType: 'spot',
+      },
       { name: 'bigone', class: (ccxt as any).bigone, defaultType: 'spot' },
       { name: 'p2b', class: (ccxt as any).pro.p2b, defaultType: 'spot' },
       { name: 'probit', class: (ccxt as any).pro.probit, defaultType: 'spot' },
-      { name: 'digifinex', class: (ccxt as any).digifinex, defaultType: 'spot' },
+      {
+        name: 'digifinex',
+        class: (ccxt as any).digifinex,
+        defaultType: 'spot',
+      },
 
       // ✅ Hyperliquid + testnet (sandbox mode)
       // Prefer CCXT Pro if present, fallback to REST class if not.
-      { name: 'hyperliquid', class: ((ccxt as any).pro?.hyperliquid ?? (ccxt as any).hyperliquid), defaultType: 'swap' },
+      {
+        name: 'hyperliquid',
+        class: (ccxt as any).pro?.hyperliquid ?? (ccxt as any).hyperliquid,
+        defaultType: 'swap',
+      },
     ];
 
     await Promise.all(
@@ -175,46 +193,70 @@ export class ExchangeInitService {
             {
               label: 'default',
               apiKey: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY`,
               ),
               secret: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET`,
               ),
               password: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD`,
               ), // OKX etc.
               walletAddress: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS`,
               ), // Hyperliquid :contentReference[oaicite:4]{index=4}
             },
             {
               label: 'account2',
               apiKey: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY_2`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY_2`,
               ),
               secret: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET_2`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET_2`,
               ),
               password: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_2`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD_2`,
               ),
               walletAddress: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS_2`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS_2`,
               ), // Hyperliquid
             },
             {
               label: 'read-only',
               apiKey: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_API_KEY_READ_ONLY`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_API_KEY_READ_ONLY`,
               ),
               secret: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_SECRET_READ_ONLY`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_SECRET_READ_ONLY`,
               ),
               password: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_PASSWORD_READ_ONLY`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_PASSWORD_READ_ONLY`,
               ),
               walletAddress: this.envTrim(
-                `${cfg.name.toUpperCase()}${isTestnet ? '_TESTNET' : ''}_WALLET_ADDRESS_READ_ONLY`,
+                `${cfg.name.toUpperCase()}${
+                  isTestnet ? '_TESTNET' : ''
+                }_WALLET_ADDRESS_READ_ONLY`,
               ), // Hyperliquid
             },
           ];
@@ -253,7 +295,9 @@ export class ExchangeInitService {
                     this.logger.log(`[${exName}:${acct.label}] signIn OK.`);
                   } catch (error: any) {
                     this.logger.error(
-                      `[${exName}:${acct.label}] signIn failed: ${error?.message ?? error}`,
+                      `[${exName}:${acct.label}] signIn failed: ${
+                        error?.message ?? error
+                      }`,
                     );
                   }
                 }
@@ -269,7 +313,9 @@ export class ExchangeInitService {
                 this.logger.log(`[${exName}:${acct.label}] initialized.`);
               } catch (error: any) {
                 this.logger.error(
-                  `Failed to initialize [${exName}:${acct.label}]: ${error?.message ?? error}`,
+                  `Failed to initialize [${exName}:${acct.label}]: ${
+                    error?.message ?? error
+                  }`,
                 );
               }
             }),
@@ -310,7 +356,9 @@ export class ExchangeInitService {
               this.logger.log(`ProBit ${label} re-signed in successfully.`);
             } catch (error: any) {
               this.logger.error(
-                `ProBit ${label} keep-alive signIn failed: ${error?.message ?? error}`,
+                `ProBit ${label} keep-alive signIn failed: ${
+                  error?.message ?? error
+                }`,
               );
             }
           }
@@ -378,7 +426,10 @@ export class ExchangeInitService {
       }
 
       const params = network ? { network } : {};
-      const addressInfo = await exchange.fetchDepositAddress(tokenSymbol, params);
+      const addressInfo = await exchange.fetchDepositAddress(
+        tokenSymbol,
+        params,
+      );
 
       if (!addressInfo || !addressInfo.address) {
         throw new InternalServerErrorException(
@@ -389,7 +440,9 @@ export class ExchangeInitService {
       return addressInfo.address;
     } catch (error: any) {
       this.logger.error(
-        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${error?.message ?? error}`,
+        `Error fetching deposit address for ${tokenSymbol} on ${network} from ${exchangeName}: ${
+          error?.message ?? error
+        }`,
       );
       throw new InternalServerErrorException('Failed to get deposit address.');
     }

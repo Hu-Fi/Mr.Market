@@ -1,11 +1,19 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { SolanaVolumeStrategyService } from './solana-volume-strategy.service';
 import { StartVolumeDto } from './start-volume.dto';
 import { StopVolumeDto } from './stop-volume.dto';
 import { VolumeStrategyConfig } from './solana-volume.types';
-import { parsePrivateKeyToUint8Array } from 'src/common/helpers/key-utils';
+// import { parsePrivateKeyToUint8Array } from 'src/common/helpers/key-utils';
 
 @ApiTags('Solana Volume')
 @Controller('solana-volume')
@@ -48,7 +56,9 @@ export class SolanaVolumeStrategyController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Stop a running strategy' })
   @ApiBody({ type: StopVolumeDto })
-  @ApiOkResponse({ schema: { properties: { status: { type: 'string', example: 'stopped' } } } })
+  @ApiOkResponse({
+    schema: { properties: { status: { type: 'string', example: 'stopped' } } },
+  })
   async stop(@Body() dto: StopVolumeDto) {
     await this.svc.stopVolumeStrategy(dto.userId, dto.clientId);
     return { status: 'stopped' };
@@ -87,8 +97,16 @@ export class SolanaVolumeStrategyController {
 
   @Get('price')
   @ApiOperation({ summary: 'Get current price for the configured pair' })
-  @ApiOkResponse({ schema: { type: 'number', description: 'Price of 1 input token in output token units' } })
-  async price(@Query('userId') userId: string, @Query('clientId') clientId: string) {
+  @ApiOkResponse({
+    schema: {
+      type: 'number',
+      description: 'Price of 1 input token in output token units',
+    },
+  })
+  async price(
+    @Query('userId') userId: string,
+    @Query('clientId') clientId: string,
+  ) {
     const price = await this.svc.getCurrentPrice(userId, clientId);
     return price;
   }

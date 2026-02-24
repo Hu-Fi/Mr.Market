@@ -16,7 +16,10 @@ import {
 import { DexId } from 'src/defi/addresses';
 
 export class DexVolumeStrategyDto {
-  @ApiProperty({ description: 'User ID initiating the strategy', example: 'user_123' })
+  @ApiProperty({
+    description: 'User ID initiating the strategy',
+    example: 'user_123',
+  })
   @IsString()
   userId!: string;
 
@@ -40,21 +43,28 @@ export class DexVolumeStrategyDto {
   @IsPositive()
   chainId!: number;
 
-  @ApiProperty({ description: 'RPC URL for provider', example: 'https://mainnet.infura.io/v3/<key>' })
+  @ApiProperty({
+    description: 'RPC URL for provider',
+    example: 'https://mainnet.infura.io/v3/<key>',
+  })
   @IsString()
   rpcUrl!: string;
 
   @ApiProperty({
     description: 'Primary signer private key (0x-prefixed)',
-    example: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    example:
+      '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
   })
   @IsString()
-  @Matches(/^0x[0-9a-fA-F]{64}$/, { message: 'signerPk1 must be a 0x-prefixed 32-byte hex string' })
+  @Matches(/^0x[0-9a-fA-F]{64}$/, {
+    message: 'signerPk1 must be a 0x-prefixed 32-byte hex string',
+  })
   signerPk1!: string;
 
   @ApiPropertyOptional({
     description: 'Optional secondary signer private key (0x-prefixed)',
-    example: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    example:
+      '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
   })
   @IsOptional()
   @IsString()
@@ -63,11 +73,17 @@ export class DexVolumeStrategyDto {
   })
   signerPk2?: string;
 
-  @ApiProperty({ description: 'Token in (ERC-20 address)', example: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' })
+  @ApiProperty({
+    description: 'Token in (ERC-20 address)',
+    example: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  })
   @IsString()
   tokenIn!: string;
 
-  @ApiProperty({ description: 'Token out (ERC-20 address)', example: '0xdAC17F958D2ee523a2206206994597C13D831ec7' })
+  @ApiProperty({
+    description: 'Token out (ERC-20 address)',
+    example: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  })
   @IsString()
   tokenOut!: string;
 
@@ -102,7 +118,11 @@ export class DexVolumeStrategyDto {
   @Max(100)
   amountJitterPct?: number;
 
-  @ApiProperty({ description: 'How many cycles to run', example: 50, minimum: 1 })
+  @ApiProperty({
+    description: 'How many cycles to run',
+    example: 50,
+    minimum: 1,
+  })
   @Type(() => Number)
   @IsInt()
   @IsPositive()
@@ -166,7 +186,8 @@ export class DexVolumeStrategyDto {
   maxGasCostInQuote?: number;
 
   @ApiPropertyOptional({
-    description: 'Native gas token price in quote token (e.g., ETH priced in USDC)',
+    description:
+      'Native gas token price in quote token (e.g., ETH priced in USDC)',
     example: 3200.5,
     minimum: 0,
   })

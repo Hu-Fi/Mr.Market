@@ -50,7 +50,7 @@ import { PancakeV3Adapter } from 'src/defi/adapters/pancakeV3.adapter';
       IndicatorStrategyHistory,
     ]),
   ],
-  controllers: [StrategyController,DexVolumeController],
+  controllers: [StrategyController, DexVolumeController],
   providers: [
     StrategyService,
     StrategyUserService,
@@ -58,17 +58,17 @@ import { PancakeV3Adapter } from 'src/defi/adapters/pancakeV3.adapter';
     ExchangeInitService,
     AlpacaStratService,
     TimeIndicatorStrategyService,
-    DexVolumeStrategyService, 
-    DexAdapterRegistry, 
-    UniswapV3Adapter, 
-    PancakeV3Adapter
+    DexVolumeStrategyService,
+    DexAdapterRegistry,
+    UniswapV3Adapter,
+    PancakeV3Adapter,
   ],
   exports: [
     StrategyService,
     StrategyUserService,
     StrategyUserRepository,
     TimeIndicatorStrategyService,
-    DexVolumeStrategyService
+    DexVolumeStrategyService,
   ],
 })
 export class StrategyModule {}
