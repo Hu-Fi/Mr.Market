@@ -3,8 +3,7 @@ import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'; // Im
 import { AuthService } from 'src/modules/auth/auth.service';
 import { CustomLogger } from '../logger/logger.service';
 
-// Add @ApiTags to categorize the endpoint in Swagger
-@ApiTags('Auth')
+@ApiTags('Mixin')
 @Controller('auth')
 export class AuthController {
   private readonly logger = new CustomLogger(AuthController.name);

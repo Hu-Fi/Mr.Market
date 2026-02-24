@@ -17,7 +17,7 @@ import { TradeService } from './trade.service';
 import { MarketTradeDto, LimitTradeDto } from './trade.dto';
 import { CustomLogger } from '../logger/logger.service';
 
-@ApiTags('trade')
+@ApiTags('Trade')
 @Controller('trade')
 export class TradeController {
   private readonly logger = new CustomLogger(TradeController.name);

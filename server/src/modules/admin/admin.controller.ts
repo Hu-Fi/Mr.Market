@@ -39,7 +39,7 @@ import { SpotdataTradingPairDto } from './spotData/adminSpot.dto';
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@ApiTags('Admin')
+@ApiTags('Mixin')
 export class AdminController {
   constructor(
     private readonly adminStrategyService: AdminStrategyService,
