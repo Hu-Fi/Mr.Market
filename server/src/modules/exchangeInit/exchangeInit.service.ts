@@ -88,6 +88,27 @@ export class ExchangeInitService {
     return ex;
   }
 
+  private async loadMarketsWithRetry(
+    exchange: ccxt.Exchange,
+    exName: string,
+    label: string,
+    maxRetries = 3,
+  ) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await exchange.loadMarkets();
+        return;
+      } catch (e: any) {
+        this.logger.warn(
+          `[${exName}:${label}] loadMarkets attempt ${attempt}/${maxRetries} failed: ${
+            e?.message ?? e
+          }`,
+        );
+        if (attempt === maxRetries) throw e;
+        await new Promise((r) => setTimeout(r, 2000 * attempt));
+      }
+    }
+  }
   /** quick targeted diagnostics to catch auth/time issues early */
   private async postInitDiagnostics(
     exName: string,
@@ -286,7 +307,7 @@ export class ExchangeInitService {
                 }
 
                 // Preload markets to configure symbol routing/types
-                await exchange.loadMarkets();
+                await this.loadMarketsWithRetry(exchange, exName, acct.label);
 
                 // ProBit requires signIn for private endpoints
                 if (cfg.name === 'probit' && exchange.has?.signIn) {

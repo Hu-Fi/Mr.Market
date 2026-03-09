@@ -78,7 +78,7 @@ export class DexVolumeStrategyService {
         strategyType: 'dexVolume',
         parameters: dto,
         status: 'running',
-        startPrice: 0,
+        // startPrice: 0,
       }),
     );
 

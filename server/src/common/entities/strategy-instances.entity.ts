@@ -25,9 +25,6 @@ export class StrategyInstance {
   @Column()
   strategyType: string;
 
-  @Column()
-  startPrice: number;
-
   @Column('json')
   parameters: Record<string, any>;
 

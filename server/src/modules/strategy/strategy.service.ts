@@ -16,7 +16,7 @@
  * - Enums: PriceSourceType for specifying the price source type in market making.
  *
  * Methods:
- *
+ *x
  * - constructor: Initializes the service with injected dependencies and sets up exchange instances.
  *
  * - initializeExchanges(): Sets up the exchange instances with the provided API keys and secrets.
@@ -258,7 +258,7 @@ export class StrategyService {
         );
       } else {
         // Otherwise, create a new instance
-        const exchange = this.exchangeInitService.getExchange(exchangeAName);
+        // const exchange = this.exchangeInitService.getExchange(exchangeAName);
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -266,9 +266,9 @@ export class StrategyService {
           strategyType: 'arbitrage',
           parameters: strategyParamsDto,
           status: 'running',
-          startPrice: await exchange
-            .fetchTicker(pair)
-            .then((ticker) => ticker.last),
+          // startPrice: await exchange
+          //   .fetchTicker(pair)
+          //   .then((ticker) => ticker.last),
         });
         await this.strategyInstanceRepository.save(strategyInstance);
       }
@@ -401,8 +401,8 @@ export class StrategyService {
       const minAmt = market.limits?.amount?.min ?? 0;
       const minPrice = market.limits?.price?.min ?? 0;
 
-      const startTicker = await ex1.fetchTicker(symbol);
-      const startPrice = Number(startTicker.last);
+      // const startTicker = await ex1.fetchTicker(symbol);
+      // const startPrice = Number(startTicker.last);
 
       const parameters = {
         exchangeName,
@@ -425,9 +425,9 @@ export class StrategyService {
           strategyType: 'volume',
           parameters,
           status: 'running',
-          startPrice,
+          // startPrice,
         });
-        // await this.strategyInstanceRepository.save(strategyInstance);
+        await this.strategyInstanceRepository.save(strategyInstance);
       } else {
         await this.strategyInstanceRepository.update(
           { strategyKey },
@@ -1711,8 +1711,8 @@ export class StrategyService {
         );
       } else {
         // The exchange we place orders on
-        const executionExchange =
-          this.exchangeInitService.getExchange(exchangeName);
+        // const executionExchange =
+        //   this.exchangeInitService.getExchange(exchangeName);
 
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
@@ -1722,15 +1722,15 @@ export class StrategyService {
           parameters: strategyParamsDto,
           status: 'running',
           // For startPrice, we fetch from the oracle exchange if provided, else the executionExchange
-          startPrice: await (async () => {
-            const priceExchange = oracleExchangeName
-              ? this.exchangeInitService.getExchange(oracleExchangeName)
-              : executionExchange;
-            const ticker = await priceExchange.fetchTicker(pair);
-            return ticker.last;
-          })(),
+          // startPrice: await (async () => {
+          //   const priceExchange = oracleExchangeName
+          //     ? this.exchangeInitService.getExchange(oracleExchangeName)
+          //     : executionExchange;
+          //   const ticker = await priceExchange.fetchTicker(pair);
+          //   return ticker.last;
+          // })(),
         });
-        // await this.strategyInstanceRepository.save(strategyInstance);
+        await this.strategyInstanceRepository.save(strategyInstance);
       }
     }
 
@@ -1782,19 +1782,14 @@ export class StrategyService {
     floorPrice?: number,
     oracleExchangeName?: string, // optional
   ) {
-    // 1. Determine which exchange to use for pricing
-    const priceExchange = oracleExchangeName
-      ? this.exchangeInitService.getExchange(oracleExchangeName)
-      : this.exchangeInitService.getExchange(executionExchangeName);
-
-    // 2. Execution exchange is always the main exchangeName
+    // 1. Execution exchange is always the main exchangeName
     const executionExchange = this.exchangeInitService.getExchange(
       executionExchangeName,
     );
 
-    // 3. Fetch the current market price from the selected price exchange
+    // 2. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
-      priceExchange.id, // use priceExchange for data
+      oracleExchangeName, // use priceExchange for data
       pair,
       priceSourceType,
     );

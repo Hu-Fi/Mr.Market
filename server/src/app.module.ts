@@ -129,7 +129,7 @@ dotenv.config();
         GrowdataMarketMakingPair,
         IndicatorStrategyHistory,
       ],
-      synchronize: false,
+      synchronize: true,
       ssl: process.env.POSTGRES_SSL === 'true',
     }),
     ScheduleModule.forRoot(),
