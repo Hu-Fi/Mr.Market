@@ -258,7 +258,7 @@ export class StrategyService {
         );
       } else {
         // Otherwise, create a new instance
-        const exchange = this.exchangeInitService.getExchange(exchangeAName);
+        // const exchange = this.exchangeInitService.getExchange(exchangeAName);
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
           userId,
@@ -401,7 +401,7 @@ export class StrategyService {
       const minAmt = market.limits?.amount?.min ?? 0;
       const minPrice = market.limits?.price?.min ?? 0;
 
-      const startTicker = await ex1.fetchTicker(symbol);
+      // const startTicker = await ex1.fetchTicker(symbol);
       // const startPrice = Number(startTicker.last);
 
       const parameters = {
@@ -1711,8 +1711,8 @@ export class StrategyService {
         );
       } else {
         // The exchange we place orders on
-        const executionExchange =
-          this.exchangeInitService.getExchange(exchangeName);
+        // const executionExchange =
+        //   this.exchangeInitService.getExchange(exchangeName);
 
         strategyInstance = this.strategyInstanceRepository.create({
           strategyKey,
@@ -1782,17 +1782,12 @@ export class StrategyService {
     floorPrice?: number,
     oracleExchangeName?: string, // optional
   ) {
-    // 1. Determine which exchange to use for pricing
-    const priceExchange = oracleExchangeName
-      ? this.exchangeInitService.getExchange(oracleExchangeName)
-      : this.exchangeInitService.getExchange(executionExchangeName);
-
-    // 2. Execution exchange is always the main exchangeName
+    // 1. Execution exchange is always the main exchangeName
     const executionExchange = this.exchangeInitService.getExchange(
       executionExchangeName,
     );
 
-    // 3. Fetch the current market price from the selected price exchange
+    // 2. Fetch the current market price from the selected price exchange
     const priceSource = await this.getPriceSource(
       oracleExchangeName, // use priceExchange for data
       pair,

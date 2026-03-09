@@ -100,7 +100,9 @@ export class ExchangeInitService {
         return;
       } catch (e: any) {
         this.logger.warn(
-          `[${exName}:${label}] loadMarkets attempt ${attempt}/${maxRetries} failed: ${e?.message ?? e}`,
+          `[${exName}:${label}] loadMarkets attempt ${attempt}/${maxRetries} failed: ${
+            e?.message ?? e
+          }`,
         );
         if (attempt === maxRetries) throw e;
         await new Promise((r) => setTimeout(r, 2000 * attempt));
