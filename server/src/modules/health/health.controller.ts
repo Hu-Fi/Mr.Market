@@ -1,10 +1,16 @@
 // health.controller.ts
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { HealthService } from './health.service';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@ApiTags('health')
+@ApiTags('Health')
 @Controller('health')
 export class HealthController {
   constructor(private healthService: HealthService) {}
@@ -38,6 +44,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Get DB health status' })
   @ApiResponse({ status: 200, description: 'Health of Database , OK | ERROR' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async getDbHealth() {
     return await this.healthService.checkDbHealth();

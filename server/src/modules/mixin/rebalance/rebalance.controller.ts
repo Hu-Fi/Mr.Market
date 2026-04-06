@@ -9,13 +9,19 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { RebalanceService } from './rebalance.service';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 
-@ApiTags('rebalance')
+@ApiTags('Mixin')
 @Controller('rebalance')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class RebalanceController {
   private readonly logger = new CustomLogger(RebalanceController.name);

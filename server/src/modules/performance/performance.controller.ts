@@ -1,6 +1,8 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PerformanceService } from './performance.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Performance')
 @Controller('performance')
 export class PerformanceController {
   constructor(private readonly performanceService: PerformanceService) {}

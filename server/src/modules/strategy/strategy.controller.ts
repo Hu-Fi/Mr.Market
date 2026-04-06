@@ -32,7 +32,7 @@ import { AdminStrategyService } from '../admin/strategy/adminStrategy.service';
 import { TimeIndicatorStrategyService } from './time-indicator.service';
 import { TimeIndicatorStrategyDto } from './timeIndicator.dto';
 
-@ApiTags('strategy')
+@ApiTags('Strategy')
 @Controller('strategy')
 export class StrategyController {
   private loops = new Map<string, NodeJS.Timeout>();

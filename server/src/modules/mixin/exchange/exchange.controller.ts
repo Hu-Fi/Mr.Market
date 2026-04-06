@@ -1,13 +1,19 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { CustomLogger } from 'src/modules/logger/logger.service';
 import { ExchangeService } from './exchange.service';
 import { ExchangeDepositDto, ExchangeWithdrawalDto } from './exchange.dto';
 
 // This API is used for admin page to do rebalance
-@ApiTags('exchange')
+@ApiTags('Mixin')
 @Controller('exchange')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class ExchangeController {
   private readonly logger = new CustomLogger(ExchangeController.name);

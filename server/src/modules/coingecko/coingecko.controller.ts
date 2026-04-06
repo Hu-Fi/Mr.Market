@@ -8,7 +8,7 @@ import {
   CoinMarketChartResponse,
 } from 'coingecko-api-v3';
 
-@ApiTags('marketdata')
+@ApiTags('Marketdata')
 @Controller('coingecko')
 export class CoingeckoController {
   constructor(private readonly coingeckoProxy: CoingeckoProxyService) {}

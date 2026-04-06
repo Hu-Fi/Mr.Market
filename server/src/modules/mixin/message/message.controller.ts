@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -20,8 +21,9 @@ import {
 } from './message.dto';
 import { MessageService } from './message.service';
 
-@ApiTags('message')
+@ApiTags('Mixin')
 @Controller('message')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class MessageController {
   private readonly logger = new CustomLogger(MessageController.name);
